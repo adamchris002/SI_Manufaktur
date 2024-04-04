@@ -18,6 +18,10 @@ const LoginPage = () => {
   const navigate = useNavigate();
 
   const [showPassword, setShowPassword] = useState(false);
+  const [name, setName] = useState("");
+  const [username, setUsername] = useState("");
+  const [email, setEmail] = useState("");
+  const [Password, setPassword] = useState("");
 
   const handleClickShowPassword = () => {
     setShowPassword((show) => !show);
@@ -54,7 +58,7 @@ const LoginPage = () => {
         <Typography
           style={{ color: "#0F607D", fontSize: 72, fontWeight: "regular" }}
         >
-          Sign in
+          Register
         </Typography>
         <Typography
           style={{
@@ -64,8 +68,27 @@ const LoginPage = () => {
             color: "#676767",
           }}
         >
-          Hello there! Sign in to your account
+          Hello there! Kindly fill in your information
         </Typography>
+        <div style={{ marginTop: "64px" }}>
+          <TextField
+            sx={{
+              "& label.Mui-focused": {
+                color: "#0F607D",
+              },
+              "& .MuiInput-underline:after": {
+                borderBottomColor: "#0F607D",
+              },
+              "& .MuiInput-underline:hover:before": {
+                borderBottomColor: "#0F607D",
+              },
+              width: 512,
+            }}
+            label="Name"
+            variant="standard"
+            onChange={(e) => {setName(e.target.value)}}
+          />
+        </div>
         <div style={{ marginTop: "64px" }}>
           <TextField
             sx={{
@@ -82,6 +105,26 @@ const LoginPage = () => {
             }}
             label="Username"
             variant="standard"
+            onChange={(e) => {setUsername(e.target.value)}}
+          />
+        </div>
+        <div style={{ marginTop: "64px" }}>
+          <TextField
+            sx={{
+              "& label.Mui-focused": {
+                color: "#0F607D",
+              },
+              "& .MuiInput-underline:after": {
+                borderBottomColor: "#0F607D",
+              },
+              "& .MuiInput-underline:hover:before": {
+                borderBottomColor: "#0F607D",
+              },
+              width: 512,
+            }}
+            label="E-mail"
+            variant="standard"
+            onChange={(e) => {setEmail(e.target.value)}}
           />
         </div>
         <div style={{ marginTop: "64px" }}>
@@ -100,6 +143,7 @@ const LoginPage = () => {
             }}
             label="Password"
             variant="standard"
+            onChange={(e) => {setPassword(e.target.value)}}
             type={showPassword ? "password" : "text"}
             InputProps={{
               endAdornment: (
@@ -116,29 +160,24 @@ const LoginPage = () => {
             }}
           />
         </div>
-        <div onClick={() => {navigate("/register")}} style={{ marginTop: "48px" }}>
-          <MyLink text={"Don't have an account yet? Register here!"} />
-          <div style={{ marginTop: "48px" }}>
-            <DefaultButton
-              width="84px"
-              height="42px"
-              backgroundColor="#0F607D"
-              borderRadius="10px"
-              textTransform="uppercase"
-            >
-              Login
-            </DefaultButton>
-          </div>
+        <div style={{ marginTop: "48px" }}>
+          <DefaultButton
+            width="84px"
+            height="42px"
+            backgroundColor="#0F607D"
+            borderRadius="10px"
+            textTransform="uppercase"
+          >
+            Login
+          </DefaultButton>
         </div>
         <div
-          style={{
-            position: "fixed",
-            bottom: "64px",
-            left: "50%",
-            transform: "translateX(-50%)",
+          onClick={() => {
+            navigate("/");
           }}
+          style={{ marginTop: "30px" }}
         >
-          <MyLink text={"Forgot Password?"} />
+          <MyLink text={"Already have an account? sign in here"} />
         </div>
       </div>
     </div>

@@ -3,9 +3,11 @@ import {
   BrowserRouter as Router,
   Routes,
   Route,
-  Navigate,
+  // useNavigate,
 } from "react-router-dom";
 import LoginPage from "./pages/LoginPage";
+import RegisterPage from "./pages/RegisterPage";
+import MaindashboardMarketing from "./pages/MaindashboardMarketing";
 
 function App() {
   return (
@@ -13,6 +15,11 @@ function App() {
       <Router>
         <Routes>
           <Route path="/" element={<LoginPage />} />
+          <Route path="/register" element={<RegisterPage />} />
+          <Route
+            path="/marketingDashboard"
+            element={<MaindashboardMarketing />}
+          />
         </Routes>
       </Router>
     </div>
