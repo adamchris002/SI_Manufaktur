@@ -36,16 +36,15 @@ const LoginPage = () => {
     >
       <div
         style={{
-          zIndex: 1,
           position: "fixed",
           top: 64,
           left: 64,
-          width: "128px",
-          height: "128px",
+          width: "232",
+          height: "232",
         }}
       >
         <img
-          style={{ width: "128px", height: "128px" }}
+          style={{ width: "inherit", height: "inherit" }}
           src={companyLogo}
           alt="Company Logo"
         />
@@ -116,7 +115,12 @@ const LoginPage = () => {
             }}
           />
         </div>
-        <div onClick={() => {navigate("/register")}} style={{ marginTop: "48px" }}>
+        <div
+          onClick={() => {
+            navigate("/register");
+          }}
+          style={{ marginTop: "48px" }}
+        >
           <MyLink text={"Don't have an account yet? Register here!"} />
           <div style={{ marginTop: "48px" }}>
             <DefaultButton
@@ -129,16 +133,9 @@ const LoginPage = () => {
               Login
             </DefaultButton>
           </div>
-        </div>
-        <div
-          style={{
-            position: "fixed",
-            bottom: "64px",
-            left: "50%",
-            transform: "translateX(-50%)",
-          }}
-        >
+          <div style={{marginTop: "156px"}}>
           <MyLink text={"Forgot Password?"} />
+          </div>
         </div>
       </div>
     </div>

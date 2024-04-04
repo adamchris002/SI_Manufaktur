@@ -40,16 +40,15 @@ const LoginPage = () => {
     >
       <div
         style={{
-          zIndex: 1,
           position: "fixed",
           top: 64,
           left: 64,
-          width: "128px",
-          height: "128px",
+          width: "232",
+          height: "232",
         }}
       >
         <img
-          style={{ width: "128px", height: "128px" }}
+          style={{ width: "inherit", height: "inherit" }}
           src={companyLogo}
           alt="Company Logo"
         />

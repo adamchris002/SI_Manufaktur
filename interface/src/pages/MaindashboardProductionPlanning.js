@@ -5,9 +5,9 @@ import DefaultButton from "../components/Button";
 import AccountCircleIcon from "@mui/icons-material/AccountCircle";
 import { Typography } from "@mui/material";
 
-const MaindashboardMarketing = () => {
+const MaindashboardProductionPlanning = () => {
   const [username, setUsername] = useState("Ricky_Sutar22");
-  const [division, setDivision] = useState("Marketing Division");
+  const [division, setDivision] = useState("Production Planning Division");
 
   const orderList = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
 
@@ -20,6 +20,7 @@ const MaindashboardMarketing = () => {
         backgroundSize: "cover",
         display: "flex",
         backgroundAttachment: "fixed",
+        flexDirection: "row",
       }}
     >
       <div
@@ -44,26 +45,14 @@ const MaindashboardMarketing = () => {
             height="40px"
             backgroundColor="#0F607D"
             borderRadius="16px"
-            fontSize="24px"
+            fontSize="16px"
             onClickFunction={() => {
-              document.getElementById("vieworders").scrollIntoView({behavior: "smooth"});
+              document
+                .getElementById("unreviewedorders")
+                .scrollIntoView({ behavior: "smooth" });
             }}
           >
-            View All Orders
-          </DefaultButton>
-        </div>
-        <div style={{ marginTop: "32px", fontSize: "24px" }}>
-          <DefaultButton
-            width="232px"
-            height="40px"
-            backgroundColor="#0F607D"
-            borderRadius="16px"
-            fontSize="24px"
-            onClickFunction={() => {
-              document.getElementById("manageorders").scrollIntoView({behavior: "smooth"});
-            }}
-          >
-            Manage Orders
+            Unreviewed Orders
           </DefaultButton>
         </div>
         <div style={{ marginTop: "32px", fontSize: "24px" }}>
@@ -74,10 +63,12 @@ const MaindashboardMarketing = () => {
             borderRadius="16px"
             fontSize="16px"
             onClickFunction={() => {
-              document.getElementById("reviewedorders").scrollIntoView({behavior: "smooth"});
+              document
+                .getElementById("estimatedorders")
+                .scrollIntoView({ behavior: "smooth" });
             }}
           >
-            View Reviewed Orders
+            Estimated Orders
           </DefaultButton>
         </div>
         <div style={{ marginTop: "32px", fontSize: "24px" }}>
@@ -88,10 +79,12 @@ const MaindashboardMarketing = () => {
             borderRadius="16px"
             fontSize="16px"
             onClickFunction={() => {
-              document.getElementById("processedorders").scrollIntoView({behavior: "smooth"});
+              document
+                .getElementById("manageestimationorders")
+                .scrollIntoView({ behavior: "smooth" });
             }}
           >
-            View Processed Orders
+            Manage Estimation Orders
           </DefaultButton>
         </div>
         <div style={{ marginTop: "32px", fontSize: "24px" }}>
@@ -102,24 +95,12 @@ const MaindashboardMarketing = () => {
             borderRadius="16px"
             fontSize="16px"
             onClickFunction={() => {
-              document.getElementById("deliveredorders").scrollIntoView({behavior: "smooth"});
+              document
+                .getElementById("estimationordershistory")
+                .scrollIntoView({ behavior: "smooth" });
             }}
           >
-            View Delivered Orders
-          </DefaultButton>
-        </div>
-        <div style={{ marginTop: "32px", fontSize: "24px" }}>
-          <DefaultButton
-            width="232px"
-            height="40px"
-            backgroundColor="#0F607D"
-            borderRadius="16px"
-            fontSize="16px"
-            onClickFunction={() => {
-              document.getElementById("ordershistory").scrollIntoView({behavior: "smooth"});
-            }}
-          >
-            View Orders History
+            Estimation Orders History
           </DefaultButton>
         </div>
       </div>
@@ -129,7 +110,7 @@ const MaindashboardMarketing = () => {
           width: "0.2083vw",
           height: "95vh",
           backgroundColor: "#0F607D",
-          alignSelf: "center"
+          alignSelf: "center",
         }}
       ></div>
       <div style={{ width: "83.1217vw", height: "100vh", overflow: "auto" }}>
@@ -164,10 +145,10 @@ const MaindashboardMarketing = () => {
           }}
         >
           <Typography
-            id="vieworders"
+            id="unreviewedorders"
             style={{ color: "#0F607D", fontSize: "36px" }}
           >
-            View All Orders
+            Unreviewed Orders
           </Typography>
           <div
             style={{
@@ -259,10 +240,105 @@ const MaindashboardMarketing = () => {
           }}
         >
           <Typography
-            id="manageorders"
+            id="estimatedorders"
             style={{ fontSize: "36px", color: "#0F607D" }}
           >
-            Manage Orders
+            Estimated Orders
+          </Typography>
+          <div
+            style={{
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "space-evenly",
+            }}
+          >
+            <Typography style={{ marginRight: "8px", color: "#0F607D" }}>
+              Sort by:
+            </Typography>
+            <div style={{ marginRight: "8px" }}>
+              <DefaultButton
+                width="64px"
+                height="16px"
+                backgroundColor="#0F607D"
+                fontSize="10px"
+                borderRadius="10px"
+              >
+                date
+              </DefaultButton>
+            </div>
+            <div style={{ marginRight: "8px" }}>
+              <DefaultButton
+                width="64px"
+                height="16px"
+                backgroundColor="#0F607D"
+                fontSize="10px"
+                borderRadius="10px"
+              >
+                amount
+              </DefaultButton>
+            </div>
+            <div style={{ marginRight: "8px" }}>
+              <DefaultButton
+                width="64px"
+                height="16px"
+                backgroundColor="#0F607D"
+                fontSize="10px"
+                borderRadius="10px"
+              >
+                name
+              </DefaultButton>
+            </div>
+          </div>
+        </div>
+        <div style={{ marginLeft: "32px", marginTop: "32px" }}>
+          <div
+            style={{
+              width: "72vw",
+              overflowX: "auto",
+              whiteSpace: "nowrap",
+            }}
+          >
+            {orderList.map((data, index) => {
+              return (
+                <div
+                  style={{
+                    height: "256px",
+                    width: "256px",
+                    backgroundColor: "#d9d9d9",
+                    borderRadius: "20px",
+                    display: "inline-block",
+                    marginRight: index === orderList.length - 1 ? "" : "32px",
+                    cursor: "pointer",
+                    transition: "background-color 0.3s ease",
+                  }}
+                  onMouseEnter={(e) =>
+                    (e.target.style.backgroundColor = "#a0a0a0")
+                  }
+                  onMouseLeave={(e) =>
+                    (e.target.style.backgroundColor = "#d9d9d9")
+                  }
+                >
+                  {/* <img src="" alt=""/> */}
+                </div>
+              );
+            })}
+          </div>
+        </div>
+        <div
+          style={{
+            marginLeft: "32px",
+            marginTop: "64px",
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "center",
+            width: "72vw",
+          }}
+        >
+          <Typography
+            id="manageestimationorders"
+            style={{ fontSize: "36px", color: "#0F607D" }}
+          >
+            Manage Estimation Orders
           </Typography>
           <DefaultButton
             height="40px"
@@ -318,298 +394,13 @@ const MaindashboardMarketing = () => {
           }}
         >
           <Typography
-            id="reviewedorders"
+            id="estimationordershistory"
             style={{ fontSize: "36px", color: "#0F607D" }}
           >
-            Reviewed Orders
-          </Typography>
-          <div
-            style={{
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "space-evenly",
-            }}
-          >
-            <Typography style={{ marginRight: "8px", color: "#0F607D" }}>
-              Sort by:
-            </Typography>
-            <div style={{ marginRight: "8px" }}>
-              <DefaultButton
-                width="64px"
-                height="16px"
-                backgroundColor="#0F607D"
-                fontSize="10px"
-                borderRadius="10px"
-              >
-                date
-              </DefaultButton>
-            </div>
-            <div style={{ marginRight: "8px" }}>
-              <DefaultButton
-                width="64px"
-                height="16px"
-                backgroundColor="#0F607D"
-                fontSize="10px"
-                borderRadius="10px"
-              >
-                amount
-              </DefaultButton>
-            </div>
-            <div style={{ marginRight: "8px" }}>
-              <DefaultButton
-                width="64px"
-                height="16px"
-                backgroundColor="#0F607D"
-                fontSize="10px"
-                borderRadius="10px"
-              >
-                name
-              </DefaultButton>
-            </div>
-          </div>
-        </div>
-        <div style={{ marginLeft: "32px", marginTop: "32px" }}>
-          <div
-            style={{
-              width: "72vw",
-              overflowX: "auto",
-              whiteSpace: "nowrap",
-            }}
-          >
-            {orderList.map((data, index) => {
-              return (
-                <div
-                  style={{
-                    height: "256px",
-                    width: "256px",
-                    backgroundColor: "#d9d9d9",
-                    borderRadius: "20px",
-                    display: "inline-block",
-                    marginRight: index === orderList.length - 1 ? "" : "32px",
-                    cursor: "pointer",
-                    transition: "background-color 0.3s ease",
-                  }}
-                  onMouseEnter={(e) =>
-                    (e.target.style.backgroundColor = "#a0a0a0")
-                  }
-                  onMouseLeave={(e) =>
-                    (e.target.style.backgroundColor = "#d9d9d9")
-                  }
-                >
-                  {/* <img src="" alt=""/> */}
-                </div>
-              );
-            })}
-          </div>
-        </div>
-        <div
-          style={{
-            marginLeft: "32px",
-            marginTop: "64px",
-            display: "flex",
-            justifyContent: "space-between",
-            alignItems: "center",
-            width: "72vw",
-          }}
-        >
-          <Typography
-            id="processedorders"
-            style={{ fontSize: "36px", color: "#0F607D" }}
-          >
-            Processed Orders
-          </Typography>
-          <div
-            style={{
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "space-evenly",
-            }}
-          >
-            <Typography style={{ marginRight: "8px", color: "#0F607D" }}>
-              Sort by:
-            </Typography>
-            <div style={{ marginRight: "8px" }}>
-              <DefaultButton
-                width="64px"
-                height="16px"
-                backgroundColor="#0F607D"
-                fontSize="10px"
-                borderRadius="10px"
-              >
-                date
-              </DefaultButton>
-            </div>
-            <div style={{ marginRight: "8px" }}>
-              <DefaultButton
-                width="64px"
-                height="16px"
-                backgroundColor="#0F607D"
-                fontSize="10px"
-                borderRadius="10px"
-              >
-                amount
-              </DefaultButton>
-            </div>
-            <div style={{ marginRight: "8px" }}>
-              <DefaultButton
-                width="64px"
-                height="16px"
-                backgroundColor="#0F607D"
-                fontSize="10px"
-                borderRadius="10px"
-              >
-                name
-              </DefaultButton>
-            </div>
-          </div>
-        </div>
-        <div style={{ marginLeft: "32px", marginTop: "32px" }}>
-          <div
-            style={{
-              width: "72vw",
-              overflowX: "auto",
-              whiteSpace: "nowrap",
-            }}
-          >
-            {orderList.map((data, index) => {
-              return (
-                <div
-                  style={{
-                    height: "256px",
-                    width: "256px",
-                    backgroundColor: "#d9d9d9",
-                    borderRadius: "20px",
-                    display: "inline-block",
-                    marginRight: index === orderList.length - 1 ? "" : "32px",
-                    cursor: "pointer",
-                    transition: "background-color 0.3s ease",
-                  }}
-                  onMouseEnter={(e) =>
-                    (e.target.style.backgroundColor = "#a0a0a0")
-                  }
-                  onMouseLeave={(e) =>
-                    (e.target.style.backgroundColor = "#d9d9d9")
-                  }
-                >
-                  {/* <img src="" alt=""/> */}
-                </div>
-              );
-            })}
-          </div>
-        </div>
-        <div
-          style={{
-            marginLeft: "32px",
-            marginTop: "64px",
-            display: "flex",
-            justifyContent: "space-between",
-            alignItems: "center",
-            width: "72vw",
-          }}
-        >
-          <Typography
-            id="deliveredorders"
-            style={{ fontSize: "36px", color: "#0F607D" }}
-          >
-            Delivered Orders
-          </Typography>
-          <div
-            style={{
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "space-evenly",
-            }}
-          >
-            <Typography style={{ marginRight: "8px", color: "#0F607D" }}>
-              Sort by:
-            </Typography>
-            <div style={{ marginRight: "8px" }}>
-              <DefaultButton
-                width="64px"
-                height="16px"
-                backgroundColor="#0F607D"
-                fontSize="10px"
-                borderRadius="10px"
-              >
-                date
-              </DefaultButton>
-            </div>
-            <div style={{ marginRight: "8px" }}>
-              <DefaultButton
-                width="64px"
-                height="16px"
-                backgroundColor="#0F607D"
-                fontSize="10px"
-                borderRadius="10px"
-              >
-                amount
-              </DefaultButton>
-            </div>
-            <div style={{ marginRight: "8px" }}>
-              <DefaultButton
-                width="64px"
-                height="16px"
-                backgroundColor="#0F607D"
-                fontSize="10px"
-                borderRadius="10px"
-              >
-                name
-              </DefaultButton>
-            </div>
-          </div>
-        </div>
-        <div style={{ marginLeft: "32px", marginTop: "32px" }}>
-          <div
-            style={{
-              width: "72vw",
-              overflowX: "auto",
-              whiteSpace: "nowrap",
-            }}
-          >
-            {orderList.map((data, index) => {
-              return (
-                <div
-                  style={{
-                    height: "256px",
-                    width: "256px",
-                    backgroundColor: "#d9d9d9",
-                    borderRadius: "20px",
-                    display: "inline-block",
-                    marginRight: index === orderList.length - 1 ? "" : "32px",
-                    cursor: "pointer",
-                    transition: "background-color 0.3s ease",
-                  }}
-                  onMouseEnter={(e) =>
-                    (e.target.style.backgroundColor = "#a0a0a0")
-                  }
-                  onMouseLeave={(e) =>
-                    (e.target.style.backgroundColor = "#d9d9d9")
-                  }
-                >
-                  {/* <img src="" alt=""/> */}
-                </div>
-              );
-            })}
-          </div>
-        </div>
-        <div
-          style={{
-            marginLeft: "32px",
-            marginTop: "64px",
-            display: "flex",
-            justifyContent: "space-between",
-            alignItems: "center",
-            width: "72vw",
-          }}
-        >
-          <Typography
-            id="ordershistory"
-            style={{ fontSize: "36px", color: "#0F607D" }}
-          >
-            Orders History
+            Estimation Orders History
           </Typography>
           <div>
-            <DefaultButton>Go to Orders History Page</DefaultButton>
+            <DefaultButton>Go to Estimation Orders History Page</DefaultButton>
           </div>
         </div>
       </div>
@@ -617,4 +408,4 @@ const MaindashboardMarketing = () => {
   );
 };
 
-export default MaindashboardMarketing;
+export default MaindashboardProductionPlanning;

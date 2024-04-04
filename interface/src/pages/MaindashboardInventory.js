@@ -5,9 +5,9 @@ import DefaultButton from "../components/Button";
 import AccountCircleIcon from "@mui/icons-material/AccountCircle";
 import { Typography } from "@mui/material";
 
-const MaindashboardMarketing = () => {
+const MaindashboardInventory = () => {
   const [username, setUsername] = useState("Ricky_Sutar22");
-  const [division, setDivision] = useState("Marketing Division");
+  const [division, setDivision] = useState("Inventory Division");
 
   const orderList = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
 
@@ -20,6 +20,7 @@ const MaindashboardMarketing = () => {
         backgroundSize: "cover",
         display: "flex",
         backgroundAttachment: "fixed",
+        flexDirection: "row",
       }}
     >
       <div
@@ -44,26 +45,14 @@ const MaindashboardMarketing = () => {
             height="40px"
             backgroundColor="#0F607D"
             borderRadius="16px"
-            fontSize="24px"
+            fontSize="16px"
             onClickFunction={() => {
-              document.getElementById("vieworders").scrollIntoView({behavior: "smooth"});
+              document
+                .getElementById("managestocks")
+                .scrollIntoView({ behavior: "smooth" });
             }}
           >
-            View All Orders
-          </DefaultButton>
-        </div>
-        <div style={{ marginTop: "32px", fontSize: "24px" }}>
-          <DefaultButton
-            width="232px"
-            height="40px"
-            backgroundColor="#0F607D"
-            borderRadius="16px"
-            fontSize="24px"
-            onClickFunction={() => {
-              document.getElementById("manageorders").scrollIntoView({behavior: "smooth"});
-            }}
-          >
-            Manage Orders
+            Manage Stocks
           </DefaultButton>
         </div>
         <div style={{ marginTop: "32px", fontSize: "24px" }}>
@@ -74,10 +63,12 @@ const MaindashboardMarketing = () => {
             borderRadius="16px"
             fontSize="16px"
             onClickFunction={() => {
-              document.getElementById("reviewedorders").scrollIntoView({behavior: "smooth"});
+              document
+                .getElementById("unhandledreports")
+                .scrollIntoView({ behavior: "smooth" });
             }}
           >
-            View Reviewed Orders
+            Unhandled Reports
           </DefaultButton>
         </div>
         <div style={{ marginTop: "32px", fontSize: "24px" }}>
@@ -88,10 +79,12 @@ const MaindashboardMarketing = () => {
             borderRadius="16px"
             fontSize="16px"
             onClickFunction={() => {
-              document.getElementById("processedorders").scrollIntoView({behavior: "smooth"});
+              document
+                .getElementById("retrieveactivity")
+                .scrollIntoView({ behavior: "smooth" });
             }}
           >
-            View Processed Orders
+            Retrieve Activity
           </DefaultButton>
         </div>
         <div style={{ marginTop: "32px", fontSize: "24px" }}>
@@ -102,10 +95,12 @@ const MaindashboardMarketing = () => {
             borderRadius="16px"
             fontSize="16px"
             onClickFunction={() => {
-              document.getElementById("deliveredorders").scrollIntoView({behavior: "smooth"});
+              document
+                .getElementById("pickupactivity")
+                .scrollIntoView({ behavior: "smooth" });
             }}
           >
-            View Delivered Orders
+            Pickup Activity
           </DefaultButton>
         </div>
         <div style={{ marginTop: "32px", fontSize: "24px" }}>
@@ -116,10 +111,12 @@ const MaindashboardMarketing = () => {
             borderRadius="16px"
             fontSize="16px"
             onClickFunction={() => {
-              document.getElementById("ordershistory").scrollIntoView({behavior: "smooth"});
+              document
+                .getElementById("stockshistory")
+                .scrollIntoView({ behavior: "smooth" });
             }}
           >
-            View Orders History
+            Stocks History
           </DefaultButton>
         </div>
       </div>
@@ -129,7 +126,7 @@ const MaindashboardMarketing = () => {
           width: "0.2083vw",
           height: "95vh",
           backgroundColor: "#0F607D",
-          alignSelf: "center"
+          alignSelf: "center",
         }}
       ></div>
       <div style={{ width: "83.1217vw", height: "100vh", overflow: "auto" }}>
@@ -164,10 +161,30 @@ const MaindashboardMarketing = () => {
           }}
         >
           <Typography
-            id="vieworders"
+            id="managestocks"
             style={{ color: "#0F607D", fontSize: "36px" }}
           >
-            View All Orders
+            Manage Stocks
+          </Typography>
+          <div>
+            <DefaultButton>Go to Stocks Page</DefaultButton>
+          </div>
+        </div>
+        <div
+          style={{
+            marginLeft: "32px",
+            marginTop: "64px",
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "center",
+            width: "72vw",
+          }}
+        >
+          <Typography
+            id="unhandledreports"
+            style={{ fontSize: "36px", color: "#0F607D" }}
+          >
+            Unhandled Reports
           </Typography>
           <div
             style={{
@@ -259,10 +276,10 @@ const MaindashboardMarketing = () => {
           }}
         >
           <Typography
-            id="manageorders"
+            id="retrieveactivity"
             style={{ fontSize: "36px", color: "#0F607D" }}
           >
-            Manage Orders
+            Retrieve Activity
           </Typography>
           <DefaultButton
             height="40px"
@@ -270,7 +287,7 @@ const MaindashboardMarketing = () => {
             borderRadius="16px"
             fontSize="24px"
           >
-            Add Order
+            Add Activity
           </DefaultButton>
         </div>
         <div style={{ marginLeft: "32px", marginTop: "32px" }}>
@@ -318,55 +335,19 @@ const MaindashboardMarketing = () => {
           }}
         >
           <Typography
-            id="reviewedorders"
+            id="pickupactivity"
             style={{ fontSize: "36px", color: "#0F607D" }}
           >
-            Reviewed Orders
+            Pickup Activity
           </Typography>
-          <div
-            style={{
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "space-evenly",
-            }}
+          <DefaultButton
+            height="40px"
+            width="232px"
+            borderRadius="16px"
+            fontSize="24px"
           >
-            <Typography style={{ marginRight: "8px", color: "#0F607D" }}>
-              Sort by:
-            </Typography>
-            <div style={{ marginRight: "8px" }}>
-              <DefaultButton
-                width="64px"
-                height="16px"
-                backgroundColor="#0F607D"
-                fontSize="10px"
-                borderRadius="10px"
-              >
-                date
-              </DefaultButton>
-            </div>
-            <div style={{ marginRight: "8px" }}>
-              <DefaultButton
-                width="64px"
-                height="16px"
-                backgroundColor="#0F607D"
-                fontSize="10px"
-                borderRadius="10px"
-              >
-                amount
-              </DefaultButton>
-            </div>
-            <div style={{ marginRight: "8px" }}>
-              <DefaultButton
-                width="64px"
-                height="16px"
-                backgroundColor="#0F607D"
-                fontSize="10px"
-                borderRadius="10px"
-              >
-                name
-              </DefaultButton>
-            </div>
-          </div>
+            Add Activity
+          </DefaultButton>
         </div>
         <div style={{ marginLeft: "32px", marginTop: "32px" }}>
           <div
@@ -413,203 +394,13 @@ const MaindashboardMarketing = () => {
           }}
         >
           <Typography
-            id="processedorders"
+            id="stockshistory"
             style={{ fontSize: "36px", color: "#0F607D" }}
           >
-            Processed Orders
-          </Typography>
-          <div
-            style={{
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "space-evenly",
-            }}
-          >
-            <Typography style={{ marginRight: "8px", color: "#0F607D" }}>
-              Sort by:
-            </Typography>
-            <div style={{ marginRight: "8px" }}>
-              <DefaultButton
-                width="64px"
-                height="16px"
-                backgroundColor="#0F607D"
-                fontSize="10px"
-                borderRadius="10px"
-              >
-                date
-              </DefaultButton>
-            </div>
-            <div style={{ marginRight: "8px" }}>
-              <DefaultButton
-                width="64px"
-                height="16px"
-                backgroundColor="#0F607D"
-                fontSize="10px"
-                borderRadius="10px"
-              >
-                amount
-              </DefaultButton>
-            </div>
-            <div style={{ marginRight: "8px" }}>
-              <DefaultButton
-                width="64px"
-                height="16px"
-                backgroundColor="#0F607D"
-                fontSize="10px"
-                borderRadius="10px"
-              >
-                name
-              </DefaultButton>
-            </div>
-          </div>
-        </div>
-        <div style={{ marginLeft: "32px", marginTop: "32px" }}>
-          <div
-            style={{
-              width: "72vw",
-              overflowX: "auto",
-              whiteSpace: "nowrap",
-            }}
-          >
-            {orderList.map((data, index) => {
-              return (
-                <div
-                  style={{
-                    height: "256px",
-                    width: "256px",
-                    backgroundColor: "#d9d9d9",
-                    borderRadius: "20px",
-                    display: "inline-block",
-                    marginRight: index === orderList.length - 1 ? "" : "32px",
-                    cursor: "pointer",
-                    transition: "background-color 0.3s ease",
-                  }}
-                  onMouseEnter={(e) =>
-                    (e.target.style.backgroundColor = "#a0a0a0")
-                  }
-                  onMouseLeave={(e) =>
-                    (e.target.style.backgroundColor = "#d9d9d9")
-                  }
-                >
-                  {/* <img src="" alt=""/> */}
-                </div>
-              );
-            })}
-          </div>
-        </div>
-        <div
-          style={{
-            marginLeft: "32px",
-            marginTop: "64px",
-            display: "flex",
-            justifyContent: "space-between",
-            alignItems: "center",
-            width: "72vw",
-          }}
-        >
-          <Typography
-            id="deliveredorders"
-            style={{ fontSize: "36px", color: "#0F607D" }}
-          >
-            Delivered Orders
-          </Typography>
-          <div
-            style={{
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "space-evenly",
-            }}
-          >
-            <Typography style={{ marginRight: "8px", color: "#0F607D" }}>
-              Sort by:
-            </Typography>
-            <div style={{ marginRight: "8px" }}>
-              <DefaultButton
-                width="64px"
-                height="16px"
-                backgroundColor="#0F607D"
-                fontSize="10px"
-                borderRadius="10px"
-              >
-                date
-              </DefaultButton>
-            </div>
-            <div style={{ marginRight: "8px" }}>
-              <DefaultButton
-                width="64px"
-                height="16px"
-                backgroundColor="#0F607D"
-                fontSize="10px"
-                borderRadius="10px"
-              >
-                amount
-              </DefaultButton>
-            </div>
-            <div style={{ marginRight: "8px" }}>
-              <DefaultButton
-                width="64px"
-                height="16px"
-                backgroundColor="#0F607D"
-                fontSize="10px"
-                borderRadius="10px"
-              >
-                name
-              </DefaultButton>
-            </div>
-          </div>
-        </div>
-        <div style={{ marginLeft: "32px", marginTop: "32px" }}>
-          <div
-            style={{
-              width: "72vw",
-              overflowX: "auto",
-              whiteSpace: "nowrap",
-            }}
-          >
-            {orderList.map((data, index) => {
-              return (
-                <div
-                  style={{
-                    height: "256px",
-                    width: "256px",
-                    backgroundColor: "#d9d9d9",
-                    borderRadius: "20px",
-                    display: "inline-block",
-                    marginRight: index === orderList.length - 1 ? "" : "32px",
-                    cursor: "pointer",
-                    transition: "background-color 0.3s ease",
-                  }}
-                  onMouseEnter={(e) =>
-                    (e.target.style.backgroundColor = "#a0a0a0")
-                  }
-                  onMouseLeave={(e) =>
-                    (e.target.style.backgroundColor = "#d9d9d9")
-                  }
-                >
-                  {/* <img src="" alt=""/> */}
-                </div>
-              );
-            })}
-          </div>
-        </div>
-        <div
-          style={{
-            marginLeft: "32px",
-            marginTop: "64px",
-            display: "flex",
-            justifyContent: "space-between",
-            alignItems: "center",
-            width: "72vw",
-          }}
-        >
-          <Typography
-            id="ordershistory"
-            style={{ fontSize: "36px", color: "#0F607D" }}
-          >
-            Orders History
+            Stocks History
           </Typography>
           <div>
-            <DefaultButton>Go to Orders History Page</DefaultButton>
+            <DefaultButton>Stocks History Page</DefaultButton>
           </div>
         </div>
       </div>
@@ -617,4 +408,4 @@ const MaindashboardMarketing = () => {
   );
 };
 
-export default MaindashboardMarketing;
+export default MaindashboardInventory;

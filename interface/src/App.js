@@ -8,6 +8,10 @@ import {
 import LoginPage from "./pages/LoginPage";
 import RegisterPage from "./pages/RegisterPage";
 import MaindashboardMarketing from "./pages/MaindashboardMarketing";
+import MaindashboardProductionPlanning from "./pages/MaindashboardProductionPlanning";
+import MaindashboardInventory from "./pages/MaindashboardInventory";
+import MaindashboardProduction from "./pages/MaindashboardProduction";
+import MaindasboardWaste from "./pages/MaindashboardWaste";
 
 function App() {
   return (
@@ -19,6 +23,24 @@ function App() {
           <Route
             path="/marketingDashboard"
             element={<MaindashboardMarketing />}
+          />
+          <Route
+            path="/productionPlanningDashboard"
+            element={<MaindashboardProductionPlanning />}
+          />
+          <Route
+            path="/inventoryDashboard"
+            element={<MaindashboardInventory />}
+          >
+            {/* <Route path="/stocksPage" element={<StocksPage />} /> */}
+          </Route>
+          <Route
+            path="/productionDashboard"
+            element={<MaindashboardProduction />}
+          />
+                    <Route
+            path="/wasteDashboard"
+            element={<MaindasboardWaste />}
           />
         </Routes>
       </Router>
