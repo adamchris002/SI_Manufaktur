@@ -1,15 +1,37 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import factoryBackground from "../assets/factorybackground.png";
 import companyLogo from "../assets/PT_Aridas_Karya_Satria_Logo.png";
 import DefaultButton from "../components/Button";
 import AccountCircleIcon from "@mui/icons-material/AccountCircle";
 import { Typography } from "@mui/material";
+import { useAuth } from "../components/AuthContext";
+import MySnackbar from "../components/Snackbar";
 
 const MaindashboardMarketing = () => {
   const [username, setUsername] = useState("Ricky_Sutar22");
   const [division, setDivision] = useState("Marketing Division");
+  const { message, clearMessage } = useAuth();
+  const [ snackbarMessage, setSnackbarMessage ] = useState("");
+  const [ snackbarStatus, setSnackbarStatus ] = useState(false);
+  const [ openSnackbar, setOpenSnackbar ] = useState(false);
 
   const orderList = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
+
+  const handleCloseSnackbar = () => {
+    setOpenSnackbar(false);
+    setSnackbarMessage("");
+    setSnackbarStatus(true);
+  };
+
+  useEffect(() => {
+    if (message) {
+      console.log(message)
+      setSnackbarMessage(message);
+      setSnackbarStatus(true);
+      setOpenSnackbar(true);
+      clearMessage();
+    }
+  }, [message, clearMessage]);
 
   return (
     <div
@@ -46,7 +68,9 @@ const MaindashboardMarketing = () => {
             borderRadius="16px"
             fontSize="24px"
             onClickFunction={() => {
-              document.getElementById("vieworders").scrollIntoView({behavior: "smooth"});
+              document
+                .getElementById("vieworders")
+                .scrollIntoView({ behavior: "smooth" });
             }}
           >
             View All Orders
@@ -60,7 +84,9 @@ const MaindashboardMarketing = () => {
             borderRadius="16px"
             fontSize="24px"
             onClickFunction={() => {
-              document.getElementById("manageorders").scrollIntoView({behavior: "smooth"});
+              document
+                .getElementById("manageorders")
+                .scrollIntoView({ behavior: "smooth" });
             }}
           >
             Manage Orders
@@ -74,7 +100,9 @@ const MaindashboardMarketing = () => {
             borderRadius="16px"
             fontSize="16px"
             onClickFunction={() => {
-              document.getElementById("reviewedorders").scrollIntoView({behavior: "smooth"});
+              document
+                .getElementById("reviewedorders")
+                .scrollIntoView({ behavior: "smooth" });
             }}
           >
             View Reviewed Orders
@@ -88,7 +116,9 @@ const MaindashboardMarketing = () => {
             borderRadius="16px"
             fontSize="16px"
             onClickFunction={() => {
-              document.getElementById("processedorders").scrollIntoView({behavior: "smooth"});
+              document
+                .getElementById("processedorders")
+                .scrollIntoView({ behavior: "smooth" });
             }}
           >
             View Processed Orders
@@ -102,7 +132,9 @@ const MaindashboardMarketing = () => {
             borderRadius="16px"
             fontSize="16px"
             onClickFunction={() => {
-              document.getElementById("deliveredorders").scrollIntoView({behavior: "smooth"});
+              document
+                .getElementById("deliveredorders")
+                .scrollIntoView({ behavior: "smooth" });
             }}
           >
             View Delivered Orders
@@ -116,7 +148,9 @@ const MaindashboardMarketing = () => {
             borderRadius="16px"
             fontSize="16px"
             onClickFunction={() => {
-              document.getElementById("ordershistory").scrollIntoView({behavior: "smooth"});
+              document
+                .getElementById("ordershistory")
+                .scrollIntoView({ behavior: "smooth" });
             }}
           >
             View Orders History
@@ -129,7 +163,7 @@ const MaindashboardMarketing = () => {
           width: "0.2083vw",
           height: "95vh",
           backgroundColor: "#0F607D",
-          alignSelf: "center"
+          alignSelf: "center",
         }}
       ></div>
       <div style={{ width: "83.1217vw", height: "100vh", overflow: "auto" }}>
@@ -142,7 +176,12 @@ const MaindashboardMarketing = () => {
           }}
         >
           <AccountCircleIcon
-            style={{ width: "64px", height: "64px", marginRight: "16px" }}
+            style={{
+              width: "64px",
+              height: "auto",
+              marginRight: "16px",
+              cursor: "pointer",
+            }}
           />
           <div style={{ textAlign: "left" }}>
             <Typography style={{ fontSize: "48px", color: "#0F607D" }}>
@@ -172,14 +211,18 @@ const MaindashboardMarketing = () => {
           <div
             style={{
               display: "flex",
-              alignItems: "center",
+              alignContent: "center",
               justifyContent: "space-evenly",
             }}
           >
             <Typography style={{ marginRight: "8px", color: "#0F607D" }}>
               Sort by:
             </Typography>
-            <div style={{ marginRight: "8px" }}>
+            <div
+              style={{
+                marginRight: "8px",
+              }}
+            >
               <DefaultButton
                 width="64px"
                 height="16px"
@@ -190,7 +233,11 @@ const MaindashboardMarketing = () => {
                 date
               </DefaultButton>
             </div>
-            <div style={{ marginRight: "8px" }}>
+            <div
+              style={{
+                marginRight: "8px",
+              }}
+            >
               <DefaultButton
                 width="64px"
                 height="16px"
@@ -201,7 +248,7 @@ const MaindashboardMarketing = () => {
                 amount
               </DefaultButton>
             </div>
-            <div style={{ marginRight: "8px" }}>
+            <div>
               <DefaultButton
                 width="64px"
                 height="16px"
@@ -326,14 +373,18 @@ const MaindashboardMarketing = () => {
           <div
             style={{
               display: "flex",
-              alignItems: "center",
+              alignContent: "center",
               justifyContent: "space-evenly",
             }}
           >
             <Typography style={{ marginRight: "8px", color: "#0F607D" }}>
               Sort by:
             </Typography>
-            <div style={{ marginRight: "8px" }}>
+            <div
+              style={{
+                marginRight: "8px",
+              }}
+            >
               <DefaultButton
                 width="64px"
                 height="16px"
@@ -344,7 +395,11 @@ const MaindashboardMarketing = () => {
                 date
               </DefaultButton>
             </div>
-            <div style={{ marginRight: "8px" }}>
+            <div
+              style={{
+                marginRight: "8px",
+              }}
+            >
               <DefaultButton
                 width="64px"
                 height="16px"
@@ -355,7 +410,7 @@ const MaindashboardMarketing = () => {
                 amount
               </DefaultButton>
             </div>
-            <div style={{ marginRight: "8px" }}>
+            <div>
               <DefaultButton
                 width="64px"
                 height="16px"
@@ -421,14 +476,18 @@ const MaindashboardMarketing = () => {
           <div
             style={{
               display: "flex",
-              alignItems: "center",
+              alignContent: "center",
               justifyContent: "space-evenly",
             }}
           >
             <Typography style={{ marginRight: "8px", color: "#0F607D" }}>
               Sort by:
             </Typography>
-            <div style={{ marginRight: "8px" }}>
+            <div
+              style={{
+                marginRight: "8px",
+              }}
+            >
               <DefaultButton
                 width="64px"
                 height="16px"
@@ -439,7 +498,11 @@ const MaindashboardMarketing = () => {
                 date
               </DefaultButton>
             </div>
-            <div style={{ marginRight: "8px" }}>
+            <div
+              style={{
+                marginRight: "8px",
+              }}
+            >
               <DefaultButton
                 width="64px"
                 height="16px"
@@ -450,7 +513,7 @@ const MaindashboardMarketing = () => {
                 amount
               </DefaultButton>
             </div>
-            <div style={{ marginRight: "8px" }}>
+            <div>
               <DefaultButton
                 width="64px"
                 height="16px"
@@ -516,14 +579,18 @@ const MaindashboardMarketing = () => {
           <div
             style={{
               display: "flex",
-              alignItems: "center",
+              alignContent: "center",
               justifyContent: "space-evenly",
             }}
           >
             <Typography style={{ marginRight: "8px", color: "#0F607D" }}>
               Sort by:
             </Typography>
-            <div style={{ marginRight: "8px" }}>
+            <div
+              style={{
+                marginRight: "8px",
+              }}
+            >
               <DefaultButton
                 width="64px"
                 height="16px"
@@ -534,7 +601,11 @@ const MaindashboardMarketing = () => {
                 date
               </DefaultButton>
             </div>
-            <div style={{ marginRight: "8px" }}>
+            <div
+              style={{
+                marginRight: "8px",
+              }}
+            >
               <DefaultButton
                 width="64px"
                 height="16px"
@@ -545,7 +616,7 @@ const MaindashboardMarketing = () => {
                 amount
               </DefaultButton>
             </div>
-            <div style={{ marginRight: "8px" }}>
+            <div>
               <DefaultButton
                 width="64px"
                 height="16px"
@@ -613,6 +684,14 @@ const MaindashboardMarketing = () => {
           </div>
         </div>
       </div>
+      {snackbarMessage !== ("" || null) && (
+        <MySnackbar
+          open={openSnackbar}
+          handleClose={handleCloseSnackbar}
+          messageStatus={snackbarStatus}
+          popupMessage={snackbarMessage}
+        />
+      )}
     </div>
   );
 };

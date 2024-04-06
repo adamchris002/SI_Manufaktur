@@ -189,14 +189,18 @@ const MaindashboardInventory = () => {
           <div
             style={{
               display: "flex",
-              alignItems: "center",
+              alignContent: "center",
               justifyContent: "space-evenly",
             }}
           >
             <Typography style={{ marginRight: "8px", color: "#0F607D" }}>
               Sort by:
             </Typography>
-            <div style={{ marginRight: "8px" }}>
+            <div
+              style={{
+                marginRight: "8px",
+              }}
+            >
               <DefaultButton
                 width="64px"
                 height="16px"
@@ -207,7 +211,11 @@ const MaindashboardInventory = () => {
                 date
               </DefaultButton>
             </div>
-            <div style={{ marginRight: "8px" }}>
+            <div
+              style={{
+                marginRight: "8px",
+              }}
+            >
               <DefaultButton
                 width="64px"
                 height="16px"
@@ -218,7 +226,7 @@ const MaindashboardInventory = () => {
                 amount
               </DefaultButton>
             </div>
-            <div style={{ marginRight: "8px" }}>
+            <div>
               <DefaultButton
                 width="64px"
                 height="16px"

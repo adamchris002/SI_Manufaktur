@@ -2,7 +2,8 @@ import React from "react";
 import Link from "@mui/material/Link";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
 
-const MyLink = ({ text }) => {
+const MyLink = (props) => {
+  const {text, onClickFunction} = props
   const theme = createTheme({
     components: {
       MuiLink: {
@@ -35,7 +36,7 @@ const MyLink = ({ text }) => {
 
   return (
     <ThemeProvider theme={theme}>
-      <Link>
+      <Link onClick={onClickFunction}>
         {text}
       </Link>
     </ThemeProvider>

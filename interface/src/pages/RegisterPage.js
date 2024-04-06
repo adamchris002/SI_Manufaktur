@@ -1,4 +1,5 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
+import axios from "axios";
 import factoryBackground from "../assets/factorybackground.png";
 import companyLogo from "../assets/PT_Aridas_Karya_Satria_Logo.png";
 import {
@@ -13,15 +14,63 @@ import "@fontsource/roboto/300.css";
 import VisibilityIcon from "@mui/icons-material/Visibility";
 import VisibilityOffIcon from "@mui/icons-material/VisibilityOff";
 import { useNavigate } from "react-router-dom";
+import MySnackbar from "../components/Snackbar";
+import { useAuth } from "../components/AuthContext";
 
 const LoginPage = () => {
   const navigate = useNavigate();
 
-  const [showPassword, setShowPassword] = useState(false);
+  const [showPassword, setShowPassword] = useState(true);
+  const { setSuccessMessage } = useAuth();
   const [name, setName] = useState("");
   const [username, setUsername] = useState("");
   const [email, setEmail] = useState("");
-  const [Password, setPassword] = useState("");
+  const [password, setPassword] = useState("");
+  const [openSnackbar, setOpenSnackbar] = useState(false);
+  const [snackbarMessage, setSnackbarMessage] = useState("");
+  const [snackbarStatus, setSnackbarStatus] = useState(false);
+
+  console.log(email);
+
+  const handleRegister = () => {
+    const registerData = {
+      name: name,
+      username: username,
+      email: email,
+      password: password,
+    };
+    if (name === "" || username === "" || email === "" || password === "") {
+      setOpenSnackbar(true);
+      setSnackbarMessage("Please fill in all the required fields");
+      setSnackbarStatus(false);
+    } else {
+      axios({
+        method: "POST",
+        url: "http://localhost:3000/users/register",
+        data: registerData,
+      })
+        .then((result) => {
+          if (result.status === 200) {
+            setSuccessMessage("You have successfully created an account!");
+            setSnackbarStatus(true);
+            navigate("/");
+          }
+        })
+        .catch((error) => {
+          if (error.response) {
+            setOpenSnackbar(true);
+            setSnackbarMessage(error.response.data.error);
+            setSnackbarStatus(false);
+          }
+        });
+    }
+  };
+
+  const handleCloseSnackbar = () => {
+    setOpenSnackbar(false);
+    setSnackbarMessage("");
+    setSnackbarStatus(null);
+  };
 
   const handleClickShowPassword = () => {
     setShowPassword((show) => !show);
@@ -85,7 +134,9 @@ const LoginPage = () => {
             }}
             label="Name"
             variant="standard"
-            onChange={(e) => {setName(e.target.value)}}
+            onChange={(current) => {
+              setName(current.target.value);
+            }}
           />
         </div>
         <div style={{ marginTop: "64px" }}>
@@ -104,7 +155,9 @@ const LoginPage = () => {
             }}
             label="Username"
             variant="standard"
-            onChange={(e) => {setUsername(e.target.value)}}
+            onChange={(current) => {
+              setUsername(current.target.value);
+            }}
           />
         </div>
         <div style={{ marginTop: "64px" }}>
@@ -123,7 +176,9 @@ const LoginPage = () => {
             }}
             label="E-mail"
             variant="standard"
-            onChange={(e) => {setEmail(e.target.value)}}
+            onChange={(current) => {
+              setEmail(current.target.value);
+            }}
           />
         </div>
         <div style={{ marginTop: "64px" }}>
@@ -142,17 +197,28 @@ const LoginPage = () => {
             }}
             label="Password"
             variant="standard"
-            onChange={(e) => {setPassword(e.target.value)}}
+            onChange={(current) => {
+              setPassword(current.target.value);
+            }}
             type={showPassword ? "password" : "text"}
             InputProps={{
               endAdornment: (
                 <InputAdornment position="end">
                   <IconButton
+                    style={{ height: "16px", width: "16px" }}
                     aria-label="toggle password visibility"
                     onClick={handleClickShowPassword}
                     edge="end"
                   >
-                    {showPassword ? <VisibilityOffIcon /> : <VisibilityIcon />}
+                    {showPassword ? (
+                      <VisibilityOffIcon
+                        style={{ width: "16px", height: "auto" }}
+                      />
+                    ) : (
+                      <VisibilityIcon
+                        style={{ width: "16px", height: "auto" }}
+                      />
+                    )}
                   </IconButton>
                 </InputAdornment>
               ),
@@ -166,8 +232,9 @@ const LoginPage = () => {
             backgroundColor="#0F607D"
             borderRadius="10px"
             textTransform="uppercase"
+            onClickFunction={handleRegister}
           >
-            Login
+            Register
           </DefaultButton>
         </div>
         <div
@@ -179,6 +246,14 @@ const LoginPage = () => {
           <MyLink text={"Already have an account? sign in here"} />
         </div>
       </div>
+      {snackbarMessage !== ("" || null) && (
+        <MySnackbar
+          open={openSnackbar}
+          handleClose={handleCloseSnackbar}
+          messageStatus={snackbarStatus}
+          popupMessage={snackbarMessage}
+        />
+      )}
     </div>
   );
 };
