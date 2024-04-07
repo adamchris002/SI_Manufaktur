@@ -28,6 +28,8 @@ const LoginPage = () => {
   const [snackbarMessage, setSnackbarMessage] = useState("");
   const [snackbarStatus, setSnackbarStatus] = useState(false);
 
+  const [loginClicked, setLoginClicked] = useState(false);
+
   const handleCloseSnackbar = () => {
     setOpenSnackbar(false);
     setSnackbarMessage("");
@@ -43,13 +45,22 @@ const LoginPage = () => {
     }
   }, [message, clearMessage]);
 
+  const handleInputUsername = (e) => {
+    setUsername(e.target.value);
+  };
+  const handleInputPassword = (e) => {
+    setPassword(e.target.value);
+  };
+
   const handleLogin = () => {
     const loginData = { username: username, password: password };
     if (username === "" || password === "") {
       setOpenSnackbar(true);
       setSnackbarMessage("Please fill in all the required fields");
       setSnackbarStatus(false);
+      setLoginClicked(true)
     } else {
+      setLoginClicked(true)
       axios({
         method: "POST",
         url: "http://localhost:3000/users/login",
@@ -141,7 +152,7 @@ const LoginPage = () => {
           Hello there! Sign in to your account
         </Typography>
         <div style={{ marginTop: "64px" }}>
-          <TextField
+            <TextField
             sx={{
               "& label.Mui-focused": {
                 color: "#0F607D",
@@ -154,15 +165,17 @@ const LoginPage = () => {
               },
               width: 512,
             }}
+            error={loginClicked && username === ""} // Show error only after clicking login
+            helperText={(loginClicked && username === "") && ("Please fill in your Username")}
             label="Username"
             variant="standard"
             onChange={(current) => {
-              setUsername(current.target.value);
+              handleInputUsername(current);
             }}
           />
         </div>
         <div style={{ marginTop: "64px" }}>
-          <TextField
+            <TextField
             sx={{
               "& label.Mui-focused": {
                 color: "#0F607D",
@@ -175,17 +188,19 @@ const LoginPage = () => {
               },
               width: 512,
             }}
+            error={loginClicked && password === ""} // Show error only after clicking login
+            helperText={(loginClicked && password === "") && ("Please fill in your Password")}
             label="Password"
             variant="standard"
             onChange={(current) => {
-              setPassword(current.target.value);
+              handleInputPassword(current);
             }}
             type={showPassword ? "password" : "text"}
             InputProps={{
               endAdornment: (
                 <InputAdornment position="end">
                   <IconButton
-                  style={{height: "16px", width: "16px"}}
+                    style={{ height: "16px", width: "16px" }}
                     aria-label="toggle password visibility"
                     onClick={handleClickShowPassword}
                     edge="end"

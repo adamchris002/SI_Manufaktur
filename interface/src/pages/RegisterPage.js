@@ -30,7 +30,7 @@ const LoginPage = () => {
   const [snackbarMessage, setSnackbarMessage] = useState("");
   const [snackbarStatus, setSnackbarStatus] = useState(false);
 
-  console.log(email);
+  const [registerClicked, setRegisterClicked] = useState(false);
 
   const handleRegister = () => {
     const registerData = {
@@ -43,6 +43,7 @@ const LoginPage = () => {
       setOpenSnackbar(true);
       setSnackbarMessage("Please fill in all the required fields");
       setSnackbarStatus(false);
+      setRegisterClicked(true);
     } else {
       axios({
         method: "POST",
@@ -118,7 +119,11 @@ const LoginPage = () => {
         >
           Hello there! Kindly fill in your information
         </Typography>
-        <div style={{ marginTop: "64px" }}>
+        <div
+          style={{
+            marginTop: "64px",
+          }}
+        >
           <TextField
             sx={{
               "& label.Mui-focused": {
@@ -132,6 +137,10 @@ const LoginPage = () => {
               },
               width: 512,
             }}
+            error={registerClicked && name === ""}
+            helperText={
+              registerClicked && name === "" && "Please fill in your Name"
+            }
             label="Name"
             variant="standard"
             onChange={(current) => {
@@ -139,7 +148,7 @@ const LoginPage = () => {
             }}
           />
         </div>
-        <div style={{ marginTop: "64px" }}>
+        <div style={{ marginTop: registerClicked && name === "" ? "32px" :"64px" }}>
           <TextField
             sx={{
               "& label.Mui-focused": {
@@ -153,6 +162,12 @@ const LoginPage = () => {
               },
               width: 512,
             }}
+            error={registerClicked && username === ""}
+            helperText={
+              registerClicked &&
+              username === "" &&
+              "Please fill in your Username"
+            }
             label="Username"
             variant="standard"
             onChange={(current) => {
@@ -160,7 +175,7 @@ const LoginPage = () => {
             }}
           />
         </div>
-        <div style={{ marginTop: "64px" }}>
+        <div style={{ marginTop: registerClicked && name === "" ? "32px" :"64px" }}>
           <TextField
             sx={{
               "& label.Mui-focused": {
@@ -174,6 +189,10 @@ const LoginPage = () => {
               },
               width: 512,
             }}
+            error={registerClicked && email === ""}
+            helperText={
+              registerClicked && email === "" && "Please fill in your E-mail"
+            }
             label="E-mail"
             variant="standard"
             onChange={(current) => {
@@ -181,7 +200,7 @@ const LoginPage = () => {
             }}
           />
         </div>
-        <div style={{ marginTop: "64px" }}>
+        <div style={{ marginTop: registerClicked && name === "" ? "32px" :"64px" }}>
           <TextField
             sx={{
               "& label.Mui-focused": {
@@ -195,6 +214,12 @@ const LoginPage = () => {
               },
               width: 512,
             }}
+            error={registerClicked && password === ""}
+            helperText={
+              registerClicked &&
+              password === "" &&
+              "Please fill in your Password"
+            }
             label="Password"
             variant="standard"
             onChange={(current) => {
