@@ -3,19 +3,69 @@ import factoryBackground from "../assets/factorybackground.png";
 import companyLogo from "../assets/PT_Aridas_Karya_Satria_Logo.png";
 import DefaultButton from "../components/Button";
 import AccountCircleIcon from "@mui/icons-material/AccountCircle";
-import { Typography } from "@mui/material";
+import { Typography, TextField, styled, Button } from "@mui/material";
 import { useAuth } from "../components/AuthContext";
 import MySnackbar from "../components/Snackbar";
+import MyModal from "../components/Modal";
+import CloudUploadIcon from "@mui/icons-material/CloudUpload";
+import MySelectTextField from "../components/SelectTextField";
+
+const VisuallyHiddenInput = styled("input")({
+  clip: "rect(0 0 0 0)",
+  clipPath: "inset(50%)",
+  height: 1,
+  overflow: "hidden",
+  position: "absolute",
+  bottom: 0,
+  left: 0,
+  whiteSpace: "nowrap",
+  width: 1,
+});
 
 const MaindashboardMarketing = () => {
   const [username, setUsername] = useState("Ricky_Sutar22");
   const [division, setDivision] = useState("Marketing Division");
   const { message, clearMessage } = useAuth();
-  const [ snackbarMessage, setSnackbarMessage ] = useState("");
-  const [ snackbarStatus, setSnackbarStatus ] = useState(false);
-  const [ openSnackbar, setOpenSnackbar ] = useState(false);
+  const [snackbarMessage, setSnackbarMessage] = useState("");
+  const [snackbarStatus, setSnackbarStatus] = useState(false);
+  const [openSnackbar, setOpenSnackbar] = useState(false);
+  const [openModal, setOpenModal] = useState(false);
 
   const orderList = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
+
+  const values = [
+    {
+      value: "USD",
+      label: "$",
+    },
+    {
+      value: "EUR",
+      label: "€",
+    },
+    {
+      value: "BTC",
+      label: "฿",
+    },
+    {
+      value: "JPY",
+      label: "¥",
+    },
+  ];
+
+  const channels = [
+    {
+      value: "Gmail",
+      label: "$",
+    },
+    {
+      value: "Phone",
+      label: "€",
+    },
+    {
+      value: "Social Media",
+      label: "฿",
+    },
+  ];
 
   const handleCloseSnackbar = () => {
     setOpenSnackbar(false);
@@ -23,9 +73,13 @@ const MaindashboardMarketing = () => {
     setSnackbarStatus(true);
   };
 
+  const handleCloseModal = () => {
+    setOpenModal(false);
+  };
+
   useEffect(() => {
     if (message) {
-      console.log(message)
+      console.log(message);
       setSnackbarMessage(message);
       setSnackbarStatus(true);
       setOpenSnackbar(true);
@@ -316,6 +370,9 @@ const MaindashboardMarketing = () => {
             width="232px"
             borderRadius="16px"
             fontSize="24px"
+            onClickFunction={() => {
+              setOpenModal(true);
+            }}
           >
             Add Order
           </DefaultButton>
@@ -691,6 +748,245 @@ const MaindashboardMarketing = () => {
           messageStatus={snackbarStatus}
           popupMessage={snackbarMessage}
         />
+      )}
+      {openModal === true && (
+        <MyModal open={openModal} handleClose={handleCloseModal}>
+          <div style={{ margin: "32px" }}>
+            <div style={{ display: "flex", margin: "32px 0px 20px 32px" }}>
+              <Typography style={{ color: "#0F607D", fontSize: "48px" }}>
+                Add New Order
+              </Typography>
+            </div>
+            <div style={{ marginBottom: "32px" }}>
+              <div
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                }}
+              >
+                <div style={{ width: "300px", display: "flex" }}>
+                  <Typography style={{ color: "#0F607D", fontSize: "28px" }}>
+                    Order Title:
+                  </Typography>
+                </div>
+                <TextField
+                  sx={{
+                    "& .MuiOutlinedInput-root": {
+                      height: "48px",
+                      width: "512px",
+                      fontSize: "24px",
+                      borderRadius: "10px",
+                      "& fieldset": {
+                        borderColor: "#0F607D", // Change the border color here
+                      },
+                      "&:hover fieldset": {
+                        borderColor: "#0F607D", // Change the border color on hover here
+                      },
+                      "&.Mui-focused fieldset": {
+                        borderColor: "#0F607D", // Change the border color when focused here
+                      },
+                    },
+                  }}
+                />
+              </div>
+            </div>
+            <div style={{ marginBottom: "32px" }}>
+              <div
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                }}
+              >
+                <div style={{ width: "300px", display: "flex" }}>
+                  <Typography style={{ color: "#0F607D", fontSize: "28px" }}>
+                    Order Quantity:
+                  </Typography>
+                </div>
+                <TextField
+                  type="number"
+                  sx={{
+                    marginRight: "32px",
+                    "& .MuiOutlinedInput-root": {
+                      height: "48px",
+                      width: "138px",
+                      fontSize: "24px",
+                      borderRadius: "10px",
+                      "& fieldset": {
+                        borderColor: "#0F607D", // Change the border color here
+                      },
+                      "&:hover fieldset": {
+                        borderColor: "#0F607D", // Change the border color on hover here
+                      },
+                      "&.Mui-focused fieldset": {
+                        borderColor: "#0F607D", // Change the border color when focused here
+                      },
+                    },
+                  }}
+                />
+                <MySelectTextField
+                  width="138px"
+                  height="48px"
+                  borderRadius="10px"
+                  data={values}
+                />
+              </div>
+            </div>
+            <div style={{ marginBottom: "32px" }}>
+              <div
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                }}
+              >
+                <div style={{ width: "300px", display: "flex" }}>
+                  <Typography style={{ color: "#0F607D", fontSize: "28px" }}>
+                    Images & Informations:
+                  </Typography>
+                </div>
+                <Button
+                  component="label"
+                  role={undefined}
+                  variant="contained"
+                  tabIndex={-1}
+                  startIcon={<CloudUploadIcon />}
+                  sx={{
+                    height: "48px",
+                    borderRadius: "10px",
+                    backgroundColor: "#0F607D",
+                  }}
+                >
+                  Upload file
+                  <VisuallyHiddenInput type="file" />
+                </Button>
+              </div>
+            </div>
+            <div style={{ marginBottom: "32px" }}>
+              <div
+                style={{
+                  display: "flex",
+                }}
+              >
+                <div style={{ width: "300px", display: "flex" }}>
+                  <Typography style={{ color: "#0F607D", fontSize: "28px" }}>
+                    Order Details:
+                  </Typography>
+                </div>
+                <TextField
+                  sx={{
+                    "& .MuiOutlinedInput-root": {
+                      width: "512px",
+                      height: "160px",
+                      fontSize: "24px",
+                      borderRadius: "10px",
+                      boxSizing: "border-box",
+                      "& fieldset": {
+                        borderColor: "#0F607D", // Change the border color here
+                      },
+                      "&:hover fieldset": {
+                        borderColor: "#0F607D", // Change the border color on hover here
+                      },
+                      "&.Mui-focused fieldset": {
+                        borderColor: "#0F607D", // Change the border color when focused here
+                      },
+                    },
+                  }}
+                />
+              </div>
+            </div>
+            <div style={{ marginBottom: "32px" }}>
+              <div
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                }}
+              >
+                <div style={{ width: "300px", display: "flex" }}>
+                  <Typography style={{ color: "#0F607D", fontSize: "28px" }}>
+                    Customer Channel:
+                  </Typography>
+                </div>
+                <MySelectTextField
+                  width="90px"
+                  height="48px"
+                  borderRadius="10px"
+                  data={channels}
+                />
+              </div>
+            </div>
+            <div style={{ marginBottom: "32px" }}>
+              <div
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                }}
+              >
+                <div style={{ width: "300px", display: "flex" }}>
+                  <Typography style={{ color: "#0F607D", fontSize: "28px" }}>
+                    Customer Detail:
+                  </Typography>
+                </div>
+                <TextField
+                  sx={{
+                    "& .MuiOutlinedInput-root": {
+                      height: "48px",
+                      width: "512px",
+                      fontSize: "24px",
+                      borderRadius: "10px",
+                      "& fieldset": {
+                        borderColor: "#0F607D", // Change the border color here
+                      },
+                      "&:hover fieldset": {
+                        borderColor: "#0F607D", // Change the border color on hover here
+                      },
+                      "&.Mui-focused fieldset": {
+                        borderColor: "#0F607D", // Change the border color when focused here
+                      },
+                    },
+                  }}
+                />
+              </div>
+            </div>
+            <div
+              style={{
+                width: "100%",
+                display: "flex",
+                justifyContent: "center",
+              }}
+            >
+              <div
+                style={{
+                  display: "flex",
+                  width: "40%",
+                  justifyContent: "space-evenly",
+                }}
+              >
+                <DefaultButton
+                  height="32px"
+                  width="128px"
+                  backgroundColor="#0F607D"
+                  borderRadius="10px"
+                  fontSize="16px"
+                >
+                  Add Order
+                </DefaultButton>
+                <Button
+                  variant="outlined"
+                  color="error"
+                  style={{
+                    height: "32px",
+                    width: "128px",
+                    borderRadius: "10px",
+                    fontSize: "16px",
+                    textTransform: "none",
+                  }}
+                  onClick={() => {setOpenModal(false)}}
+                >
+                  Cancel
+                </Button>
+              </div>
+            </div>
+          </div>
+        </MyModal>
       )}
     </div>
   );

@@ -9,7 +9,8 @@ const DefaultButton = (props) => {
     borderRadius,
     onClickFunction,
     textTransform,
-    fontSize
+    fontSize,
+    startIcon,
   } = props;
 
   const [isHovered, setIsHovered] = useState(false);
@@ -31,8 +32,9 @@ const DefaultButton = (props) => {
           borderColor: "#0F607D",
           borderRadius: borderRadius,
           textTransform: textTransform || "none",
-          fontSize: fontSize
+          fontSize: fontSize,
         }}
+        startIcon={startIcon}
         variant="outlined"
         onClick={onClickFunction}
         onMouseEnter={handleMouseEnter}
