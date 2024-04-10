@@ -2,7 +2,7 @@ import React from "react";
 import { TextField, MenuItem } from "@mui/material";
 
 const MySelectTextField = (props) => {
-  const { width, height, borderRadius, data } = props;
+  const { width, height, borderRadius, data, onChange } = props;
   return (
     <div>
       <TextField
@@ -24,9 +24,10 @@ const MySelectTextField = (props) => {
           },
         }}
         select
+        onChange={onChange}
       >
         {data.map((result) => {
-          return <MenuItem value={result.value}>{result.label}</MenuItem>;
+          return <MenuItem value={result.value}>{result.value}</MenuItem>;
         })}
       </TextField>
     </div>

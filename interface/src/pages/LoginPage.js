@@ -17,7 +17,9 @@ import { useNavigate } from "react-router-dom";
 import MySnackbar from "../components/Snackbar";
 import { useAuth } from "../components/AuthContext";
 
-const LoginPage = () => {
+const LoginPage = (props) => {
+  const { userCredentials, setUserCredentials } = props;
+
   const navigate = useNavigate();
 
   const [showPassword, setShowPassword] = useState(true);
@@ -58,9 +60,9 @@ const LoginPage = () => {
       setOpenSnackbar(true);
       setSnackbarMessage("Please fill in all the required fields");
       setSnackbarStatus(false);
-      setLoginClicked(true)
+      setLoginClicked(true);
     } else {
-      setLoginClicked(true)
+      setLoginClicked(true);
       axios({
         method: "POST",
         url: "http://localhost:3000/users/login",
@@ -73,6 +75,7 @@ const LoginPage = () => {
           );
           setSnackbarStatus(false);
         } else {
+          setUserCredentials(result);
           setSuccessMessage(
             `Successfully logged in, welcome back ${result.data.username}`
           );
@@ -152,7 +155,7 @@ const LoginPage = () => {
           Hello there! Sign in to your account
         </Typography>
         <div style={{ marginTop: "64px" }}>
-            <TextField
+          <TextField
             sx={{
               "& label.Mui-focused": {
                 color: "#0F607D",
@@ -166,7 +169,9 @@ const LoginPage = () => {
               width: 512,
             }}
             error={loginClicked && username === ""} // Show error only after clicking login
-            helperText={(loginClicked && username === "") && ("Please fill in your Username")}
+            helperText={
+              loginClicked && username === "" && "Please fill in your Username"
+            }
             label="Username"
             variant="standard"
             onChange={(current) => {
@@ -175,7 +180,7 @@ const LoginPage = () => {
           />
         </div>
         <div style={{ marginTop: "64px" }}>
-            <TextField
+          <TextField
             sx={{
               "& label.Mui-focused": {
                 color: "#0F607D",
@@ -189,7 +194,9 @@ const LoginPage = () => {
               width: 512,
             }}
             error={loginClicked && password === ""} // Show error only after clicking login
-            helperText={(loginClicked && password === "") && ("Please fill in your Password")}
+            helperText={
+              loginClicked && password === "" && "Please fill in your Password"
+            }
             label="Password"
             variant="standard"
             onChange={(current) => {

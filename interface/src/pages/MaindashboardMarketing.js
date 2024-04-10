@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import axios from "axios";
 import factoryBackground from "../assets/factorybackground.png";
 import companyLogo from "../assets/PT_Aridas_Karya_Satria_Logo.png";
 import DefaultButton from "../components/Button";
@@ -22,50 +23,121 @@ const VisuallyHiddenInput = styled("input")({
   width: 1,
 });
 
-const MaindashboardMarketing = () => {
-  const [username, setUsername] = useState("Ricky_Sutar22");
-  const [division, setDivision] = useState("Marketing Division");
+const MaindashboardMarketing = (props) => {
+  const { userInformation } = props;
   const { message, clearMessage } = useAuth();
   const [snackbarMessage, setSnackbarMessage] = useState("");
   const [snackbarStatus, setSnackbarStatus] = useState(false);
   const [openSnackbar, setOpenSnackbar] = useState(false);
   const [openModal, setOpenModal] = useState(false);
+  const [orderTitle, setOrderTitle] = useState("");
+  const [orderQuantityValue, setOrderQuantityValue] = useState(null);
+  const [orderQuantityUnit, setOrderQuantityUnit] = useState("");
+  const [orderDocuments, setOrderDocuments] = useState([]);
+  const [orderDetails, setOrderDetails] = useState("");
+  const [orderCustomerChannel, setOrderCustomerChannel] = useState("");
+  const [orderCustomerDetail, setOrderCustomerDetail] = useState("");
+  const [updateNotification, setUpdateNofitication] = useState(false);
+  const [allOrderList, setAllOrderList] = useState([]);
+
+  useEffect(() => {
+    axios({
+      method: "GET",
+      url: "http://localhost:3000/order/getAllOrderInfo",
+    }).then((result) => {
+      setAllOrderList(result);
+      setUpdateNofitication(false);
+    });
+  }, [updateNotification]);
 
   const orderList = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
 
   const values = [
     {
       value: "USD",
-      label: "$",
     },
     {
       value: "EUR",
-      label: "€",
     },
     {
       value: "BTC",
-      label: "฿",
     },
     {
       value: "JPY",
-      label: "¥",
     },
   ];
 
   const channels = [
     {
       value: "Gmail",
-      label: "$",
     },
     {
       value: "Phone",
-      label: "€",
     },
     {
       value: "Social Media",
-      label: "฿",
     },
   ];
+
+  const handleAddNewOrder = () => {
+    const addNewOrderData = {
+      orderTitle: orderTitle,
+      orderQuantity: orderQuantityValue + " " + orderQuantityUnit,
+      orderDetails: orderDetails,
+      customerChannel: orderCustomerChannel,
+      customerDetail: orderCustomerChannel,
+    };
+    if (
+      orderTitle === "" ||
+      orderQuantityValue === "" ||
+      orderQuantityUnit === "" ||
+      orderDetails === "" ||
+      orderCustomerChannel === "" ||
+      orderCustomerDetail === ""
+    ) {
+      setOpenSnackbar(true);
+      setSnackbarStatus(false);
+      setSnackbarMessage("Please in all the fields");
+    } else {
+      axios({
+        method: "POST",
+        url: "http://localhost:3000/order/addOrder",
+        data: addNewOrderData,
+      }).then((result) => {
+        if (result.status === 200) {
+          setOpenModal(false);
+          setOpenSnackbar(true);
+          setSnackbarStatus(true);
+          setSnackbarMessage("You have added a new order");
+          setUpdateNofitication(true);
+          setOrderTitle("");
+          setOrderQuantityValue(null);
+          setOrderQuantityUnit("");
+          setOrderDetails("");
+          setOrderCustomerChannel("");
+          setOrderCustomerDetail("");
+        } else {
+          setOpenSnackbar(true);
+          setSnackbarStatus(false);
+          setSnackbarMessage("There was an error in adding the order");
+          setOrderTitle("");
+          setOrderQuantityValue(null);
+          setOrderQuantityUnit("");
+          setOrderDetails("");
+          setOrderCustomerChannel("");
+          setOrderCustomerDetail("");
+        }
+      });
+    }
+  };
+
+  const handleAddSelectCustomerChannel = (event) => {
+    setOrderCustomerChannel(event.target.value);
+  };
+
+  const handleAddSelectUnit = (event) => {
+    setOrderQuantityUnit(event.target.value);
+  };
 
   const handleCloseSnackbar = () => {
     setOpenSnackbar(false);
@@ -79,7 +151,6 @@ const MaindashboardMarketing = () => {
 
   useEffect(() => {
     if (message) {
-      console.log(message);
       setSnackbarMessage(message);
       setSnackbarStatus(true);
       setOpenSnackbar(true);
@@ -239,10 +310,10 @@ const MaindashboardMarketing = () => {
           />
           <div style={{ textAlign: "left" }}>
             <Typography style={{ fontSize: "48px", color: "#0F607D" }}>
-              Welcome back, {username}
+              Welcome back, {userInformation.data.username}
             </Typography>
             <Typography style={{ fontSize: "24px", color: "#0F607D" }}>
-              {division}
+              {userInformation.data.department} Division
             </Typography>
           </div>
         </div>
@@ -321,18 +392,23 @@ const MaindashboardMarketing = () => {
               width: "72vw",
               overflowX: "auto",
               whiteSpace: "nowrap",
+              display: "flex",
             }}
           >
-            {orderList.map((data, index) => {
-              return (
+            {allOrderList.data?.length === 0 ? (
+              <Typography>There are no orders currently</Typography>
+            ) : (
+              allOrderList.data?.map((data, index) => (
                 <div
+                  key={index} // Make sure to include a unique key for each item
                   style={{
                     height: "256px",
                     width: "256px",
                     backgroundColor: "#d9d9d9",
                     borderRadius: "20px",
                     display: "inline-block",
-                    marginRight: index === orderList.length - 1 ? "" : "32px",
+                    marginRight:
+                      index === allOrderList.data.length - 1 ? "" : "32px",
                     cursor: "pointer",
                     transition: "background-color 0.3s ease",
                   }}
@@ -343,10 +419,10 @@ const MaindashboardMarketing = () => {
                     (e.target.style.backgroundColor = "#d9d9d9")
                   }
                 >
-                  {/* <img src="" alt=""/> */}
+                  {/* Content of each order item */}
                 </div>
-              );
-            })}
+              ))
+            )}
           </div>
         </div>
         <div
@@ -355,7 +431,6 @@ const MaindashboardMarketing = () => {
             marginTop: "64px",
             display: "flex",
             justifyContent: "space-between",
-            alignItems: "center",
             width: "72vw",
           }}
         >
@@ -787,6 +862,9 @@ const MaindashboardMarketing = () => {
                       },
                     },
                   }}
+                  onChange={(current) => {
+                    setOrderTitle(current.target.value);
+                  }}
                 />
               </div>
             </div>
@@ -822,12 +900,16 @@ const MaindashboardMarketing = () => {
                       },
                     },
                   }}
+                  onChange={(current) => {
+                    setOrderQuantityValue(current.target.value);
+                  }}
                 />
                 <MySelectTextField
                   width="138px"
                   height="48px"
                   borderRadius="10px"
                   data={values}
+                  onChange={handleAddSelectUnit}
                 />
               </div>
             </div>
@@ -890,6 +972,9 @@ const MaindashboardMarketing = () => {
                       },
                     },
                   }}
+                  onChange={(current) => {
+                    setOrderDetails(current.target.value);
+                  }}
                 />
               </div>
             </div>
@@ -910,6 +995,7 @@ const MaindashboardMarketing = () => {
                   height="48px"
                   borderRadius="10px"
                   data={channels}
+                  onChange={handleAddSelectCustomerChannel}
                 />
               </div>
             </div>
@@ -943,6 +1029,9 @@ const MaindashboardMarketing = () => {
                       },
                     },
                   }}
+                  onChange={(current) => {
+                    setOrderCustomerDetail(current.target.value);
+                  }}
                 />
               </div>
             </div>
@@ -966,6 +1055,9 @@ const MaindashboardMarketing = () => {
                   backgroundColor="#0F607D"
                   borderRadius="10px"
                   fontSize="16px"
+                  onClickFunction={() => {
+                    handleAddNewOrder();
+                  }}
                 >
                   Add Order
                 </DefaultButton>
@@ -979,7 +1071,9 @@ const MaindashboardMarketing = () => {
                     fontSize: "16px",
                     textTransform: "none",
                   }}
-                  onClick={() => {setOpenModal(false)}}
+                  onClick={() => {
+                    setOpenModal(false);
+                  }}
                 >
                   Cancel
                 </Button>

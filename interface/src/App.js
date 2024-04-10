@@ -1,8 +1,10 @@
+import { useState } from "react";
 import "./App.css";
 import {
   BrowserRouter as Router,
   Routes,
   Route,
+  Navigate,
   // useNavigate,
 } from "react-router-dom";
 import LoginPage from "./pages/LoginPage";
@@ -12,36 +14,80 @@ import MaindashboardProductionPlanning from "./pages/MaindashboardProductionPlan
 import MaindashboardInventory from "./pages/MaindashboardInventory";
 import MaindashboardProduction from "./pages/MaindashboardProduction";
 import MaindasboardWaste from "./pages/MaindashboardWaste";
+import UnauthorizedPage from "./pages/UnauthorizedPage";
 
 function App() {
+  const [userCredentials, setUserCredentials] = useState({});
   return (
     <div className="App">
       <Router>
         <Routes>
-          <Route path="/" element={<LoginPage />} />
+          <Route
+            path="/"
+            element={
+              <LoginPage
+                userCredentials={userCredentials}
+                setUserCredentials={setUserCredentials}
+              />
+            }
+          />
           <Route path="/register" element={<RegisterPage />} />
           <Route
             path="/marketingDashboard"
-            element={<MaindashboardMarketing />}
+            element={
+              !userCredentials.data ||
+              userCredentials.data.department !== "Marketing" ? (
+                <Navigate to="/unauthorized" replace />
+              ) : (
+                <MaindashboardMarketing userInformation={userCredentials}/>
+              )
+            }
           />
           <Route
             path="/productionPlanningDashboard"
-            element={<MaindashboardProductionPlanning />}
+            element={
+              !userCredentials.data ||
+              userCredentials.data.department !== "Production Planning" ? (
+                <Navigate to="/unauthorized" replace />
+              ) : (
+                <MaindashboardProductionPlanning />
+              )
+            }
           />
           <Route
             path="/inventoryDashboard"
-            element={<MaindashboardInventory />}
-          >
-            {/* <Route path="/stocksPage" element={<StocksPage />} /> */}
-          </Route>
+            element={
+              !userCredentials.data ||
+              userCredentials.data.department !== "Inventory" ? (
+                <Navigate to="/unauthorized" replace />
+              ) : (
+                <MaindashboardInventory />
+              )
+            }
+          />
           <Route
             path="/productionDashboard"
-            element={<MaindashboardProduction />}
+            element={
+              !userCredentials.data ||
+              userCredentials.data.department !== "Production" ? (
+                <Navigate to="/unauthorized" replace />
+              ) : (
+                <MaindashboardProduction />
+              )
+            }
           />
-                    <Route
+          <Route
             path="/wasteDashboard"
-            element={<MaindasboardWaste />}
+            element={
+              !userCredentials.data ||
+              userCredentials.data.department !== "Waste" ? (
+                <Navigate to="/unauthorized" replace />
+              ) : (
+                <MaindasboardWaste />
+              )
+            }
           />
+          <Route path="/unauthorized" element={<UnauthorizedPage />} />
         </Routes>
       </Router>
     </div>
