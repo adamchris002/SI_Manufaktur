@@ -18,6 +18,9 @@ module.exports = {
       orderDetails: {
         type: Sequelize.STRING
       },
+      orderStatus: {
+        type: Sequelize.STRING
+      },
       customerChannel: {
         type: Sequelize.STRING
       },

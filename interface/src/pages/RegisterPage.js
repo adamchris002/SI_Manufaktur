@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import axios from "axios";
 import factoryBackground from "../assets/factorybackground.png";
 import companyLogo from "../assets/PT_Aridas_Karya_Satria_Logo.png";
@@ -17,7 +17,7 @@ import { useNavigate } from "react-router-dom";
 import MySnackbar from "../components/Snackbar";
 import { useAuth } from "../components/AuthContext";
 
-const LoginPage = () => {
+const RegisterPage = () => {
   const navigate = useNavigate();
 
   const [showPassword, setShowPassword] = useState(true);
@@ -283,4 +283,4 @@ const LoginPage = () => {
   );
 };
 
-export default LoginPage;
+export default RegisterPage;

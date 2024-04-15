@@ -2,10 +2,11 @@ import React from "react";
 import { TextField, MenuItem } from "@mui/material";
 
 const MySelectTextField = (props) => {
-  const { width, height, borderRadius, data, onChange } = props;
+  const { width, height, borderRadius, data, onChange, type } = props;
   return (
     <div>
       <TextField
+        type={type}
         sx={{
           "& .MuiOutlinedInput-root": {
             height: height,

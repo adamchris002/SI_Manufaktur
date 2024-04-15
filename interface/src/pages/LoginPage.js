@@ -75,33 +75,42 @@ const LoginPage = (props) => {
           );
           setSnackbarStatus(false);
         } else {
-          setUserCredentials(result);
-          setSuccessMessage(
-            `Successfully logged in, welcome back ${result.data.username}`
-          );
-          setSnackbarStatus(true);
-          switch (result.data.department) {
-            case "Marketing":
-              navigate("/marketingDashboard");
-              break;
-            case "Production Planning":
-              navigate("/productionPlanningDashboard");
-              break;
-            case "Inventory":
-              navigate("inventoryDashboard");
-              break;
-            case "Production":
-              navigate("productionDashboard");
-              break;
-            case "Waste":
-              navigate("/wasteDashboard");
-              break;
-            default:
-              setOpenSnackbar(true);
-              setSnackbarMessage(
-                "Sorry, it seems that you don't have a department yet"
-              );
-              setSnackbarStatus(false);
+          if (result.data.department === null) {
+            setOpenSnackbar(true);
+            setSnackbarMessage(
+              "You have not been assigned a department yet. Please wait until one has been assigned to you."
+            );
+            setSnackbarStatus(false);
+            setLoginClicked(true);
+          } else {
+            setUserCredentials(result);
+            setSuccessMessage(
+              `Successfully logged in, welcome back ${result.data.username}`
+            );
+            setSnackbarStatus(true);
+            switch (result.data.department) {
+              case "Marketing":
+                navigate("/marketingDashboard");
+                break;
+              case "Production Planning":
+                navigate("/productionPlanningDashboard");
+                break;
+              case "Inventory":
+                navigate("inventoryDashboard");
+                break;
+              case "Production":
+                navigate("productionDashboard");
+                break;
+              case "Waste":
+                navigate("/wasteDashboard");
+                break;
+              default:
+                setOpenSnackbar(true);
+                setSnackbarMessage(
+                  "Sorry, it seems that you don't have a department yet"
+                );
+                setSnackbarStatus(false);
+            }
           }
         }
       });

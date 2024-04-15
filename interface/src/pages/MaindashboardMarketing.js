@@ -4,12 +4,22 @@ import factoryBackground from "../assets/factorybackground.png";
 import companyLogo from "../assets/PT_Aridas_Karya_Satria_Logo.png";
 import DefaultButton from "../components/Button";
 import AccountCircleIcon from "@mui/icons-material/AccountCircle";
-import { Typography, TextField, styled, Button } from "@mui/material";
+import {
+  Typography,
+  TextField,
+  styled,
+  Button,
+  Backdrop,
+  IconButton,
+} from "@mui/material";
 import { useAuth } from "../components/AuthContext";
 import MySnackbar from "../components/Snackbar";
 import MyModal from "../components/Modal";
 import CloudUploadIcon from "@mui/icons-material/CloudUpload";
 import MySelectTextField from "../components/SelectTextField";
+import CloseIcon from "@mui/icons-material/Close";
+import DeleteIcon from "@mui/icons-material/Delete";
+import RemoveRedEyeIcon from "@mui/icons-material/RemoveRedEye";
 
 const VisuallyHiddenInput = styled("input")({
   clip: "rect(0 0 0 0)",
@@ -39,6 +49,9 @@ const MaindashboardMarketing = (props) => {
   const [orderCustomerDetail, setOrderCustomerDetail] = useState("");
   const [updateNotification, setUpdateNofitication] = useState(false);
   const [allOrderList, setAllOrderList] = useState([]);
+  const [openImage, setOpenImage] = useState(false);
+  const [imageIndex, setImageIndex] = useState(null);
+  const [imageOption, setImageOption] = useState(true);
 
   useEffect(() => {
     axios({
@@ -80,13 +93,6 @@ const MaindashboardMarketing = (props) => {
   ];
 
   const handleAddNewOrder = () => {
-    const addNewOrderData = {
-      orderTitle: orderTitle,
-      orderQuantity: orderQuantityValue + " " + orderQuantityUnit,
-      orderDetails: orderDetails,
-      customerChannel: orderCustomerChannel,
-      customerDetail: orderCustomerChannel,
-    };
     if (
       orderTitle === "" ||
       orderQuantityValue === "" ||
@@ -97,12 +103,32 @@ const MaindashboardMarketing = (props) => {
     ) {
       setOpenSnackbar(true);
       setSnackbarStatus(false);
-      setSnackbarMessage("Please in all the fields");
+      setSnackbarMessage("Please fill in all the fields");
     } else {
+      const formData = new FormData();
+      formData.append("orderTitle", orderTitle);
+      formData.append(
+        "orderQuantity",
+        orderQuantityValue + " " + orderQuantityUnit
+      );
+      formData.append("orderDetails", orderDetails);
+      formData.append("customerChannel", orderCustomerChannel);
+      formData.append("customerDetail", orderCustomerDetail);
+      formData.append("orderStatus", "Ongoing");
+
+      for (const file of orderDocuments) {
+        formData.append("files", file);
+      }
+
+      console.log([...formData, formData.entries()])
+
       axios({
         method: "POST",
         url: "http://localhost:3000/order/addOrder",
-        data: addNewOrderData,
+        data: formData,
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
       }).then((result) => {
         if (result.status === 200) {
           setOpenModal(false);
@@ -116,6 +142,7 @@ const MaindashboardMarketing = (props) => {
           setOrderDetails("");
           setOrderCustomerChannel("");
           setOrderCustomerDetail("");
+          setOrderDocuments([]);
         } else {
           setOpenSnackbar(true);
           setSnackbarStatus(false);
@@ -126,9 +153,33 @@ const MaindashboardMarketing = (props) => {
           setOrderDetails("");
           setOrderCustomerChannel("");
           setOrderCustomerDetail("");
+          setOrderDocuments([]);
         }
       });
     }
+  };
+
+  // const handleFileChange = (event) => {
+  //   const file = event.target.files[0];
+  //   setSelectedFile(file);
+  //   const url = URL.createObjectURL(file);
+  //   setImageUrl(url);
+  // };
+
+  const handleRemoveDocument = (indexToRemove) => {
+    setOrderDocuments((prevOrderDocuments) =>
+      prevOrderDocuments.filter((_, index) => index !== indexToRemove)
+    );
+  };
+
+  const handleOpenImage = (index) => {
+    setImageIndex(index);
+    setOpenImage(!openImage);
+  };
+
+  const handleFileInput = (event) => {
+    const newFiles = Array.from(event.target.files);
+    setOrderDocuments((prevFiles) => [...prevFiles, ...newFiles]);
   };
 
   const handleAddSelectCustomerChannel = (event) => {
@@ -147,6 +198,13 @@ const MaindashboardMarketing = (props) => {
 
   const handleCloseModal = () => {
     setOpenModal(false);
+    setOrderTitle("");
+    setOrderQuantityValue(null);
+    setOrderQuantityUnit("");
+    setOrderDetails("");
+    setOrderCustomerChannel("");
+    setOrderCustomerDetail("");
+    setOrderDocuments([]);
   };
 
   useEffect(() => {
@@ -816,6 +874,23 @@ const MaindashboardMarketing = (props) => {
           </div>
         </div>
       </div>
+      {openImage && (
+        <Backdrop
+          sx={{ color: "#fff", zIndex: (theme) => theme.zIndex.drawer + 2 }}
+          open={openImage}
+          onClick={() => {
+            setOpenImage(!openImage);
+          }}
+        >
+          <div>
+            <img
+              style={{ width: "720px", height: "auto" }}
+              src={URL.createObjectURL(orderDocuments[imageIndex])}
+              alt=""
+            />
+          </div>
+        </Backdrop>
+      )}
       {snackbarMessage !== ("" || null) && (
         <MySnackbar
           open={openSnackbar}
@@ -845,6 +920,7 @@ const MaindashboardMarketing = (props) => {
                   </Typography>
                 </div>
                 <TextField
+                  type="text"
                   sx={{
                     "& .MuiOutlinedInput-root": {
                       height: "48px",
@@ -905,6 +981,7 @@ const MaindashboardMarketing = (props) => {
                   }}
                 />
                 <MySelectTextField
+                  type="text"
                   width="138px"
                   height="48px"
                   borderRadius="10px"
@@ -938,8 +1015,96 @@ const MaindashboardMarketing = (props) => {
                   }}
                 >
                   Upload file
-                  <VisuallyHiddenInput type="file" />
+                  <VisuallyHiddenInput
+                    onChange={(event) => {
+                      handleFileInput(event);
+                    }}
+                    type="file"
+                    multiple={true}
+                  />
                 </Button>
+                <div style={{ marginLeft: "18px", display: "flex" }}>
+                  {Array.from(orderDocuments).map((result, index) => {
+                    return (
+                      <div
+                        style={{
+                          width: "32px",
+                          height: "32px",
+                          marginLeft: "8px",
+                          backgroundColor: "#d9d9d9",
+                          position: "relative",
+                          cursor: imageOption === true ? "pointer" : "",
+                        }}
+                        onClick={
+                          imageOption === true
+                            ? () => {
+                                handleOpenImage(index);
+                              }
+                            : ""
+                        }
+                      >
+                        {imageOption === false && (
+                          <IconButton
+                            style={{
+                              position: "absolute",
+                              top: "-12px",
+                              right: "-12px",
+                              zIndex: 1,
+                              height: "24px",
+                              width: "24px",
+                            }}
+                            onClick={(event) => {
+                              event.stopPropagation();
+                              handleRemoveDocument(index);
+                            }}
+                          >
+                            <CloseIcon
+                              style={{
+                                height: "16px",
+                                width: "16x",
+                                color: "black",
+                              }}
+                            />
+                          </IconButton>
+                        )}
+                        <img
+                          style={{
+                            width: "100%",
+                            height: "100%",
+                            objectFit: "cover",
+                            position: "absolute",
+                            top: 0,
+                            left: 0,
+                          }}
+                          src={URL.createObjectURL(result)}
+                          alt=""
+                        />
+                      </div>
+                    );
+                  })}
+                  <div>
+                    {orderDocuments.length !== 0 ? (
+                      <IconButton
+                        style={{
+                          height: "32px",
+                          width: "32px",
+                          marginLeft: "8px",
+                        }}
+                        onClick={() => {
+                          setImageOption(!imageOption);
+                        }}
+                      >
+                        {imageOption === true ? (
+                          <DeleteIcon />
+                        ) : (
+                          <RemoveRedEyeIcon />
+                        )}
+                      </IconButton>
+                    ) : (
+                      ""
+                    )}
+                  </div>
+                </div>
               </div>
             </div>
             <div style={{ marginBottom: "32px" }}>
@@ -954,6 +1119,7 @@ const MaindashboardMarketing = (props) => {
                   </Typography>
                 </div>
                 <TextField
+                  type="text"
                   sx={{
                     "& .MuiOutlinedInput-root": {
                       width: "512px",
@@ -991,6 +1157,7 @@ const MaindashboardMarketing = (props) => {
                   </Typography>
                 </div>
                 <MySelectTextField
+                  type="text"
                   width="90px"
                   height="48px"
                   borderRadius="10px"
@@ -1012,6 +1179,7 @@ const MaindashboardMarketing = (props) => {
                   </Typography>
                 </div>
                 <TextField
+                  type="text"
                   sx={{
                     "& .MuiOutlinedInput-root": {
                       height: "48px",
@@ -1072,7 +1240,7 @@ const MaindashboardMarketing = (props) => {
                     textTransform: "none",
                   }}
                   onClick={() => {
-                    setOpenModal(false);
+                    handleCloseModal();
                   }}
                 >
                   Cancel

@@ -1,4 +1,6 @@
-const { orders } = require("../models");
+const { orders, documents } = require("../models");
+const path = require("path");
+const upload = require("../multerConfig");
 
 class OrderController {
   static async addOrder(req, res) {
@@ -9,18 +11,45 @@ class OrderController {
         orderDetails,
         customerChannel,
         customerDetail,
+        orderStatus,
       } = req.body;
-      let result = await orders.create({
+  
+      // Create the order in the database
+      let order = await orders.create({
         orderTitle,
         orderQuantity,
         orderDetails,
         customerChannel,
         customerDetail,
-        orderStatus: "Ongoing",
+        orderStatus,
       });
-      res.json(result);
+  
+      // Handle document uploads using Multer middleware
+      if (req.files && req.files.length > 0) {
+        const filePromises = req.files.map(async (file) => {
+          const filePath = path.join(__dirname, "uploads", file.filename);
+          try {
+            // Save file information to the database
+            await documents.create({
+              orderId: order.id,
+              filename: file.filename,
+              size: file.size,
+              type: file.mimetype,
+              path: filePath,
+            });
+          } catch (error) {
+            console.error("Error saving file information:", error);
+            // Handle error as needed
+          }
+        });
+        await Promise.all(filePromises);
+      }
+  
+      // Respond with the created order
+      res.json(order);
     } catch (err) {
-      res.json(err);
+      console.error("Error adding order:", err);
+      res.status(500).json({ error: "Error adding order" });
     }
   }
   static async getAllOrders(req, res) {

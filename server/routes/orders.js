@@ -1,7 +1,10 @@
-const orderRoutes = require("express").Router()
-const {OrderController} = require("../controllers")
+const orderRoutes = require("express").Router();
+const multer = require("multer");
+const { OrderController } = require("../controllers");
 
-orderRoutes.post("/addOrder", OrderController.addOrder)
-orderRoutes.get("/getAllOrderInfo", OrderController.getAllOrders)
+const upload = multer({dest: "uploads/"})
 
-module.exports = orderRoutes
+orderRoutes.post("/addOrder", upload.any(), OrderController.addOrder);
+orderRoutes.get("/getAllOrderInfo", OrderController.getAllOrders);
+
+module.exports = orderRoutes;
