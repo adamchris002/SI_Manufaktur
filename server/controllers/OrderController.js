@@ -54,7 +54,9 @@ class OrderController {
   }
   static async getAllOrders(req, res) {
     try {
-      let result = await orders.findAll();
+      let result = await orders.findAll({
+        include: [{model: documents}]
+      });
       res.json(result);
     } catch (error) {
       res.json(error);

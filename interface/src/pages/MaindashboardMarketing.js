@@ -11,15 +11,21 @@ import {
   Button,
   Backdrop,
   IconButton,
+  Box,
+  ImageList,
+  ImageListItem,
 } from "@mui/material";
 import { useAuth } from "../components/AuthContext";
 import MySnackbar from "../components/Snackbar";
+import { Carousel } from "react-responsive-carousel";
 import MyModal from "../components/Modal";
 import CloudUploadIcon from "@mui/icons-material/CloudUpload";
 import MySelectTextField from "../components/SelectTextField";
 import CloseIcon from "@mui/icons-material/Close";
 import DeleteIcon from "@mui/icons-material/Delete";
 import RemoveRedEyeIcon from "@mui/icons-material/RemoveRedEye";
+import ImageSlider from "../components/ImageSlider";
+import zIndex from "@mui/material/styles/zIndex";
 
 const VisuallyHiddenInput = styled("input")({
   clip: "rect(0 0 0 0)",
@@ -52,6 +58,7 @@ const MaindashboardMarketing = (props) => {
   const [openImage, setOpenImage] = useState(false);
   const [imageIndex, setImageIndex] = useState(null);
   const [imageOption, setImageOption] = useState(true);
+  console.log(allOrderList);
 
   useEffect(() => {
     axios({
@@ -120,7 +127,7 @@ const MaindashboardMarketing = (props) => {
         formData.append("files", file);
       }
 
-      console.log([...formData, formData.entries()])
+      console.log([...formData, formData.entries()]);
 
       axios({
         method: "POST",
@@ -477,7 +484,26 @@ const MaindashboardMarketing = (props) => {
                     (e.target.style.backgroundColor = "#d9d9d9")
                   }
                 >
-                  {/* Content of each order item */}
+                  {data?.document?.length === "" || null ? (
+                    ""
+                  ) : (
+                    <div style={{margin: "16px"}}>
+                      <ImageList variant="masonry" cols={3} gap={8}>
+                      {data.documents?.map((document, index) => {
+                        return (
+                          <ImageListItem key={document.id}>
+                            <img
+                            srcSet={`http://localhost:3000/uploads/${document.filename}?w=248&fit=crop&auto=format&dpr=2 2x`}
+                              src={`http://localhost:3000/uploads/${document.filename}?w=248&fit=crop&auto=format`}
+                              alt={document.filename}
+                              loading="lazy"
+                            />
+                          </ImageListItem>
+                        );
+                      })}
+                    </ImageList>
+                    </div>
+                  )}
                 </div>
               ))
             )}
