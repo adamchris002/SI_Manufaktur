@@ -1,5 +1,7 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
+import moment from "moment";
+import "./MaindashbordMarketing.css";
 import factoryBackground from "../assets/factorybackground.png";
 import companyLogo from "../assets/PT_Aridas_Karya_Satria_Logo.png";
 import DefaultButton from "../components/Button";
@@ -11,21 +13,17 @@ import {
   Button,
   Backdrop,
   IconButton,
-  Box,
   ImageList,
   ImageListItem,
 } from "@mui/material";
 import { useAuth } from "../components/AuthContext";
 import MySnackbar from "../components/Snackbar";
-import { Carousel } from "react-responsive-carousel";
 import MyModal from "../components/Modal";
 import CloudUploadIcon from "@mui/icons-material/CloudUpload";
 import MySelectTextField from "../components/SelectTextField";
 import CloseIcon from "@mui/icons-material/Close";
 import DeleteIcon from "@mui/icons-material/Delete";
 import RemoveRedEyeIcon from "@mui/icons-material/RemoveRedEye";
-import ImageSlider from "../components/ImageSlider";
-import zIndex from "@mui/material/styles/zIndex";
 
 const VisuallyHiddenInput = styled("input")({
   clip: "rect(0 0 0 0)",
@@ -466,44 +464,77 @@ const MaindashboardMarketing = (props) => {
               allOrderList.data?.map((data, index) => (
                 <div
                   key={index} // Make sure to include a unique key for each item
-                  style={{
-                    height: "256px",
-                    width: "256px",
-                    backgroundColor: "#d9d9d9",
-                    borderRadius: "20px",
-                    display: "inline-block",
-                    marginRight:
-                      index === allOrderList.data.length - 1 ? "" : "32px",
-                    cursor: "pointer",
-                    transition: "background-color 0.3s ease",
-                  }}
-                  onMouseEnter={(e) =>
-                    (e.target.style.backgroundColor = "#a0a0a0")
-                  }
-                  onMouseLeave={(e) =>
-                    (e.target.style.backgroundColor = "#d9d9d9")
-                  }
+                  className="order-item"
                 >
                   {data?.document?.length === "" || null ? (
                     ""
                   ) : (
-                    <div style={{margin: "16px"}}>
-                      <ImageList variant="masonry" cols={3} gap={8}>
-                      {data.documents?.map((document, index) => {
-                        return (
-                          <ImageListItem key={document.id}>
-                            <img
-                            srcSet={`http://localhost:3000/uploads/${document.filename}?w=248&fit=crop&auto=format&dpr=2 2x`}
-                              src={`http://localhost:3000/uploads/${document.filename}?w=248&fit=crop&auto=format`}
-                              alt={document.filename}
-                              loading="lazy"
-                            />
-                          </ImageListItem>
-                        );
-                      })}
-                    </ImageList>
+                    <div style={{ margin: "16px" }}>
+                      <ImageList
+                        sx={{ height: 70 }}
+                        variant="masonry"
+                        cols={3}
+                        gap={2}
+                      >
+                        {data.documents?.slice(0, 5).map((document, index) => {
+                          return (
+                            <ImageListItem key={document.id}>
+                              <img
+                                srcSet={`http://localhost:3000/uploads/${document.filename}?w=248&fit=crop&auto=format&dpr=2 2x`}
+                                src={`http://localhost:3000/uploads/${document.filename}?w=248&fit=crop&auto=format`}
+                                alt={document.filename}
+                                loading="lazy"
+                              />
+                            </ImageListItem>
+                          );
+                        })}
+                      </ImageList>
                     </div>
                   )}
+                  <div
+                    style={{
+                      display: "flex",
+                      marginLeft: "16px",
+                      backgroundColor: "transparent",
+                    }}
+                  >
+                    <Typography
+                      style={{
+                        color: "#0F607D",
+                        fontWeight: "bold",
+                      }}
+                    >
+                      {data.orderTitle}
+                    </Typography>
+                  </div>
+                  <div
+                    style={{
+                      display: "flex",
+                      marginLeft: "16px",
+                      backgroundColor: "transparent",
+                    }}
+                  >
+                    <Typography>{data.orderDetails}</Typography>
+                  </div>
+                  <div
+                    style={{
+                      display: "flex",
+                      backgroundColor: "transparent",
+                      position: "absolute",
+                      bottom: "16px",
+                      left: "16px",
+                    }}
+                  >
+                    <Typography
+                      style={{
+                        color: "#0F607D",
+                        fontWeight: "bold",
+                        fontSize: 12,
+                      }}
+                    >{`Date Added: ${moment(data.createdAt).format(
+                      "DD/MM/YYYY"
+                    )}`}</Typography>
+                  </div>
                 </div>
               ))
             )}
