@@ -1,8 +1,9 @@
 import React from "react";
-import { Backdrop, Typography } from "@mui/material";
+import { Backdrop } from "@mui/material";
+import "./Modal.css";
 
 const MyModal = (props) => {
-  const { children, open, handleClose } = props;
+  const { children, open } = props;
   return (
     <div>
       <Backdrop
@@ -10,6 +11,7 @@ const MyModal = (props) => {
         open={open}
       >
         <div
+        className="hideScrollbar"
           style={{
             height: "40vw",
             width: "60vw",

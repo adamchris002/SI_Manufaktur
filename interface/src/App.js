@@ -5,7 +5,6 @@ import {
   Routes,
   Route,
   Navigate,
-  // useNavigate,
 } from "react-router-dom";
 import LoginPage from "./pages/LoginPage";
 import RegisterPage from "./pages/RegisterPage";
@@ -15,6 +14,7 @@ import MaindashboardInventory from "./pages/MaindashboardInventory";
 import MaindashboardProduction from "./pages/MaindashboardProduction";
 import MaindasboardWaste from "./pages/MaindashboardWaste";
 import UnauthorizedPage from "./pages/UnauthorizedPage";
+import OrderDetail from "./pages/MarketingPage/OrderDetail";
 
 function App() {
   const [userCredentials, setUserCredentials] = useState({});
@@ -33,13 +33,24 @@ function App() {
           />
           <Route path="/register" element={<RegisterPage />} />
           <Route
-            path="/marketingDashboard"
+            path="/marketingDashboard/*"
             element={
               !userCredentials.data ||
               userCredentials.data.department !== "Marketing" ? (
                 <Navigate to="/unauthorized" replace />
               ) : (
-                <MaindashboardMarketing userInformation={userCredentials}/>
+                <MaindashboardMarketing userInformation={userCredentials} />
+              )
+            }
+          />
+          <Route
+            path="/marketingDashboard/orderDetail/:orderId"
+            element={
+              !userCredentials.data ||
+              userCredentials.data.department !== "Marketing" ? (
+                <Navigate to="/unauthorized" replace />
+              ) : (
+                <OrderDetail />
               )
             }
           />
