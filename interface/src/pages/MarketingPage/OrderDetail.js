@@ -18,6 +18,7 @@ import CloudUploadIcon from "@mui/icons-material/CloudUpload";
 import CloseIcon from "@mui/icons-material/Close";
 import DeleteIcon from "@mui/icons-material/Delete";
 import RemoveRedEyeIcon from "@mui/icons-material/RemoveRedEye";
+import MySnackbar from "../../components/Snackbar";
 
 const VisuallyHiddenInput = styled("input")({
   clip: "rect(0 0 0 0)",
@@ -33,6 +34,7 @@ const VisuallyHiddenInput = styled("input")({
 
 const OrderDetail = () => {
   const { orderId } = useParams();
+  const [checkUpdate, setCheckUpdate] = useState(false);
   const [orderDetailInfo, setOrderDetailInfo] = useState({});
   const [openModal, setOpenModal] = useState(false);
   const [orderTitle, setOrderTitle] = useState("");
@@ -45,6 +47,12 @@ const OrderDetail = () => {
   const [openImage, setOpenImage] = useState(false);
   const [imageIndex, setImageIndex] = useState(null);
   const [imageOption, setImageOption] = useState(true);
+  const [snackbarMessage, setSnackbarMessage] = useState("");
+  const [snackbarStatus, setSnackbarStatus] = useState(false);
+  const [openSnackbar, setOpenSnackbar] = useState(false);
+
+  console.log(orderDocuments)
+
 
   const navigate = useNavigate();
 
@@ -81,21 +89,100 @@ const OrderDetail = () => {
       url: `http://localhost:3000/order/getOrderInfo/${orderId}`,
     }).then((result) => {
       setOrderDetailInfo(result);
+      setOrderTitle(result.data.orderTitle);
+      setOrderDetails(result.data.orderDetails);
+      setOrderDocuments(result.data.documents);
+      setOrderCustomerChannel(result.data.customerChannel);
+      setOrderCustomerDetail(result.data.customerDetail);
+      setCheckUpdate(false)
     });
-  }, []);
+  }, [checkUpdate]);
 
   const handleCloseModal = () => {
     setOpenModal(false);
-    setOrderTitle("");
-    setOrderQuantityValue(null);
-    setOrderQuantityUnit("");
-    setOrderDetails("");
-    setOrderCustomerChannel("");
-    setOrderCustomerDetail("");
-    setOrderDocuments([]);
+    setOrderTitle(orderDetailInfo.data.orderTitle);
+    setOrderDetails(orderDetailInfo.data.orderDetails);
+    setOrderCustomerChannel(orderDetailInfo.data.customerChannel);
+    setOrderCustomerDetail(orderDetailInfo.data.customerDetail);
+    setOrderDocuments(orderDetailInfo.data.documents);
   };
 
-  const handleEditOrder = () => {};
+  const handleUpdateOrder = (orderId) => {
+    if (
+      orderTitle === "" ||
+      orderQuantityValue === "" ||
+      orderQuantityUnit === "" ||
+      orderDetails === "" ||
+      orderCustomerChannel === "" ||
+      orderCustomerDetail === ""
+    ) {
+      setOpenSnackbar(true);
+      setSnackbarStatus(false);
+      setSnackbarMessage("Please fill in all the fields");
+    } else {
+      const formData = new FormData();
+      formData.append("orderId", orderId);
+      formData.append("orderTitle", orderTitle);
+      formData.append(
+        "orderQuantity",
+        orderQuantityValue + " " + orderQuantityUnit
+      );
+      formData.append("orderDetails", orderDetails);
+      formData.append("customerChannel", orderCustomerChannel);
+      formData.append("customerDetail", orderCustomerDetail);
+  
+      for (const file of orderDocuments) {
+        formData.append("files", file);
+      }
+  
+      axios({
+        method: "PUT",
+        url: `http://localhost:3000/order/updateOrder/${orderId}`,
+        data: formData,
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      }).then((result) => {
+        if (result.status === 200) {
+          setOpenModal(false);
+          setOpenSnackbar(true);
+          setSnackbarStatus(true);
+          setSnackbarMessage("Order updated successfully");
+          setCheckUpdate(true);
+          setOrderTitle("");
+          setOrderQuantityValue(null);
+          setOrderQuantityUnit("");
+          setOrderDetails("");
+          setOrderCustomerChannel("");
+          setOrderCustomerDetail("");
+          setOrderDocuments([]);
+        } else {
+          setOpenSnackbar(true);
+          setSnackbarStatus(false);
+          setSnackbarMessage("There was an error updating the order");
+          // Optionally clear the form fields
+          setOrderTitle("");
+          setOrderQuantityValue(null);
+          setOrderQuantityUnit("");
+          setOrderDetails("");
+          setOrderCustomerChannel("");
+          setOrderCustomerDetail("");
+          setOrderDocuments([]);
+        }
+      }).catch((error) => {
+        console.error("Error updating order:", error);
+        setOpenSnackbar(true);
+        setSnackbarStatus(false);
+        setSnackbarMessage("There was an error updating the order");
+      });
+    }
+  };
+  
+  const handleCloseSnackbar = () => {
+    setOpenSnackbar(false);
+    setSnackbarMessage("");
+    setSnackbarStatus(true);
+  };
 
   const handleDeleteOrder = () => {
     axios({
@@ -278,7 +365,7 @@ const OrderDetail = () => {
                 </div>
                 <TextField
                   type="text"
-                  value={orderDetailInfo.data.orderTitle}
+                  value={orderTitle}
                   sx={{
                     "& .MuiOutlinedInput-root": {
                       height: "48px",
@@ -384,7 +471,7 @@ const OrderDetail = () => {
                   />
                 </Button>
                 <div style={{ marginLeft: "18px", display: "flex" }}>
-                  {orderDetailInfo.data.documents.map((result, index) => {
+                  {orderDocuments.map((result, index) => {
                     return (
                       <div
                         style={{
@@ -436,8 +523,12 @@ const OrderDetail = () => {
                             top: 0,
                             left: 0,
                           }}
-                          srcSet={`http://localhost:3000/uploads/${result.filename}?w=248&fit=crop&auto=format&dpr=2 2x`}
-                          src={`http://localhost:3000/uploads/${result.filename}?w=248&fit=crop&auto=format`}
+                          // srcSet={`http://localhost:3000/uploads/${result.filename}?w=248&fit=crop&auto=format&dpr=2 2x`}
+                          src={
+                            result.id !== undefined
+                              ? `http://localhost:3000/uploads/${result.filename}?w=248&fit=crop&auto=format`
+                              : URL.createObjectURL(result)
+                          }
                           alt={result.filename}
                           loading="lazy"
                         />
@@ -482,7 +573,7 @@ const OrderDetail = () => {
                 </div>
                 <TextField
                   type="text"
-                  value={orderDetailInfo.data.orderDetails}
+                  value={orderDetails}
                   multiline
                   sx={{
                     "& .MuiOutlinedInput-root": {
@@ -523,7 +614,7 @@ const OrderDetail = () => {
                   type="text"
                   width="90px"
                   height="48px"
-                  value={orderDetailInfo.data.customerChannel}
+                  value={orderCustomerChannel}
                   borderRadius="10px"
                   data={channels}
                   onChange={handleAddSelectCustomerChannel}
@@ -544,7 +635,7 @@ const OrderDetail = () => {
                 </div>
                 <TextField
                   type="text"
-                  value={orderDetailInfo.data.customerDetail}
+                  value={orderCustomerDetail}
                   sx={{
                     "& .MuiOutlinedInput-root": {
                       height: "48px",
@@ -589,10 +680,10 @@ const OrderDetail = () => {
                   borderRadius="10px"
                   fontSize="16px"
                   onClickFunction={() => {
-                    handleEditOrder();
+                    handleUpdateOrder(orderId);
                   }}
                 >
-                  Add Order
+                  Edit Order
                 </DefaultButton>
                 <Button
                   variant="outlined"
@@ -626,13 +717,29 @@ const OrderDetail = () => {
           <div>
             <img
               style={{ width: "720px", height: "auto" }}
-              srcSet={`http://localhost:3000/uploads/${orderDetailInfo.data.documents[imageIndex].filename}?w=248&fit=crop&auto=format&dpr=2 2x`}
-              src={`http://localhost:3000/uploads/${orderDetailInfo.data.documents[imageIndex].filename}?w=248&fit=crop&auto=format`}
-              alt={orderDetailInfo.data.documents[imageIndex].filename}
+              // srcSet={`http://localhost:3000/uploads/${orderDetailInfo.data.documents[imageIndex].filename}?w=248&fit=crop&auto=format&dpr=2 2x`}
+              src={
+                orderDocuments[imageIndex].id !== undefined
+                  ? `http://localhost:3000/uploads/${orderDocuments[imageIndex].filename}?w=248&fit=crop&auto=format`
+                  : URL.createObjectURL(orderDocuments[imageIndex])
+              }
+              alt={
+                orderDocuments[imageIndex].id !== undefined
+                  ? orderDetailInfo.data.documents[imageIndex].filename
+                  : ""
+              }
               loading="lazy"
             />
           </div>
         </Backdrop>
+      )}
+      {snackbarMessage !== ("" || null) && (
+        <MySnackbar
+          open={openSnackbar}
+          handleClose={handleCloseSnackbar}
+          messageStatus={snackbarStatus}
+          popupMessage={snackbarMessage}
+        />
       )}
     </div>
   );

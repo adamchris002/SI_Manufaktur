@@ -52,7 +52,7 @@ const MaindashboardMarketing = (props) => {
   const [orderDetails, setOrderDetails] = useState("");
   const [orderCustomerChannel, setOrderCustomerChannel] = useState("");
   const [orderCustomerDetail, setOrderCustomerDetail] = useState("");
-  const [updateNotification, setUpdateNofitication] = useState(false);
+  const [updateNotification, setUpdateNotification] = useState(false);
   const [allOrderList, setAllOrderList] = useState([]);
   const [openImage, setOpenImage] = useState(false);
   const [imageIndex, setImageIndex] = useState(null);
@@ -64,7 +64,7 @@ const MaindashboardMarketing = (props) => {
       url: "http://localhost:3000/order/getAllOrderInfo",
     }).then((result) => {
       setAllOrderList(result);
-      setUpdateNofitication(false);
+      setUpdateNotification(false);
     });
   }, [updateNotification]);
 
@@ -136,7 +136,7 @@ const MaindashboardMarketing = (props) => {
           setOpenSnackbar(true);
           setSnackbarStatus(true);
           setSnackbarMessage("You have added a new order");
-          setUpdateNofitication(true);
+          setUpdateNotification(true);
           setOrderTitle("");
           setOrderQuantityValue(null);
           setOrderQuantityUnit("");
@@ -1273,13 +1273,13 @@ const MaindashboardMarketing = (props) => {
           }}
         >
           <Typography
-            id="ordershistory"
+            id="activitylog"
             style={{ fontSize: "36px", color: "#0F607D" }}
           >
-            Orders History
+            Activity Log
           </Typography>
           <div>
-            <DefaultButton>Go to Orders History Page</DefaultButton>
+            <DefaultButton>Go to Activity Logs</DefaultButton>
           </div>
         </div>
       </div>

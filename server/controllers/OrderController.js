@@ -1,8 +1,68 @@
 const { orders, documents } = require("../models");
 const path = require("path");
 const upload = require("../multerConfig");
+const { error } = require("console");
 
 class OrderController {
+  static async updateOrder(req, res) {
+    try {
+      const { id } = req.params;
+
+      const {
+        orderTitle,
+        orderQuantity,
+        orderDetails,
+        customerChannel,
+        customerDetail,
+      } = req.body;
+
+      let order = await orders.findOne({
+        where: { id },
+        include: [{ model: documents }],
+      });
+
+      if (!order) {
+        return res.status(404).json({ error: "Order not found" });
+      }
+
+      const updatedOrder = await order.update(
+        {
+          orderTitle,
+          orderQuantity,
+          orderDetails,
+          customerChannel,
+          customerDetail,
+        },
+        {
+          where: { id },
+        }
+      );
+
+      if (req.files && req.files.length > 0) {
+        const filePromises = req.files.map(async (file) => {
+          const filePath = path.join(__dirname, "uploads", file.filename);
+          try {
+            // Save file information to the database
+            await documents.create({
+              orderId: order.id,
+              filename: file.filename,
+              size: file.size,
+              type: file.mimetype,
+              path: filePath,
+            });
+          } catch (error) {
+            console.error("Error saving file information:", error);
+            // Handle error as needed
+          }
+        });
+        await Promise.all(filePromises);
+      }
+
+      res.json(updatedOrder)
+    } catch (error) {
+      res.json(error);
+    }
+  }
   static async deleteOrder(req, res) {
     try {
       const { id } = req.params;
