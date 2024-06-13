@@ -15,10 +15,12 @@ import DefaultButton from "../../components/Button";
 import MyModal from "../../components/Modal";
 import MySelectTextField from "../../components/SelectTextField";
 import CloudUploadIcon from "@mui/icons-material/CloudUpload";
+import WarningIcon from "@mui/icons-material/Warning";
 import CloseIcon from "@mui/icons-material/Close";
 import DeleteIcon from "@mui/icons-material/Delete";
 import RemoveRedEyeIcon from "@mui/icons-material/RemoveRedEye";
 import MySnackbar from "../../components/Snackbar";
+import { useAuth } from "../../components/AuthContext";
 
 const VisuallyHiddenInput = styled("input")({
   clip: "rect(0 0 0 0)",
@@ -32,8 +34,9 @@ const VisuallyHiddenInput = styled("input")({
   width: 1,
 });
 
-const OrderDetail = () => {
+const OrderDetail = (props) => {
   const { orderId } = useParams();
+  const { userInformation } = props;
   const [checkUpdate, setCheckUpdate] = useState(false);
   const [orderDetailInfo, setOrderDetailInfo] = useState({});
   const [openModal, setOpenModal] = useState(false);
@@ -50,9 +53,8 @@ const OrderDetail = () => {
   const [snackbarMessage, setSnackbarMessage] = useState("");
   const [snackbarStatus, setSnackbarStatus] = useState(false);
   const [openSnackbar, setOpenSnackbar] = useState(false);
-
-  console.log(orderDocuments)
-
+  const [openDeleteModal, setOpenDeleteModal] = useState(false);
+  const { setSuccessMessage } = useAuth();
 
   const navigate = useNavigate();
 
@@ -94,7 +96,7 @@ const OrderDetail = () => {
       setOrderDocuments(result.data.documents);
       setOrderCustomerChannel(result.data.customerChannel);
       setOrderCustomerDetail(result.data.customerDetail);
-      setCheckUpdate(false)
+      setCheckUpdate(false);
     });
   }, [checkUpdate]);
 
@@ -130,65 +132,100 @@ const OrderDetail = () => {
       formData.append("orderDetails", orderDetails);
       formData.append("customerChannel", orderCustomerChannel);
       formData.append("customerDetail", orderCustomerDetail);
-  
+
       for (const file of orderDocuments) {
-        formData.append("files", file);
+        if (!file.id) {
+          formData.append("files", file);
+        }
       }
-  
+
+      const documentsToRemove = orderDetailInfo.data.documents
+        .filter((doc) => !orderDocuments.some((f) => f.id === doc.id))
+        .map((doc) => doc.id);
+
+      formData.append("documentsToRemove", JSON.stringify(documentsToRemove));
+
       axios({
         method: "PUT",
-        url: `http://localhost:3000/order/updateOrder/${orderId}`,
+        url: `http://localhost:3000/order/updateOrder/${userInformation?.data?.id}`,
         data: formData,
         headers: {
           "Content-Type": "multipart/form-data",
         },
-      }).then((result) => {
-        if (result.status === 200) {
-          setOpenModal(false);
-          setOpenSnackbar(true);
-          setSnackbarStatus(true);
-          setSnackbarMessage("Order updated successfully");
-          setCheckUpdate(true);
-          setOrderTitle("");
-          setOrderQuantityValue(null);
-          setOrderQuantityUnit("");
-          setOrderDetails("");
-          setOrderCustomerChannel("");
-          setOrderCustomerDetail("");
-          setOrderDocuments([]);
-        } else {
+      })
+        .then((result) => {
+          if (result.status === 200) {
+            setOpenModal(false);
+            setOpenSnackbar(true);
+            setSnackbarStatus(true);
+            setSnackbarMessage("Order updated successfully");
+            setCheckUpdate(true);
+            setOrderTitle("");
+            setOrderQuantityValue(null);
+            setOrderQuantityUnit("");
+            setOrderDetails("");
+            setOrderCustomerChannel("");
+            setOrderCustomerDetail("");
+            setOrderDocuments([]);
+          } else {
+            setOpenSnackbar(true);
+            setSnackbarStatus(false);
+            setSnackbarMessage("There was an error updating the order");
+            // Optionally clear the form fields
+            setOrderTitle("");
+            setOrderQuantityValue(null);
+            setOrderQuantityUnit("");
+            setOrderDetails("");
+            setOrderCustomerChannel("");
+            setOrderCustomerDetail("");
+            setOrderDocuments([]);
+          }
+        })
+        .catch((error) => {
+          console.error("Error updating order:", error);
           setOpenSnackbar(true);
           setSnackbarStatus(false);
           setSnackbarMessage("There was an error updating the order");
-          // Optionally clear the form fields
-          setOrderTitle("");
-          setOrderQuantityValue(null);
-          setOrderQuantityUnit("");
-          setOrderDetails("");
-          setOrderCustomerChannel("");
-          setOrderCustomerDetail("");
-          setOrderDocuments([]);
-        }
-      }).catch((error) => {
-        console.error("Error updating order:", error);
-        setOpenSnackbar(true);
-        setSnackbarStatus(false);
-        setSnackbarMessage("There was an error updating the order");
-      });
+        });
     }
   };
-  
+
   const handleCloseSnackbar = () => {
     setOpenSnackbar(false);
     setSnackbarMessage("");
     setSnackbarStatus(true);
   };
 
+  const handleCloseDeleteModal = () => {
+    setOpenDeleteModal(false);
+  };
+
+  const handleDeleteModal = () => {
+    setOpenDeleteModal(true);
+  };
+
   const handleDeleteOrder = () => {
     axios({
       method: "DELETE",
-      url: `http://localhost:3000/order/deleteOrder/${orderId}`,
-    });
+      url: `http://localhost:3000/order/deleteOrder`,
+      params: {userId: userInformation?.data?.id, orderId: orderId}
+    })
+      .then((result, index) => {
+        if (result.status === 200) {
+          setSuccessMessage(
+            `Order of order name ${orderTitle} has been deleted`
+          );
+          setSnackbarStatus(true);
+          navigate("/marketingDashboard");
+        }
+      })
+      .catch((error) => {
+        if (error.response) {
+          setOpenSnackbar(true);
+          setSnackbarMessage(error.response.data.error);
+          setSnackbarStatus(false);
+        }
+      });
   };
 
   const handleOpenModal = (orderDetailInfo) => {
@@ -271,22 +308,32 @@ const OrderDetail = () => {
             </div>
           </div>
           <div style={{ display: "flex" }}>
-            <DefaultButton
-              onClickFunction={() => {
-                handleOpenModal(orderDetailInfo);
-              }}
-            >
-              <Typography>Edit Order</Typography>
-            </DefaultButton>
-            <div style={{ marginLeft: "8px" }}>
-              <Button
-                sx={{ textTransform: "none" }}
-                color="error"
-                variant="outlined"
-              >
-                <Typography>Delete Order</Typography>
-              </Button>
-            </div>
+            {userInformation?.data?.role === "Admin" ||
+            userInformation?.data?.role === "Super Admin" ? (
+              <>
+                <DefaultButton
+                  onClickFunction={() => {
+                    handleOpenModal(orderDetailInfo);
+                  }}
+                >
+                  <Typography>Edit Order</Typography>
+                </DefaultButton>
+                <div style={{ marginLeft: "8px" }}>
+                  <Button
+                    sx={{ textTransform: "none" }}
+                    color="error"
+                    variant="outlined"
+                    onClick={() => {
+                      handleDeleteModal();
+                    }}
+                  >
+                    <Typography>Delete Order</Typography>
+                  </Button>
+                </div>
+              </>
+            ) : (
+              ""
+            )}
           </div>
         </div>
         <div
@@ -740,6 +787,59 @@ const OrderDetail = () => {
           messageStatus={snackbarStatus}
           popupMessage={snackbarMessage}
         />
+      )}
+      {openDeleteModal && (
+        <MyModal open={openDeleteModal} handleClose={handleCloseDeleteModal}>
+          <div
+            style={{
+              display: "flex",
+              justifyContent: "center",
+              flexDirection: "column",
+              height: "100%",
+            }}
+          >
+            <div>
+              <WarningIcon
+                style={{ color: "red", height: "256px", width: "256px" }}
+              />
+              <div>
+                <Typography sx={{ fontSize: "24px", color: "black" }}>
+                  Are you sure you want to delete the order?
+                </Typography>
+                <div style={{ display: "flex", justifyContent: "center" }}>
+                  <div
+                    style={{
+                      marginTop: "16px",
+                      display: "flex",
+                      justifyContent: "space-evenly",
+                      width: "25vh",
+                      bottom: 0,
+                      position: "relative",
+                    }}
+                  >
+                    <Button
+                      onClick={() => {
+                        handleDeleteOrder();
+                      }}
+                      style={{ textTransform: "none" }}
+                      variant="outlined"
+                      color="error"
+                    >
+                      Yes
+                    </Button>
+                    <DefaultButton
+                      onClickFunction={() => {
+                        handleCloseDeleteModal();
+                      }}
+                    >
+                      No
+                    </DefaultButton>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </MyModal>
       )}
     </div>
   );

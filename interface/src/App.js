@@ -15,6 +15,7 @@ import MaindashboardProduction from "./pages/MaindashboardProduction";
 import MaindasboardWaste from "./pages/MaindashboardWaste";
 import UnauthorizedPage from "./pages/UnauthorizedPage";
 import OrderDetail from "./pages/MarketingPage/OrderDetail";
+import MarketingActivityLog from "./pages/MarketingPage/MarketingActivityLog";
 
 function App() {
   const [userCredentials, setUserCredentials] = useState({});
@@ -50,7 +51,18 @@ function App() {
               userCredentials.data.department !== "Marketing" ? (
                 <Navigate to="/unauthorized" replace />
               ) : (
-                <OrderDetail />
+                <OrderDetail userInformation={userCredentials}/>
+              )
+            }
+          />
+          <Route
+            path="/marketingDashboard/activityLog"
+            element={
+              !userCredentials.data ||
+              userCredentials.data.department !== "Marketing" ? (
+                <Navigate to="/unauthorized" replace />
+              ) : (
+                <MarketingActivityLog />
               )
             }
           />

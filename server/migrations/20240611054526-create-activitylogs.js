@@ -2,31 +2,23 @@
 /** @type {import('sequelize-cli').Migration} */
 module.exports = {
   async up(queryInterface, Sequelize) {
-    await queryInterface.createTable('documents', {
+    await queryInterface.createTable('activitylogs', {
       id: {
         allowNull: false,
         autoIncrement: true,
         primaryKey: true,
         type: Sequelize.INTEGER
       },
-      orderId: {
-        type: Sequelize.INTEGER,
-        references: {
-          model: 'orders',
-          key: 'id',
-        },
-        onDelete: 'CASCADE',
-      },
-      filename: {
+      user: {
         type: Sequelize.STRING
       },
-      size: {
-        type: Sequelize.INTEGER
-      },
-      type: {
+      activity: {
         type: Sequelize.STRING
       },
-      path: {
+      name: {
+        type: Sequelize.STRING
+      },
+      division: {
         type: Sequelize.STRING
       },
       createdAt: {
@@ -40,6 +32,6 @@ module.exports = {
     });
   },
   async down(queryInterface, Sequelize) {
-    await queryInterface.dropTable('documents');
+    await queryInterface.dropTable('activitylogs');
   }
 };

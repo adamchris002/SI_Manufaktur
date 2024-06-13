@@ -125,7 +125,7 @@ const MaindashboardMarketing = (props) => {
 
       axios({
         method: "POST",
-        url: "http://localhost:3000/order/addOrder",
+        url: `http://localhost:3000/order/addOrder/${userInformation.data.id}`,
         data: formData,
         headers: {
           "Content-Type": "multipart/form-data",
@@ -453,10 +453,11 @@ const MaindashboardMarketing = (props) => {
               display: "flex",
             }}
           >
-            {allOrderList.data?.length === 0 ? (
+            {allOrderList?.data?.length === 0 ||
+            allOrderList?.data === undefined ? (
               <Typography>There are no orders currently</Typography>
             ) : (
-              allOrderList.data?.map((data, index) => (
+              allOrderList?.data?.map((data, index) => (
                 <div
                   key={index}
                   className="order-item"
@@ -464,11 +465,11 @@ const MaindashboardMarketing = (props) => {
                     navigate(`/marketingDashboard/orderDetail/${data.id}`);
                   }}
                 >
-                  {data?.documents?.length === "" || null ? (
+                  {data?.documents?.length === "" || null || undefined ? (
                     ""
                   ) : (
                     <div style={{ margin: "16px" }}>
-                      {data.documents?.length > 3 ? (
+                      {data?.documents?.length > 3 ? (
                         <div style={{ display: "flex", alignItems: "center" }}>
                           {data.documents
                             ?.slice(0, 3)
@@ -483,7 +484,7 @@ const MaindashboardMarketing = (props) => {
                                     }}
                                     srcSet={`http://localhost:3000/uploads/${document.filename}?w=248&fit=crop&auto=format&dpr=2 2x`}
                                     src={`http://localhost:3000/uploads/${document.filename}?w=248&fit=crop&auto=format`}
-                                    alt={document.filename}
+                                    alt=""
                                     loading="lazy"
                                   />
                                 </div>
@@ -492,7 +493,7 @@ const MaindashboardMarketing = (props) => {
                           <Typography
                             style={{ marginLeft: "8px", fontWeight: "bold" }}
                           >
-                            + {data.documents?.length - 3}
+                            + {data?.documents?.length - 3}
                           </Typography>
                         </div>
                       ) : (
@@ -508,7 +509,7 @@ const MaindashboardMarketing = (props) => {
                                   }}
                                   srcSet={`http://localhost:3000/uploads/${document.filename}?w=248&fit=crop&auto=format&dpr=2 2x`}
                                   src={`http://localhost:3000/uploads/${document.filename}?w=248&fit=crop&auto=format`}
-                                  alt={document.filename}
+                                  alt=""
                                   loading="lazy"
                                 />
                               </div>
@@ -605,17 +606,22 @@ const MaindashboardMarketing = (props) => {
             )}
           </div>
           <div style={{ display: "flex", marginTop: "32px" }}>
-            <DefaultButton
-              height="40px"
-              width="232px"
-              borderRadius="16px"
-              fontSize="24px"
-              onClickFunction={() => {
-                setOpenModal(true);
-              }}
-            >
-              Add Order
-            </DefaultButton>
+            {userInformation?.data?.role === "Admin" ||
+            userInformation?.data?.role === "Super Admin" ? (
+              <DefaultButton
+                height="40px"
+                width="232px"
+                borderRadius="16px"
+                fontSize="24px"
+                onClickFunction={() => {
+                  setOpenModal(true);
+                }}
+              >
+                Add Order
+              </DefaultButton>
+            ) : (
+              ""
+            )}
           </div>
         </div>
         <div
@@ -696,21 +702,53 @@ const MaindashboardMarketing = (props) => {
               display: "flex",
             }}
           >
-            {allOrderList.data?.length === 0 ||
-            allOrderList.data?.orderStatus !== "Reviewed" ? (
+            {allOrderList?.data?.length === 0 ||
+            allOrderList?.data === undefined ||
+            !allOrderList?.data?.some(
+              (order) => order.orderStatus === "Reviewed"
+            ) ? (
               <Typography>There are no reviewed orders currently</Typography>
             ) : (
-              allOrderList.data?.map((data, index) => (
-                <div key={index} className="order-item">
-                  {data?.documents?.length === "" || null ? (
-                    ""
-                  ) : (
-                    <div style={{ margin: "16px" }}>
-                      {data.documents?.length > 3 ? (
-                        <div style={{ display: "flex", alignItems: "center" }}>
-                          {data.documents
-                            ?.slice(0, 3)
-                            .map((document, index) => {
+              allOrderList?.data
+                ?.filter((order) => order.orderStatus === "Reviewed")
+                .map((data, index) => (
+                  <div key={index} className="order-item">
+                    {data?.documents?.length === "" || null || undefined ? (
+                      ""
+                    ) : (
+                      <div style={{ margin: "16px" }}>
+                        {data?.documents?.length > 3 ? (
+                          <div
+                            style={{ display: "flex", alignItems: "center" }}
+                          >
+                            {data?.documents
+                              ?.slice(0, 3)
+                              .map((document, index) => {
+                                return (
+                                  <div>
+                                    <img
+                                      style={{
+                                        height: "60px",
+                                        width: "60px",
+                                        marginRight: "4px",
+                                      }}
+                                      srcSet={`http://localhost:3000/uploads/${document.filename}?w=248&fit=crop&auto=format&dpr=2 2x`}
+                                      src={`http://localhost:3000/uploads/${document.filename}?w=248&fit=crop&auto=format`}
+                                      alt=""
+                                      loading="lazy"
+                                    />
+                                  </div>
+                                );
+                              })}
+                            <Typography
+                              style={{ marginLeft: "8px", fontWeight: "bold" }}
+                            >
+                              + {data?.documents?.length - 3}
+                            </Typography>
+                          </div>
+                        ) : (
+                          <div style={{ display: "flex" }}>
+                            {data.documents?.map((document, index) => {
                               return (
                                 <div>
                                   <img
@@ -721,108 +759,100 @@ const MaindashboardMarketing = (props) => {
                                     }}
                                     srcSet={`http://localhost:3000/uploads/${document.filename}?w=248&fit=crop&auto=format&dpr=2 2x`}
                                     src={`http://localhost:3000/uploads/${document.filename}?w=248&fit=crop&auto=format`}
-                                    alt={document.filename}
+                                    alt=""
                                     loading="lazy"
                                   />
                                 </div>
                               );
                             })}
-                          <Typography
-                            style={{ marginLeft: "8px", fontWeight: "bold" }}
-                          >
-                            + {data.documents?.length - 3}
-                          </Typography>
-                        </div>
-                      ) : (
-                        <div style={{ display: "flex" }}>
-                          {data.documents?.map((document, index) => {
-                            return (
-                              <div>
-                                <img
-                                  style={{
-                                    height: "60px",
-                                    width: "60px",
-                                    marginRight: "4px",
-                                  }}
-                                  srcSet={`http://localhost:3000/uploads/${document.filename}?w=248&fit=crop&auto=format&dpr=2 2x`}
-                                  src={`http://localhost:3000/uploads/${document.filename}?w=248&fit=crop&auto=format`}
-                                  alt={document.filename}
-                                  loading="lazy"
-                                />
-                              </div>
-                            );
-                          })}
-                        </div>
-                      )}
+                          </div>
+                        )}
+                      </div>
+                    )}
+                    <div
+                      style={{
+                        display: "flex",
+                        marginLeft: "16px",
+                        backgroundColor: "transparent",
+                        overflow: "hidden",
+                        textOverflow: "ellipsis",
+                        whiteSpace: "nowrap",
+                      }}
+                    >
+                      <Typography
+                        style={{
+                          color: "#0F607D",
+                          fontWeight: "bold",
+                          overflow: "hidden",
+                          textOverflow: "ellipsis",
+                          whiteSpace: "nowrap",
+                        }}
+                      >
+                        {data.orderTitle}
+                      </Typography>
                     </div>
-                  )}
-                  <div
-                    style={{
-                      display: "flex",
-                      marginLeft: "16px",
-                      backgroundColor: "transparent",
-                    }}
-                  >
-                    <Typography
+                    <div
                       style={{
-                        color: "#0F607D",
-                        fontWeight: "bold",
+                        display: "flex",
+                        marginLeft: "16px",
+                        backgroundColor: "transparent",
+                        overflow: "hidden",
+                        textOverflow: "ellipsis",
+                        whiteSpace: "nowrap",
                       }}
                     >
-                      {data.orderTitle}
-                    </Typography>
-                  </div>
-                  <div
-                    style={{
-                      display: "flex",
-                      marginLeft: "16px",
-                      backgroundColor: "transparent",
-                    }}
-                  >
-                    <Typography>{data.orderDetails}</Typography>
-                  </div>
-                  <div
-                    style={{
-                      display: "flex",
-                      backgroundColor: "transparent",
-                      position: "absolute",
-                      bottom: "16px",
-                      left: "16px",
-                      flexDirection: "column",
-                    }}
-                  >
-                    <Typography
+                      <Typography
+                        style={{
+                          overflow: "hidden",
+                          textOverflow: "ellipsis",
+                          whiteSpace: "nowrap",
+                        }}
+                      >
+                        {data.orderDetails}
+                      </Typography>
+                    </div>
+                    <div
                       style={{
-                        color: "#0F607D",
-                        fontWeight: "bold",
-                        fontSize: 12,
-                      }}
-                    >{`Date Added: ${moment(data.createdAt).format(
-                      "DD/MM/YYYY"
-                    )}`}</Typography>
-                  </div>
-                  <div
-                    style={{
-                      display: "flex",
-                      backgroundColor: "transparent",
-                      position: "absolute",
-                      bottom: "32px",
-                      left: "16px",
-                      flexDirection: "column",
-                    }}
-                  >
-                    <Typography
-                      style={{
-                        color: "#0F607D",
-                        fontWeight: "bold",
-                        fontSize: 12,
+                        display: "flex",
+                        backgroundColor: "transparent",
+                        position: "absolute",
+                        bottom: "16px",
+                        left: "16px",
+                        flexDirection: "column",
                       }}
                     >
-                      {`Order Status: ${data.orderStatus}`}
-                    </Typography>
+                      <Typography
+                        style={{
+                          color: "#0F607D",
+                          fontWeight: "bold",
+                          fontSize: 12,
+                        }}
+                      >{`Date Added: ${moment(data.createdAt).format(
+                        "DD/MM/YYYY"
+                      )}`}</Typography>
+                    </div>
+                    <div
+                      style={{
+                        display: "flex",
+                        backgroundColor: "transparent",
+                        position: "absolute",
+                        bottom: "32px",
+                        left: "16px",
+                        flexDirection: "column",
+                      }}
+                    >
+                      <Typography
+                        style={{
+                          color: "#0F607D",
+                          fontWeight: "bold",
+                          fontSize: 12,
+                        }}
+                      >
+                        {`Order Status: ${data.orderStatus}`}
+                      </Typography>
+                    </div>
                   </div>
-                </div>
-              ))
+                ))
             )}
           </div>
         </div>
@@ -904,21 +934,53 @@ const MaindashboardMarketing = (props) => {
               display: "flex",
             }}
           >
-            {allOrderList.data?.length === 0 ||
-            allOrderList.data?.orderStatus !== "Processed" ? (
+            {allOrderList?.data?.length === 0 ||
+            allOrderList?.data === undefined ||
+            !allOrderList?.data?.some(
+              (order) => order.orderStatus === "Processed"
+            ) ? (
               <Typography>There are no processed orders currently</Typography>
             ) : (
-              allOrderList.data?.map((data, index) => (
-                <div key={index} className="order-item">
-                  {data?.documents?.length === "" || null ? (
-                    ""
-                  ) : (
-                    <div style={{ margin: "16px" }}>
-                      {data.documents?.length > 3 ? (
-                        <div style={{ display: "flex", alignItems: "center" }}>
-                          {data.documents
-                            ?.slice(0, 3)
-                            .map((document, index) => {
+              allOrderList?.data
+                ?.filter((order) => order.orderStatus === "Processed")
+                .map((data, index) => (
+                  <div key={index} className="order-item">
+                    {data?.documents?.length === "" || null ? (
+                      ""
+                    ) : (
+                      <div style={{ margin: "16px" }}>
+                        {data?.documents?.length > 3 ? (
+                          <div
+                            style={{ display: "flex", alignItems: "center" }}
+                          >
+                            {data?.documents
+                              ?.slice(0, 3)
+                              .map((document, index) => {
+                                return (
+                                  <div>
+                                    <img
+                                      style={{
+                                        height: "60px",
+                                        width: "60px",
+                                        marginRight: "4px",
+                                      }}
+                                      srcSet={`http://localhost:3000/uploads/${document.filename}?w=248&fit=crop&auto=format&dpr=2 2x`}
+                                      src={`http://localhost:3000/uploads/${document.filename}?w=248&fit=crop&auto=format`}
+                                      alt=""
+                                      loading="lazy"
+                                    />
+                                  </div>
+                                );
+                              })}
+                            <Typography
+                              style={{ marginLeft: "8px", fontWeight: "bold" }}
+                            >
+                              + {data.documents?.length - 3}
+                            </Typography>
+                          </div>
+                        ) : (
+                          <div style={{ display: "flex" }}>
+                            {data.documents?.map((document, index) => {
                               return (
                                 <div>
                                   <img
@@ -929,108 +991,103 @@ const MaindashboardMarketing = (props) => {
                                     }}
                                     srcSet={`http://localhost:3000/uploads/${document.filename}?w=248&fit=crop&auto=format&dpr=2 2x`}
                                     src={`http://localhost:3000/uploads/${document.filename}?w=248&fit=crop&auto=format`}
-                                    alt={document.filename}
+                                    alt=""
                                     loading="lazy"
                                   />
                                 </div>
                               );
                             })}
-                          <Typography
-                            style={{ marginLeft: "8px", fontWeight: "bold" }}
-                          >
-                            + {data.documents?.length - 3}
-                          </Typography>
-                        </div>
-                      ) : (
-                        <div style={{ display: "flex" }}>
-                          {data.documents?.map((document, index) => {
-                            return (
-                              <div>
-                                <img
-                                  style={{
-                                    height: "60px",
-                                    width: "60px",
-                                    marginRight: "4px",
-                                  }}
-                                  srcSet={`http://localhost:3000/uploads/${document.filename}?w=248&fit=crop&auto=format&dpr=2 2x`}
-                                  src={`http://localhost:3000/uploads/${document.filename}?w=248&fit=crop&auto=format`}
-                                  alt={document.filename}
-                                  loading="lazy"
-                                />
-                              </div>
-                            );
-                          })}
-                        </div>
-                      )}
+                          </div>
+                        )}
+                      </div>
+                    )}
+                    <div
+                      style={{
+                        display: "flex",
+                        marginLeft: "16px",
+                        backgroundColor: "transparent",
+                        overflow: "hidden",
+                        textOverflow: "ellipsis",
+                        whiteSpace: "nowrap",
+                      }}
+                    >
+                      <Typography
+                        style={{
+                          color: "#0F607D",
+                          fontWeight: "bold",
+                          overflow: "hidden",
+                          textOverflow: "ellipsis",
+                          whiteSpace: "nowrap",
+                        }}
+                      >
+                        {data.orderTitle}
+                      </Typography>
                     </div>
-                  )}
-                  <div
-                    style={{
-                      display: "flex",
-                      marginLeft: "16px",
-                      backgroundColor: "transparent",
-                    }}
-                  >
-                    <Typography
+                    <div
                       style={{
-                        color: "#0F607D",
-                        fontWeight: "bold",
+                        display: "flex",
+                        marginLeft: "16px",
+                        backgroundColor: "transparent",
+                        overflow: "hidden",
+                        textOverflow: "ellipsis",
+                        whiteSpace: "nowrap",
                       }}
                     >
-                      {data.orderTitle}
-                    </Typography>
-                  </div>
-                  <div
-                    style={{
-                      display: "flex",
-                      marginLeft: "16px",
-                      backgroundColor: "transparent",
-                    }}
-                  >
-                    <Typography>{data.orderDetails}</Typography>
-                  </div>
-                  <div
-                    style={{
-                      display: "flex",
-                      backgroundColor: "transparent",
-                      position: "absolute",
-                      bottom: "16px",
-                      left: "16px",
-                      flexDirection: "column",
-                    }}
-                  >
-                    <Typography
+                      <Typography
+                        style={{
+                          overflow: "hidden",
+                          textOverflow: "ellipsis",
+                          whiteSpace: "nowrap",
+                        }}
+                      >
+                        {data.orderDetails}
+                      </Typography>
+                    </div>
+                    <div
                       style={{
-                        color: "#0F607D",
-                        fontWeight: "bold",
-                        fontSize: 12,
-                      }}
-                    >{`Date Added: ${moment(data.createdAt).format(
-                      "DD/MM/YYYY"
-                    )}`}</Typography>
-                  </div>
-                  <div
-                    style={{
-                      display: "flex",
-                      backgroundColor: "transparent",
-                      position: "absolute",
-                      bottom: "32px",
-                      left: "16px",
-                      flexDirection: "column",
-                    }}
-                  >
-                    <Typography
-                      style={{
-                        color: "#0F607D",
-                        fontWeight: "bold",
-                        fontSize: 12,
+                        display: "flex",
+                        backgroundColor: "transparent",
+                        position: "absolute",
+                        bottom: "16px",
+                        left: "16px",
+                        flexDirection: "column",
                       }}
                     >
-                      {`Order Status: ${data.orderStatus}`}
-                    </Typography>
+                      <Typography
+                        style={{
+                          color: "#0F607D",
+                          fontWeight: "bold",
+                          fontSize: 12,
+                          overflow: "hidden",
+                          textOverflow: "ellipsis",
+                          whiteSpace: "nowrap",
+                        }}
+                      >{`Date Added: ${moment(data.createdAt).format(
+                        "DD/MM/YYYY"
+                      )}`}</Typography>
+                    </div>
+                    <div
+                      style={{
+                        display: "flex",
+                        backgroundColor: "transparent",
+                        position: "absolute",
+                        bottom: "32px",
+                        left: "16px",
+                        flexDirection: "column",
+                      }}
+                    >
+                      <Typography
+                        style={{
+                          color: "#0F607D",
+                          fontWeight: "bold",
+                          fontSize: 12,
+                        }}
+                      >
+                        {`Order Status: ${data.orderStatus}`}
+                      </Typography>
+                    </div>
                   </div>
-                </div>
-              ))
+                ))
             )}
           </div>
         </div>
@@ -1106,27 +1163,58 @@ const MaindashboardMarketing = (props) => {
         <div style={{ marginLeft: "32px", marginTop: "32px" }}>
           <div
             style={{
-              width: "72vw",
               overflowX: "auto",
               whiteSpace: "nowrap",
               display: "flex",
             }}
           >
-            {allOrderList.data?.length === 0 ||
-            allOrderList.data?.orderStatus !== "Delivered" ? (
+            {allOrderList?.data?.length === 0 ||
+            allOrderList?.data === undefined ||
+            !allOrderList?.data?.some(
+              (order) => order.orderStatus === "Delivered"
+            ) ? (
               <Typography>There are no delivered orders currently</Typography>
             ) : (
-              allOrderList.data?.map((data, index) => (
-                <div key={index} className="order-item">
-                  {data?.documents?.length === "" || null ? (
-                    ""
-                  ) : (
-                    <div style={{ margin: "16px" }}>
-                      {data.documents?.length > 3 ? (
-                        <div style={{ display: "flex", alignItems: "center" }}>
-                          {data.documents
-                            ?.slice(0, 3)
-                            .map((document, index) => {
+              allOrderList?.data
+                ?.filter((order) => order.orderStatus === "Delivered")
+                .map((data, index) => (
+                  <div key={index} className="order-item">
+                    {data?.documents?.length === "" || null ? (
+                      ""
+                    ) : (
+                      <div style={{ margin: "16px" }}>
+                        {data?.documents?.length > 3 ? (
+                          <div
+                            style={{ display: "flex", alignItems: "center" }}
+                          >
+                            {data?.documents
+                              ?.slice(0, 3)
+                              .map((document, index) => {
+                                return (
+                                  <div>
+                                    <img
+                                      style={{
+                                        height: "60px",
+                                        width: "60px",
+                                        marginRight: "4px",
+                                      }}
+                                      srcSet={`http://localhost:3000/uploads/${document.filename}?w=248&fit=crop&auto=format&dpr=2 2x`}
+                                      src={`http://localhost:3000/uploads/${document.filename}?w=248&fit=crop&auto=format`}
+                                      alt=""
+                                      loading="lazy"
+                                    />
+                                  </div>
+                                );
+                              })}
+                            <Typography
+                              style={{ marginLeft: "8px", fontWeight: "bold" }}
+                            >
+                              + {data?.documents?.length - 3}
+                            </Typography>
+                          </div>
+                        ) : (
+                          <div style={{ display: "flex" }}>
+                            {data?.documents?.map((document, index) => {
                               return (
                                 <div>
                                   <img
@@ -1137,108 +1225,100 @@ const MaindashboardMarketing = (props) => {
                                     }}
                                     srcSet={`http://localhost:3000/uploads/${document.filename}?w=248&fit=crop&auto=format&dpr=2 2x`}
                                     src={`http://localhost:3000/uploads/${document.filename}?w=248&fit=crop&auto=format`}
-                                    alt={document.filename}
+                                    alt=""
                                     loading="lazy"
                                   />
                                 </div>
                               );
                             })}
-                          <Typography
-                            style={{ marginLeft: "8px", fontWeight: "bold" }}
-                          >
-                            + {data.documents?.length - 3}
-                          </Typography>
-                        </div>
-                      ) : (
-                        <div style={{ display: "flex" }}>
-                          {data.documents?.map((document, index) => {
-                            return (
-                              <div>
-                                <img
-                                  style={{
-                                    height: "60px",
-                                    width: "60px",
-                                    marginRight: "4px",
-                                  }}
-                                  srcSet={`http://localhost:3000/uploads/${document.filename}?w=248&fit=crop&auto=format&dpr=2 2x`}
-                                  src={`http://localhost:3000/uploads/${document.filename}?w=248&fit=crop&auto=format`}
-                                  alt={document.filename}
-                                  loading="lazy"
-                                />
-                              </div>
-                            );
-                          })}
-                        </div>
-                      )}
+                          </div>
+                        )}
+                      </div>
+                    )}
+                    <div
+                      style={{
+                        display: "flex",
+                        marginLeft: "16px",
+                        backgroundColor: "transparent",
+                        overflow: "hidden",
+                        textOverflow: "ellipsis",
+                        whiteSpace: "nowrap",
+                      }}
+                    >
+                      <Typography
+                        style={{
+                          color: "#0F607D",
+                          fontWeight: "bold",
+                          overflow: "hidden",
+                          textOverflow: "ellipsis",
+                          whiteSpace: "nowrap",
+                        }}
+                      >
+                        {data.orderTitle}
+                      </Typography>
                     </div>
-                  )}
-                  <div
-                    style={{
-                      display: "flex",
-                      marginLeft: "16px",
-                      backgroundColor: "transparent",
-                    }}
-                  >
-                    <Typography
+                    <div
                       style={{
-                        color: "#0F607D",
-                        fontWeight: "bold",
+                        display: "flex",
+                        marginLeft: "16px",
+                        backgroundColor: "transparent",
+                        overflow: "hidden",
+                        textOverflow: "ellipsis",
+                        whiteSpace: "nowrap",
                       }}
                     >
-                      {data.orderTitle}
-                    </Typography>
-                  </div>
-                  <div
-                    style={{
-                      display: "flex",
-                      marginLeft: "16px",
-                      backgroundColor: "transparent",
-                    }}
-                  >
-                    <Typography>{data.orderDetails}</Typography>
-                  </div>
-                  <div
-                    style={{
-                      display: "flex",
-                      backgroundColor: "transparent",
-                      position: "absolute",
-                      bottom: "16px",
-                      left: "16px",
-                      flexDirection: "column",
-                    }}
-                  >
-                    <Typography
+                      <Typography
+                        style={{
+                          overflow: "hidden",
+                          textOverflow: "ellipsis",
+                          whiteSpace: "nowrap",
+                        }}
+                      >
+                        {data.orderDetails}
+                      </Typography>
+                    </div>
+                    <div
                       style={{
-                        color: "#0F607D",
-                        fontWeight: "bold",
-                        fontSize: 12,
-                      }}
-                    >{`Date Added: ${moment(data.createdAt).format(
-                      "DD/MM/YYYY"
-                    )}`}</Typography>
-                  </div>
-                  <div
-                    style={{
-                      display: "flex",
-                      backgroundColor: "transparent",
-                      position: "absolute",
-                      bottom: "32px",
-                      left: "16px",
-                      flexDirection: "column",
-                    }}
-                  >
-                    <Typography
-                      style={{
-                        color: "#0F607D",
-                        fontWeight: "bold",
-                        fontSize: 12,
+                        display: "flex",
+                        backgroundColor: "transparent",
+                        position: "absolute",
+                        bottom: "16px",
+                        left: "16px",
+                        flexDirection: "column",
                       }}
                     >
-                      {`Order Status: ${data.orderStatus}`}
-                    </Typography>
+                      <Typography
+                        style={{
+                          color: "#0F607D",
+                          fontWeight: "bold",
+                          fontSize: 12,
+                        }}
+                      >{`Date Added: ${moment(data.createdAt).format(
+                        "DD/MM/YYYY"
+                      )}`}</Typography>
+                    </div>
+                    <div
+                      style={{
+                        display: "flex",
+                        backgroundColor: "transparent",
+                        position: "absolute",
+                        bottom: "32px",
+                        left: "16px",
+                        flexDirection: "column",
+                      }}
+                    >
+                      <Typography
+                        style={{
+                          color: "#0F607D",
+                          fontWeight: "bold",
+                          fontSize: 12,
+                        }}
+                      >
+                        {`Order Status: ${data.orderStatus}`}
+                      </Typography>
+                    </div>
                   </div>
-                </div>
-              ))
+                ))
             )}
           </div>
         </div>
@@ -1279,7 +1359,13 @@ const MaindashboardMarketing = (props) => {
             Activity Log
           </Typography>
           <div>
-            <DefaultButton>Go to Activity Logs</DefaultButton>
+            <DefaultButton
+              onClickFunction={() => {
+                navigate("/marketingDashboard/activityLog");
+              }}
+            >
+              Go to Activity Logs
+            </DefaultButton>
           </div>
         </div>
       </div>
@@ -1629,18 +1715,22 @@ const MaindashboardMarketing = (props) => {
                   justifyContent: "space-evenly",
                 }}
               >
-                <DefaultButton
-                  height="32px"
-                  width="128px"
-                  backgroundColor="#0F607D"
-                  borderRadius="10px"
-                  fontSize="16px"
-                  onClickFunction={() => {
-                    handleAddNewOrder();
-                  }}
-                >
-                  Add Order
-                </DefaultButton>
+                {userInformation ? (
+                  <DefaultButton
+                    height="32px"
+                    width="128px"
+                    backgroundColor="#0F607D"
+                    borderRadius="10px"
+                    fontSize="16px"
+                    onClickFunction={() => {
+                      handleAddNewOrder();
+                    }}
+                  >
+                    Add Order
+                  </DefaultButton>
+                ) : (
+                  ""
+                )}
                 <Button
                   variant="outlined"
                   color="error"

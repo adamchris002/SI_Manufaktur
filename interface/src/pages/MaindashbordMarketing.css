@@ -1,9 +1,8 @@
 .order-item {
-    height: 256px;
-    width: 256px;
+    min-height: 256px;
+    min-width: 256px;
     background-color: #d9d9d9;
     border-radius: 20px;
-    /* display: inline-block; */
     cursor: pointer;
     transition: background-color 0.3s ease;
     position: relative;
