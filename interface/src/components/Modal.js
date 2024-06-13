@@ -13,8 +13,8 @@ const MyModal = (props) => {
         <div
         className="hideScrollbar"
           style={{
-            height: "40vw",
-            width: "60vw",
+            // height: "40vw",
+            // width: "60vw",
             backgroundColor: "white",
             borderRadius: "20px",
             overflow: "auto"

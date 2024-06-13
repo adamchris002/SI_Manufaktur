@@ -1,0 +1,8 @@
+.register-page {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+}
+
+.register-page::-webkit-scrollbar {
+    display: none;
+}

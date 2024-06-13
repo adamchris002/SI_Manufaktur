@@ -8,6 +8,7 @@ import {
   InputAdornment,
   IconButton,
 } from "@mui/material";
+import "./Login.css"
 import MyLink from "../components/Link";
 import DefaultButton from "../components/Button";
 import "@fontsource/roboto/300.css";
@@ -128,17 +129,19 @@ const LoginPage = (props) => {
         width: "100vw",
         backgroundImage: `url(${factoryBackground})`,
         backgroundSize: "cover",
-        overflow: "hidden", // Prevent scrolling and zooming
-        position: "relative", // Needed for child element positioning
+        overflow: "auto",
+        position: "relative",
+        // display: "flex"
       }}
+      className="login-page"
     >
       <div
         style={{
           position: "fixed",
-          top: 64,
-          left: 64,
-          width: "232",
-          height: "232",
+          top: 32,
+          left: 32,
+          width: "12vw",
+          height: "12vw",
         }}
       >
         <img
@@ -147,23 +150,26 @@ const LoginPage = (props) => {
           alt="Company Logo"
         />
       </div>
-      <div style={{ paddingTop: "128px" }}>
+      <div>
+        <img alt="" src="" />
+      </div>
+      <div style={{ paddingTop: "64px" }}>
         <Typography
-          style={{ color: "#0F607D", fontSize: 72, fontWeight: "regular" }}
+          style={{ color: "#0F607D", fontSize: "5vw", fontWeight: "regular" }}
         >
           Sign in
         </Typography>
         <Typography
           style={{
-            marginTop: "48px",
-            fontSize: 28,
+            marginTop: "32px",
+            fontSize: "2vw",
             fontWeight: "regular",
             color: "#676767",
           }}
         >
           Hello there! Sign in to your account
         </Typography>
-        <div style={{ marginTop: "64px" }}>
+        <div style={{ marginTop: "32px" }}>
           <TextField
             sx={{
               "& label.Mui-focused": {
@@ -175,7 +181,7 @@ const LoginPage = (props) => {
               "& .MuiInput-underline:hover:before": {
                 borderBottomColor: "#0F607D",
               },
-              width: 512,
+              width: "32vw",
             }}
             error={loginClicked && username === ""} // Show error only after clicking login
             helperText={
@@ -200,7 +206,7 @@ const LoginPage = (props) => {
               "& .MuiInput-underline:hover:before": {
                 borderBottomColor: "#0F607D",
               },
-              width: 512,
+              width: "32vw",
             }}
             error={loginClicked && password === ""} // Show error only after clicking login
             helperText={
@@ -236,14 +242,14 @@ const LoginPage = (props) => {
             }}
           />
         </div>
-        <div style={{ marginTop: "48px" }}>
+        <div style={{ marginTop: "32px" }}>
           <MyLink
             onClickFunction={() => {
               navigate("/register");
             }}
             text={"Don't have an account yet? Register here!"}
           />
-          <div style={{ marginTop: "48px" }}>
+          <div style={{ marginTop: "32px" }}>
             <DefaultButton
               width="84px"
               height="42px"
@@ -255,7 +261,7 @@ const LoginPage = (props) => {
               Login
             </DefaultButton>
           </div>
-          <div style={{ marginTop: "156px" }}>
+          <div style={{ margin: "32px 0px 32px 0px"}}>
             <MyLink text={"Forgot Password?"} />
           </div>
         </div>

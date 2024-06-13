@@ -22,7 +22,6 @@ const DefaultButton = (props) => {
     setIsHovered(false);
   };
   return (
-    <div>
       <Button
         style={{
           width: width, //default: 84px
@@ -42,7 +41,6 @@ const DefaultButton = (props) => {
       >
         {children}
       </Button>
-    </div>
   );
 };
 

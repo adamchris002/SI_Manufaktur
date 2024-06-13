@@ -8,6 +8,7 @@ import {
   InputAdornment,
   IconButton,
 } from "@mui/material";
+import "./Register.css"
 import MyLink from "../components/Link";
 import DefaultButton from "../components/Button";
 import "@fontsource/roboto/300.css";
@@ -79,22 +80,23 @@ const RegisterPage = () => {
 
   return (
     <div
+    className="register-page"
       style={{
         height: "100vh",
         width: "100vw",
         backgroundImage: `url(${factoryBackground})`,
         backgroundSize: "cover",
-        overflow: "hidden", // Prevent scrolling and zooming
+        overflow: "auto", // Prevent scrolling and zooming
         position: "relative", // Needed for child element positioning
       }}
     >
       <div
         style={{
           position: "fixed",
-          top: 64,
-          left: 64,
-          width: "232",
-          height: "232",
+          top: 32,
+          left: 32,
+          width: "12vw",
+          height: "12vw",
         }}
       >
         <img
@@ -103,16 +105,16 @@ const RegisterPage = () => {
           alt="Company Logo"
         />
       </div>
-      <div style={{ paddingTop: "128px" }}>
+      <div style={{ paddingTop: "64px" }}>
         <Typography
-          style={{ color: "#0F607D", fontSize: 72, fontWeight: "regular" }}
+          style={{ color: "#0F607D", fontSize: "4.5vw", fontWeight: "regular" }}
         >
           Register
         </Typography>
         <Typography
           style={{
-            marginTop: "48px",
-            fontSize: 28,
+            marginTop: "32px",
+            fontSize: "1.5vw",
             fontWeight: "regular",
             color: "#676767",
           }}
@@ -121,7 +123,7 @@ const RegisterPage = () => {
         </Typography>
         <div
           style={{
-            marginTop: "64px",
+            marginTop: "32px",
           }}
         >
           <TextField
@@ -135,7 +137,7 @@ const RegisterPage = () => {
               "& .MuiInput-underline:hover:before": {
                 borderBottomColor: "#0F607D",
               },
-              width: 512,
+              width: "32vw",
             }}
             error={registerClicked && name === ""}
             helperText={
@@ -148,7 +150,7 @@ const RegisterPage = () => {
             }}
           />
         </div>
-        <div style={{ marginTop: registerClicked && name === "" ? "32px" :"64px" }}>
+        <div style={{ marginTop: registerClicked && name === "" ? "32px" :"48px" }}>
           <TextField
             sx={{
               "& label.Mui-focused": {
@@ -160,7 +162,7 @@ const RegisterPage = () => {
               "& .MuiInput-underline:hover:before": {
                 borderBottomColor: "#0F607D",
               },
-              width: 512,
+              width: "32vw",
             }}
             error={registerClicked && username === ""}
             helperText={
@@ -175,7 +177,7 @@ const RegisterPage = () => {
             }}
           />
         </div>
-        <div style={{ marginTop: registerClicked && name === "" ? "32px" :"64px" }}>
+        <div style={{ marginTop: registerClicked && name === "" ? "32px" :"48px" }}>
           <TextField
             sx={{
               "& label.Mui-focused": {
@@ -187,7 +189,7 @@ const RegisterPage = () => {
               "& .MuiInput-underline:hover:before": {
                 borderBottomColor: "#0F607D",
               },
-              width: 512,
+              width: "32vw",
             }}
             error={registerClicked && email === ""}
             helperText={
@@ -200,7 +202,7 @@ const RegisterPage = () => {
             }}
           />
         </div>
-        <div style={{ marginTop: registerClicked && name === "" ? "32px" :"64px" }}>
+        <div style={{ marginTop: registerClicked && name === "" ? "32px" :"48px" }}>
           <TextField
             sx={{
               "& label.Mui-focused": {
@@ -212,7 +214,7 @@ const RegisterPage = () => {
               "& .MuiInput-underline:hover:before": {
                 borderBottomColor: "#0F607D",
               },
-              width: 512,
+              width: "32vw",
             }}
             error={registerClicked && password === ""}
             helperText={
@@ -250,7 +252,7 @@ const RegisterPage = () => {
             }}
           />
         </div>
-        <div style={{ marginTop: "48px" }}>
+        <div style={{ marginTop: "32px" }}>
           <DefaultButton
             width="84px"
             height="42px"
@@ -266,7 +268,7 @@ const RegisterPage = () => {
           onClick={() => {
             navigate("/");
           }}
-          style={{ marginTop: "30px" }}
+          style={{ margin: "32px 0px 32px 0px" }}
         >
           <MyLink text={"Already have an account? sign in here"} />
         </div>

@@ -233,7 +233,7 @@ const MaindashboardMarketing = (props) => {
           overflow: "auto",
         }}
       >
-        <div style={{ width: "232px", height: "232px", marginTop: "32px" }}>
+        <div style={{ width: "15vw", height: "15vw", marginTop: "32px" }}>
           <img
             style={{ height: "inherit", width: "inherit" }}
             src={companyLogo}
@@ -242,11 +242,11 @@ const MaindashboardMarketing = (props) => {
         </div>
         <div style={{ marginTop: "64px", fontSize: "24px" }}>
           <DefaultButton
-            width="232px"
+            width="15vw"
             height="40px"
             backgroundColor="#0F607D"
             borderRadius="16px"
-            fontSize="16px"
+            fontSize="1vw"
             onClickFunction={() => {
               document
                 .getElementById("vieworders")
@@ -258,11 +258,11 @@ const MaindashboardMarketing = (props) => {
         </div>
         <div style={{ marginTop: "32px", fontSize: "24px" }}>
           <DefaultButton
-            width="232px"
+            width="15vw"
             height="40px"
             backgroundColor="#0F607D"
             borderRadius="16px"
-            fontSize="16px"
+            fontSize="1vw"
             onClickFunction={() => {
               document
                 .getElementById("reviewedorders")
@@ -274,11 +274,11 @@ const MaindashboardMarketing = (props) => {
         </div>
         <div style={{ marginTop: "32px", fontSize: "24px" }}>
           <DefaultButton
-            width="232px"
+            width="15vw"
             height="40px"
             backgroundColor="#0F607D"
             borderRadius="16px"
-            fontSize="16px"
+            fontSize="1vw"
             onClickFunction={() => {
               document
                 .getElementById("processedorders")
@@ -290,11 +290,11 @@ const MaindashboardMarketing = (props) => {
         </div>
         <div style={{ marginTop: "32px", fontSize: "24px" }}>
           <DefaultButton
-            width="232px"
+            width="15vw"
             height="40px"
             backgroundColor="#0F607D"
             borderRadius="16px"
-            fontSize="16px"
+            fontSize="1vw"
             onClickFunction={() => {
               document
                 .getElementById("deliveredorders")
@@ -306,11 +306,11 @@ const MaindashboardMarketing = (props) => {
         </div>
         <div style={{ marginTop: "32px", fontSize: "24px" }}>
           <DefaultButton
-            width="232px"
+            width="15vw"
             height="40px"
             backgroundColor="#0F607D"
             borderRadius="16px"
-            fontSize="16px"
+            fontSize="1vw"
             onClickFunction={() => {
               document
                 .getElementById("ordershistory")
@@ -322,11 +322,11 @@ const MaindashboardMarketing = (props) => {
         </div>
         <div style={{ marginTop: "32px", fontSize: "24px" }}>
           <DefaultButton
-            width="232px"
+            width="15vw"
             height="40px"
             backgroundColor="#0F607D"
             borderRadius="16px"
-            fontSize="16px"
+            fontSize="1vw"
             onClickFunction={() => {
               document
                 .getElementById("ordershistory")
@@ -367,10 +367,10 @@ const MaindashboardMarketing = (props) => {
             }}
           />
           <div style={{ textAlign: "left" }}>
-            <Typography style={{ fontSize: "48px", color: "#0F607D" }}>
+            <Typography style={{ fontSize: "4vw", color: "#0F607D" }}>
               Welcome back, {userInformation.data.username}
             </Typography>
-            <Typography style={{ fontSize: "24px", color: "#0F607D" }}>
+            <Typography style={{ fontSize: "2vw", color: "#0F607D" }}>
               {userInformation.data.department} Division
             </Typography>
           </div>
@@ -387,7 +387,7 @@ const MaindashboardMarketing = (props) => {
         >
           <Typography
             id="vieworders"
-            style={{ color: "#0F607D", fontSize: "36px" }}
+            style={{ color: "#0F607D", fontSize: "2vw" }}
           >
             View All Orders
           </Typography>
@@ -398,19 +398,35 @@ const MaindashboardMarketing = (props) => {
               justifyContent: "space-evenly",
             }}
           >
-            <Typography style={{ marginRight: "8px", color: "#0F607D" }}>
-              Sort by:
-            </Typography>
+            <div
+              style={{
+                display: "flex",
+                justifyContent: "center",
+                alignItems: "center",
+              }}
+            >
+              <Typography
+                style={{
+                  marginRight: "8px",
+                  color: "#0F607D",
+                  fontSize: "0.8vw",
+                }}
+              >
+                Sort by:
+              </Typography>
+            </div>
             <div
               style={{
                 marginRight: "8px",
+                display: "flex",
+                alignContent: "center",
               }}
             >
               <DefaultButton
                 width="64px"
                 height="16px"
                 backgroundColor="#0F607D"
-                fontSize="10px"
+                fontSize="0.7vw"
                 borderRadius="10px"
               >
                 date
@@ -419,24 +435,26 @@ const MaindashboardMarketing = (props) => {
             <div
               style={{
                 marginRight: "8px",
+                display: "flex",
+                alignContent: "center",
               }}
             >
               <DefaultButton
                 width="64px"
                 height="16px"
                 backgroundColor="#0F607D"
-                fontSize="10px"
+                fontSize="0.7vw"
                 borderRadius="10px"
               >
                 amount
               </DefaultButton>
             </div>
-            <div>
+            <div style={{ display: "flex", alignContent: "center" }}>
               <DefaultButton
                 width="64px"
                 height="16px"
                 backgroundColor="#0F607D"
-                fontSize="10px"
+                fontSize="0.7vw"
                 borderRadius="10px"
               >
                 name
@@ -610,9 +628,9 @@ const MaindashboardMarketing = (props) => {
             userInformation?.data?.role === "Super Admin" ? (
               <DefaultButton
                 height="40px"
-                width="232px"
+                width="15vw"
                 borderRadius="16px"
-                fontSize="24px"
+                fontSize="1.5vw"
                 onClickFunction={() => {
                   setOpenModal(true);
                 }}
@@ -636,7 +654,7 @@ const MaindashboardMarketing = (props) => {
         >
           <Typography
             id="reviewedorders"
-            style={{ fontSize: "36px", color: "#0F607D" }}
+            style={{ fontSize: "2vw", color: "#0F607D" }}
           >
             Reviewed Orders
           </Typography>
@@ -647,19 +665,29 @@ const MaindashboardMarketing = (props) => {
               justifyContent: "space-evenly",
             }}
           >
-            <Typography style={{ marginRight: "8px", color: "#0F607D" }}>
+            <Typography
+              style={{
+                marginRight: "8px",
+                color: "#0F607D",
+                fontSize: "0.8vw",
+                display: "flex",
+                alignItems: "center",
+              }}
+            >
               Sort by:
             </Typography>
             <div
               style={{
                 marginRight: "8px",
+                display: "flex",
+                alignContent: "center",
               }}
             >
               <DefaultButton
                 width="64px"
                 height="16px"
                 backgroundColor="#0F607D"
-                fontSize="10px"
+                fontSize="0.7vw"
                 borderRadius="10px"
               >
                 date
@@ -668,24 +696,31 @@ const MaindashboardMarketing = (props) => {
             <div
               style={{
                 marginRight: "8px",
+                display: "flex",
+                alignContent: "center",
               }}
             >
               <DefaultButton
                 width="64px"
                 height="16px"
                 backgroundColor="#0F607D"
-                fontSize="10px"
+                fontSize="0.7vw"
                 borderRadius="10px"
               >
                 amount
               </DefaultButton>
             </div>
-            <div>
+            <div
+              style={{
+                display: "flex",
+                alignContent: "center",
+              }}
+            >
               <DefaultButton
                 width="64px"
                 height="16px"
                 backgroundColor="#0F607D"
-                fontSize="10px"
+                fontSize="0.7vw"
                 borderRadius="10px"
               >
                 name
@@ -868,7 +903,7 @@ const MaindashboardMarketing = (props) => {
         >
           <Typography
             id="processedorders"
-            style={{ fontSize: "36px", color: "#0F607D" }}
+            style={{ fontSize: "2vw", color: "#0F607D" }}
           >
             Processed Orders
           </Typography>
@@ -879,19 +914,27 @@ const MaindashboardMarketing = (props) => {
               justifyContent: "space-evenly",
             }}
           >
-            <Typography style={{ marginRight: "8px", color: "#0F607D" }}>
+            <Typography
+              style={{
+                marginRight: "8px",
+                color: "#0F607D",
+                fontSize: "0.8vw",
+              }}
+            >
               Sort by:
             </Typography>
             <div
               style={{
                 marginRight: "8px",
+                display: "flex",
+                alignItems: "center",
               }}
             >
               <DefaultButton
                 width="64px"
                 height="16px"
                 backgroundColor="#0F607D"
-                fontSize="10px"
+                fontSize="0.7vw"
                 borderRadius="10px"
               >
                 date
@@ -900,24 +943,26 @@ const MaindashboardMarketing = (props) => {
             <div
               style={{
                 marginRight: "8px",
+                display: "flex",
+                alignItems: "center",
               }}
             >
               <DefaultButton
                 width="64px"
                 height="16px"
                 backgroundColor="#0F607D"
-                fontSize="10px"
+                fontSize="0.7vw"
                 borderRadius="10px"
               >
                 amount
               </DefaultButton>
             </div>
-            <div>
+            <div style={{ display: "flex", alignItems: "center" }}>
               <DefaultButton
                 width="64px"
                 height="16px"
                 backgroundColor="#0F607D"
-                fontSize="10px"
+                fontSize="0.7vw"
                 borderRadius="10px"
               >
                 name
@@ -1103,7 +1148,7 @@ const MaindashboardMarketing = (props) => {
         >
           <Typography
             id="deliveredorders"
-            style={{ fontSize: "36px", color: "#0F607D" }}
+            style={{ fontSize: "2vw", color: "#0F607D" }}
           >
             Delivered Orders
           </Typography>
@@ -1114,19 +1159,27 @@ const MaindashboardMarketing = (props) => {
               justifyContent: "space-evenly",
             }}
           >
-            <Typography style={{ marginRight: "8px", color: "#0F607D" }}>
+            <Typography
+              style={{
+                marginRight: "8px",
+                color: "#0F607D",
+                fontSize: "0.8vw",
+              }}
+            >
               Sort by:
             </Typography>
             <div
               style={{
                 marginRight: "8px",
+                display: "flex",
+                alignItems: "center",
               }}
             >
               <DefaultButton
                 width="64px"
                 height="16px"
                 backgroundColor="#0F607D"
-                fontSize="10px"
+                fontSize="0.7vw"
                 borderRadius="10px"
               >
                 date
@@ -1135,24 +1188,26 @@ const MaindashboardMarketing = (props) => {
             <div
               style={{
                 marginRight: "8px",
+                display: "flex",
+                alignItems: "center",
               }}
             >
               <DefaultButton
                 width="64px"
                 height="16px"
                 backgroundColor="#0F607D"
-                fontSize="10px"
+                fontSize="0.7vw"
                 borderRadius="10px"
               >
                 amount
               </DefaultButton>
             </div>
-            <div>
+            <div style={{ display: "flex", alignItems: "center" }}>
               <DefaultButton
                 width="64px"
                 height="16px"
                 backgroundColor="#0F607D"
-                fontSize="10px"
+                fontSize="0.7vw"
                 borderRadius="10px"
               >
                 name
@@ -1334,7 +1389,7 @@ const MaindashboardMarketing = (props) => {
         >
           <Typography
             id="ordershistory"
-            style={{ fontSize: "36px", color: "#0F607D" }}
+            style={{ fontSize: "2vw", color: "#0F607D" }}
           >
             Orders History
           </Typography>
@@ -1354,7 +1409,7 @@ const MaindashboardMarketing = (props) => {
         >
           <Typography
             id="activitylog"
-            style={{ fontSize: "36px", color: "#0F607D" }}
+            style={{ fontSize: "2vw", color: "#0F607D" }}
           >
             Activity Log
           </Typography>
@@ -1398,10 +1453,14 @@ const MaindashboardMarketing = (props) => {
         <MyModal open={openModal} handleClose={handleCloseModal}>
           <div
             className="hideScrollbar"
-            style={{ margin: "32px", overflow: "auto" }}
+            style={{
+              margin: "16px 32px 16px 32px",
+              overflow: "auto",
+              width: "50vw",
+            }}
           >
             <div style={{ display: "flex", margin: "32px 0px 20px 0px" }}>
-              <Typography style={{ color: "#0F607D", fontSize: "48px" }}>
+              <Typography style={{ color: "#0F607D", fontSize: "2.5vw" }}>
                 Add New Order
               </Typography>
             </div>
@@ -1410,10 +1469,12 @@ const MaindashboardMarketing = (props) => {
                 style={{
                   display: "flex",
                   alignItems: "center",
+                  justifyContent: "space-between",
+                  width: "100%",
                 }}
               >
-                <div style={{ width: "300px", display: "flex" }}>
-                  <Typography style={{ color: "#0F607D", fontSize: "28px" }}>
+                <div style={{ display: "flex" }}>
+                  <Typography style={{ color: "#0F607D", fontSize: "1.5vw" }}>
                     Order Title:
                   </Typography>
                 </div>
@@ -1421,9 +1482,9 @@ const MaindashboardMarketing = (props) => {
                   type="text"
                   sx={{
                     "& .MuiOutlinedInput-root": {
-                      height: "48px",
-                      width: "512px",
-                      fontSize: "24px",
+                      height: "3vw",
+                      width: "25vw",
+                      fontSize: "1.5vw",
                       borderRadius: "10px",
                       "& fieldset": {
                         borderColor: "#0F607D",
@@ -1447,45 +1508,51 @@ const MaindashboardMarketing = (props) => {
                 style={{
                   display: "flex",
                   alignItems: "center",
+                  justifyContent: "space-between",
+                  width: "100%",
                 }}
               >
-                <div style={{ width: "300px", display: "flex" }}>
-                  <Typography style={{ color: "#0F607D", fontSize: "28px" }}>
+                <div style={{ display: "flex" }}>
+                  <Typography style={{ color: "#0F607D", fontSize: "1.5vw" }}>
                     Order Quantity:
                   </Typography>
                 </div>
-                <TextField
-                  type="number"
-                  sx={{
-                    marginRight: "32px",
-                    "& .MuiOutlinedInput-root": {
-                      height: "48px",
-                      width: "138px",
-                      fontSize: "24px",
-                      borderRadius: "10px",
-                      "& fieldset": {
-                        borderColor: "#0F607D",
+                <div
+                  style={{ display: "flex", justifyContent: "space-around" }}
+                >
+                  <TextField
+                    type="number"
+                    sx={{
+                      marginRight: "32px",
+                      "& .MuiOutlinedInput-root": {
+                        height: "3vw",
+                        width: "7vw",
+                        fontSize: "1.5vw",
+                        borderRadius: "10px",
+                        "& fieldset": {
+                          borderColor: "#0F607D",
+                        },
+                        "&:hover fieldset": {
+                          borderColor: "#0F607D",
+                        },
+                        "&.Mui-focused fieldset": {
+                          borderColor: "#0F607D",
+                        },
                       },
-                      "&:hover fieldset": {
-                        borderColor: "#0F607D",
-                      },
-                      "&.Mui-focused fieldset": {
-                        borderColor: "#0F607D",
-                      },
-                    },
-                  }}
-                  onChange={(current) => {
-                    setOrderQuantityValue(current.target.value);
-                  }}
-                />
-                <MySelectTextField
-                  type="text"
-                  width="138px"
-                  height="48px"
-                  borderRadius="10px"
-                  data={values}
-                  onChange={handleAddSelectUnit}
-                />
+                    }}
+                    onChange={(current) => {
+                      setOrderQuantityValue(current.target.value);
+                    }}
+                  />
+                  <MySelectTextField
+                    type="text"
+                    width="7vw"
+                    height="3vw"
+                    borderRadius="10px"
+                    data={values}
+                    onChange={handleAddSelectUnit}
+                  />
+                </div>
               </div>
             </div>
             <div style={{ marginBottom: "32px" }}>
@@ -1493,10 +1560,12 @@ const MaindashboardMarketing = (props) => {
                 style={{
                   display: "flex",
                   alignItems: "center",
+                  justifyContent: "space-between",
+                  width: "100%",
                 }}
               >
-                <div style={{ width: "300px", display: "flex" }}>
-                  <Typography style={{ color: "#0F607D", fontSize: "28px" }}>
+                <div style={{ display: "flex" }}>
+                  <Typography style={{ color: "#0F607D", fontSize: "1.5vw" }}>
                     Images & Informations:
                   </Typography>
                 </div>
@@ -1505,11 +1574,15 @@ const MaindashboardMarketing = (props) => {
                   role={undefined}
                   variant="contained"
                   tabIndex={-1}
-                  startIcon={<CloudUploadIcon />}
+                  startIcon={
+                    <CloudUploadIcon style={{ height: "2vw", width: "2vw" }} />
+                  }
                   sx={{
-                    height: "48px",
+                    height: "4vw",
+                    width: "15vw",
                     borderRadius: "10px",
                     backgroundColor: "#0F607D",
+                    fontSize: "1vw",
                   }}
                 >
                   Upload file
@@ -1526,8 +1599,8 @@ const MaindashboardMarketing = (props) => {
                     return (
                       <div
                         style={{
-                          width: "32px",
-                          height: "32px",
+                          width: "2.96vw",
+                          height: "2.96vw",
                           marginLeft: "8px",
                           backgroundColor: "#d9d9d9",
                           position: "relative",
@@ -1609,10 +1682,12 @@ const MaindashboardMarketing = (props) => {
               <div
                 style={{
                   display: "flex",
+                  justifyContent: "space-between",
+                  width: "100%",
                 }}
               >
-                <div style={{ width: "300px", display: "flex" }}>
-                  <Typography style={{ color: "#0F607D", fontSize: "28px" }}>
+                <div style={{ display: "flex" }}>
+                  <Typography style={{ color: "#0F607D", fontSize: "1.5vw" }}>
                     Order Details:
                   </Typography>
                 </div>
@@ -1621,8 +1696,8 @@ const MaindashboardMarketing = (props) => {
                   multiline
                   sx={{
                     "& .MuiOutlinedInput-root": {
-                      width: "512px",
-                      fontSize: "24px",
+                      width: "25vw",
+                      fontSize: "1.5vw",
                       borderRadius: "10px",
                       boxSizing: "border-box",
                       "& fieldset": {
@@ -1647,17 +1722,19 @@ const MaindashboardMarketing = (props) => {
                 style={{
                   display: "flex",
                   alignItems: "center",
+                  width: "100%",
+                  justifyContent: "space-between",
                 }}
               >
-                <div style={{ width: "300px", display: "flex" }}>
-                  <Typography style={{ color: "#0F607D", fontSize: "28px" }}>
+                <div style={{ display: "flex" }}>
+                  <Typography style={{ color: "#0F607D", fontSize: "1.5vw" }}>
                     Customer Channel:
                   </Typography>
                 </div>
                 <MySelectTextField
                   type="text"
-                  width="90px"
-                  height="48px"
+                  width="8vw"
+                  height="3vw"
                   borderRadius="10px"
                   data={channels}
                   onChange={handleAddSelectCustomerChannel}
@@ -1669,10 +1746,12 @@ const MaindashboardMarketing = (props) => {
                 style={{
                   display: "flex",
                   alignItems: "center",
+                  width: "100%",
+                  justifyContent: "space-between",
                 }}
               >
-                <div style={{ width: "300px", display: "flex" }}>
-                  <Typography style={{ color: "#0F607D", fontSize: "28px" }}>
+                <div style={{ display: "flex" }}>
+                  <Typography style={{ color: "#0F607D", fontSize: "1.5vw" }}>
                     Customer Detail:
                   </Typography>
                 </div>
@@ -1680,9 +1759,9 @@ const MaindashboardMarketing = (props) => {
                   type="text"
                   sx={{
                     "& .MuiOutlinedInput-root": {
-                      height: "48px",
-                      width: "512px",
-                      fontSize: "24px",
+                      height: "3vw",
+                      width: "25vw",
+                      fontSize: "1.5vw",
                       borderRadius: "10px",
                       "& fieldset": {
                         borderColor: "#0F607D",
@@ -1711,17 +1790,16 @@ const MaindashboardMarketing = (props) => {
               <div
                 style={{
                   display: "flex",
-                  width: "40%",
                   justifyContent: "space-evenly",
                 }}
               >
                 {userInformation ? (
                   <DefaultButton
-                    height="32px"
-                    width="128px"
+                    height="3vw"
+                    width="10vw"
                     backgroundColor="#0F607D"
                     borderRadius="10px"
-                    fontSize="16px"
+                    fontSize="0.9vw"
                     onClickFunction={() => {
                       handleAddNewOrder();
                     }}
@@ -1735,10 +1813,11 @@ const MaindashboardMarketing = (props) => {
                   variant="outlined"
                   color="error"
                   style={{
-                    height: "32px",
-                    width: "128px",
+                    marginLeft: "2vw",
+                    height: "3vw",
+                    width: "10vw",
                     borderRadius: "10px",
-                    fontSize: "16px",
+                    fontSize: "0.9vw",
                     textTransform: "none",
                   }}
                   onClick={() => {

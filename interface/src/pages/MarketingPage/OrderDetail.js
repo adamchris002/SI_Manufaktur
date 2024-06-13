@@ -208,7 +208,7 @@ const OrderDetail = (props) => {
     axios({
       method: "DELETE",
       url: `http://localhost:3000/order/deleteOrder`,
-      params: {userId: userInformation?.data?.id, orderId: orderId}
+      params: { userId: userInformation?.data?.id, orderId: orderId },
     })
       .then((result, index) => {
         if (result.status === 200) {
@@ -275,7 +275,7 @@ const OrderDetail = (props) => {
   return (
     <div
       style={{
-        width: "100%",
+        width: "100vw",
         height: "100vh",
         backgroundImage: `url(${factoryBackground})`,
         backgroundSize: "cover",
@@ -289,20 +289,28 @@ const OrderDetail = (props) => {
             display: "flex",
             justifyContent: "space-between",
             alignItems: "center",
+            width: "100%",
           }}
         >
           <div style={{ display: "flex", alignItems: "center" }}>
             <div style={{ marginRight: "8px" }}>
               <IconButton
+                style={{
+                  padding: "0px",
+                  display: "flex",
+                  alignItems: "center",
+                }}
                 onClick={() => {
                   navigate(-1);
                 }}
               >
-                <KeyboardArrowLeftIcon />
+                <KeyboardArrowLeftIcon
+                  style={{ height: "3vw", width: "3vw" }}
+                />
               </IconButton>
             </div>
             <div>
-              <Typography style={{ fontSize: "32px", color: "#0F607D" }}>
+              <Typography style={{ fontSize: "2.5vw", color: "#0F607D" }}>
                 {orderDetailInfo?.data?.orderTitle}
               </Typography>
             </div>
@@ -310,27 +318,42 @@ const OrderDetail = (props) => {
           <div style={{ display: "flex" }}>
             {userInformation?.data?.role === "Admin" ||
             userInformation?.data?.role === "Super Admin" ? (
-              <>
+              <div
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "space-evenly",
+                }}
+              >
                 <DefaultButton
+                  height="4vw"
+                  width="12vw"
+                  fontSize="1.5vw"
                   onClickFunction={() => {
                     handleOpenModal(orderDetailInfo);
                   }}
                 >
-                  <Typography>Edit Order</Typography>
+                  Edit Order
                 </DefaultButton>
-                <div style={{ marginLeft: "8px" }}>
-                  <Button
-                    sx={{ textTransform: "none" }}
-                    color="error"
-                    variant="outlined"
-                    onClick={() => {
-                      handleDeleteModal();
-                    }}
-                  >
-                    <Typography>Delete Order</Typography>
-                  </Button>
-                </div>
-              </>
+
+                <Button
+                  sx={{
+                    textTransform: "none",
+                    width: "12vw",
+                    height: "4vw",
+                    marginLeft: "8px",
+                  }}
+                  color="error"
+                  variant="outlined"
+                  onClick={() => {
+                    handleDeleteModal();
+                  }}
+                >
+                  <Typography style={{ fontSize: "1.5vw" }}>
+                    Delete Order
+                  </Typography>
+                </Button>
+              </div>
             ) : (
               ""
             )}
@@ -344,7 +367,7 @@ const OrderDetail = (props) => {
           }}
         >
           <div style={{ display: "flex" }}>
-            <Typography style={{ fontSize: "24px", color: "#0F607D" }}>
+            <Typography style={{ fontSize: "2vw", color: "#0F607D" }}>
               Documents:
             </Typography>
           </div>
@@ -354,8 +377,8 @@ const OrderDetail = (props) => {
                 <div>
                   <img
                     style={{
-                      height: "160px",
-                      width: "160px",
+                      height: "9vw",
+                      width: "9vw",
                       marginRight: "64px",
                     }}
                     srcSet={`http://localhost:3000/uploads/${result.filename}?w=248&fit=crop&auto=format&dpr=2 2x`}
@@ -376,12 +399,12 @@ const OrderDetail = (props) => {
           }}
         >
           <div style={{ display: "flex" }}>
-            <Typography sx={{ fontSize: "24px", color: "#0F607D" }}>
+            <Typography sx={{ fontSize: "2vw", color: "#0F607D" }}>
               Order Details:{" "}
             </Typography>
           </div>
           <div style={{ display: "flex" }}>
-            <Typography sx={{ fontSize: "20px" }}>
+            <Typography sx={{ fontSize: "1.8vw" }}>
               {orderDetailInfo?.data?.orderDetails}
             </Typography>
           </div>
@@ -391,10 +414,14 @@ const OrderDetail = (props) => {
         <MyModal open={openModal} handleClose={handleCloseModal}>
           <div
             className="hideScrollbar"
-            style={{ margin: "32px", overflow: "auto" }}
+            style={{
+              margin: "16px 32px 16px 32px",
+              overflow: "auto",
+              width: "50vw",
+            }}
           >
             <div style={{ display: "flex", margin: "32px 0px 20px 0px" }}>
-              <Typography style={{ color: "#0F607D", fontSize: "48px" }}>
+              <Typography style={{ color: "#0F607D", fontSize: "2.5vw" }}>
                 Edit Order
               </Typography>
             </div>
@@ -403,10 +430,12 @@ const OrderDetail = (props) => {
                 style={{
                   display: "flex",
                   alignItems: "center",
+                  width: "100%",
+                  justifyContent: "space-between",
                 }}
               >
-                <div style={{ width: "300px", display: "flex" }}>
-                  <Typography style={{ color: "#0F607D", fontSize: "28px" }}>
+                <div style={{ display: "flex" }}>
+                  <Typography style={{ color: "#0F607D", fontSize: "1.5vw" }}>
                     Order Title:
                   </Typography>
                 </div>
@@ -415,9 +444,9 @@ const OrderDetail = (props) => {
                   value={orderTitle}
                   sx={{
                     "& .MuiOutlinedInput-root": {
-                      height: "48px",
-                      width: "512px",
-                      fontSize: "24px",
+                      height: "3vw",
+                      width: "25vw",
+                      fontSize: "1.5vw",
                       borderRadius: "10px",
                       "& fieldset": {
                         borderColor: "#0F607D",
@@ -441,47 +470,53 @@ const OrderDetail = (props) => {
                 style={{
                   display: "flex",
                   alignItems: "center",
+                  justifyContent: "space-between",
+                  width: "100%",
                 }}
               >
-                <div style={{ width: "300px", display: "flex" }}>
-                  <Typography style={{ color: "#0F607D", fontSize: "28px" }}>
+                <div style={{ display: "flex" }}>
+                  <Typography style={{ color: "#0F607D", fontSize: "1.5vw" }}>
                     Order Quantity:
                   </Typography>
                 </div>
-                <TextField
-                  type="number"
-                  value={orderQuantityValue}
-                  sx={{
-                    marginRight: "32px",
-                    "& .MuiOutlinedInput-root": {
-                      height: "48px",
-                      width: "138px",
-                      fontSize: "24px",
-                      borderRadius: "10px",
-                      "& fieldset": {
-                        borderColor: "#0F607D",
+                <div
+                  style={{ display: "flex", justifyContent: "space-around" }}
+                >
+                  <TextField
+                    type="number"
+                    value={orderQuantityValue}
+                    sx={{
+                      marginRight: "32px",
+                      "& .MuiOutlinedInput-root": {
+                        height: "3vw",
+                        width: "7vw",
+                        fontSize: "1.5vw",
+                        borderRadius: "10px",
+                        "& fieldset": {
+                          borderColor: "#0F607D",
+                        },
+                        "&:hover fieldset": {
+                          borderColor: "#0F607D",
+                        },
+                        "&.Mui-focused fieldset": {
+                          borderColor: "#0F607D",
+                        },
                       },
-                      "&:hover fieldset": {
-                        borderColor: "#0F607D",
-                      },
-                      "&.Mui-focused fieldset": {
-                        borderColor: "#0F607D",
-                      },
-                    },
-                  }}
-                  onChange={(current) => {
-                    setOrderQuantityValue(current.target.value);
-                  }}
-                />
-                <MySelectTextField
-                  value={orderQuantityUnit}
-                  type="text"
-                  width="138px"
-                  height="48px"
-                  borderRadius="10px"
-                  data={values}
-                  onChange={handleAddSelectUnit}
-                />
+                    }}
+                    onChange={(current) => {
+                      setOrderQuantityValue(current.target.value);
+                    }}
+                  />
+                  <MySelectTextField
+                    value={orderQuantityUnit}
+                    type="text"
+                    width="7vw"
+                    height="3vw"
+                    borderRadius="10px"
+                    data={values}
+                    onChange={handleAddSelectUnit}
+                  />
+                </div>
               </div>
             </div>
             <div style={{ marginBottom: "32px" }}>
@@ -489,120 +524,130 @@ const OrderDetail = (props) => {
                 style={{
                   display: "flex",
                   alignItems: "center",
+                  width: "100%",
+                  justifyContent: "space-between",
                 }}
               >
-                <div style={{ width: "300px", display: "flex" }}>
-                  <Typography style={{ color: "#0F607D", fontSize: "28px" }}>
+                <div style={{ display: "flex" }}>
+                  <Typography style={{ color: "#0F607D", fontSize: "1.5vw" }}>
                     Images & Informations:
                   </Typography>
                 </div>
-                <Button
-                  component="label"
-                  role={undefined}
-                  variant="contained"
-                  tabIndex={-1}
-                  startIcon={<CloudUploadIcon />}
-                  sx={{
-                    height: "48px",
-                    borderRadius: "10px",
-                    backgroundColor: "#0F607D",
-                  }}
-                >
-                  Upload file
-                  <VisuallyHiddenInput
-                    onChange={(event) => {
-                      handleFileInput(event);
+                <div style={{ display: "flex", alignItems: "center"}}>
+                  <Button
+                    component="label"
+                    role={undefined}
+                    variant="contained"
+                    tabIndex={-1}
+                    startIcon={
+                      <CloudUploadIcon
+                        style={{ height: "2vw", width: "2vw" }}
+                      />
+                    }
+                    sx={{
+                      height: "4vw",
+                      width: "12vw",
+                      borderRadius: "10px",
+                      backgroundColor: "#0F607D",
+                      fontSize: "0.8vw",
                     }}
-                    type="file"
-                    multiple={true}
-                  />
-                </Button>
-                <div style={{ marginLeft: "18px", display: "flex" }}>
-                  {orderDocuments.map((result, index) => {
-                    return (
-                      <div
-                        style={{
-                          width: "32px",
-                          height: "32px",
-                          marginLeft: "8px",
-                          backgroundColor: "#d9d9d9",
-                          position: "relative",
-                          cursor: imageOption === true ? "pointer" : "",
-                        }}
-                        onClick={
-                          imageOption === true
-                            ? () => {
-                                handleOpenImage(index);
-                              }
-                            : ""
-                        }
-                      >
-                        {imageOption === false && (
-                          <IconButton
-                            style={{
-                              position: "absolute",
-                              top: "-12px",
-                              right: "-12px",
-                              zIndex: 1,
-                              height: "24px",
-                              width: "24px",
-                            }}
-                            onClick={(event) => {
-                              event.stopPropagation();
-                              handleRemoveDocument(index);
-                            }}
-                          >
-                            <CloseIcon
-                              style={{
-                                height: "16px",
-                                width: "16x",
-                                color: "black",
-                              }}
-                            />
-                          </IconButton>
-                        )}
-                        <img
+                  >
+                    Upload file
+                    <VisuallyHiddenInput
+                      onChange={(event) => {
+                        handleFileInput(event);
+                      }}
+                      type="file"
+                      multiple={true}
+                    />
+                  </Button>
+                  <div style={{ marginLeft: "18px", display: "flex" }}>
+                    {orderDocuments.map((result, index) => {
+                      return (
+                        <div
                           style={{
-                            width: "100%",
-                            height: "100%",
-                            objectFit: "cover",
-                            position: "absolute",
-                            top: 0,
-                            left: 0,
+                            width: "2.96vw",
+                            height: "2.96vw",
+                            marginLeft: "8px",
+                            backgroundColor: "#d9d9d9",
+                            position: "relative",
+                            cursor: imageOption === true ? "pointer" : "",
                           }}
-                          // srcSet={`http://localhost:3000/uploads/${result.filename}?w=248&fit=crop&auto=format&dpr=2 2x`}
-                          src={
-                            result.id !== undefined
-                              ? `http://localhost:3000/uploads/${result.filename}?w=248&fit=crop&auto=format`
-                              : URL.createObjectURL(result)
+                          onClick={
+                            imageOption === true
+                              ? () => {
+                                  handleOpenImage(index);
+                                }
+                              : ""
                           }
-                          alt={result.filename}
-                          loading="lazy"
-                        />
-                      </div>
-                    );
-                  })}
-                  <div>
-                    {orderDetailInfo.data.documents.length !== 0 ? (
-                      <IconButton
-                        style={{
-                          height: "32px",
-                          width: "32px",
-                          marginLeft: "8px",
-                        }}
-                        onClick={() => {
-                          setImageOption(!imageOption);
-                        }}
-                      >
-                        {imageOption === true ? (
-                          <DeleteIcon />
-                        ) : (
-                          <RemoveRedEyeIcon />
-                        )}
-                      </IconButton>
-                    ) : (
-                      ""
-                    )}
+                        >
+                          {imageOption === false && (
+                            <IconButton
+                              style={{
+                                position: "absolute",
+                                top: "-12px",
+                                right: "-12px",
+                                zIndex: 1,
+                                height: "24px",
+                                width: "24px",
+                              }}
+                              onClick={(event) => {
+                                event.stopPropagation();
+                                handleRemoveDocument(index);
+                              }}
+                            >
+                              <CloseIcon
+                                style={{
+                                  height: "16px",
+                                  width: "16x",
+                                  color: "black",
+                                }}
+                              />
+                            </IconButton>
+                          )}
+                          <img
+                            style={{
+                              width: "100%",
+                              height: "100%",
+                              objectFit: "cover",
+                              position: "absolute",
+                              top: 0,
+                              left: 0,
+                            }}
+                            // srcSet={`http://localhost:3000/uploads/${result.filename}?w=248&fit=crop&auto=format&dpr=2 2x`}
+                            src={
+                              result.id !== undefined
+                                ? `http://localhost:3000/uploads/${result.filename}?w=248&fit=crop&auto=format`
+                                : URL.createObjectURL(result)
+                            }
+                            alt={result.filename}
+                            loading="lazy"
+                          />
+                        </div>
+                      );
+                    })}
+                    <div>
+                      {orderDetailInfo.data.documents.length !== 0 ? (
+                        <IconButton
+                          style={{
+                            height: "32px",
+                            width: "32px",
+                            marginLeft: "8px",
+                          }}
+                          onClick={() => {
+                            setImageOption(!imageOption);
+                          }}
+                        >
+                          {imageOption === true ? (
+                            <DeleteIcon />
+                          ) : (
+                            <RemoveRedEyeIcon />
+                          )}
+                        </IconButton>
+                      ) : (
+                        ""
+                      )}
+                    </div>
                   </div>
                 </div>
               </div>
@@ -611,10 +656,12 @@ const OrderDetail = (props) => {
               <div
                 style={{
                   display: "flex",
+                  justifyContent: "space-between",
+                  width: "100%",
                 }}
               >
-                <div style={{ width: "300px", display: "flex" }}>
-                  <Typography style={{ color: "#0F607D", fontSize: "28px" }}>
+                <div style={{ display: "flex" }}>
+                  <Typography style={{ color: "#0F607D", fontSize: "1.5vw" }}>
                     Order Details:
                   </Typography>
                 </div>
@@ -624,8 +671,8 @@ const OrderDetail = (props) => {
                   multiline
                   sx={{
                     "& .MuiOutlinedInput-root": {
-                      width: "512px",
-                      fontSize: "24px",
+                      width: "25vw",
+                      fontSize: "1.5vw",
                       borderRadius: "10px",
                       boxSizing: "border-box",
                       "& fieldset": {
@@ -650,17 +697,19 @@ const OrderDetail = (props) => {
                 style={{
                   display: "flex",
                   alignItems: "center",
+                  width: "100%",
+                  justifyContent: "space-between",
                 }}
               >
-                <div style={{ width: "300px", display: "flex" }}>
-                  <Typography style={{ color: "#0F607D", fontSize: "28px" }}>
+                <div style={{ display: "flex" }}>
+                  <Typography style={{ color: "#0F607D", fontSize: "1.5vw" }}>
                     Customer Channel:
                   </Typography>
                 </div>
                 <MySelectTextField
                   type="text"
-                  width="90px"
-                  height="48px"
+                  width="7vw"
+                  height="3vw"
                   value={orderCustomerChannel}
                   borderRadius="10px"
                   data={channels}
@@ -673,10 +722,12 @@ const OrderDetail = (props) => {
                 style={{
                   display: "flex",
                   alignItems: "center",
+                  width: "100%",
+                  justifyContent: "space-between",
                 }}
               >
-                <div style={{ width: "300px", display: "flex" }}>
-                  <Typography style={{ color: "#0F607D", fontSize: "28px" }}>
+                <div style={{ display: "flex" }}>
+                  <Typography style={{ color: "#0F607D", fontSize: "1.5vw" }}>
                     Customer Detail:
                   </Typography>
                 </div>
@@ -685,9 +736,9 @@ const OrderDetail = (props) => {
                   value={orderCustomerDetail}
                   sx={{
                     "& .MuiOutlinedInput-root": {
-                      height: "48px",
-                      width: "512px",
-                      fontSize: "24px",
+                      height: "3vw",
+                      width: "25vw",
+                      fontSize: "1.5vw",
                       borderRadius: "10px",
                       "& fieldset": {
                         borderColor: "#0F607D",
@@ -716,16 +767,15 @@ const OrderDetail = (props) => {
               <div
                 style={{
                   display: "flex",
-                  width: "40%",
-                  justifyContent: "space-evenly",
+                  justifyContent: "space-between",
                 }}
               >
                 <DefaultButton
-                  height="32px"
-                  width="128px"
+                  height="3vw"
+                  width="10vw"
                   backgroundColor="#0F607D"
                   borderRadius="10px"
-                  fontSize="16px"
+                  fontSize="0.9vw"
                   onClickFunction={() => {
                     handleUpdateOrder(orderId);
                   }}
@@ -736,11 +786,12 @@ const OrderDetail = (props) => {
                   variant="outlined"
                   color="error"
                   style={{
-                    height: "32px",
-                    width: "128px",
+                    height: "3vw",
+                    width: "10vw",
                     borderRadius: "10px",
-                    fontSize: "16px",
+                    fontSize: "0.9vw",
                     textTransform: "none",
+                    marginLeft: "2vw"
                   }}
                   onClick={() => {
                     handleCloseModal();
@@ -796,6 +847,7 @@ const OrderDetail = (props) => {
               justifyContent: "center",
               flexDirection: "column",
               height: "100%",
+              margin: "64px",
             }}
           >
             <div>

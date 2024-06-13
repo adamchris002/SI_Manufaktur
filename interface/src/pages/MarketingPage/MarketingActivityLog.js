@@ -4,6 +4,7 @@ import { useNavigate } from "react-router-dom";
 import { IconButton, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Typography } from "@mui/material";
 import KeyboardArrowLeftIcon from "@mui/icons-material/KeyboardArrowLeft";
 import axios from "axios";
+import moment from "moment";
 
 const MarketingActivityLog = () => {
   const navigate = useNavigate();
@@ -14,7 +15,7 @@ const MarketingActivityLog = () => {
     axios({
       method: "GET",
       url: "http://localhost:3000/order/getAllActivityLogs",
-    }).then((result, index) => {
+    }).then((result) => {
       setActivityLogs(result);
     })
   }, []) 
@@ -63,6 +64,7 @@ const MarketingActivityLog = () => {
                   <TableRow>
                     <TableCell>User</TableCell>
                     <TableCell align="right">Activity</TableCell>
+                    <TableCell align="right">Order ID</TableCell>
                     <TableCell align="right">Order Name</TableCell>
                     <TableCell align="right">Division</TableCell>
                     <TableCell align="right">Created At</TableCell>
@@ -79,10 +81,11 @@ const MarketingActivityLog = () => {
                         {result.user}
                       </TableCell>
                       <TableCell align="right">{result.activity}</TableCell>
+                      <TableCell align="right">{""}</TableCell>
                       <TableCell align="right">{result.name}</TableCell>
                       <TableCell align="right">{result.division}</TableCell>
-                      <TableCell align="right">{result.createdAt}</TableCell>
-                      <TableCell align="right">{result.updatedAt}</TableCell>
+                      <TableCell align="right">{moment(result.createdAt).format("LLLL")}</TableCell>
+                      <TableCell align="right">{moment(result.updatedAt).format("LLLL")}</TableCell>
                     </TableRow>
                   ))}
                 </TableBody>

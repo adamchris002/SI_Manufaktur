@@ -1,0 +1,8 @@
+.login-page {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+}
+
+.login-page::-webkit-scrollbar {
+    display: none;
+}
