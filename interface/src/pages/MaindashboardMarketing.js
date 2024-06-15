@@ -556,7 +556,9 @@ const MaindashboardMarketing = (props) => {
                         whiteSpace: "nowrap",
                       }}
                     >
-                      {data.orderTitle}
+                      {data.orderTitle.length < 25
+                        ? data.orderTitle
+                        : data.orderTitle.slice(0, 25)}
                     </Typography>
                   </div>
                   <div
@@ -576,7 +578,9 @@ const MaindashboardMarketing = (props) => {
                         whiteSpace: "nowrap",
                       }}
                     >
-                      {data.orderDetails}
+                      {data.orderDetails.length < 25
+                        ? data.orderDetails
+                        : data.orderDetails.slice(0, 25) + "..."}
                     </Typography>
                   </div>
                   <div
@@ -823,7 +827,9 @@ const MaindashboardMarketing = (props) => {
                           whiteSpace: "nowrap",
                         }}
                       >
-                        {data.orderTitle}
+                        {data.orderTitle.length < 25
+                          ? data.orderTitle
+                          : data.orderTitle.slice(0, 25)}
                       </Typography>
                     </div>
                     <div
@@ -843,7 +849,9 @@ const MaindashboardMarketing = (props) => {
                           whiteSpace: "nowrap",
                         }}
                       >
-                        {data.orderDetails}
+                        {data.orderDetails.length < 25
+                          ? data.orderDetails
+                          : data.orderDetails.slice(0, 25) + "..."}
                       </Typography>
                     </div>
                     <div
@@ -1065,7 +1073,9 @@ const MaindashboardMarketing = (props) => {
                           whiteSpace: "nowrap",
                         }}
                       >
-                        {data.orderTitle}
+                        {data.orderTitle.length < 25
+                          ? data.orderTitle
+                          : data.orderTitle.slice(0, 25)}
                       </Typography>
                     </div>
                     <div
@@ -1085,7 +1095,9 @@ const MaindashboardMarketing = (props) => {
                           whiteSpace: "nowrap",
                         }}
                       >
-                        {data.orderDetails}
+                        {data.orderDetails.length < 25
+                          ? data.orderDetails
+                          : data.orderDetails.slice(0, 25) + "..."}
                       </Typography>
                     </div>
                     <div
@@ -1309,7 +1321,9 @@ const MaindashboardMarketing = (props) => {
                           whiteSpace: "nowrap",
                         }}
                       >
-                        {data.orderTitle}
+                        {data.orderTitle.length < 25
+                          ? data.orderTitle
+                          : data.orderTitle.slice(0, 25)}
                       </Typography>
                     </div>
                     <div
@@ -1329,7 +1343,9 @@ const MaindashboardMarketing = (props) => {
                           whiteSpace: "nowrap",
                         }}
                       >
-                        {data.orderDetails}
+                        {data.orderDetails.length < 25
+                          ? data.orderDetails
+                          : data.orderDetails.slice(0, 25) + "..."}
                       </Typography>
                     </div>
                     <div
