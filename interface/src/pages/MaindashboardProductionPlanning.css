@@ -1,6 +1,6 @@
 .order-item {
-    min-height: 13.33vw;
-    min-width: 13.33vw;
+    min-height: 256px;
+    min-width: 256px;
     background-color: #d9d9d9;
     border-radius: 20px;
     cursor: pointer;
@@ -12,7 +12,7 @@
   .order-item:hover {
     background-color: #a0a0a0;
   }
-  
+
   .order-title {
     display: flex;
     margin-left: 16px;
@@ -26,4 +26,3 @@
   .hideScrollbar::-webkit-scrollbar {
     display: none
   }
-  

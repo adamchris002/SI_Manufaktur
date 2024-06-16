@@ -73,7 +73,7 @@ function App() {
               userCredentials.data.department !== "Production Planning" ? (
                 <Navigate to="/unauthorized" replace />
               ) : (
-                <MaindashboardProductionPlanning />
+                <MaindashboardProductionPlanning userInformation={userCredentials} />
               )
             }
           />

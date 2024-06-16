@@ -5,9 +5,9 @@ import DefaultButton from "../components/Button";
 import AccountCircleIcon from "@mui/icons-material/AccountCircle";
 import { Typography } from "@mui/material";
 
-const MaindashboardProductionPlanning = () => {
-  const [username, setUsername] = useState("Ricky_Sutar22");
-  const [division, setDivision] = useState("Production Planning Division");
+const MaindashboardProductionPlanning = (props) => {
+
+  const { userInformation } = props;
 
   const orderList = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
 
@@ -32,7 +32,7 @@ const MaindashboardProductionPlanning = () => {
           flexDirection: "column",
         }}
       >
-        <div style={{ width: "232px", height: "232px", marginTop: "32px" }}>
+        <div style={{ width: "15vw", height: "15vw", marginTop: "32px" }}>
           <img
             style={{ height: "inherit", width: "inherit" }}
             src={companyLogo}
@@ -41,11 +41,11 @@ const MaindashboardProductionPlanning = () => {
         </div>
         <div style={{ marginTop: "64px", fontSize: "24px" }}>
           <DefaultButton
-            width="232px"
-            height="40px"
+            width="15vw"
+            height="2.08vw"
             backgroundColor="#0F607D"
             borderRadius="16px"
-            fontSize="16px"
+            fontSize="1vw"
             onClickFunction={() => {
               document
                 .getElementById("unreviewedorders")
@@ -57,11 +57,11 @@ const MaindashboardProductionPlanning = () => {
         </div>
         <div style={{ marginTop: "32px", fontSize: "24px" }}>
           <DefaultButton
-            width="232px"
-            height="40px"
+            width="15vw"
+            height="2.08vw"
             backgroundColor="#0F607D"
             borderRadius="16px"
-            fontSize="16px"
+            fontSize="1vw"
             onClickFunction={() => {
               document
                 .getElementById("estimatedorders")
@@ -73,11 +73,11 @@ const MaindashboardProductionPlanning = () => {
         </div>
         <div style={{ marginTop: "32px", fontSize: "24px" }}>
           <DefaultButton
-            width="232px"
-            height="40px"
+            width="15vw"
+            height="2.08vw"
             backgroundColor="#0F607D"
             borderRadius="16px"
-            fontSize="16px"
+            fontSize="1vw"
             onClickFunction={() => {
               document
                 .getElementById("manageestimationorders")
@@ -89,11 +89,11 @@ const MaindashboardProductionPlanning = () => {
         </div>
         <div style={{ marginTop: "32px", fontSize: "24px" }}>
           <DefaultButton
-            width="232px"
-            height="40px"
+            width="15vw"
+            height="2.08vw"
             backgroundColor="#0F607D"
             borderRadius="16px"
-            fontSize="16px"
+            fontSize="1vw"
             onClickFunction={() => {
               document
                 .getElementById("estimationordershistory")
@@ -123,14 +123,14 @@ const MaindashboardProductionPlanning = () => {
           }}
         >
           <AccountCircleIcon
-            style={{ width: "64px", height: "64px", marginRight: "16px" }}
+            style={{ width: "3.33vw", height: "3.33vw", marginRight: "16px" }}
           />
           <div style={{ textAlign: "left" }}>
-            <Typography style={{ fontSize: "48px", color: "#0F607D" }}>
-              Welcome back, {username}
+            <Typography style={{ fontSize: "4vw", color: "#0F607D" }}>
+              Welcome back, {userInformation.data.username}
             </Typography>
-            <Typography style={{ fontSize: "24px", color: "#0F607D" }}>
-              {division}
+            <Typography style={{ fontSize: "2vw", color: "#0F607D" }}>
+              {userInformation.data.department}
             </Typography>
           </div>
         </div>
@@ -146,7 +146,7 @@ const MaindashboardProductionPlanning = () => {
         >
           <Typography
             id="unreviewedorders"
-            style={{ color: "#0F607D", fontSize: "36px" }}
+            style={{ color: "#0F607D", fontSize: "2vw" }}
           >
             Unreviewed Orders
           </Typography>
@@ -215,8 +215,8 @@ const MaindashboardProductionPlanning = () => {
               return (
                 <div
                   style={{
-                    height: "256px",
-                    width: "256px",
+                    height: "13.33vw",
+                    width: "13.33vw",
                     backgroundColor: "#d9d9d9",
                     borderRadius: "20px",
                     display: "inline-block",
@@ -249,7 +249,7 @@ const MaindashboardProductionPlanning = () => {
         >
           <Typography
             id="estimatedorders"
-            style={{ fontSize: "36px", color: "#0F607D" }}
+            style={{ fontSize: "2vw", color: "#0F607D" }}
           >
             Estimated Orders
           </Typography>
@@ -318,8 +318,8 @@ const MaindashboardProductionPlanning = () => {
               return (
                 <div
                   style={{
-                    height: "256px",
-                    width: "256px",
+                    height: "13.33vw",
+                    width: "13.33vw",
                     backgroundColor: "#d9d9d9",
                     borderRadius: "20px",
                     display: "inline-block",
@@ -352,7 +352,7 @@ const MaindashboardProductionPlanning = () => {
         >
           <Typography
             id="manageestimationorders"
-            style={{ fontSize: "36px", color: "#0F607D" }}
+            style={{ fontSize: "2vw", color: "#0F607D" }}
           >
             Manage Estimation Orders
           </Typography>
@@ -377,8 +377,8 @@ const MaindashboardProductionPlanning = () => {
               return (
                 <div
                   style={{
-                    height: "256px",
-                    width: "256px",
+                    height: "13.33vw",
+                    width: "13.33vw",
                     backgroundColor: "#d9d9d9",
                     borderRadius: "20px",
                     display: "inline-block",
@@ -411,7 +411,7 @@ const MaindashboardProductionPlanning = () => {
         >
           <Typography
             id="estimationordershistory"
-            style={{ fontSize: "36px", color: "#0F607D" }}
+            style={{ fontSize: "2vw", color: "#0F607D" }}
           >
             Estimation Orders History
           </Typography>

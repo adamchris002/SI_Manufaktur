@@ -233,19 +233,19 @@ const MaindashboardMarketing = (props) => {
           overflow: "auto",
         }}
       >
-        <div style={{ width: "15vw", height: "15vw", marginTop: "32px" }}>
+        <div style={{ width: "15vw", height: "15vw", marginTop: "1.667vw" }}>
           <img
             style={{ height: "inherit", width: "inherit" }}
             src={companyLogo}
             alt="Company Logo"
           />
         </div>
-        <div style={{ marginTop: "64px", fontSize: "24px" }}>
+        <div style={{ marginTop: "3.33vw", fontSize: "1.25vw" }}>
           <DefaultButton
             width="15vw"
-            height="40px"
+            height="2.08vw"
             backgroundColor="#0F607D"
-            borderRadius="16px"
+            borderRadius="0.83vw"
             fontSize="1vw"
             onClickFunction={() => {
               document
@@ -256,12 +256,12 @@ const MaindashboardMarketing = (props) => {
             View All Orders
           </DefaultButton>
         </div>
-        <div style={{ marginTop: "32px", fontSize: "24px" }}>
+        <div style={{ marginTop: "1.667vw", fontSize: "1.25vw" }}>
           <DefaultButton
             width="15vw"
-            height="40px"
+            height="2.08vw"
             backgroundColor="#0F607D"
-            borderRadius="16px"
+            borderRadius="0.83vw"
             fontSize="1vw"
             onClickFunction={() => {
               document
@@ -272,12 +272,12 @@ const MaindashboardMarketing = (props) => {
             View Reviewed Orders
           </DefaultButton>
         </div>
-        <div style={{ marginTop: "32px", fontSize: "24px" }}>
+        <div style={{ marginTop: "1.667vw", fontSize: "1.25vw" }}>
           <DefaultButton
             width="15vw"
-            height="40px"
+            height="2.08vw"
             backgroundColor="#0F607D"
-            borderRadius="16px"
+            borderRadius="0.83vw"
             fontSize="1vw"
             onClickFunction={() => {
               document
@@ -288,12 +288,12 @@ const MaindashboardMarketing = (props) => {
             View Processed Orders
           </DefaultButton>
         </div>
-        <div style={{ marginTop: "32px", fontSize: "24px" }}>
+        <div style={{ marginTop: "1.667vw", fontSize: "1.25vw" }}>
           <DefaultButton
             width="15vw"
-            height="40px"
+            height="2.08vw"
             backgroundColor="#0F607D"
-            borderRadius="16px"
+            borderRadius="0.83vw"
             fontSize="1vw"
             onClickFunction={() => {
               document
@@ -304,12 +304,12 @@ const MaindashboardMarketing = (props) => {
             View Delivered Orders
           </DefaultButton>
         </div>
-        <div style={{ marginTop: "32px", fontSize: "24px" }}>
+        <div style={{ marginTop: "1.667vw", fontSize: "1.25vw" }}>
           <DefaultButton
             width="15vw"
-            height="40px"
+            height="2.08vw"
             backgroundColor="#0F607D"
-            borderRadius="16px"
+            borderRadius="0.83vw"
             fontSize="1vw"
             onClickFunction={() => {
               document
@@ -320,12 +320,12 @@ const MaindashboardMarketing = (props) => {
             View Orders History
           </DefaultButton>
         </div>
-        <div style={{ marginTop: "32px", fontSize: "24px" }}>
+        <div style={{ marginTop: "1.667vw", fontSize: "1.25vw" }}>
           <DefaultButton
             width="15vw"
-            height="40px"
+            height="2.08vw"
             backgroundColor="#0F607D"
-            borderRadius="16px"
+            borderRadius="0.83vw"
             fontSize="1vw"
             onClickFunction={() => {
               document
@@ -352,17 +352,17 @@ const MaindashboardMarketing = (props) => {
       >
         <div
           style={{
-            marginTop: "72px",
-            marginLeft: "32px",
+            marginTop: "3.75vw",
+            marginLeft: "1.667vw",
             display: "flex",
             alignItems: "center",
           }}
         >
           <AccountCircleIcon
             style={{
-              width: "64px",
+              width: "3.33vw",
               height: "auto",
-              marginRight: "16px",
+              marginRight: "0.83vw",
               cursor: "pointer",
             }}
           />
@@ -377,8 +377,8 @@ const MaindashboardMarketing = (props) => {
         </div>
         <div
           style={{
-            marginLeft: "32px",
-            marginTop: "64px",
+            marginLeft: "1.667vw",
+            marginTop: "3.33vw",
             display: "flex",
             justifyContent: "space-between",
             alignItems: "center",
@@ -396,35 +396,28 @@ const MaindashboardMarketing = (props) => {
               display: "flex",
               alignContent: "center",
               justifyContent: "space-evenly",
+              alignItems: "center",
             }}
           >
-            <div
+            <Typography
               style={{
-                display: "flex",
-                justifyContent: "center",
-                alignItems: "center",
+                marginRight: "0.417vw",
+                color: "#0F607D",
+                fontSize: "0.8vw",
               }}
             >
-              <Typography
-                style={{
-                  marginRight: "8px",
-                  color: "#0F607D",
-                  fontSize: "0.8vw",
-                }}
-              >
-                Sort by:
-              </Typography>
-            </div>
+              Sort by:
+            </Typography>
             <div
               style={{
-                marginRight: "8px",
+                marginRight: "0.417vw",
                 display: "flex",
                 alignContent: "center",
               }}
             >
               <DefaultButton
-                width="64px"
-                height="16px"
+                width="3.33vw"
+                height="0.83vw"
                 backgroundColor="#0F607D"
                 fontSize="0.7vw"
                 borderRadius="10px"
@@ -434,14 +427,14 @@ const MaindashboardMarketing = (props) => {
             </div>
             <div
               style={{
-                marginRight: "8px",
+                marginRight: "0.417vw",
                 display: "flex",
                 alignContent: "center",
               }}
             >
               <DefaultButton
-                width="64px"
-                height="16px"
+                width="3.33vw"
+                height="0.83vw"
                 backgroundColor="#0F607D"
                 fontSize="0.7vw"
                 borderRadius="10px"
@@ -451,8 +444,8 @@ const MaindashboardMarketing = (props) => {
             </div>
             <div style={{ display: "flex", alignContent: "center" }}>
               <DefaultButton
-                width="64px"
-                height="16px"
+                width="3.33vw"
+                height="0.83vw"
                 backgroundColor="#0F607D"
                 fontSize="0.7vw"
                 borderRadius="10px"
@@ -462,7 +455,7 @@ const MaindashboardMarketing = (props) => {
             </div>
           </div>
         </div>
-        <div style={{ marginLeft: "32px", marginTop: "32px" }}>
+        <div style={{ marginLeft: "1.667vw", marginTop: "1.667vw" }}>
           <div
             style={{
               width: "72vw",
@@ -473,7 +466,9 @@ const MaindashboardMarketing = (props) => {
           >
             {allOrderList?.data?.length === 0 ||
             allOrderList?.data === undefined ? (
-              <Typography>There are no orders currently</Typography>
+              <Typography style={{ fontSize: "1.25vw" }}>
+                There are no orders currently
+              </Typography>
             ) : (
               allOrderList?.data?.map((data, index) => (
                 <div
@@ -486,7 +481,7 @@ const MaindashboardMarketing = (props) => {
                   {data?.documents?.length === "" || null || undefined ? (
                     ""
                   ) : (
-                    <div style={{ margin: "16px" }}>
+                    <div style={{ margin: "0.83vw" }}>
                       {data?.documents?.length > 3 ? (
                         <div style={{ display: "flex", alignItems: "center" }}>
                           {data.documents
@@ -496,8 +491,8 @@ const MaindashboardMarketing = (props) => {
                                 <div>
                                   <img
                                     style={{
-                                      height: "60px",
-                                      width: "60px",
+                                      height: "3.125vw",
+                                      width: "3.125vw",
                                       marginRight: "4px",
                                     }}
                                     srcSet={`http://localhost:3000/uploads/${document.filename}?w=248&fit=crop&auto=format&dpr=2 2x`}
@@ -509,7 +504,11 @@ const MaindashboardMarketing = (props) => {
                               );
                             })}
                           <Typography
-                            style={{ marginLeft: "8px", fontWeight: "bold" }}
+                            style={{
+                              marginLeft: "0.417vw",
+                              fontWeight: "bold",
+                              fontSize: "1.042vw",
+                            }}
                           >
                             + {data?.documents?.length - 3}
                           </Typography>
@@ -521,8 +520,8 @@ const MaindashboardMarketing = (props) => {
                               <div>
                                 <img
                                   style={{
-                                    height: "60px",
-                                    width: "60px",
+                                    height: "3.125vw",
+                                    width: "3.125vw",
                                     marginRight: "4px",
                                   }}
                                   srcSet={`http://localhost:3000/uploads/${document.filename}?w=248&fit=crop&auto=format&dpr=2 2x`}
@@ -540,7 +539,7 @@ const MaindashboardMarketing = (props) => {
                   <div
                     style={{
                       display: "flex",
-                      marginLeft: "16px",
+                      marginLeft: "0.83vw",
                       backgroundColor: "transparent",
                       overflow: "hidden",
                       textOverflow: "ellipsis",
@@ -554,6 +553,7 @@ const MaindashboardMarketing = (props) => {
                         overflow: "hidden",
                         textOverflow: "ellipsis",
                         whiteSpace: "nowrap",
+                        fontSize: "1.25vw",
                       }}
                     >
                       {data.orderTitle.length < 25
@@ -564,7 +564,7 @@ const MaindashboardMarketing = (props) => {
                   <div
                     style={{
                       display: "flex",
-                      marginLeft: "16px",
+                      marginLeft: "0.83vw",
                       backgroundColor: "transparent",
                       overflow: "hidden",
                       textOverflow: "ellipsis",
@@ -576,11 +576,12 @@ const MaindashboardMarketing = (props) => {
                         overflow: "hidden",
                         textOverflow: "ellipsis",
                         whiteSpace: "nowrap",
+                        fontSize: "0.833vw",
                       }}
                     >
-                      {data.orderDetails.length < 25
+                      {data.orderDetails.length < 28
                         ? data.orderDetails
-                        : data.orderDetails.slice(0, 25) + "..."}
+                        : data.orderDetails.slice(0, 28) + "..."}
                     </Typography>
                   </div>
                   <div
@@ -588,8 +589,8 @@ const MaindashboardMarketing = (props) => {
                       display: "flex",
                       backgroundColor: "transparent",
                       position: "absolute",
-                      bottom: "16px",
-                      left: "16px",
+                      bottom: "0.83vw",
+                      left: "0.83vw",
                       flexDirection: "column",
                     }}
                   >
@@ -597,7 +598,7 @@ const MaindashboardMarketing = (props) => {
                       style={{
                         color: "#0F607D",
                         fontWeight: "bold",
-                        fontSize: 12,
+                        fontSize: "0.625vw",
                       }}
                     >{`Date Added: ${moment(data.createdAt).format(
                       "DD/MM/YYYY"
@@ -608,8 +609,8 @@ const MaindashboardMarketing = (props) => {
                       display: "flex",
                       backgroundColor: "transparent",
                       position: "absolute",
-                      bottom: "32px",
-                      left: "16px",
+                      bottom: "1.66vw",
+                      left: "0.83vw",
                       flexDirection: "column",
                     }}
                   >
@@ -617,7 +618,7 @@ const MaindashboardMarketing = (props) => {
                       style={{
                         color: "#0F607D",
                         fontWeight: "bold",
-                        fontSize: 12,
+                        fontSize: "0.625vw",
                       }}
                     >
                       {`Order Status: ${data.orderStatus}`}
@@ -627,13 +628,13 @@ const MaindashboardMarketing = (props) => {
               ))
             )}
           </div>
-          <div style={{ display: "flex", marginTop: "32px" }}>
+          <div style={{ display: "flex", marginTop: "1.667vw" }}>
             {userInformation?.data?.role === "Admin" ||
             userInformation?.data?.role === "Super Admin" ? (
               <DefaultButton
-                height="40px"
+                height="2.08vw"
                 width="15vw"
-                borderRadius="16px"
+                borderRadius="0.83vw"
                 fontSize="1.5vw"
                 onClickFunction={() => {
                   setOpenModal(true);
@@ -648,8 +649,8 @@ const MaindashboardMarketing = (props) => {
         </div>
         <div
           style={{
-            marginLeft: "32px",
-            marginTop: "64px",
+            marginLeft: "1.667vw",
+            marginTop: "3.33vw",
             display: "flex",
             justifyContent: "space-between",
             alignItems: "center",
@@ -667,11 +668,12 @@ const MaindashboardMarketing = (props) => {
               display: "flex",
               alignContent: "center",
               justifyContent: "space-evenly",
+              alignItems: "center",
             }}
           >
             <Typography
               style={{
-                marginRight: "8px",
+                marginRight: "0.417vw",
                 color: "#0F607D",
                 fontSize: "0.8vw",
                 display: "flex",
@@ -682,14 +684,14 @@ const MaindashboardMarketing = (props) => {
             </Typography>
             <div
               style={{
-                marginRight: "8px",
+                marginRight: "0.417vw",
                 display: "flex",
                 alignContent: "center",
               }}
             >
               <DefaultButton
-                width="64px"
-                height="16px"
+                width="3.33vw"
+                height="0.83vw"
                 backgroundColor="#0F607D"
                 fontSize="0.7vw"
                 borderRadius="10px"
@@ -699,14 +701,14 @@ const MaindashboardMarketing = (props) => {
             </div>
             <div
               style={{
-                marginRight: "8px",
+                marginRight: "0.417vw",
                 display: "flex",
                 alignContent: "center",
               }}
             >
               <DefaultButton
-                width="64px"
-                height="16px"
+                width="3.33vw"
+                height="0.83vw"
                 backgroundColor="#0F607D"
                 fontSize="0.7vw"
                 borderRadius="10px"
@@ -721,8 +723,8 @@ const MaindashboardMarketing = (props) => {
               }}
             >
               <DefaultButton
-                width="64px"
-                height="16px"
+                width="3.33vw"
+                height="0.83vw"
                 backgroundColor="#0F607D"
                 fontSize="0.7vw"
                 borderRadius="10px"
@@ -732,7 +734,7 @@ const MaindashboardMarketing = (props) => {
             </div>
           </div>
         </div>
-        <div style={{ marginLeft: "32px", marginTop: "32px" }}>
+        <div style={{ marginLeft: "1.667vw", marginTop: "1.667vw" }}>
           <div
             style={{
               width: "72vw",
@@ -746,7 +748,9 @@ const MaindashboardMarketing = (props) => {
             !allOrderList?.data?.some(
               (order) => order.orderStatus === "Reviewed"
             ) ? (
-              <Typography>There are no reviewed orders currently</Typography>
+              <Typography style={{ fontSize: "1.25vw" }}>
+                There are no reviewed orders currently
+              </Typography>
             ) : (
               allOrderList?.data
                 ?.filter((order) => order.orderStatus === "Reviewed")
@@ -755,7 +759,7 @@ const MaindashboardMarketing = (props) => {
                     {data?.documents?.length === "" || null || undefined ? (
                       ""
                     ) : (
-                      <div style={{ margin: "16px" }}>
+                      <div style={{ margin: "0.83vw" }}>
                         {data?.documents?.length > 3 ? (
                           <div
                             style={{ display: "flex", alignItems: "center" }}
@@ -767,8 +771,8 @@ const MaindashboardMarketing = (props) => {
                                   <div>
                                     <img
                                       style={{
-                                        height: "60px",
-                                        width: "60px",
+                                        height: "3.125vw",
+                                        width: "3.125vw",
                                         marginRight: "4px",
                                       }}
                                       srcSet={`http://localhost:3000/uploads/${document.filename}?w=248&fit=crop&auto=format&dpr=2 2x`}
@@ -780,7 +784,11 @@ const MaindashboardMarketing = (props) => {
                                 );
                               })}
                             <Typography
-                              style={{ marginLeft: "8px", fontWeight: "bold" }}
+                              style={{
+                                marginLeft: "0.417vw",
+                                fontWeight: "bold",
+                                fontSize: "1.042vw",
+                              }}
                             >
                               + {data?.documents?.length - 3}
                             </Typography>
@@ -792,8 +800,8 @@ const MaindashboardMarketing = (props) => {
                                 <div>
                                   <img
                                     style={{
-                                      height: "60px",
-                                      width: "60px",
+                                      height: "3.125vw",
+                                      width: "3.125vw",
                                       marginRight: "4px",
                                     }}
                                     srcSet={`http://localhost:3000/uploads/${document.filename}?w=248&fit=crop&auto=format&dpr=2 2x`}
@@ -811,7 +819,7 @@ const MaindashboardMarketing = (props) => {
                     <div
                       style={{
                         display: "flex",
-                        marginLeft: "16px",
+                        marginLeft: "0.83vw",
                         backgroundColor: "transparent",
                         overflow: "hidden",
                         textOverflow: "ellipsis",
@@ -835,7 +843,7 @@ const MaindashboardMarketing = (props) => {
                     <div
                       style={{
                         display: "flex",
-                        marginLeft: "16px",
+                        marginLeft: "0.83vw",
                         backgroundColor: "transparent",
                         overflow: "hidden",
                         textOverflow: "ellipsis",
@@ -849,9 +857,9 @@ const MaindashboardMarketing = (props) => {
                           whiteSpace: "nowrap",
                         }}
                       >
-                        {data.orderDetails.length < 25
+                        {data.orderDetails.length < 28
                           ? data.orderDetails
-                          : data.orderDetails.slice(0, 25) + "..."}
+                          : data.orderDetails.slice(0, 28) + "..."}
                       </Typography>
                     </div>
                     <div
@@ -859,8 +867,8 @@ const MaindashboardMarketing = (props) => {
                         display: "flex",
                         backgroundColor: "transparent",
                         position: "absolute",
-                        bottom: "16px",
-                        left: "16px",
+                        bottom: "0.83vw",
+                        left: "0.83vw",
                         flexDirection: "column",
                       }}
                     >
@@ -868,7 +876,7 @@ const MaindashboardMarketing = (props) => {
                         style={{
                           color: "#0F607D",
                           fontWeight: "bold",
-                          fontSize: 12,
+                          fontSize: "0.625vw",
                         }}
                       >{`Date Added: ${moment(data.createdAt).format(
                         "DD/MM/YYYY"
@@ -879,8 +887,8 @@ const MaindashboardMarketing = (props) => {
                         display: "flex",
                         backgroundColor: "transparent",
                         position: "absolute",
-                        bottom: "32px",
-                        left: "16px",
+                        bottom: "1.66vw",
+                        left: "0.83vw",
                         flexDirection: "column",
                       }}
                     >
@@ -888,7 +896,7 @@ const MaindashboardMarketing = (props) => {
                         style={{
                           color: "#0F607D",
                           fontWeight: "bold",
-                          fontSize: 12,
+                          fontSize: "0.625vw",
                         }}
                       >
                         {`Order Status: ${data.orderStatus}`}
@@ -901,8 +909,8 @@ const MaindashboardMarketing = (props) => {
         </div>
         <div
           style={{
-            marginLeft: "32px",
-            marginTop: "64px",
+            marginLeft: "1.667vw",
+            marginTop: "3.33vw",
             display: "flex",
             justifyContent: "space-between",
             alignItems: "center",
@@ -920,11 +928,12 @@ const MaindashboardMarketing = (props) => {
               display: "flex",
               alignContent: "center",
               justifyContent: "space-evenly",
+              alignItems: "center",
             }}
           >
             <Typography
               style={{
-                marginRight: "8px",
+                marginRight: "0.417vw",
                 color: "#0F607D",
                 fontSize: "0.8vw",
               }}
@@ -933,14 +942,14 @@ const MaindashboardMarketing = (props) => {
             </Typography>
             <div
               style={{
-                marginRight: "8px",
+                marginRight: "0.417vw",
                 display: "flex",
                 alignItems: "center",
               }}
             >
               <DefaultButton
-                width="64px"
-                height="16px"
+                width="3.33vw"
+                height="0.83vw"
                 backgroundColor="#0F607D"
                 fontSize="0.7vw"
                 borderRadius="10px"
@@ -950,14 +959,14 @@ const MaindashboardMarketing = (props) => {
             </div>
             <div
               style={{
-                marginRight: "8px",
+                marginRight: "0.417vw",
                 display: "flex",
                 alignItems: "center",
               }}
             >
               <DefaultButton
-                width="64px"
-                height="16px"
+                width="3.33vw"
+                height="0.83vw"
                 backgroundColor="#0F607D"
                 fontSize="0.7vw"
                 borderRadius="10px"
@@ -967,8 +976,8 @@ const MaindashboardMarketing = (props) => {
             </div>
             <div style={{ display: "flex", alignItems: "center" }}>
               <DefaultButton
-                width="64px"
-                height="16px"
+                width="3.33vw"
+                height="0.83vw"
                 backgroundColor="#0F607D"
                 fontSize="0.7vw"
                 borderRadius="10px"
@@ -978,7 +987,7 @@ const MaindashboardMarketing = (props) => {
             </div>
           </div>
         </div>
-        <div style={{ marginLeft: "32px", marginTop: "32px" }}>
+        <div style={{ marginLeft: "1.667vw", marginTop: "1.667vw" }}>
           <div
             style={{
               width: "72vw",
@@ -992,7 +1001,9 @@ const MaindashboardMarketing = (props) => {
             !allOrderList?.data?.some(
               (order) => order.orderStatus === "Processed"
             ) ? (
-              <Typography>There are no processed orders currently</Typography>
+              <Typography style={{ fontSize: "1.25vw" }}>
+                There are no processed orders currently
+              </Typography>
             ) : (
               allOrderList?.data
                 ?.filter((order) => order.orderStatus === "Processed")
@@ -1001,7 +1012,7 @@ const MaindashboardMarketing = (props) => {
                     {data?.documents?.length === "" || null ? (
                       ""
                     ) : (
-                      <div style={{ margin: "16px" }}>
+                      <div style={{ margin: "0.83vw" }}>
                         {data?.documents?.length > 3 ? (
                           <div
                             style={{ display: "flex", alignItems: "center" }}
@@ -1013,8 +1024,8 @@ const MaindashboardMarketing = (props) => {
                                   <div>
                                     <img
                                       style={{
-                                        height: "60px",
-                                        width: "60px",
+                                        height: "3.125vw",
+                                        width: "3.125vw",
                                         marginRight: "4px",
                                       }}
                                       srcSet={`http://localhost:3000/uploads/${document.filename}?w=248&fit=crop&auto=format&dpr=2 2x`}
@@ -1026,7 +1037,11 @@ const MaindashboardMarketing = (props) => {
                                 );
                               })}
                             <Typography
-                              style={{ marginLeft: "8px", fontWeight: "bold" }}
+                              style={{
+                                marginLeft: "0.417vw",
+                                fontWeight: "bold",
+                                fontSize: "1.042vw",
+                              }}
                             >
                               + {data.documents?.length - 3}
                             </Typography>
@@ -1038,8 +1053,8 @@ const MaindashboardMarketing = (props) => {
                                 <div>
                                   <img
                                     style={{
-                                      height: "60px",
-                                      width: "60px",
+                                      height: "3.125vw",
+                                      width: "3.125vw",
                                       marginRight: "4px",
                                     }}
                                     srcSet={`http://localhost:3000/uploads/${document.filename}?w=248&fit=crop&auto=format&dpr=2 2x`}
@@ -1057,7 +1072,7 @@ const MaindashboardMarketing = (props) => {
                     <div
                       style={{
                         display: "flex",
-                        marginLeft: "16px",
+                        marginLeft: "0.83vw",
                         backgroundColor: "transparent",
                         overflow: "hidden",
                         textOverflow: "ellipsis",
@@ -1081,7 +1096,7 @@ const MaindashboardMarketing = (props) => {
                     <div
                       style={{
                         display: "flex",
-                        marginLeft: "16px",
+                        marginLeft: "0.83vw",
                         backgroundColor: "transparent",
                         overflow: "hidden",
                         textOverflow: "ellipsis",
@@ -1095,9 +1110,9 @@ const MaindashboardMarketing = (props) => {
                           whiteSpace: "nowrap",
                         }}
                       >
-                        {data.orderDetails.length < 25
+                        {data.orderDetails.length < 28
                           ? data.orderDetails
-                          : data.orderDetails.slice(0, 25) + "..."}
+                          : data.orderDetails.slice(0, 28) + "..."}
                       </Typography>
                     </div>
                     <div
@@ -1105,8 +1120,8 @@ const MaindashboardMarketing = (props) => {
                         display: "flex",
                         backgroundColor: "transparent",
                         position: "absolute",
-                        bottom: "16px",
-                        left: "16px",
+                        bottom: "0.83vw",
+                        left: "0.83vw",
                         flexDirection: "column",
                       }}
                     >
@@ -1128,8 +1143,8 @@ const MaindashboardMarketing = (props) => {
                         display: "flex",
                         backgroundColor: "transparent",
                         position: "absolute",
-                        bottom: "32px",
-                        left: "16px",
+                        bottom: "1.66vw",
+                        left: "0.83vw",
                         flexDirection: "column",
                       }}
                     >
@@ -1150,8 +1165,8 @@ const MaindashboardMarketing = (props) => {
         </div>
         <div
           style={{
-            marginLeft: "32px",
-            marginTop: "64px",
+            marginLeft: "1.667vw",
+            marginTop: "3.33vw",
             display: "flex",
             justifyContent: "space-between",
             alignItems: "center",
@@ -1169,11 +1184,12 @@ const MaindashboardMarketing = (props) => {
               display: "flex",
               alignContent: "center",
               justifyContent: "space-evenly",
+              alignItems: "center",
             }}
           >
             <Typography
               style={{
-                marginRight: "8px",
+                marginRight: "0.417vw",
                 color: "#0F607D",
                 fontSize: "0.8vw",
               }}
@@ -1182,14 +1198,14 @@ const MaindashboardMarketing = (props) => {
             </Typography>
             <div
               style={{
-                marginRight: "8px",
+                marginRight: "0.417vw",
                 display: "flex",
                 alignItems: "center",
               }}
             >
               <DefaultButton
-                width="64px"
-                height="16px"
+                width="3.33vw"
+                height="0.83vw"
                 backgroundColor="#0F607D"
                 fontSize="0.7vw"
                 borderRadius="10px"
@@ -1199,14 +1215,14 @@ const MaindashboardMarketing = (props) => {
             </div>
             <div
               style={{
-                marginRight: "8px",
+                marginRight: "0.417vw",
                 display: "flex",
                 alignItems: "center",
               }}
             >
               <DefaultButton
-                width="64px"
-                height="16px"
+                width="3.33vw"
+                height="0.83vw"
                 backgroundColor="#0F607D"
                 fontSize="0.7vw"
                 borderRadius="10px"
@@ -1216,8 +1232,8 @@ const MaindashboardMarketing = (props) => {
             </div>
             <div style={{ display: "flex", alignItems: "center" }}>
               <DefaultButton
-                width="64px"
-                height="16px"
+                width="3.33vw"
+                height="0.83vw"
                 backgroundColor="#0F607D"
                 fontSize="0.7vw"
                 borderRadius="10px"
@@ -1227,7 +1243,7 @@ const MaindashboardMarketing = (props) => {
             </div>
           </div>
         </div>
-        <div style={{ marginLeft: "32px", marginTop: "32px" }}>
+        <div style={{ marginLeft: "1.667vw", marginTop: "1.667vw" }}>
           <div
             style={{
               overflowX: "auto",
@@ -1240,7 +1256,9 @@ const MaindashboardMarketing = (props) => {
             !allOrderList?.data?.some(
               (order) => order.orderStatus === "Delivered"
             ) ? (
-              <Typography>There are no delivered orders currently</Typography>
+              <Typography style={{ fontSize: "1.25vw" }}>
+                There are no delivered orders currently
+              </Typography>
             ) : (
               allOrderList?.data
                 ?.filter((order) => order.orderStatus === "Delivered")
@@ -1249,7 +1267,7 @@ const MaindashboardMarketing = (props) => {
                     {data?.documents?.length === "" || null ? (
                       ""
                     ) : (
-                      <div style={{ margin: "16px" }}>
+                      <div style={{ margin: "0.83vw" }}>
                         {data?.documents?.length > 3 ? (
                           <div
                             style={{ display: "flex", alignItems: "center" }}
@@ -1261,8 +1279,8 @@ const MaindashboardMarketing = (props) => {
                                   <div>
                                     <img
                                       style={{
-                                        height: "60px",
-                                        width: "60px",
+                                        height: "3.125vw",
+                                        width: "3.125vw",
                                         marginRight: "4px",
                                       }}
                                       srcSet={`http://localhost:3000/uploads/${document.filename}?w=248&fit=crop&auto=format&dpr=2 2x`}
@@ -1274,7 +1292,11 @@ const MaindashboardMarketing = (props) => {
                                 );
                               })}
                             <Typography
-                              style={{ marginLeft: "8px", fontWeight: "bold" }}
+                              style={{
+                                marginLeft: "0.417vw",
+                                fontWeight: "bold",
+                                fontSize: "1.042vw",
+                              }}
                             >
                               + {data?.documents?.length - 3}
                             </Typography>
@@ -1286,8 +1308,8 @@ const MaindashboardMarketing = (props) => {
                                 <div>
                                   <img
                                     style={{
-                                      height: "60px",
-                                      width: "60px",
+                                      height: "3.125vw",
+                                      width: "3.125vw",
                                       marginRight: "4px",
                                     }}
                                     srcSet={`http://localhost:3000/uploads/${document.filename}?w=248&fit=crop&auto=format&dpr=2 2x`}
@@ -1305,7 +1327,7 @@ const MaindashboardMarketing = (props) => {
                     <div
                       style={{
                         display: "flex",
-                        marginLeft: "16px",
+                        marginLeft: "0.83vw",
                         backgroundColor: "transparent",
                         overflow: "hidden",
                         textOverflow: "ellipsis",
@@ -1329,7 +1351,7 @@ const MaindashboardMarketing = (props) => {
                     <div
                       style={{
                         display: "flex",
-                        marginLeft: "16px",
+                        marginLeft: "0.83vw",
                         backgroundColor: "transparent",
                         overflow: "hidden",
                         textOverflow: "ellipsis",
@@ -1353,8 +1375,8 @@ const MaindashboardMarketing = (props) => {
                         display: "flex",
                         backgroundColor: "transparent",
                         position: "absolute",
-                        bottom: "16px",
-                        left: "16px",
+                        bottom: "0.83vw",
+                        left: "0.83vw",
                         flexDirection: "column",
                       }}
                     >
@@ -1373,8 +1395,8 @@ const MaindashboardMarketing = (props) => {
                         display: "flex",
                         backgroundColor: "transparent",
                         position: "absolute",
-                        bottom: "32px",
-                        left: "16px",
+                        bottom: "1.66vw",
+                        left: "0.83vw",
                         flexDirection: "column",
                       }}
                     >
@@ -1395,8 +1417,8 @@ const MaindashboardMarketing = (props) => {
         </div>
         <div
           style={{
-            marginLeft: "32px",
-            marginTop: "64px",
+            marginLeft: "1.667vw",
+            marginTop: "3.33vw",
             display: "flex",
             justifyContent: "space-between",
             alignItems: "center",
@@ -1410,13 +1432,17 @@ const MaindashboardMarketing = (props) => {
             Orders History
           </Typography>
           <div>
-            <DefaultButton>Go to Orders History Page</DefaultButton>
+            <DefaultButton style={{ width: "4.375vw", height: "2.083vw" }}>
+              <Typography style={{ fontSize: "1.042vw" }}>
+                Go to Orders History Page
+              </Typography>
+            </DefaultButton>
           </div>
         </div>
         <div
           style={{
-            marginLeft: "32px",
-            marginTop: "64px",
+            marginLeft: "1.667vw",
+            marginTop: "3.33vw",
             display: "flex",
             justifyContent: "space-between",
             alignItems: "center",
@@ -1435,7 +1461,9 @@ const MaindashboardMarketing = (props) => {
                 navigate("/marketingDashboard/activityLog");
               }}
             >
-              Go to Activity Logs
+              <Typography style={{ fontSize: "1.042vw" }}>
+                Go to Activity Logs
+              </Typography>
             </DefaultButton>
           </div>
         </div>
@@ -1450,7 +1478,7 @@ const MaindashboardMarketing = (props) => {
         >
           <div>
             <img
-              style={{ width: "720px", height: "auto" }}
+              style={{ width: "37.5vw", height: "auto" }}
               src={URL.createObjectURL(orderDocuments[imageIndex])}
               alt=""
             />
@@ -1470,17 +1498,17 @@ const MaindashboardMarketing = (props) => {
           <div
             className="hideScrollbar"
             style={{
-              margin: "16px 32px 16px 32px",
+              margin: "0.83vw 1.667vw 0.83vw 1.667vw",
               overflow: "auto",
               width: "50vw",
             }}
           >
-            <div style={{ display: "flex", margin: "32px 0px 20px 0px" }}>
+            <div style={{ display: "flex", margin: "1.667vw 0px 1.042vw 0px" }}>
               <Typography style={{ color: "#0F607D", fontSize: "2.5vw" }}>
                 Add New Order
               </Typography>
             </div>
-            <div style={{ marginBottom: "32px" }}>
+            <div style={{ marginBottom: "1.667vw" }}>
               <div
                 style={{
                   display: "flex",
@@ -1519,7 +1547,7 @@ const MaindashboardMarketing = (props) => {
                 />
               </div>
             </div>
-            <div style={{ marginBottom: "32px" }}>
+            <div style={{ marginBottom: "1.667vw" }}>
               <div
                 style={{
                   display: "flex",
@@ -1539,7 +1567,7 @@ const MaindashboardMarketing = (props) => {
                   <TextField
                     type="number"
                     sx={{
-                      marginRight: "32px",
+                      marginRight: "1.667vw",
                       "& .MuiOutlinedInput-root": {
                         height: "3vw",
                         width: "7vw",
@@ -1571,7 +1599,7 @@ const MaindashboardMarketing = (props) => {
                 </div>
               </div>
             </div>
-            <div style={{ marginBottom: "32px" }}>
+            <div style={{ marginBottom: "1.667vw" }}>
               <div
                 style={{
                   display: "flex",
@@ -1610,14 +1638,14 @@ const MaindashboardMarketing = (props) => {
                     multiple={true}
                   />
                 </Button>
-                <div style={{ marginLeft: "18px", display: "flex" }}>
+                <div style={{ marginLeft: "0.938vw", display: "flex" }}>
                   {Array.from(orderDocuments).map((result, index) => {
                     return (
                       <div
                         style={{
                           width: "2.96vw",
                           height: "2.96vw",
-                          marginLeft: "8px",
+                          marginLeft: "0.417vw",
                           backgroundColor: "#d9d9d9",
                           position: "relative",
                           cursor: imageOption === true ? "pointer" : "",
@@ -1637,8 +1665,8 @@ const MaindashboardMarketing = (props) => {
                               top: "-12px",
                               right: "-12px",
                               zIndex: 1,
-                              height: "24px",
-                              width: "24px",
+                              height: "1.25vw",
+                              width: "1.25vw",
                             }}
                             onClick={(event) => {
                               event.stopPropagation();
@@ -1647,7 +1675,7 @@ const MaindashboardMarketing = (props) => {
                           >
                             <CloseIcon
                               style={{
-                                height: "16px",
+                                height: "0.83vw",
                                 width: "16x",
                                 color: "black",
                               }}
@@ -1673,9 +1701,9 @@ const MaindashboardMarketing = (props) => {
                     {orderDocuments.length !== 0 ? (
                       <IconButton
                         style={{
-                          height: "32px",
-                          width: "32px",
-                          marginLeft: "8px",
+                          height: "1.667vw",
+                          width: "1.667vw",
+                          marginLeft: "0.417vw",
                         }}
                         onClick={() => {
                           setImageOption(!imageOption);
@@ -1694,7 +1722,7 @@ const MaindashboardMarketing = (props) => {
                 </div>
               </div>
             </div>
-            <div style={{ marginBottom: "32px" }}>
+            <div style={{ marginBottom: "1.667vw" }}>
               <div
                 style={{
                   display: "flex",
@@ -1733,7 +1761,7 @@ const MaindashboardMarketing = (props) => {
                 />
               </div>
             </div>
-            <div style={{ marginBottom: "32px" }}>
+            <div style={{ marginBottom: "1.667vw" }}>
               <div
                 style={{
                   display: "flex",
@@ -1757,7 +1785,7 @@ const MaindashboardMarketing = (props) => {
                 />
               </div>
             </div>
-            <div style={{ marginBottom: "32px" }}>
+            <div style={{ marginBottom: "1.667vw" }}>
               <div
                 style={{
                   display: "flex",

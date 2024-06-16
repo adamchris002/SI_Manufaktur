@@ -372,20 +372,33 @@ const OrderDetail = (props) => {
             </Typography>
           </div>
           <div style={{ marginTop: "16px", display: "flex" }}>
-            {orderDetailInfo?.data?.documents?.map((result) => {
+            {orderDetailInfo?.data?.documents?.map((result, index) => {
               return (
                 <div>
-                  <img
-                    style={{
-                      height: "9vw",
-                      width: "9vw",
-                      marginRight: "64px",
-                    }}
-                    srcSet={`http://localhost:3000/uploads/${result.filename}?w=248&fit=crop&auto=format&dpr=2 2x`}
-                    src={`http://localhost:3000/uploads/${result.filename}?w=248&fit=crop&auto=format`}
-                    alt={result.filename}
-                    loading="lazy"
-                  />
+                  {index === orderDetailInfo.data.documents.length - 1 ? (
+                    <img
+                      style={{
+                        height: "9vw",
+                        width: "9vw",
+                      }}
+                      srcSet={`http://localhost:3000/uploads/${result.filename}?w=248&fit=crop&auto=format&dpr=2 2x`}
+                      src={`http://localhost:3000/uploads/${result.filename}?w=248&fit=crop&auto=format`}
+                      alt={result.filename}
+                      loading="lazy"
+                    />
+                  ) : (
+                    <img
+                      style={{
+                        height: "9vw",
+                        width: "9vw",
+                        marginRight: "64px",
+                      }}
+                      srcSet={`http://localhost:3000/uploads/${result.filename}?w=248&fit=crop&auto=format&dpr=2 2x`}
+                      src={`http://localhost:3000/uploads/${result.filename}?w=248&fit=crop&auto=format`}
+                      alt={result.filename}
+                      loading="lazy"
+                    />
+                  )}
                 </div>
               );
             })}
@@ -533,7 +546,7 @@ const OrderDetail = (props) => {
                     Images & Informations:
                   </Typography>
                 </div>
-                <div style={{ display: "flex", alignItems: "center"}}>
+                <div style={{ display: "flex", alignItems: "center" }}>
                   <Button
                     component="label"
                     role={undefined}
@@ -791,7 +804,7 @@ const OrderDetail = (props) => {
                     borderRadius: "10px",
                     fontSize: "0.9vw",
                     textTransform: "none",
-                    marginLeft: "2vw"
+                    marginLeft: "2vw",
                   }}
                   onClick={() => {
                     handleCloseModal();

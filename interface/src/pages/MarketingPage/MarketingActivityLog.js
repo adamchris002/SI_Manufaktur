@@ -8,7 +8,6 @@ import moment from "moment";
 
 const MarketingActivityLog = () => {
   const navigate = useNavigate();
-
   const [activityLogs, setActivityLogs] = useState([])
 
   useEffect(() => {
