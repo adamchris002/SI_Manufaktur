@@ -2,7 +2,7 @@ import React from "react";
 import { TextField, MenuItem } from "@mui/material";
 
 const MySelectTextField = (props) => {
-  const { width, height, borderRadius, data, onChange, type, value } = props;
+  const { width, height, borderRadius, data, onChange, type, value, fontSize } = props;
   return (
     <TextField
       type={type}
@@ -11,7 +11,7 @@ const MySelectTextField = (props) => {
         "& .MuiOutlinedInput-root": {
           height: height,
           width: width,
-          fontSize: "1.5vw",
+          fontSize: fontSize,
           borderRadius: borderRadius,
           "& fieldset": {
             borderColor: "#0F607D", // Change the border color here
