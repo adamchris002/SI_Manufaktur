@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import axios from "axios";
 import { useNavigate, Outlet } from "react-router-dom";
 import moment from "moment";
@@ -14,6 +14,7 @@ import {
   Button,
   Backdrop,
   IconButton,
+  Chip,
 } from "@mui/material";
 import { useAuth } from "../components/AuthContext";
 import MySnackbar from "../components/Snackbar";
@@ -23,6 +24,8 @@ import MySelectTextField from "../components/SelectTextField";
 import CloseIcon from "@mui/icons-material/Close";
 import DeleteIcon from "@mui/icons-material/Delete";
 import RemoveRedEyeIcon from "@mui/icons-material/RemoveRedEye";
+import { AppContext } from "../App";
+import CustomChip from "../components/Chip";
 
 const VisuallyHiddenInput = styled("input")({
   clip: "rect(0 0 0 0)",
@@ -38,6 +41,8 @@ const VisuallyHiddenInput = styled("input")({
 
 const MaindashboardMarketing = (props) => {
   const navigate = useNavigate();
+
+  const { isMobile, isTablet, isDesktop } = useContext(AppContext);
 
   const { userInformation } = props;
   const { message, clearMessage } = useAuth();
@@ -222,133 +227,145 @@ const MaindashboardMarketing = (props) => {
         // paddingBottom: "32px"
       }}
     >
+      {isMobile ? (
+        ""
+      ) : (
+        <div
+          className="hideScrollbar"
+          style={{
+            width: "16.4617vw",
+            height: "100vh",
+            display: "flex",
+            alignItems: "center",
+            flexDirection: "column",
+            overflow: "auto",
+          }}
+        >
+          <div style={{ width: "15vw", height: "15vw", marginTop: "1.667vw" }}>
+            <img
+              style={{ height: "inherit", width: "inherit" }}
+              src={companyLogo}
+              alt="Company Logo"
+            />
+          </div>
+          <div style={{ marginTop: "3.33vw", fontSize: "1.25vw" }}>
+            <DefaultButton
+              width="15vw"
+              height="2.08vw"
+              backgroundColor="#0F607D"
+              borderRadius="0.83vw"
+              fontSize="1vw"
+              onClickFunction={() => {
+                document
+                  .getElementById("vieworders")
+                  .scrollIntoView({ behavior: "smooth" });
+              }}
+            >
+              View All Orders
+            </DefaultButton>
+          </div>
+          <div style={{ marginTop: "1.667vw", fontSize: "1.25vw" }}>
+            <DefaultButton
+              width="15vw"
+              height="2.08vw"
+              backgroundColor="#0F607D"
+              borderRadius="0.83vw"
+              fontSize="1vw"
+              onClickFunction={() => {
+                document
+                  .getElementById("reviewedorders")
+                  .scrollIntoView({ behavior: "smooth" });
+              }}
+            >
+              View Reviewed Orders
+            </DefaultButton>
+          </div>
+          <div style={{ marginTop: "1.667vw", fontSize: "1.25vw" }}>
+            <DefaultButton
+              width="15vw"
+              height="2.08vw"
+              backgroundColor="#0F607D"
+              borderRadius="0.83vw"
+              fontSize="1vw"
+              onClickFunction={() => {
+                document
+                  .getElementById("processedorders")
+                  .scrollIntoView({ behavior: "smooth" });
+              }}
+            >
+              View Processed Orders
+            </DefaultButton>
+          </div>
+          <div style={{ marginTop: "1.667vw", fontSize: "1.25vw" }}>
+            <DefaultButton
+              width="15vw"
+              height="2.08vw"
+              backgroundColor="#0F607D"
+              borderRadius="0.83vw"
+              fontSize="1vw"
+              onClickFunction={() => {
+                document
+                  .getElementById("deliveredorders")
+                  .scrollIntoView({ behavior: "smooth" });
+              }}
+            >
+              View Delivered Orders
+            </DefaultButton>
+          </div>
+          <div style={{ marginTop: "1.667vw", fontSize: "1.25vw" }}>
+            <DefaultButton
+              width="15vw"
+              height="2.08vw"
+              backgroundColor="#0F607D"
+              borderRadius="0.83vw"
+              fontSize="1vw"
+              onClickFunction={() => {
+                document
+                  .getElementById("ordershistory")
+                  .scrollIntoView({ behavior: "smooth" });
+              }}
+            >
+              View Orders History
+            </DefaultButton>
+          </div>
+          <div style={{ marginTop: "1.667vw", fontSize: "1.25vw" }}>
+            <DefaultButton
+              width="15vw"
+              height="2.08vw"
+              backgroundColor="#0F607D"
+              borderRadius="0.83vw"
+              fontSize="1vw"
+              onClickFunction={() => {
+                document
+                  .getElementById("ordershistory")
+                  .scrollIntoView({ behavior: "smooth" });
+              }}
+            >
+              View Activity Log
+            </DefaultButton>
+          </div>
+        </div>
+      )}
+      {isMobile ? (
+        ""
+      ) : (
+        <div
+          id="test"
+          style={{
+            width: "0.2083vw",
+            height: "95vh",
+            backgroundColor: "#0F607D",
+            alignSelf: "center",
+          }}
+        />
+      )}
       <div
         className="hideScrollbar"
         style={{
-          width: "16.4617vw",
+          width: isMobile ? "100vw" : "83.1217vw",
           height: "100vh",
-          display: "flex",
-          alignItems: "center",
-          flexDirection: "column",
           overflow: "auto",
         }}
-      >
-        <div style={{ width: "15vw", height: "15vw", marginTop: "1.667vw" }}>
-          <img
-            style={{ height: "inherit", width: "inherit" }}
-            src={companyLogo}
-            alt="Company Logo"
-          />
-        </div>
-        <div style={{ marginTop: "3.33vw", fontSize: "1.25vw" }}>
-          <DefaultButton
-            width="15vw"
-            height="2.08vw"
-            backgroundColor="#0F607D"
-            borderRadius="0.83vw"
-            fontSize="1vw"
-            onClickFunction={() => {
-              document
-                .getElementById("vieworders")
-                .scrollIntoView({ behavior: "smooth" });
-            }}
-          >
-            View All Orders
-          </DefaultButton>
-        </div>
-        <div style={{ marginTop: "1.667vw", fontSize: "1.25vw" }}>
-          <DefaultButton
-            width="15vw"
-            height="2.08vw"
-            backgroundColor="#0F607D"
-            borderRadius="0.83vw"
-            fontSize="1vw"
-            onClickFunction={() => {
-              document
-                .getElementById("reviewedorders")
-                .scrollIntoView({ behavior: "smooth" });
-            }}
-          >
-            View Reviewed Orders
-          </DefaultButton>
-        </div>
-        <div style={{ marginTop: "1.667vw", fontSize: "1.25vw" }}>
-          <DefaultButton
-            width="15vw"
-            height="2.08vw"
-            backgroundColor="#0F607D"
-            borderRadius="0.83vw"
-            fontSize="1vw"
-            onClickFunction={() => {
-              document
-                .getElementById("processedorders")
-                .scrollIntoView({ behavior: "smooth" });
-            }}
-          >
-            View Processed Orders
-          </DefaultButton>
-        </div>
-        <div style={{ marginTop: "1.667vw", fontSize: "1.25vw" }}>
-          <DefaultButton
-            width="15vw"
-            height="2.08vw"
-            backgroundColor="#0F607D"
-            borderRadius="0.83vw"
-            fontSize="1vw"
-            onClickFunction={() => {
-              document
-                .getElementById("deliveredorders")
-                .scrollIntoView({ behavior: "smooth" });
-            }}
-          >
-            View Delivered Orders
-          </DefaultButton>
-        </div>
-        <div style={{ marginTop: "1.667vw", fontSize: "1.25vw" }}>
-          <DefaultButton
-            width="15vw"
-            height="2.08vw"
-            backgroundColor="#0F607D"
-            borderRadius="0.83vw"
-            fontSize="1vw"
-            onClickFunction={() => {
-              document
-                .getElementById("ordershistory")
-                .scrollIntoView({ behavior: "smooth" });
-            }}
-          >
-            View Orders History
-          </DefaultButton>
-        </div>
-        <div style={{ marginTop: "1.667vw", fontSize: "1.25vw" }}>
-          <DefaultButton
-            width="15vw"
-            height="2.08vw"
-            backgroundColor="#0F607D"
-            borderRadius="0.83vw"
-            fontSize="1vw"
-            onClickFunction={() => {
-              document
-                .getElementById("ordershistory")
-                .scrollIntoView({ behavior: "smooth" });
-            }}
-          >
-            View Activity Log
-          </DefaultButton>
-        </div>
-      </div>
-      <div
-        id="test"
-        style={{
-          width: "0.2083vw",
-          height: "95vh",
-          backgroundColor: "#0F607D",
-          alignSelf: "center",
-        }}
-      ></div>
-      <div
-        className="hideScrollbar"
-        style={{ width: "83.1217vw", height: "100vh", overflow: "auto" }}
       >
         <div
           style={{
@@ -360,34 +377,39 @@ const MaindashboardMarketing = (props) => {
         >
           <AccountCircleIcon
             style={{
-              width: "3.33vw",
+              width: isMobile ? "10vw" : "3.33vw",
               height: "auto",
               marginRight: "0.83vw",
               cursor: "pointer",
             }}
           />
           <div style={{ textAlign: "left" }}>
-            <Typography style={{ fontSize: "4vw", color: "#0F607D" }}>
+            <Typography
+              style={{ fontSize: isMobile ? "5.5vw" : "4vw", color: "#0F607D" }}
+            >
               Welcome back, {userInformation.data.username}
             </Typography>
-            <Typography style={{ fontSize: "2vw", color: "#0F607D" }}>
+            <Typography
+              style={{ fontSize: isMobile ? "4vw" : "2vw", color: "#0F607D" }}
+            >
               {userInformation.data.department} Division
             </Typography>
           </div>
         </div>
         <div
           style={{
-            marginLeft: "1.667vw",
-            marginTop: "3.33vw",
+            margin: isMobile
+              ? "32px 32px 12px 32px"
+              : "3.33vw 1.667vw 0vw 1.667vw",
             display: "flex",
             justifyContent: "space-between",
             alignItems: "center",
-            width: "72vw",
+            width: isMobile ? "" : "72vw",
           }}
         >
           <Typography
             id="vieworders"
-            style={{ color: "#0F607D", fontSize: "2vw" }}
+            style={{ color: "#0F607D", fontSize: isMobile ? "4.5vw" : "2vw" }}
           >
             View All Orders
           </Typography>
@@ -401,9 +423,9 @@ const MaindashboardMarketing = (props) => {
           >
             <Typography
               style={{
-                marginRight: "0.417vw",
+                marginRight: isMobile ? "4px" : "0.417vw",
                 color: "#0F607D",
-                fontSize: "0.8vw",
+                fontSize: isMobile ? "2.5vw" : "1vw",
               }}
             >
               Sort by:
@@ -415,15 +437,12 @@ const MaindashboardMarketing = (props) => {
                 alignContent: "center",
               }}
             >
-              <DefaultButton
-                width="3.33vw"
-                height="0.83vw"
-                backgroundColor="#0F607D"
-                fontSize="0.7vw"
-                borderRadius="10px"
-              >
-                date
-              </DefaultButton>
+              <CustomChip
+                fontSize={isMobile ? "8px" : ""}
+                width="auto"
+                height="15px"
+                text="date"
+              />
             </div>
             <div
               style={{
@@ -432,30 +451,24 @@ const MaindashboardMarketing = (props) => {
                 alignContent: "center",
               }}
             >
-              <DefaultButton
-                width="3.33vw"
-                height="0.83vw"
-                backgroundColor="#0F607D"
-                fontSize="0.7vw"
-                borderRadius="10px"
-              >
-                amount
-              </DefaultButton>
+              <CustomChip
+                fontSize={isMobile ? "8px" : ""}
+                width="auto"
+                height="15px"
+                text="amount"
+              />
             </div>
             <div style={{ display: "flex", alignContent: "center" }}>
-              <DefaultButton
-                width="3.33vw"
-                height="0.83vw"
-                backgroundColor="#0F607D"
-                fontSize="0.7vw"
-                borderRadius="10px"
-              >
-                name
-              </DefaultButton>
+              <CustomChip
+                fontSize={isMobile ? "8px" : ""}
+                width="auto"
+                height="15px"
+                text="name"
+              />
             </div>
           </div>
         </div>
-        <div style={{ marginLeft: "1.667vw", marginTop: "1.667vw" }}>
+        <div style={{ margin: isMobile ? "0px 0px 0px 32px" : "1.667vw" }}>
           <div
             style={{
               width: "72vw",
@@ -466,7 +479,7 @@ const MaindashboardMarketing = (props) => {
           >
             {allOrderList?.data?.length === 0 ||
             allOrderList?.data === undefined ? (
-              <Typography style={{ fontSize: "1.25vw" }}>
+              <Typography style={{ fontSize: isMobile ? "12px" : "1.25vw" }}>
                 There are no orders currently
               </Typography>
             ) : (
@@ -474,6 +487,10 @@ const MaindashboardMarketing = (props) => {
                 <div
                   key={index}
                   className="order-item"
+                  style={{
+                    minWidth: isMobile ? "132px" : "13.33vw",
+                    minHeight: isMobile ? "132px" : "13.33vw",
+                  }}
                   onClick={() => {
                     navigate(`/marketingDashboard/orderDetail/${data.id}`);
                   }}
@@ -481,7 +498,7 @@ const MaindashboardMarketing = (props) => {
                   {data?.documents?.length === "" || null || undefined ? (
                     ""
                   ) : (
-                    <div style={{ margin: "0.83vw" }}>
+                    <div style={{ margin: isMobile ? "12px" : "0.83vw" }}>
                       {data?.documents?.length > 3 ? (
                         <div style={{ display: "flex", alignItems: "center" }}>
                           {data.documents
@@ -491,8 +508,8 @@ const MaindashboardMarketing = (props) => {
                                 <div>
                                   <img
                                     style={{
-                                      height: "3.125vw",
-                                      width: "3.125vw",
+                                      height: isMobile ? "30px" : "3.125vw",
+                                      width: isMobile ? "30px" : "3.125vw",
                                       marginRight: "4px",
                                     }}
                                     srcSet={`http://localhost:3000/uploads/${document.filename}?w=248&fit=crop&auto=format&dpr=2 2x`}
@@ -507,7 +524,7 @@ const MaindashboardMarketing = (props) => {
                             style={{
                               marginLeft: "0.417vw",
                               fontWeight: "bold",
-                              fontSize: "1.042vw",
+                              fontSize: isMobile ? "10px" : "1.042vw",
                             }}
                           >
                             + {data?.documents?.length - 3}
@@ -520,8 +537,8 @@ const MaindashboardMarketing = (props) => {
                               <div>
                                 <img
                                   style={{
-                                    height: "3.125vw",
-                                    width: "3.125vw",
+                                    height: isMobile ? "30px" : "3.125vw",
+                                    width: isMobile ? "30px" : "3.125vw",
                                     marginRight: "4px",
                                   }}
                                   srcSet={`http://localhost:3000/uploads/${document.filename}?w=248&fit=crop&auto=format&dpr=2 2x`}
@@ -539,7 +556,9 @@ const MaindashboardMarketing = (props) => {
                   <div
                     style={{
                       display: "flex",
-                      marginLeft: "0.83vw",
+                      margin: isMobile
+                        ? "0px 12px 0px 12px"
+                        : "0vw 0.83vw 0vw 0.83vw",
                       backgroundColor: "transparent",
                       overflow: "hidden",
                       textOverflow: "ellipsis",
@@ -553,7 +572,7 @@ const MaindashboardMarketing = (props) => {
                         overflow: "hidden",
                         textOverflow: "ellipsis",
                         whiteSpace: "nowrap",
-                        fontSize: "1.25vw",
+                        fontSize: isMobile ? "12px" : "1.25vw",
                       }}
                     >
                       {data.orderTitle.length < 25
@@ -564,7 +583,9 @@ const MaindashboardMarketing = (props) => {
                   <div
                     style={{
                       display: "flex",
-                      marginLeft: "0.83vw",
+                      margin: isMobile
+                        ? "0px 12px 0px 12px"
+                        : "0vw 0.83vw 0vw 0.83vw",
                       backgroundColor: "transparent",
                       overflow: "hidden",
                       textOverflow: "ellipsis",
@@ -576,12 +597,12 @@ const MaindashboardMarketing = (props) => {
                         overflow: "hidden",
                         textOverflow: "ellipsis",
                         whiteSpace: "nowrap",
-                        fontSize: "0.833vw",
+                        fontSize: isMobile ? "10px" : "0.833vw",
                       }}
                     >
-                      {data.orderDetails.length < 28
+                      {data.orderDetails.length < 25
                         ? data.orderDetails
-                        : data.orderDetails.slice(0, 28) + "..."}
+                        : data.orderDetails.slice(0, 25) + "..."}
                     </Typography>
                   </div>
                   <div
@@ -589,8 +610,8 @@ const MaindashboardMarketing = (props) => {
                       display: "flex",
                       backgroundColor: "transparent",
                       position: "absolute",
-                      bottom: "0.83vw",
-                      left: "0.83vw",
+                      bottom: 12,
+                      left: 12,
                       flexDirection: "column",
                     }}
                   >
@@ -598,7 +619,7 @@ const MaindashboardMarketing = (props) => {
                       style={{
                         color: "#0F607D",
                         fontWeight: "bold",
-                        fontSize: "0.625vw",
+                        fontSize: isMobile ? "8px" : "0.625vw",
                       }}
                     >{`Date Added: ${moment(data.createdAt).format(
                       "DD/MM/YYYY"
@@ -609,8 +630,8 @@ const MaindashboardMarketing = (props) => {
                       display: "flex",
                       backgroundColor: "transparent",
                       position: "absolute",
-                      bottom: "1.66vw",
-                      left: "0.83vw",
+                      bottom: isMobile ? 24 : 28,
+                      left: 12,
                       flexDirection: "column",
                     }}
                   >
@@ -618,7 +639,7 @@ const MaindashboardMarketing = (props) => {
                       style={{
                         color: "#0F607D",
                         fontWeight: "bold",
-                        fontSize: "0.625vw",
+                        fontSize: isMobile ? "8px" : "0.625vw",
                       }}
                     >
                       {`Order Status: ${data.orderStatus}`}
@@ -632,10 +653,10 @@ const MaindashboardMarketing = (props) => {
             {userInformation?.data?.role === "Admin" ||
             userInformation?.data?.role === "Super Admin" ? (
               <DefaultButton
-                height="2.08vw"
-                width="15vw"
+                height={isMobile ? "" : "2.08vw"}
+                width={isMobile ? "" : "15vw"}
                 borderRadius="0.83vw"
-                fontSize="1.5vw"
+                fontSize={isMobile ? "12px" : "1.5vw"}
                 onClickFunction={() => {
                   setOpenModal(true);
                 }}
@@ -649,17 +670,18 @@ const MaindashboardMarketing = (props) => {
         </div>
         <div
           style={{
-            marginLeft: "1.667vw",
-            marginTop: "3.33vw",
+            margin: isMobile
+              ? "32px 32px 12px 32px"
+              : "3.33vw 1.667vw 0vw 1.667vw",
             display: "flex",
             justifyContent: "space-between",
             alignItems: "center",
-            width: "72vw",
+            width: isMobile ? "" : "72vw",
           }}
         >
           <Typography
             id="reviewedorders"
-            style={{ fontSize: "2vw", color: "#0F607D" }}
+            style={{ fontSize: isMobile ? "4.5vw" : "2vw", color: "#0F607D" }}
           >
             Reviewed Orders
           </Typography>
@@ -673,11 +695,9 @@ const MaindashboardMarketing = (props) => {
           >
             <Typography
               style={{
-                marginRight: "0.417vw",
+                marginRight: isMobile ? "4px" : "0.417vw",
                 color: "#0F607D",
-                fontSize: "0.8vw",
-                display: "flex",
-                alignItems: "center",
+                fontSize: isMobile ? "2.5vw" : "1vw",
               }}
             >
               Sort by:
@@ -689,15 +709,12 @@ const MaindashboardMarketing = (props) => {
                 alignContent: "center",
               }}
             >
-              <DefaultButton
-                width="3.33vw"
-                height="0.83vw"
-                backgroundColor="#0F607D"
-                fontSize="0.7vw"
-                borderRadius="10px"
-              >
-                date
-              </DefaultButton>
+              <CustomChip
+                fontSize={isMobile ? "8px" : ""}
+                width="auto"
+                height="15px"
+                text="date"
+              />
             </div>
             <div
               style={{
@@ -706,15 +723,12 @@ const MaindashboardMarketing = (props) => {
                 alignContent: "center",
               }}
             >
-              <DefaultButton
-                width="3.33vw"
-                height="0.83vw"
-                backgroundColor="#0F607D"
-                fontSize="0.7vw"
-                borderRadius="10px"
-              >
-                amount
-              </DefaultButton>
+              <CustomChip
+                fontSize={isMobile ? "8px" : ""}
+                width="auto"
+                height="15px"
+                text="amount"
+              />
             </div>
             <div
               style={{
@@ -722,19 +736,16 @@ const MaindashboardMarketing = (props) => {
                 alignContent: "center",
               }}
             >
-              <DefaultButton
-                width="3.33vw"
-                height="0.83vw"
-                backgroundColor="#0F607D"
-                fontSize="0.7vw"
-                borderRadius="10px"
-              >
-                name
-              </DefaultButton>
+              <CustomChip
+                fontSize={isMobile ? "8px" : ""}
+                width="auto"
+                height="15px"
+                text="name"
+              />
             </div>
           </div>
         </div>
-        <div style={{ marginLeft: "1.667vw", marginTop: "1.667vw" }}>
+        <div style={{ margin: isMobile ? "0px 0px 0px 32px" : "1.667vw" }}>
           <div
             style={{
               width: "72vw",
@@ -748,18 +759,25 @@ const MaindashboardMarketing = (props) => {
             !allOrderList?.data?.some(
               (order) => order.orderStatus === "Reviewed"
             ) ? (
-              <Typography style={{ fontSize: "1.25vw" }}>
+              <Typography style={{ fontSize: isMobile ? "12px" : "1.25vw" }}>
                 There are no reviewed orders currently
               </Typography>
             ) : (
               allOrderList?.data
                 ?.filter((order) => order.orderStatus === "Reviewed")
                 .map((data, index) => (
-                  <div key={index} className="order-item">
+                  <div
+                    key={index}
+                    className="order-item"
+                    style={{
+                      minWidth: isMobile ? "132px" : "13.33vw",
+                      minHeight: isMobile ? "132px" : "13.33vw",
+                    }}
+                  >
                     {data?.documents?.length === "" || null || undefined ? (
                       ""
                     ) : (
-                      <div style={{ margin: "0.83vw" }}>
+                      <div style={{ margin: isMobile ? "12px" : "0.83vw" }}>
                         {data?.documents?.length > 3 ? (
                           <div
                             style={{ display: "flex", alignItems: "center" }}
@@ -771,8 +789,8 @@ const MaindashboardMarketing = (props) => {
                                   <div>
                                     <img
                                       style={{
-                                        height: "3.125vw",
-                                        width: "3.125vw",
+                                        height: isMobile ? "30px" : "3.125vw",
+                                        width: isMobile ? "30px" : "3.125vw",
                                         marginRight: "4px",
                                       }}
                                       srcSet={`http://localhost:3000/uploads/${document.filename}?w=248&fit=crop&auto=format&dpr=2 2x`}
@@ -787,7 +805,7 @@ const MaindashboardMarketing = (props) => {
                               style={{
                                 marginLeft: "0.417vw",
                                 fontWeight: "bold",
-                                fontSize: "1.042vw",
+                                fontSize: isMobile ? "10px" : "1.042vw",
                               }}
                             >
                               + {data?.documents?.length - 3}
@@ -800,8 +818,8 @@ const MaindashboardMarketing = (props) => {
                                 <div>
                                   <img
                                     style={{
-                                      height: "3.125vw",
-                                      width: "3.125vw",
+                                      height: isMobile ? "30px" : "3.125vw",
+                                      width: isMobile ? "30px" : "3.125vw",
                                       marginRight: "4px",
                                     }}
                                     srcSet={`http://localhost:3000/uploads/${document.filename}?w=248&fit=crop&auto=format&dpr=2 2x`}
@@ -819,7 +837,9 @@ const MaindashboardMarketing = (props) => {
                     <div
                       style={{
                         display: "flex",
-                        marginLeft: "0.83vw",
+                        margin: isMobile
+                          ? "0px 12px 0px 12px"
+                          : "0vw 0.83vw 0vw 0.83vw",
                         backgroundColor: "transparent",
                         overflow: "hidden",
                         textOverflow: "ellipsis",
@@ -833,6 +853,7 @@ const MaindashboardMarketing = (props) => {
                           overflow: "hidden",
                           textOverflow: "ellipsis",
                           whiteSpace: "nowrap",
+                          fontSize: isMobile ? "12px" : "1.25vw",
                         }}
                       >
                         {data.orderTitle.length < 25
@@ -843,7 +864,9 @@ const MaindashboardMarketing = (props) => {
                     <div
                       style={{
                         display: "flex",
-                        marginLeft: "0.83vw",
+                        margin: isMobile
+                          ? "0px 12px 0px 12px"
+                          : "0vw 0.83vw 0vw 0.83vw",
                         backgroundColor: "transparent",
                         overflow: "hidden",
                         textOverflow: "ellipsis",
@@ -855,11 +878,12 @@ const MaindashboardMarketing = (props) => {
                           overflow: "hidden",
                           textOverflow: "ellipsis",
                           whiteSpace: "nowrap",
+                          fontSize: isMobile ? "10px" : "0.833vw",
                         }}
                       >
-                        {data.orderDetails.length < 28
+                        {data.orderDetails.length < 25
                           ? data.orderDetails
-                          : data.orderDetails.slice(0, 28) + "..."}
+                          : data.orderDetails.slice(0, 25) + "..."}
                       </Typography>
                     </div>
                     <div
@@ -867,8 +891,8 @@ const MaindashboardMarketing = (props) => {
                         display: "flex",
                         backgroundColor: "transparent",
                         position: "absolute",
-                        bottom: "0.83vw",
-                        left: "0.83vw",
+                        bottom: 12,
+                        left: 12,
                         flexDirection: "column",
                       }}
                     >
@@ -876,7 +900,7 @@ const MaindashboardMarketing = (props) => {
                         style={{
                           color: "#0F607D",
                           fontWeight: "bold",
-                          fontSize: "0.625vw",
+                          fontSize: isMobile ? "8px" : "0.625vw",
                         }}
                       >{`Date Added: ${moment(data.createdAt).format(
                         "DD/MM/YYYY"
@@ -887,8 +911,8 @@ const MaindashboardMarketing = (props) => {
                         display: "flex",
                         backgroundColor: "transparent",
                         position: "absolute",
-                        bottom: "1.66vw",
-                        left: "0.83vw",
+                        bottom: isMobile ? 24 : 28,
+                        left: 12,
                         flexDirection: "column",
                       }}
                     >
@@ -896,7 +920,7 @@ const MaindashboardMarketing = (props) => {
                         style={{
                           color: "#0F607D",
                           fontWeight: "bold",
-                          fontSize: "0.625vw",
+                          fontSize: isMobile ? "8px" : "0.625vw",
                         }}
                       >
                         {`Order Status: ${data.orderStatus}`}
@@ -909,17 +933,18 @@ const MaindashboardMarketing = (props) => {
         </div>
         <div
           style={{
-            marginLeft: "1.667vw",
-            marginTop: "3.33vw",
+            margin: isMobile
+              ? "32px 32px 12px 32px"
+              : "3.33vw 1.667vw 0vw 1.667vw",
             display: "flex",
             justifyContent: "space-between",
             alignItems: "center",
-            width: "72vw",
+            width: isMobile ? "" : "72vw",
           }}
         >
           <Typography
             id="processedorders"
-            style={{ fontSize: "2vw", color: "#0F607D" }}
+            style={{ fontSize: isMobile ? "4.5vw" : "2vw", color: "#0F607D" }}
           >
             Processed Orders
           </Typography>
@@ -933,9 +958,9 @@ const MaindashboardMarketing = (props) => {
           >
             <Typography
               style={{
-                marginRight: "0.417vw",
+                marginRight: isMobile ? "4px" : "0.417vw",
                 color: "#0F607D",
-                fontSize: "0.8vw",
+                fontSize: isMobile ? "2.5vw" : "1vw",
               }}
             >
               Sort by:
@@ -947,15 +972,12 @@ const MaindashboardMarketing = (props) => {
                 alignItems: "center",
               }}
             >
-              <DefaultButton
-                width="3.33vw"
-                height="0.83vw"
-                backgroundColor="#0F607D"
-                fontSize="0.7vw"
-                borderRadius="10px"
-              >
-                date
-              </DefaultButton>
+              <CustomChip
+                fontSize={isMobile ? "8px" : ""}
+                width="auto"
+                height="15px"
+                text="date"
+              />
             </div>
             <div
               style={{
@@ -964,30 +986,24 @@ const MaindashboardMarketing = (props) => {
                 alignItems: "center",
               }}
             >
-              <DefaultButton
-                width="3.33vw"
-                height="0.83vw"
-                backgroundColor="#0F607D"
-                fontSize="0.7vw"
-                borderRadius="10px"
-              >
-                amount
-              </DefaultButton>
+              <CustomChip
+                fontSize={isMobile ? "8px" : ""}
+                width="auto"
+                height="15px"
+                text="amount"
+              />
             </div>
             <div style={{ display: "flex", alignItems: "center" }}>
-              <DefaultButton
-                width="3.33vw"
-                height="0.83vw"
-                backgroundColor="#0F607D"
-                fontSize="0.7vw"
-                borderRadius="10px"
-              >
-                name
-              </DefaultButton>
+              <CustomChip
+                fontSize={isMobile ? "8px" : ""}
+                width="auto"
+                height="15px"
+                text="name"
+              />
             </div>
           </div>
         </div>
-        <div style={{ marginLeft: "1.667vw", marginTop: "1.667vw" }}>
+        <div style={{ margin: isMobile ? "0px 0px 0px 32px" : "1.667vw" }}>
           <div
             style={{
               width: "72vw",
@@ -1001,18 +1017,25 @@ const MaindashboardMarketing = (props) => {
             !allOrderList?.data?.some(
               (order) => order.orderStatus === "Processed"
             ) ? (
-              <Typography style={{ fontSize: "1.25vw" }}>
+              <Typography style={{ fontSize: isMobile ? "12px" : "1.25vw" }}>
                 There are no processed orders currently
               </Typography>
             ) : (
               allOrderList?.data
                 ?.filter((order) => order.orderStatus === "Processed")
                 .map((data, index) => (
-                  <div key={index} className="order-item">
+                  <div
+                    key={index}
+                    className="order-item"
+                    style={{
+                      minWidth: isMobile ? "132px" : "13.33vw",
+                      minHeight: isMobile ? "132px" : "13.33vw",
+                    }}
+                  >
                     {data?.documents?.length === "" || null ? (
                       ""
                     ) : (
-                      <div style={{ margin: "0.83vw" }}>
+                      <div style={{ margin: isMobile ? "12px" : "0.83vw" }}>
                         {data?.documents?.length > 3 ? (
                           <div
                             style={{ display: "flex", alignItems: "center" }}
@@ -1024,8 +1047,8 @@ const MaindashboardMarketing = (props) => {
                                   <div>
                                     <img
                                       style={{
-                                        height: "3.125vw",
-                                        width: "3.125vw",
+                                        height: isMobile ? "30px" : "3.125vw",
+                                        width: isMobile ? "30px" : "3.125vw",
                                         marginRight: "4px",
                                       }}
                                       srcSet={`http://localhost:3000/uploads/${document.filename}?w=248&fit=crop&auto=format&dpr=2 2x`}
@@ -1040,7 +1063,7 @@ const MaindashboardMarketing = (props) => {
                               style={{
                                 marginLeft: "0.417vw",
                                 fontWeight: "bold",
-                                fontSize: "1.042vw",
+                                fontSize: isMobile ? "10px" : "1.042vw",
                               }}
                             >
                               + {data.documents?.length - 3}
@@ -1053,8 +1076,8 @@ const MaindashboardMarketing = (props) => {
                                 <div>
                                   <img
                                     style={{
-                                      height: "3.125vw",
-                                      width: "3.125vw",
+                                      height: isMobile ? "30px" : "3.125vw",
+                                      width: isMobile ? "30px" : "3.125vw",
                                       marginRight: "4px",
                                     }}
                                     srcSet={`http://localhost:3000/uploads/${document.filename}?w=248&fit=crop&auto=format&dpr=2 2x`}
@@ -1072,7 +1095,9 @@ const MaindashboardMarketing = (props) => {
                     <div
                       style={{
                         display: "flex",
-                        marginLeft: "0.83vw",
+                        margin: isMobile
+                          ? "0px 12px 0px 12px"
+                          : "0vw 0.83vw 0vw 0.83vw",
                         backgroundColor: "transparent",
                         overflow: "hidden",
                         textOverflow: "ellipsis",
@@ -1086,6 +1111,7 @@ const MaindashboardMarketing = (props) => {
                           overflow: "hidden",
                           textOverflow: "ellipsis",
                           whiteSpace: "nowrap",
+                          fontSize: isMobile ? "12px" : "1.25vw",
                         }}
                       >
                         {data.orderTitle.length < 25
@@ -1096,7 +1122,9 @@ const MaindashboardMarketing = (props) => {
                     <div
                       style={{
                         display: "flex",
-                        marginLeft: "0.83vw",
+                        margin: isMobile
+                          ? "0px 12px 0px 12px"
+                          : "0vw 0.83vw 0vw 0.83vw",
                         backgroundColor: "transparent",
                         overflow: "hidden",
                         textOverflow: "ellipsis",
@@ -1108,11 +1136,12 @@ const MaindashboardMarketing = (props) => {
                           overflow: "hidden",
                           textOverflow: "ellipsis",
                           whiteSpace: "nowrap",
+                          fontSize: isMobile ? "10px" : "0.833vw",
                         }}
                       >
-                        {data.orderDetails.length < 28
+                        {data.orderDetails.length < 25
                           ? data.orderDetails
-                          : data.orderDetails.slice(0, 28) + "..."}
+                          : data.orderDetails.slice(0, 25) + "..."}
                       </Typography>
                     </div>
                     <div
@@ -1120,8 +1149,8 @@ const MaindashboardMarketing = (props) => {
                         display: "flex",
                         backgroundColor: "transparent",
                         position: "absolute",
-                        bottom: "0.83vw",
-                        left: "0.83vw",
+                        bottom: 12,
+                        left: 12,
                         flexDirection: "column",
                       }}
                     >
@@ -1129,10 +1158,7 @@ const MaindashboardMarketing = (props) => {
                         style={{
                           color: "#0F607D",
                           fontWeight: "bold",
-                          fontSize: 12,
-                          overflow: "hidden",
-                          textOverflow: "ellipsis",
-                          whiteSpace: "nowrap",
+                          fontSize: isMobile ? "8px" : "0.625vw",
                         }}
                       >{`Date Added: ${moment(data.createdAt).format(
                         "DD/MM/YYYY"
@@ -1143,8 +1169,8 @@ const MaindashboardMarketing = (props) => {
                         display: "flex",
                         backgroundColor: "transparent",
                         position: "absolute",
-                        bottom: "1.66vw",
-                        left: "0.83vw",
+                        bottom: isMobile ? 24 : 28,
+                        left: 12,
                         flexDirection: "column",
                       }}
                     >
@@ -1152,7 +1178,7 @@ const MaindashboardMarketing = (props) => {
                         style={{
                           color: "#0F607D",
                           fontWeight: "bold",
-                          fontSize: 12,
+                          fontSize: isMobile ? "8px" : "0.625vw",
                         }}
                       >
                         {`Order Status: ${data.orderStatus}`}
@@ -1165,17 +1191,18 @@ const MaindashboardMarketing = (props) => {
         </div>
         <div
           style={{
-            marginLeft: "1.667vw",
-            marginTop: "3.33vw",
+            margin: isMobile
+              ? "32px 32px 12px 32px"
+              : "3.33vw 1.667vw 0vw 1.667vw",
             display: "flex",
             justifyContent: "space-between",
             alignItems: "center",
-            width: "72vw",
+            width: isMobile ? "" : "72vw",
           }}
         >
           <Typography
             id="deliveredorders"
-            style={{ fontSize: "2vw", color: "#0F607D" }}
+            style={{ fontSize: isMobile ? "4.5vw" : "2vw", color: "#0F607D" }}
           >
             Delivered Orders
           </Typography>
@@ -1189,9 +1216,9 @@ const MaindashboardMarketing = (props) => {
           >
             <Typography
               style={{
-                marginRight: "0.417vw",
+                marginRight: isMobile ? "4px" : "0.417vw",
                 color: "#0F607D",
-                fontSize: "0.8vw",
+                fontSize: isMobile ? "2.5vw" : "1vw",
               }}
             >
               Sort by:
@@ -1203,15 +1230,12 @@ const MaindashboardMarketing = (props) => {
                 alignItems: "center",
               }}
             >
-              <DefaultButton
-                width="3.33vw"
-                height="0.83vw"
-                backgroundColor="#0F607D"
-                fontSize="0.7vw"
-                borderRadius="10px"
-              >
-                date
-              </DefaultButton>
+              <CustomChip
+                fontSize={isMobile ? "8px" : ""}
+                width="auto"
+                height="15px"
+                text="date"
+              />
             </div>
             <div
               style={{
@@ -1220,32 +1244,27 @@ const MaindashboardMarketing = (props) => {
                 alignItems: "center",
               }}
             >
-              <DefaultButton
-                width="3.33vw"
-                height="0.83vw"
-                backgroundColor="#0F607D"
-                fontSize="0.7vw"
-                borderRadius="10px"
-              >
-                amount
-              </DefaultButton>
+              <CustomChip
+                fontSize={isMobile ? "8px" : ""}
+                width="auto"
+                height="15px"
+                text="amount"
+              />
             </div>
             <div style={{ display: "flex", alignItems: "center" }}>
-              <DefaultButton
-                width="3.33vw"
-                height="0.83vw"
-                backgroundColor="#0F607D"
-                fontSize="0.7vw"
-                borderRadius="10px"
-              >
-                name
-              </DefaultButton>
+              <CustomChip
+                fontSize={isMobile ? "8px" : ""}
+                width="auto"
+                height="15px"
+                text="name"
+              />
             </div>
           </div>
         </div>
-        <div style={{ marginLeft: "1.667vw", marginTop: "1.667vw" }}>
+        <div style={{ margin: isMobile ? "0px 0px 0px 32px" : "1.667vw" }}>
           <div
             style={{
+              width: "72vw",
               overflowX: "auto",
               whiteSpace: "nowrap",
               display: "flex",
@@ -1256,18 +1275,25 @@ const MaindashboardMarketing = (props) => {
             !allOrderList?.data?.some(
               (order) => order.orderStatus === "Delivered"
             ) ? (
-              <Typography style={{ fontSize: "1.25vw" }}>
+              <Typography style={{ fontSize: isMobile ? "12px" : "1.25vw" }}>
                 There are no delivered orders currently
               </Typography>
             ) : (
               allOrderList?.data
                 ?.filter((order) => order.orderStatus === "Delivered")
                 .map((data, index) => (
-                  <div key={index} className="order-item">
+                  <div
+                    key={index}
+                    className="order-item"
+                    style={{
+                      minWidth: isMobile ? "132px" : "13.33vw",
+                      minHeight: isMobile ? "132px" : "13.33vw",
+                    }}
+                  >
                     {data?.documents?.length === "" || null ? (
                       ""
                     ) : (
-                      <div style={{ margin: "0.83vw" }}>
+                      <div style={{ margin: isMobile ? "12px" : "0.83vw" }}>
                         {data?.documents?.length > 3 ? (
                           <div
                             style={{ display: "flex", alignItems: "center" }}
@@ -1279,8 +1305,8 @@ const MaindashboardMarketing = (props) => {
                                   <div>
                                     <img
                                       style={{
-                                        height: "3.125vw",
-                                        width: "3.125vw",
+                                        height: isMobile ? "30px" : "3.125vw",
+                                        width: isMobile ? "30px" : "3.125vw",
                                         marginRight: "4px",
                                       }}
                                       srcSet={`http://localhost:3000/uploads/${document.filename}?w=248&fit=crop&auto=format&dpr=2 2x`}
@@ -1295,7 +1321,7 @@ const MaindashboardMarketing = (props) => {
                               style={{
                                 marginLeft: "0.417vw",
                                 fontWeight: "bold",
-                                fontSize: "1.042vw",
+                                fontSize: isMobile ? "10px" : "1.042vw",
                               }}
                             >
                               + {data?.documents?.length - 3}
@@ -1308,8 +1334,8 @@ const MaindashboardMarketing = (props) => {
                                 <div>
                                   <img
                                     style={{
-                                      height: "3.125vw",
-                                      width: "3.125vw",
+                                      height: isMobile ? "30px" : "3.125vw",
+                                      width: isMobile ? "30px" : "3.125vw",
                                       marginRight: "4px",
                                     }}
                                     srcSet={`http://localhost:3000/uploads/${document.filename}?w=248&fit=crop&auto=format&dpr=2 2x`}
@@ -1327,7 +1353,9 @@ const MaindashboardMarketing = (props) => {
                     <div
                       style={{
                         display: "flex",
-                        marginLeft: "0.83vw",
+                        margin: isMobile
+                          ? "0px 12px 0px 12px"
+                          : "0vw 0.83vw 0vw 0.83vw",
                         backgroundColor: "transparent",
                         overflow: "hidden",
                         textOverflow: "ellipsis",
@@ -1341,6 +1369,7 @@ const MaindashboardMarketing = (props) => {
                           overflow: "hidden",
                           textOverflow: "ellipsis",
                           whiteSpace: "nowrap",
+                          fontSize: isMobile ? "12px" : "1.25vw",
                         }}
                       >
                         {data.orderTitle.length < 25
@@ -1351,7 +1380,9 @@ const MaindashboardMarketing = (props) => {
                     <div
                       style={{
                         display: "flex",
-                        marginLeft: "0.83vw",
+                        margin: isMobile
+                          ? "0px 12px 0px 12px"
+                          : "0vw 0.83vw 0vw 0.83vw",
                         backgroundColor: "transparent",
                         overflow: "hidden",
                         textOverflow: "ellipsis",
@@ -1363,6 +1394,7 @@ const MaindashboardMarketing = (props) => {
                           overflow: "hidden",
                           textOverflow: "ellipsis",
                           whiteSpace: "nowrap",
+                          fontSize: isMobile ? "10px" : "0.833vw",
                         }}
                       >
                         {data.orderDetails.length < 25
@@ -1375,8 +1407,8 @@ const MaindashboardMarketing = (props) => {
                         display: "flex",
                         backgroundColor: "transparent",
                         position: "absolute",
-                        bottom: "0.83vw",
-                        left: "0.83vw",
+                        bottom: 12,
+                        left: 12,
                         flexDirection: "column",
                       }}
                     >
@@ -1384,7 +1416,7 @@ const MaindashboardMarketing = (props) => {
                         style={{
                           color: "#0F607D",
                           fontWeight: "bold",
-                          fontSize: 12,
+                          fontSize: isMobile ? "8px" : "0.625vw",
                         }}
                       >{`Date Added: ${moment(data.createdAt).format(
                         "DD/MM/YYYY"
@@ -1395,8 +1427,8 @@ const MaindashboardMarketing = (props) => {
                         display: "flex",
                         backgroundColor: "transparent",
                         position: "absolute",
-                        bottom: "1.66vw",
-                        left: "0.83vw",
+                        bottom: isMobile ? 24 : 28,
+                        left: 12,
                         flexDirection: "column",
                       }}
                     >
@@ -1404,7 +1436,7 @@ const MaindashboardMarketing = (props) => {
                         style={{
                           color: "#0F607D",
                           fontWeight: "bold",
-                          fontSize: 12,
+                          fontSize: isMobile ? "8px" : "0.625vw",
                         }}
                       >
                         {`Order Status: ${data.orderStatus}`}
@@ -1417,23 +1449,24 @@ const MaindashboardMarketing = (props) => {
         </div>
         <div
           style={{
-            marginLeft: "1.667vw",
-            marginTop: "3.33vw",
+            margin: isMobile
+              ? "32px 32px 12px 32px"
+              : "3.33vw 1.667vw 0vw 1.667vw",
             display: "flex",
             justifyContent: "space-between",
             alignItems: "center",
-            width: "72vw",
+            width: isMobile ? "" : "72vw",
           }}
         >
           <Typography
             id="ordershistory"
-            style={{ fontSize: "2vw", color: "#0F607D" }}
+            style={{ fontSize: isMobile ? "4.5vw" : "2vw", color: "#0F607D" }}
           >
             Orders History
           </Typography>
           <div>
             <DefaultButton style={{ width: "4.375vw", height: "2.083vw" }}>
-              <Typography style={{ fontSize: "1.042vw" }}>
+              <Typography style={{ fontSize: isMobile? "12px" : "1.042vw" }}>
                 Go to Orders History Page
               </Typography>
             </DefaultButton>
@@ -1441,17 +1474,18 @@ const MaindashboardMarketing = (props) => {
         </div>
         <div
           style={{
-            marginLeft: "1.667vw",
-            marginTop: "3.33vw",
+            margin: isMobile
+              ? "32px 32px 12px 32px"
+              : "3.33vw 1.667vw 0vw 1.667vw",
             display: "flex",
             justifyContent: "space-between",
             alignItems: "center",
-            width: "72vw",
+            width: isMobile ? "" : "72vw",
           }}
         >
           <Typography
             id="activitylog"
-            style={{ fontSize: "2vw", color: "#0F607D" }}
+            style={{ fontSize: isMobile ? "4.5vw" : "2vw", color: "#0F607D" }}
           >
             Activity Log
           </Typography>
@@ -1461,7 +1495,7 @@ const MaindashboardMarketing = (props) => {
                 navigate("/marketingDashboard/activityLog");
               }}
             >
-              <Typography style={{ fontSize: "1.042vw" }}>
+              <Typography style={{ fontSize: isMobile? "12px" : "1.042vw" }}>
                 Go to Activity Logs
               </Typography>
             </DefaultButton>

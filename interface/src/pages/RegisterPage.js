@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useContext, useState } from "react";
 import axios from "axios";
 import factoryBackground from "../assets/factorybackground.png";
 import companyLogo from "../assets/PT_Aridas_Karya_Satria_Logo.png";
@@ -8,7 +8,7 @@ import {
   InputAdornment,
   IconButton,
 } from "@mui/material";
-import "./Register.css"
+import "./Register.css";
 import MyLink from "../components/Link";
 import DefaultButton from "../components/Button";
 import "@fontsource/roboto/300.css";
@@ -17,9 +17,12 @@ import VisibilityOffIcon from "@mui/icons-material/VisibilityOff";
 import { useNavigate } from "react-router-dom";
 import MySnackbar from "../components/Snackbar";
 import { useAuth } from "../components/AuthContext";
+import { AppContext } from "../App";
 
 const RegisterPage = () => {
   const navigate = useNavigate();
+
+  const {isMobile, isTablet, isDesktop} = useContext(AppContext)
 
   const [showPassword, setShowPassword] = useState(true);
   const { setSuccessMessage } = useAuth();
@@ -80,14 +83,14 @@ const RegisterPage = () => {
 
   return (
     <div
-    className="register-page"
+      className="register-page"
       style={{
         height: "100vh",
         width: "100vw",
         backgroundImage: `url(${factoryBackground})`,
         backgroundSize: "cover",
-        overflow: "auto", // Prevent scrolling and zooming
-        position: "relative", // Needed for child element positioning
+        overflow: "auto",
+        position: "relative",
       }}
     >
       <div
@@ -105,16 +108,24 @@ const RegisterPage = () => {
           alt="Company Logo"
         />
       </div>
-      <div style={{ paddingTop: "64px" }}>
+      <div
+        style={{
+          display: "flex",
+          flexDirection: "column",
+          justifyContent: "center",
+          alignItems: "center",
+          height: "100%",
+        }}
+      >
         <Typography
-          style={{ color: "#0F607D", fontSize: "4.5vw", fontWeight: "regular" }}
+          style={{ color: "#0F607D", fontSize: isMobile ? "12vw" : "4.5vw", fontWeight: "regular" }}
         >
           Register
         </Typography>
         <Typography
           style={{
             marginTop: "32px",
-            fontSize: "1.5vw",
+            fontSize: isMobile ? "4vw" : "2vw",
             fontWeight: "regular",
             color: "#676767",
           }}
@@ -137,7 +148,7 @@ const RegisterPage = () => {
               "& .MuiInput-underline:hover:before": {
                 borderBottomColor: "#0F607D",
               },
-              width: "32vw",
+              width: isMobile ? "72vw" : "32vw",
             }}
             error={registerClicked && name === ""}
             helperText={
@@ -150,7 +161,11 @@ const RegisterPage = () => {
             }}
           />
         </div>
-        <div style={{ marginTop: registerClicked && name === "" ? "32px" :"48px" }}>
+        <div
+          style={{
+            marginTop: registerClicked && name === "" ? "32px" : "48px",
+          }}
+        >
           <TextField
             sx={{
               "& label.Mui-focused": {
@@ -162,7 +177,7 @@ const RegisterPage = () => {
               "& .MuiInput-underline:hover:before": {
                 borderBottomColor: "#0F607D",
               },
-              width: "32vw",
+              width: isMobile ? "72vw" : "32vw",
             }}
             error={registerClicked && username === ""}
             helperText={
@@ -177,7 +192,11 @@ const RegisterPage = () => {
             }}
           />
         </div>
-        <div style={{ marginTop: registerClicked && name === "" ? "32px" :"48px" }}>
+        <div
+          style={{
+            marginTop: registerClicked && name === "" ? "32px" : "48px",
+          }}
+        >
           <TextField
             sx={{
               "& label.Mui-focused": {
@@ -189,7 +208,7 @@ const RegisterPage = () => {
               "& .MuiInput-underline:hover:before": {
                 borderBottomColor: "#0F607D",
               },
-              width: "32vw",
+              width: isMobile ? "72vw" : "32vw",
             }}
             error={registerClicked && email === ""}
             helperText={
@@ -202,7 +221,11 @@ const RegisterPage = () => {
             }}
           />
         </div>
-        <div style={{ marginTop: registerClicked && name === "" ? "32px" :"48px" }}>
+        <div
+          style={{
+            marginTop: registerClicked && name === "" ? "32px" : "48px",
+          }}
+        >
           <TextField
             sx={{
               "& label.Mui-focused": {
@@ -214,7 +237,7 @@ const RegisterPage = () => {
               "& .MuiInput-underline:hover:before": {
                 borderBottomColor: "#0F607D",
               },
-              width: "32vw",
+              width: isMobile ? "72vw" : "32vw",
             }}
             error={registerClicked && password === ""}
             helperText={

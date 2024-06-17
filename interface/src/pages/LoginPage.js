@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import axios from "axios";
 import factoryBackground from "../assets/factorybackground.png";
 import companyLogo from "../assets/PT_Aridas_Karya_Satria_Logo.png";
@@ -8,7 +8,7 @@ import {
   InputAdornment,
   IconButton,
 } from "@mui/material";
-import "./Login.css"
+import "./Login.css";
 import MyLink from "../components/Link";
 import DefaultButton from "../components/Button";
 import "@fontsource/roboto/300.css";
@@ -17,11 +17,14 @@ import VisibilityOffIcon from "@mui/icons-material/VisibilityOff";
 import { useNavigate } from "react-router-dom";
 import MySnackbar from "../components/Snackbar";
 import { useAuth } from "../components/AuthContext";
+import { AppContext } from "../App";
 
 const LoginPage = (props) => {
   const { userCredentials, setUserCredentials } = props;
 
   const navigate = useNavigate();
+
+  const { isMobile, isTablet, isDesktop } = useContext(AppContext);
 
   const [showPassword, setShowPassword] = useState(true);
   const { message, clearMessage, setSuccessMessage } = useAuth();
@@ -150,26 +153,44 @@ const LoginPage = (props) => {
           alt="Company Logo"
         />
       </div>
-      <div>
-        <img alt="" src="" />
-      </div>
-      <div style={{ paddingTop: "64px" }}>
+      <div
+        style={{
+          display: "flex",
+          flexDirection: "column",
+          justifyContent: "center",
+          alignItems: "center",
+          height: "100%",
+        }}
+      >
         <Typography
-          style={{ color: "#0F607D", fontSize: "5vw", fontWeight: "regular" }}
+          style={{
+            color: "#0F607D",
+            fontSize: isMobile ? "12vw" : "5vw",
+            fontWeight: "regular",
+          }}
         >
           Sign in
         </Typography>
-        <Typography
+
+        <div style={{ display: "flex", justifyContent: "center" }}>
+          <Typography
+            style={{
+              marginTop: "32px",
+              fontSize: isMobile ? "5vw" : "2vw",
+              fontWeight: "regular",
+              color: "#676767",
+            }}
+          >
+            Hello there! Sign in to your account
+          </Typography>
+        </div>
+        <div
           style={{
             marginTop: "32px",
-            fontSize: "2vw",
-            fontWeight: "regular",
-            color: "#676767",
+            display: "flex",
+            justifyContent: "center",
           }}
         >
-          Hello there! Sign in to your account
-        </Typography>
-        <div style={{ marginTop: "32px" }}>
           <TextField
             sx={{
               "& label.Mui-focused": {
@@ -181,7 +202,7 @@ const LoginPage = (props) => {
               "& .MuiInput-underline:hover:before": {
                 borderBottomColor: "#0F607D",
               },
-              width: "32vw",
+              width: isMobile ? "72vw" : "32vw",
             }}
             error={loginClicked && username === ""} // Show error only after clicking login
             helperText={
@@ -194,7 +215,13 @@ const LoginPage = (props) => {
             }}
           />
         </div>
-        <div style={{ marginTop: "64px" }}>
+        <div
+          style={{
+            marginTop: "64px",
+            display: "flex",
+            justifyContent: "center",
+          }}
+        >
           <TextField
             sx={{
               "& label.Mui-focused": {
@@ -206,7 +233,7 @@ const LoginPage = (props) => {
               "& .MuiInput-underline:hover:before": {
                 borderBottomColor: "#0F607D",
               },
-              width: "32vw",
+              width: isMobile ? "72vw" : "32vw",
             }}
             error={loginClicked && password === ""} // Show error only after clicking login
             helperText={
@@ -243,13 +270,21 @@ const LoginPage = (props) => {
           />
         </div>
         <div style={{ marginTop: "32px" }}>
-          <MyLink
-            onClickFunction={() => {
-              navigate("/register");
+          <div style={{ display: "flex", justifyContent: "center" }}>
+            <MyLink
+              onClickFunction={() => {
+                navigate("/register");
+              }}
+              text={"Don't have an account yet? Register here!"}
+            />
+          </div>
+          <div
+            style={{
+              marginTop: "32px",
+              display: "flex",
+              justifyContent: "center",
             }}
-            text={"Don't have an account yet? Register here!"}
-          />
-          <div style={{ marginTop: "32px" }}>
+          >
             <DefaultButton
               width="84px"
               height="42px"
@@ -261,7 +296,13 @@ const LoginPage = (props) => {
               Login
             </DefaultButton>
           </div>
-          <div style={{ margin: "32px 0px 32px 0px"}}>
+          <div
+            style={{
+              margin: "32px 0px 32px 0px",
+              display: "flex",
+              justifyContent: "center",
+            }}
+          >
             <MyLink text={"Forgot Password?"} />
           </div>
         </div>
