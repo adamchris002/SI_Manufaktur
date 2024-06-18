@@ -1,14 +1,27 @@
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import factoryBackground from "../../assets/factorybackground.png";
 import { useNavigate } from "react-router-dom";
-import { IconButton, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Typography } from "@mui/material";
+import {
+  IconButton,
+  Paper,
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TableRow,
+  Typography,
+} from "@mui/material";
 import KeyboardArrowLeftIcon from "@mui/icons-material/KeyboardArrowLeft";
 import axios from "axios";
 import moment from "moment";
+import { AppContext } from "../../App";
 
 const MarketingActivityLog = () => {
+  const { isMobile } = useContext(AppContext);
+
   const navigate = useNavigate();
-  const [activityLogs, setActivityLogs] = useState([])
+  const [activityLogs, setActivityLogs] = useState([]);
 
   useEffect(() => {
     axios({
@@ -16,8 +29,8 @@ const MarketingActivityLog = () => {
       url: "http://localhost:3000/order/getAllActivityLogs",
     }).then((result) => {
       setActivityLogs(result);
-    })
-  }, []) 
+    });
+  }, []);
 
   return (
     <div
@@ -32,11 +45,16 @@ const MarketingActivityLog = () => {
     >
       <div
         style={{
-          margin: "32px",
           width: "100%",
         }}
       >
-        <div style={{ display: "flex", alignItems: "center" }}>
+        <div
+          style={{
+            display: "flex",
+            alignItems: "center",
+            margin: isMobile ? "16px" : "32px",
+          }}
+        >
           <div style={{ marginRight: "8px" }}>
             <IconButton
               onClick={() => {
@@ -46,7 +64,9 @@ const MarketingActivityLog = () => {
               <KeyboardArrowLeftIcon />
             </IconButton>
           </div>
-          <Typography sx={{ fontSize: "32px", color: "#0F607D" }}>
+          <Typography
+            sx={{ fontSize: isMobile ? "24px" : "32px", color: "#0F607D" }}
+          >
             Activity Log
           </Typography>
         </div>
@@ -54,9 +74,10 @@ const MarketingActivityLog = () => {
           style={{
             display: "flex",
             justifyContent: "center",
+            width: "100%",
           }}
         >
-          <div style={{ width: "90%", marginTop: "16px" }}>
+          <div style={{ width: isMobile ? "80%" : "90%", marginTop: "16px" }}>
             <TableContainer component={Paper}>
               <Table sx={{ minWidth: 650 }} aria-label="simple table">
                 <TableHead>
@@ -83,8 +104,12 @@ const MarketingActivityLog = () => {
                       <TableCell align="right">{""}</TableCell>
                       <TableCell align="right">{result.name}</TableCell>
                       <TableCell align="right">{result.division}</TableCell>
-                      <TableCell align="right">{moment(result.createdAt).format("LLLL")}</TableCell>
-                      <TableCell align="right">{moment(result.updatedAt).format("LLLL")}</TableCell>
+                      <TableCell align="right">
+                        {moment(result.createdAt).format("LLLL")}
+                      </TableCell>
+                      <TableCell align="right">
+                        {moment(result.updatedAt).format("LLLL")}
+                      </TableCell>
                     </TableRow>
                   ))}
                 </TableBody>

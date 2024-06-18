@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import axios from "axios";
 import factoryBackground from "../../assets/factorybackground.png";
@@ -21,6 +21,7 @@ import DeleteIcon from "@mui/icons-material/Delete";
 import RemoveRedEyeIcon from "@mui/icons-material/RemoveRedEye";
 import MySnackbar from "../../components/Snackbar";
 import { useAuth } from "../../components/AuthContext";
+import { AppContext } from "../../App";
 
 const VisuallyHiddenInput = styled("input")({
   clip: "rect(0 0 0 0)",
@@ -35,6 +36,8 @@ const VisuallyHiddenInput = styled("input")({
 });
 
 const OrderDetail = (props) => {
+  const { isMobile } = useContext(AppContext);
+
   const { orderId } = useParams();
   const { userInformation } = props;
   const [checkUpdate, setCheckUpdate] = useState(false);
@@ -283,16 +286,22 @@ const OrderDetail = (props) => {
         backgroundAttachment: "fixed",
       }}
     >
-      <div style={{ margin: "32px", width: "100%" }}>
+      <div style={{ width: "100%" }}>
         <div
           style={{
             display: "flex",
             justifyContent: "space-between",
             alignItems: "center",
-            width: "100%",
+            margin: "32px",
           }}
         >
-          <div style={{ display: "flex", alignItems: "center" }}>
+          <div
+            style={{
+              display: "flex",
+              alignItems: "center",
+              // margin: isMobile ? "32px" : "",
+            }}
+          >
             <div style={{ marginRight: "8px" }}>
               <IconButton
                 style={{
@@ -305,13 +314,23 @@ const OrderDetail = (props) => {
                 }}
               >
                 <KeyboardArrowLeftIcon
-                  style={{ height: "3vw", width: "3vw" }}
+                  style={{
+                    height: isMobile ? "24px" : "3vw",
+                    width: isMobile ? "24px" : "3vw",
+                  }}
                 />
               </IconButton>
             </div>
             <div>
-              <Typography style={{ fontSize: "2.5vw", color: "#0F607D" }}>
-                {orderDetailInfo?.data?.orderTitle}
+              <Typography
+                style={{
+                  fontSize: isMobile ? "6vw" : "2.5vw",
+                  color: "#0F607D",
+                }}
+              >
+                {orderDetailInfo?.data?.orderTitle.length < 8
+                  ? orderDetailInfo?.data?.orderTitle
+                  : orderDetailInfo?.data?.orderTitle.slice(0, 8) + "..."}
               </Typography>
             </div>
           </div>
@@ -326,9 +345,9 @@ const OrderDetail = (props) => {
                 }}
               >
                 <DefaultButton
-                  height="4vw"
-                  width="12vw"
-                  fontSize="1.5vw"
+                  height={isMobile ? "20px" : "4vw"}
+                  width={isMobile ? "100px" : "12vw"}
+                  fontSize={isMobile ? "12px" : "1.5vw"}
                   onClickFunction={() => {
                     handleOpenModal(orderDetailInfo);
                   }}
@@ -339,8 +358,8 @@ const OrderDetail = (props) => {
                 <Button
                   sx={{
                     textTransform: "none",
-                    width: "12vw",
-                    height: "4vw",
+                    width: isMobile ? "100px" : "12vw",
+                    height: isMobile ? "20px" : "4vw",
                     marginLeft: "8px",
                   }}
                   color="error"
@@ -349,7 +368,7 @@ const OrderDetail = (props) => {
                     handleDeleteModal();
                   }}
                 >
-                  <Typography style={{ fontSize: "1.5vw" }}>
+                  <Typography style={{ fontSize: isMobile ? "12px" : "1.5vw" }}>
                     Delete Order
                   </Typography>
                 </Button>
@@ -361,25 +380,36 @@ const OrderDetail = (props) => {
         </div>
         <div
           style={{
+            margin: "32",
             marginTop: "32px",
             display: "flex",
             flexDirection: "column",
+            width: "100%",
           }}
         >
-          <div style={{ display: "flex" }}>
-            <Typography style={{ fontSize: "2vw", color: "#0F607D" }}>
+          <div style={{ display: "flex", margin: " 0px 32px" }}>
+            <Typography
+              style={{ fontSize: isMobile ? "5vw" : "2vw", color: "#0F607D" }}
+            >
               Documents:
             </Typography>
           </div>
-          <div style={{ marginTop: "16px", display: "flex" }}>
+          <div
+            style={{
+              marginTop: "16px",
+              display: "flex",
+              overflowX: "auto",
+              width: "100%",
+            }}
+          >
             {orderDetailInfo?.data?.documents?.map((result, index) => {
               return (
-                <div>
+                <div style={{ margin: "0px 32px" }}>
                   {index === orderDetailInfo.data.documents.length - 1 ? (
                     <img
                       style={{
-                        height: "9vw",
-                        width: "9vw",
+                        height: isMobile ? "100px" : "9vw",
+                        width: isMobile ? "100px" : "9vw",
                       }}
                       srcSet={`http://localhost:3000/uploads/${result.filename}?w=248&fit=crop&auto=format&dpr=2 2x`}
                       src={`http://localhost:3000/uploads/${result.filename}?w=248&fit=crop&auto=format`}
@@ -389,9 +419,9 @@ const OrderDetail = (props) => {
                   ) : (
                     <img
                       style={{
-                        height: "9vw",
-                        width: "9vw",
-                        marginRight: "64px",
+                        height: isMobile ? "100px" : "9vw",
+                        width: isMobile ? "100px" : "9vw",
+                        marginRight: isMobile ? "" : "32px",
                       }}
                       srcSet={`http://localhost:3000/uploads/${result.filename}?w=248&fit=crop&auto=format&dpr=2 2x`}
                       src={`http://localhost:3000/uploads/${result.filename}?w=248&fit=crop&auto=format`}
@@ -409,15 +439,18 @@ const OrderDetail = (props) => {
             marginTop: "32px",
             display: "flex",
             flexDirection: "column",
+            margin: "32px",
           }}
         >
           <div style={{ display: "flex" }}>
-            <Typography sx={{ fontSize: "2vw", color: "#0F607D" }}>
+            <Typography
+              sx={{ fontSize: isMobile ? "5vw" : "2vw", color: "#0F607D" }}
+            >
               Order Details:{" "}
             </Typography>
           </div>
           <div style={{ display: "flex" }}>
-            <Typography sx={{ fontSize: "1.8vw" }}>
+            <Typography sx={{ fontSize: isMobile ? "3vw" : "1.8vw" }}>
               {orderDetailInfo?.data?.orderDetails}
             </Typography>
           </div>
@@ -428,17 +461,22 @@ const OrderDetail = (props) => {
           <div
             className="hideScrollbar"
             style={{
-              margin: "16px 32px 16px 32px",
+              margin: isMobile ? "24px" : "0.83vw 1.667vw 0.83vw 1.667vw",
               overflow: "auto",
-              width: "50vw",
+              width: isMobile ? "80vw" : "50vw",
             }}
           >
-            <div style={{ display: "flex", margin: "32px 0px 20px 0px" }}>
-              <Typography style={{ color: "#0F607D", fontSize: "2.5vw" }}>
+            <div style={{ display: "flex", margin: "1.667vw 0px 1.042vw 0px" }}>
+              <Typography
+                style={{
+                  color: "#0F607D",
+                  fontSize: isMobile ? "7vw" : "2.5vw",
+                }}
+              >
                 Edit Order
               </Typography>
             </div>
-            <div style={{ marginBottom: "32px" }}>
+            <div style={{ marginBottom: "1.667vw" }}>
               <div
                 style={{
                   display: "flex",
@@ -448,7 +486,12 @@ const OrderDetail = (props) => {
                 }}
               >
                 <div style={{ display: "flex" }}>
-                  <Typography style={{ color: "#0F607D", fontSize: "1.5vw" }}>
+                  <Typography
+                    style={{
+                      color: "#0F607D",
+                      fontSize: isMobile ? "4vw" : "1.5vw",
+                    }}
+                  >
                     Order Title:
                   </Typography>
                 </div>
@@ -457,9 +500,9 @@ const OrderDetail = (props) => {
                   value={orderTitle}
                   sx={{
                     "& .MuiOutlinedInput-root": {
-                      height: "3vw",
-                      width: "25vw",
-                      fontSize: "1.5vw",
+                      height: isMobile ? "15px" : "3vw",
+                      width: isMobile ? "150px" : "25vw",
+                      fontSize: isMobile ? "10px" : "1.5vw",
                       borderRadius: "10px",
                       "& fieldset": {
                         borderColor: "#0F607D",
@@ -478,7 +521,7 @@ const OrderDetail = (props) => {
                 />
               </div>
             </div>
-            <div style={{ marginBottom: "32px" }}>
+            <div style={{ marginBottom: "1.667vw" }}>
               <div
                 style={{
                   display: "flex",
@@ -488,7 +531,12 @@ const OrderDetail = (props) => {
                 }}
               >
                 <div style={{ display: "flex" }}>
-                  <Typography style={{ color: "#0F607D", fontSize: "1.5vw" }}>
+                  <Typography
+                    style={{
+                      color: "#0F607D",
+                      fontSize: isMobile ? "4vw" : "1.5vw",
+                    }}
+                  >
                     Order Quantity:
                   </Typography>
                 </div>
@@ -499,11 +547,11 @@ const OrderDetail = (props) => {
                     type="number"
                     value={orderQuantityValue}
                     sx={{
-                      marginRight: "32px",
+                      marginRight: "1.667vw",
                       "& .MuiOutlinedInput-root": {
-                        height: "3vw",
-                        width: "7vw",
-                        fontSize: "1.5vw",
+                        height: isMobile ? "15px" : "3vw",
+                        width: isMobile ? "50px" : "7vw",
+                        fontSize: isMobile ? "10px" : "1.5vw",
                         borderRadius: "10px",
                         "& fieldset": {
                           borderColor: "#0F607D",
@@ -523,16 +571,17 @@ const OrderDetail = (props) => {
                   <MySelectTextField
                     value={orderQuantityUnit}
                     type="text"
-                    width="7vw"
-                    height="3vw"
+                    width={isMobile ? "50px" : "7vw"}
+                    height={isMobile ? "15px" : "3vw"}
                     borderRadius="10px"
                     data={values}
+                    fontSize={isMobile ? "10px" : "1.5vw"}
                     onChange={handleAddSelectUnit}
                   />
                 </div>
               </div>
             </div>
-            <div style={{ marginBottom: "32px" }}>
+            <div style={{ marginBottom: "1.667vw" }}>
               <div
                 style={{
                   display: "flex",
@@ -542,130 +591,183 @@ const OrderDetail = (props) => {
                 }}
               >
                 <div style={{ display: "flex" }}>
-                  <Typography style={{ color: "#0F607D", fontSize: "1.5vw" }}>
+                  <Typography
+                    style={{
+                      color: "#0F607D",
+                      fontSize: isMobile ? "4vw" : "1.5vw",
+                    }}
+                  >
                     Images & Informations:
                   </Typography>
                 </div>
                 <div style={{ display: "flex", alignItems: "center" }}>
-                  <Button
-                    component="label"
-                    role={undefined}
-                    variant="contained"
-                    tabIndex={-1}
-                    startIcon={
-                      <CloudUploadIcon
-                        style={{ height: "2vw", width: "2vw" }}
-                      />
-                    }
-                    sx={{
-                      height: "4vw",
-                      width: "12vw",
-                      borderRadius: "10px",
-                      backgroundColor: "#0F607D",
-                      fontSize: "0.8vw",
-                    }}
-                  >
-                    Upload file
-                    <VisuallyHiddenInput
-                      onChange={(event) => {
-                        handleFileInput(event);
+                  {isMobile ? (
+                    <Button
+                      component="label"
+                      role={undefined}
+                      variant="contained"
+                      tabIndex={-1}
+                      sx={{
+                        height: "30px",
+                        width: "30px",
+                        padding: "0px",
+                        minWidth: "0px",
+                        borderRadius: "20px",
+                        display: "flex",
+                        justifyContent: "center",
+                        alignItems: "center",
                       }}
-                      type="file"
-                      multiple={true}
-                    />
-                  </Button>
-                  <div style={{ marginLeft: "18px", display: "flex" }}>
-                    {orderDocuments.map((result, index) => {
-                      return (
-                        <div
-                          style={{
-                            width: "2.96vw",
-                            height: "2.96vw",
-                            marginLeft: "8px",
-                            backgroundColor: "#d9d9d9",
-                            position: "relative",
-                            cursor: imageOption === true ? "pointer" : "",
-                          }}
-                          onClick={
-                            imageOption === true
-                              ? () => {
-                                  handleOpenImage(index);
-                                }
-                              : ""
-                          }
-                        >
-                          {imageOption === false && (
-                            <IconButton
-                              style={{
-                                position: "absolute",
-                                top: "-12px",
-                                right: "-12px",
-                                zIndex: 1,
-                                height: "24px",
-                                width: "24px",
-                              }}
-                              onClick={(event) => {
-                                event.stopPropagation();
-                                handleRemoveDocument(index);
-                              }}
-                            >
-                              <CloseIcon
+                    >
+                      <CloudUploadIcon sx={{ height: "15px", width: "15px" }} />
+                      <VisuallyHiddenInput
+                        onChange={(event) => {
+                          handleFileInput(event);
+                        }}
+                        type="file"
+                        multiple={true}
+                      />
+                    </Button>
+                  ) : (
+                    <Button
+                      component="label"
+                      role={undefined}
+                      variant="contained"
+                      tabIndex={-1}
+                      startIcon={
+                        <CloudUploadIcon
+                          style={{ height: "2vw", width: "2vw" }}
+                        />
+                      }
+                      sx={{
+                        height: "4vw",
+                        width: "15vw",
+                        borderRadius: "10px",
+                        backgroundColor: "#0F607D",
+                        fontSize: "1vw",
+                      }}
+                    >
+                      Upload file
+                      <VisuallyHiddenInput
+                        onChange={(event) => {
+                          handleFileInput(event);
+                        }}
+                        type="file"
+                        multiple={true}
+                      />
+                    </Button>
+                  )}
+                  {orderDocuments.length !== 0 && (
+                    <div
+                      style={{
+                        marginLeft: "0.938vw",
+                        display: "flex",
+                        alignItems: "center",
+                      }}
+                    >
+                      {orderDocuments.map((result, index) => {
+                        return (
+                          <div
+                            style={{
+                              width: "2.96vw",
+                              height: "2.96vw",
+                              marginLeft: "8px",
+                              backgroundColor: "#d9d9d9",
+                              position: "relative",
+                              cursor: imageOption === true ? "pointer" : "",
+                            }}
+                            onClick={
+                              imageOption === true
+                                ? () => {
+                                    handleOpenImage(index);
+                                  }
+                                : ""
+                            }
+                          >
+                            {imageOption === false && (
+                              <IconButton
                                 style={{
-                                  height: "16px",
-                                  width: "16x",
-                                  color: "black",
+                                  position: "absolute",
+                                  top: "-12px",
+                                  right: "-12px",
+                                  zIndex: 1,
+                                  height: "24px",
+                                  width: "24px",
+                                }}
+                                onClick={(event) => {
+                                  event.stopPropagation();
+                                  handleRemoveDocument(index);
+                                }}
+                              >
+                                <CloseIcon
+                                  style={{
+                                    height: "16px",
+                                    width: "16x",
+                                    color: "black",
+                                  }}
+                                />
+                              </IconButton>
+                            )}
+                            <img
+                              style={{
+                                width: "100%",
+                                height: "100%",
+                                objectFit: "cover",
+                                position: "absolute",
+                                top: 0,
+                                left: 0,
+                              }}
+                              // srcSet={`http://localhost:3000/uploads/${result.filename}?w=248&fit=crop&auto=format&dpr=2 2x`}
+                              src={
+                                result.id !== undefined
+                                  ? `http://localhost:3000/uploads/${result.filename}?w=248&fit=crop&auto=format`
+                                  : URL.createObjectURL(result)
+                              }
+                              alt={result.filename}
+                              loading="lazy"
+                            />
+                          </div>
+                        );
+                      })}
+                      <div>
+                        {orderDetailInfo.data.documents.length !== 0 ? (
+                          <IconButton
+                            style={{
+                              height: "1.667vw",
+                              width: "1.667vw",
+                              marginLeft: "0.417vw",
+                              display: "flex",
+                              alignItems: "center",
+                            }}
+                            onClick={() => {
+                              setImageOption(!imageOption);
+                            }}
+                          >
+                            {imageOption === true ? (
+                              <DeleteIcon
+                                style={{
+                                  width: isMobile ? "12px" : "",
+                                  height: isMobile ? "12px" : "",
                                 }}
                               />
-                            </IconButton>
-                          )}
-                          <img
-                            style={{
-                              width: "100%",
-                              height: "100%",
-                              objectFit: "cover",
-                              position: "absolute",
-                              top: 0,
-                              left: 0,
-                            }}
-                            // srcSet={`http://localhost:3000/uploads/${result.filename}?w=248&fit=crop&auto=format&dpr=2 2x`}
-                            src={
-                              result.id !== undefined
-                                ? `http://localhost:3000/uploads/${result.filename}?w=248&fit=crop&auto=format`
-                                : URL.createObjectURL(result)
-                            }
-                            alt={result.filename}
-                            loading="lazy"
-                          />
-                        </div>
-                      );
-                    })}
-                    <div>
-                      {orderDetailInfo.data.documents.length !== 0 ? (
-                        <IconButton
-                          style={{
-                            height: "32px",
-                            width: "32px",
-                            marginLeft: "8px",
-                          }}
-                          onClick={() => {
-                            setImageOption(!imageOption);
-                          }}
-                        >
-                          {imageOption === true ? (
-                            <DeleteIcon />
-                          ) : (
-                            <RemoveRedEyeIcon />
-                          )}
-                        </IconButton>
-                      ) : (
-                        ""
-                      )}
+                            ) : (
+                              <RemoveRedEyeIcon
+                                style={{
+                                  width: isMobile ? "12px" : "",
+                                  height: isMobile ? "12px" : "",
+                                }}
+                              />
+                            )}
+                          </IconButton>
+                        ) : (
+                          ""
+                        )}
+                      </div>
                     </div>
-                  </div>
+                  )}
                 </div>
               </div>
             </div>
-            <div style={{ marginBottom: "32px" }}>
+            <div style={{ marginBottom: "1.667vw" }}>
               <div
                 style={{
                   display: "flex",
@@ -674,7 +776,12 @@ const OrderDetail = (props) => {
                 }}
               >
                 <div style={{ display: "flex" }}>
-                  <Typography style={{ color: "#0F607D", fontSize: "1.5vw" }}>
+                  <Typography
+                    style={{
+                      color: "#0F607D",
+                      fontSize: isMobile ? "4vw " : "1.5vw",
+                    }}
+                  >
                     Order Details:
                   </Typography>
                 </div>
@@ -684,8 +791,8 @@ const OrderDetail = (props) => {
                   multiline
                   sx={{
                     "& .MuiOutlinedInput-root": {
-                      width: "25vw",
-                      fontSize: "1.5vw",
+                      width: isMobile ? "150px" : "25vw",
+                      fontSize: isMobile ? "10px" : "1.5vw",
                       borderRadius: "10px",
                       boxSizing: "border-box",
                       "& fieldset": {
@@ -705,7 +812,7 @@ const OrderDetail = (props) => {
                 />
               </div>
             </div>
-            <div style={{ marginBottom: "32px" }}>
+            <div style={{ marginBottom: "1.667vw" }}>
               <div
                 style={{
                   display: "flex",
@@ -715,14 +822,19 @@ const OrderDetail = (props) => {
                 }}
               >
                 <div style={{ display: "flex" }}>
-                  <Typography style={{ color: "#0F607D", fontSize: "1.5vw" }}>
+                  <Typography
+                    style={{
+                      color: "#0F607D",
+                      fontSize: isMobile ? "4vw" : "1.5vw",
+                    }}
+                  >
                     Customer Channel:
                   </Typography>
                 </div>
                 <MySelectTextField
                   type="text"
-                  width="7vw"
-                  height="3vw"
+                  width={isMobile ? "80px" : "8vw"}
+                  height={isMobile ? "15px" : "3vw"}
                   value={orderCustomerChannel}
                   borderRadius="10px"
                   data={channels}
@@ -730,7 +842,7 @@ const OrderDetail = (props) => {
                 />
               </div>
             </div>
-            <div style={{ marginBottom: "32px" }}>
+            <div style={{ marginBottom: "1.667vw" }}>
               <div
                 style={{
                   display: "flex",
@@ -740,7 +852,12 @@ const OrderDetail = (props) => {
                 }}
               >
                 <div style={{ display: "flex" }}>
-                  <Typography style={{ color: "#0F607D", fontSize: "1.5vw" }}>
+                  <Typography
+                    style={{
+                      color: "#0F607D",
+                      fontSize: isMobile ? "4vw" : "1.5vw",
+                    }}
+                  >
                     Customer Detail:
                   </Typography>
                 </div>
@@ -749,9 +866,9 @@ const OrderDetail = (props) => {
                   value={orderCustomerDetail}
                   sx={{
                     "& .MuiOutlinedInput-root": {
-                      height: "3vw",
-                      width: "25vw",
-                      fontSize: "1.5vw",
+                      height: isMobile ? "15px" : "3vw",
+                      width: isMobile ? "150px" : "25vw",
+                      fontSize: isMobile ? "10px" : "1.5vw",
                       borderRadius: "10px",
                       "& fieldset": {
                         borderColor: "#0F607D",
@@ -784,11 +901,11 @@ const OrderDetail = (props) => {
                 }}
               >
                 <DefaultButton
-                  height="3vw"
-                  width="10vw"
+                    height={isMobile ? "30px" : "3vw"}
+                    width={isMobile ? "80px" : "10vw"}
                   backgroundColor="#0F607D"
                   borderRadius="10px"
-                  fontSize="0.9vw"
+                  fontSize={isMobile ? "10px" : "0.9vw"}
                   onClickFunction={() => {
                     handleUpdateOrder(orderId);
                   }}
@@ -799,10 +916,10 @@ const OrderDetail = (props) => {
                   variant="outlined"
                   color="error"
                   style={{
-                    height: "3vw",
-                    width: "10vw",
+                    height: isMobile ? "30px" : "3vw",
+                    width: isMobile ? "80px" : "10vw",
                     borderRadius: "10px",
-                    fontSize: "0.9vw",
+                    fontSize: isMobile ? "10px" : "0.9vw",
                     textTransform: "none",
                     marginLeft: "2vw",
                   }}
@@ -859,18 +976,22 @@ const OrderDetail = (props) => {
               display: "flex",
               justifyContent: "center",
               flexDirection: "column",
-              height: "100%",
-              margin: "64px",
+              width: isMobile ? "80vw" : "50vw",
+              margin: isMobile ? "24px" : "0.83vw 1.667vw 0.83vw 1.667vw",
             }}
           >
             <div>
-              <WarningIcon
-                style={{ color: "red", height: "256px", width: "256px" }}
-              />
+              <div style={{ display: "flex", justifyContent: "center" }}>
+                <WarningIcon
+                  style={{ color: "red", height: "256px", width: "256px" }}
+                />
+              </div>
               <div>
-                <Typography sx={{ fontSize: "24px", color: "black" }}>
-                  Are you sure you want to delete the order?
-                </Typography>
+                <div style={{ display: "flex", justifyContent: "center" }}>
+                  <Typography sx={{ fontSize: "24px", color: "black" }}>
+                    Are you sure you want to delete the order?
+                  </Typography>
+                </div>
                 <div style={{ display: "flex", justifyContent: "center" }}>
                   <div
                     style={{

@@ -14,7 +14,6 @@ import {
   Button,
   Backdrop,
   IconButton,
-  Chip,
 } from "@mui/material";
 import { useAuth } from "../components/AuthContext";
 import MySnackbar from "../components/Snackbar";
@@ -1740,7 +1739,7 @@ const MaindashboardMarketing = (props) => {
                             style={{
                               width: "2.96vw",
                               height: "2.96vw",
-                              marginLeft: "0.417vw",
+                              marginLeft: "8px",
                               backgroundColor: "#d9d9d9",
                               position: "relative",
                               cursor: imageOption === true ? "pointer" : "",
