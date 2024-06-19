@@ -16,6 +16,7 @@ import MaindasboardWaste from "./pages/MaindashboardWaste";
 import UnauthorizedPage from "./pages/UnauthorizedPage";
 import OrderDetail from "./pages/MarketingPage/OrderDetail";
 import MarketingActivityLog from "./pages/MarketingPage/MarketingActivityLog";
+import EstimationOrderPage from "./pages/ProductionPlanningPage/EstimationOrderPage";
 import { createTheme, useMediaQuery } from "@mui/material";
 
 export const AppContext = createContext({});
@@ -101,6 +102,19 @@ function App() {
                   <Navigate to="/unauthorized" replace />
                 ) : (
                   <MaindashboardProductionPlanning
+                    userInformation={userCredentials}
+                  />
+                )
+              }
+            />
+            <Route
+              path="/productionPlanningDashboard/estimationOrder"
+              element={
+                !userCredentials.data ||
+                userCredentials.data.department !== "Production Planning" ? (
+                  <Navigate to="/unauthorized" replace />
+                ) : (
+                  <EstimationOrderPage
                     userInformation={userCredentials}
                   />
                 )

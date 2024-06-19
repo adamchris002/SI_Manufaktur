@@ -370,8 +370,9 @@ const MaindashboardMarketing = (props) => {
       >
         <div
           style={{
-            marginTop: "3.75vw",
-            marginLeft: "1.667vw",
+            margin: isMobile
+              ? "32px 32px 12px 32px"
+              : "3.33vw 1.667vw 0vw 1.667vw",
             display: "flex",
             alignItems: "center",
           }}
@@ -386,7 +387,7 @@ const MaindashboardMarketing = (props) => {
           />
           <div style={{ textAlign: "left" }}>
             <Typography
-              style={{ fontSize: isMobile ? "5.5vw" : "4vw", color: "#0F607D" }}
+              style={{ fontSize: isMobile ? "5vw" : "4vw", color: "#0F607D" }}
             >
               Welcome back, {userInformation.data.username}
             </Typography>
@@ -484,13 +485,14 @@ const MaindashboardMarketing = (props) => {
                 There are no orders currently
               </Typography>
             ) : (
-              allOrderList?.data?.map((data, index) => (
+              allOrderList?.data?.map((data, index, array) => (
                 <div
                   key={index}
                   className="order-item"
                   style={{
                     minWidth: isMobile ? "132px" : "13.33vw",
                     minHeight: isMobile ? "132px" : "13.33vw",
+                    marginRight: index === array.length - 1 ? "0" : "32px",
                   }}
                   onClick={() => {
                     navigate(`/marketingDashboard/orderDetail/${data.id}`);
@@ -576,9 +578,9 @@ const MaindashboardMarketing = (props) => {
                         fontSize: isMobile ? "12px" : "1.25vw",
                       }}
                     >
-                      {data.orderTitle.length < 25
-                        ? data.orderTitle
-                        : data.orderTitle.slice(0, 25)}
+                      {data.orderTitle.length < 15
+                        ? (data.orderTitle)
+                        : (data.orderTitle.slice(0, 15) + "...")}
                     </Typography>
                   </div>
                   <div
@@ -766,13 +768,15 @@ const MaindashboardMarketing = (props) => {
             ) : (
               allOrderList?.data
                 ?.filter((order) => order.orderStatus === "Reviewed")
-                .map((data, index) => (
+                .map((data, index, filteredArray) => (
                   <div
                     key={index}
                     className="order-item"
                     style={{
                       minWidth: isMobile ? "132px" : "13.33vw",
                       minHeight: isMobile ? "132px" : "13.33vw",
+                      marginRight:
+                        index === filteredArray.length - 1 ? "0" : "32px",
                     }}
                   >
                     {data?.documents?.length === "" || null || undefined ? (
@@ -857,9 +861,9 @@ const MaindashboardMarketing = (props) => {
                           fontSize: isMobile ? "12px" : "1.25vw",
                         }}
                       >
-                        {data.orderTitle.length < 25
-                          ? data.orderTitle
-                          : data.orderTitle.slice(0, 25)}
+                      {data.orderTitle.length < 15
+                        ? (data.orderTitle)
+                        : (data.orderTitle.slice(0, 15) + "...")}
                       </Typography>
                     </div>
                     <div
@@ -1024,13 +1028,15 @@ const MaindashboardMarketing = (props) => {
             ) : (
               allOrderList?.data
                 ?.filter((order) => order.orderStatus === "Processed")
-                .map((data, index) => (
+                .map((data, index, filteredArray) => (
                   <div
                     key={index}
                     className="order-item"
                     style={{
                       minWidth: isMobile ? "132px" : "13.33vw",
                       minHeight: isMobile ? "132px" : "13.33vw",
+                      marginRight:
+                        index === filteredArray.length - 1 ? "0" : "32px",
                     }}
                   >
                     {data?.documents?.length === "" || null ? (
@@ -1115,9 +1121,9 @@ const MaindashboardMarketing = (props) => {
                           fontSize: isMobile ? "12px" : "1.25vw",
                         }}
                       >
-                        {data.orderTitle.length < 25
-                          ? data.orderTitle
-                          : data.orderTitle.slice(0, 25)}
+                      {data.orderTitle.length < 15
+                        ? (data.orderTitle)
+                        : (data.orderTitle.slice(0, 15) + "...")}
                       </Typography>
                     </div>
                     <div
@@ -1282,13 +1288,15 @@ const MaindashboardMarketing = (props) => {
             ) : (
               allOrderList?.data
                 ?.filter((order) => order.orderStatus === "Delivered")
-                .map((data, index) => (
+                .map((data, index, filteredArray) => (
                   <div
                     key={index}
                     className="order-item"
                     style={{
                       minWidth: isMobile ? "132px" : "13.33vw",
                       minHeight: isMobile ? "132px" : "13.33vw",
+                      marginRight:
+                        index === filteredArray.length - 1 ? "0" : "32px",
                     }}
                   >
                     {data?.documents?.length === "" || null ? (
@@ -1373,9 +1381,9 @@ const MaindashboardMarketing = (props) => {
                           fontSize: isMobile ? "12px" : "1.25vw",
                         }}
                       >
-                        {data.orderTitle.length < 25
-                          ? data.orderTitle
-                          : data.orderTitle.slice(0, 25)}
+                      {data.orderTitle.length < 15
+                        ? (data.orderTitle)
+                        : (data.orderTitle.slice(0, 15) + "...")}
                       </Typography>
                     </div>
                     <div
