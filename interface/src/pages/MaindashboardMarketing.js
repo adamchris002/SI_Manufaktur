@@ -41,7 +41,7 @@ const VisuallyHiddenInput = styled("input")({
 const MaindashboardMarketing = (props) => {
   const navigate = useNavigate();
 
-  const { isMobile, isTablet, isDesktop } = useContext(AppContext);
+  const { isMobile } = useContext(AppContext);
 
   const { userInformation } = props;
   const { message, clearMessage } = useAuth();
@@ -579,8 +579,8 @@ const MaindashboardMarketing = (props) => {
                       }}
                     >
                       {data.orderTitle.length < 15
-                        ? (data.orderTitle)
-                        : (data.orderTitle.slice(0, 15) + "...")}
+                        ? data.orderTitle
+                        : data.orderTitle.slice(0, 15) + "..."}
                     </Typography>
                   </div>
                   <div
@@ -861,9 +861,9 @@ const MaindashboardMarketing = (props) => {
                           fontSize: isMobile ? "12px" : "1.25vw",
                         }}
                       >
-                      {data.orderTitle.length < 15
-                        ? (data.orderTitle)
-                        : (data.orderTitle.slice(0, 15) + "...")}
+                        {data.orderTitle.length < 15
+                          ? data.orderTitle
+                          : data.orderTitle.slice(0, 15) + "..."}
                       </Typography>
                     </div>
                     <div
@@ -1121,9 +1121,9 @@ const MaindashboardMarketing = (props) => {
                           fontSize: isMobile ? "12px" : "1.25vw",
                         }}
                       >
-                      {data.orderTitle.length < 15
-                        ? (data.orderTitle)
-                        : (data.orderTitle.slice(0, 15) + "...")}
+                        {data.orderTitle.length < 15
+                          ? data.orderTitle
+                          : data.orderTitle.slice(0, 15) + "..."}
                       </Typography>
                     </div>
                     <div
@@ -1381,9 +1381,9 @@ const MaindashboardMarketing = (props) => {
                           fontSize: isMobile ? "12px" : "1.25vw",
                         }}
                       >
-                      {data.orderTitle.length < 15
-                        ? (data.orderTitle)
-                        : (data.orderTitle.slice(0, 15) + "...")}
+                        {data.orderTitle.length < 15
+                          ? data.orderTitle
+                          : data.orderTitle.slice(0, 15) + "..."}
                       </Typography>
                     </div>
                     <div

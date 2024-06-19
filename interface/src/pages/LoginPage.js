@@ -24,7 +24,7 @@ const LoginPage = (props) => {
 
   const navigate = useNavigate();
 
-  const { isMobile, isTablet, isDesktop } = useContext(AppContext);
+  const { isMobile } = useContext(AppContext);
 
   const [showPassword, setShowPassword] = useState(true);
   const { message, clearMessage, setSuccessMessage } = useAuth();
