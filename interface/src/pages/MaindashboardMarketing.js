@@ -74,18 +74,24 @@ const MaindashboardMarketing = (props) => {
     });
   }, [updateNotification]);
 
-  const values = [
+  const units = [
     {
-      value: "USD",
+      value: "Kg",
     },
     {
-      value: "EUR",
+      value: "Ton",
     },
     {
-      value: "BTC",
+      value: "Roll",
     },
     {
-      value: "JPY",
+      value: "Kaleng",
+    },
+    {
+      value: "Lembar",
+    },
+    {
+      value: "Box",
     },
   ];
 
@@ -1651,7 +1657,7 @@ const MaindashboardMarketing = (props) => {
                     width={isMobile ? "50px" : "7vw"}
                     height={isMobile ? "15px" : "3vw"}
                     borderRadius="10px"
-                    data={values}
+                    data={units}
                     fontSize={isMobile ? "10px" : "1.5vw"}
                     onChange={handleAddSelectUnit}
                   />

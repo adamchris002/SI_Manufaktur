@@ -61,18 +61,24 @@ const OrderDetail = (props) => {
 
   const navigate = useNavigate();
 
-  const values = [
+  const units = [
     {
-      value: "USD",
+      value: "Kg",
     },
     {
-      value: "EUR",
+      value: "Ton",
     },
     {
-      value: "BTC",
+      value: "Roll",
     },
     {
-      value: "JPY",
+      value: "Kaleng",
+    },
+    {
+      value: "Lembar",
+    },
+    {
+      value: "Box",
     },
   ];
 
@@ -450,9 +456,47 @@ const OrderDetail = (props) => {
             </Typography>
           </div>
           <div style={{ display: "flex" }}>
-            <Typography sx={{ fontSize: isMobile ? "3vw" : "1.8vw" }}>
+            <Typography sx={{ fontSize: isMobile ? "3vw" : "1.8vw", color: "#0F607D" }}>
               {orderDetailInfo?.data?.orderDetails}
             </Typography>
+          </div>
+          <div style={{width: isMobile ? "90%" : "60%", marginTop: "32px"}}>
+            <div style={{ display: "flex", justifyContent: "flex-start" }}>
+              <div style={{width: "50%"}}>
+                <Typography
+                  style={{
+                    fontSize: isMobile ? "3vw" : "1.8vw",
+                    color: "#0F607D",
+                  }}
+                >{`Order Quantity: ${orderDetailInfo?.data?.orderQuantity}`}</Typography>
+              </div>
+              <div style={{ marginLeft: "16px", width: "50%" }}>
+                <Typography
+                  style={{
+                    fontSize: isMobile ? "3vw" : "1.8vw",
+                    color: "#0F607D",
+                  }}
+                >{`Order Status: ${orderDetailInfo?.data?.orderStatus}`}</Typography>
+              </div>
+            </div>
+            <div style={{ display: "flex", marginTop: "16px" }}>
+              <div style={{width: "50%"}}>
+                <Typography
+                  style={{
+                    fontSize: isMobile ? "3vw" : "1.8vw",
+                    color: "#0F607D",
+                  }}
+                >{`Customer Channel: ${orderDetailInfo?.data?.customerChannel}`}</Typography>
+              </div>
+              <div style={{ marginLeft: "16px", width: "50%" }}>
+                <Typography
+                  style={{
+                    fontSize: isMobile ? "3vw" : "1.8vw",
+                    color: "#0F607D",
+                  }}
+                >{`Customer Detail: ${orderDetailInfo?.data?.customerDetail}`}</Typography>
+              </div>
+            </div>
           </div>
         </div>
       </div>
@@ -574,7 +618,7 @@ const OrderDetail = (props) => {
                     width={isMobile ? "50px" : "7vw"}
                     height={isMobile ? "15px" : "3vw"}
                     borderRadius="10px"
-                    data={values}
+                    data={units}
                     fontSize={isMobile ? "10px" : "1.5vw"}
                     onChange={handleAddSelectUnit}
                   />
@@ -901,8 +945,8 @@ const OrderDetail = (props) => {
                 }}
               >
                 <DefaultButton
-                    height={isMobile ? "30px" : "3vw"}
-                    width={isMobile ? "80px" : "10vw"}
+                  height={isMobile ? "30px" : "3vw"}
+                  width={isMobile ? "80px" : "10vw"}
                   backgroundColor="#0F607D"
                   borderRadius="10px"
                   fontSize={isMobile ? "10px" : "0.9vw"}
