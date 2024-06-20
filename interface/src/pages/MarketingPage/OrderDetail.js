@@ -6,10 +6,8 @@ import {
   Backdrop,
   Button,
   IconButton,
-  Stack,
   styled,
   TextField,
-  Tooltip,
   Typography,
 } from "@mui/material";
 import KeyboardArrowLeftIcon from "@mui/icons-material/KeyboardArrowLeft";
@@ -30,6 +28,11 @@ import { DemoContainer, DemoItem } from "@mui/x-date-pickers/internals/demo";
 import { DateTimePicker } from "@mui/x-date-pickers/DateTimePicker";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { NumericFormat } from "react-number-format";
+import utc from "dayjs/plugin/utc";
+import timezone from "dayjs/plugin/timezone";
+
+dayjs.extend(utc);
+dayjs.extend(timezone);
 
 const VisuallyHiddenInput = styled("input")({
   clip: "rect(0 0 0 0)",
@@ -42,44 +45,6 @@ const VisuallyHiddenInput = styled("input")({
   whiteSpace: "nowrap",
   width: 1,
 });
-
-const ProSpan = styled("span")({
-  display: "inline-block",
-  height: "1em",
-  width: "1em",
-  verticalAlign: "middle",
-  marginLeft: "0.3em",
-  marginBottom: "0.08em",
-  backgroundSize: "contain",
-  backgroundRepeat: "no-repeat",
-  backgroundImage: "url(https://mui.com/static/x/pro.svg)",
-});
-
-function Label({ componentName, valueType, isProOnly }) {
-  const content = (
-    <span>
-      <strong>{componentName}</strong> for {valueType} editing
-    </span>
-  );
-
-  if (isProOnly) {
-    return (
-      <Stack direction="row" spacing={0.5} component="span">
-        <Tooltip title="Included on Pro package">
-          <a
-            href="https://mui.com/x/introduction/licensing/#pro-plan"
-            aria-label="Included on Pro package"
-          >
-            <ProSpan />
-          </a>
-        </Tooltip>
-        {content}
-      </Stack>
-    );
-  }
-
-  return content;
-}
 
 const NumericFormatCustom = React.forwardRef((props, ref) => {
   const { onChange, ...other } = props;
@@ -224,7 +189,10 @@ const OrderDetail = (props) => {
       formData.append("orderTotalPrice", orderTotalPrice);
       formData.append("orderType", orderType);
       formData.append("orderNoSeries", orderNoSeries);
-      formData.append("orderDueDate", orderDueDate);
+      formData.append(
+        "orderDueDate",
+        dayjs(orderDueDate).format("MM/DD/YYYY hh:mm A")
+      );
 
       for (const file of orderDocuments) {
         if (!file.id) {
@@ -598,7 +566,9 @@ const OrderDetail = (props) => {
                     fontSize: isMobile ? "3vw" : "1.8vw",
                     color: "#0F607D",
                   }}
-                >{`Order Due Date: ${orderDetailInfo?.data?.orderDueDate}`}</Typography>
+                >{`Order Due Date: ${dayjs(
+                  orderDetailInfo?.data?.orderDueDate
+                ).format("MM/DD/YYYY hh:mm A")}`}</Typography>
               </div>
             </div>
             <div style={{ display: "flex", marginTop: "16px" }}>
@@ -1138,14 +1108,7 @@ const OrderDetail = (props) => {
                 </div>
                 <LocalizationProvider dateAdapter={AdapterDayjs}>
                   <DemoContainer components={["DateTimePicker"]}>
-                    <DemoItem
-                      label={
-                        <Label
-                          componentName="DateTimePicker"
-                          valueType="date time"
-                        />
-                      }
-                    >
+                    <DemoItem>
                       <DateTimePicker
                         disablePast
                         value={orderDueDate}

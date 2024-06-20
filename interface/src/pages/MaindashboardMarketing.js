@@ -1,4 +1,4 @@
-import React, { forwardRef, useContext, useEffect, useState } from "react";
+import React, {  useContext, useEffect, useState } from "react";
 import axios from "axios";
 import { useNavigate, Outlet } from "react-router-dom";
 import moment from "moment";
@@ -19,8 +19,6 @@ import {
   Button,
   Backdrop,
   IconButton,
-  Stack,
-  Tooltip,
 } from "@mui/material";
 import { useAuth } from "../components/AuthContext";
 import MySnackbar from "../components/Snackbar";
@@ -45,44 +43,6 @@ const VisuallyHiddenInput = styled("input")({
   whiteSpace: "nowrap",
   width: 1,
 });
-
-const ProSpan = styled("span")({
-  display: "inline-block",
-  height: "1em",
-  width: "1em",
-  verticalAlign: "middle",
-  marginLeft: "0.3em",
-  marginBottom: "0.08em",
-  backgroundSize: "contain",
-  backgroundRepeat: "no-repeat",
-  backgroundImage: "url(https://mui.com/static/x/pro.svg)",
-});
-
-function Label({ componentName, valueType, isProOnly }) {
-  const content = (
-    <span>
-      <strong>{componentName}</strong> for {valueType} editing
-    </span>
-  );
-
-  if (isProOnly) {
-    return (
-      <Stack direction="row" spacing={0.5} component="span">
-        <Tooltip title="Included on Pro package">
-          <a
-            href="https://mui.com/x/introduction/licensing/#pro-plan"
-            aria-label="Included on Pro package"
-          >
-            <ProSpan />
-          </a>
-        </Tooltip>
-        {content}
-      </Stack>
-    );
-  }
-
-  return content;
-}
 
 const NumericFormatCustom = React.forwardRef((props, ref) => {
   const { onChange, ...other } = props;
@@ -2127,12 +2087,6 @@ const MaindashboardMarketing = (props) => {
                 <LocalizationProvider dateAdapter={AdapterDayjs}>
                   <DemoContainer components={["DateTimePicker"]}>
                     <DemoItem
-                      label={
-                        <Label
-                          componentName="DateTimePicker"
-                          valueType="date time"
-                        />
-                      }
                     >
                       <DateTimePicker
                         disablePast

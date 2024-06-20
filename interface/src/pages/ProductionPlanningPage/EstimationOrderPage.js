@@ -4,8 +4,6 @@ import {
   FormControlLabel,
   IconButton,
   Paper,
-  Stack,
-  styled,
   Switch,
   Table,
   TableBody,
@@ -14,7 +12,6 @@ import {
   TableHead,
   TableRow,
   TextField,
-  Tooltip,
   Typography,
 } from "@mui/material";
 import AddIcon from "@mui/icons-material/Add";
@@ -26,50 +23,21 @@ import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { DemoContainer, DemoItem } from "@mui/x-date-pickers/internals/demo";
 import { DateTimePicker } from "@mui/x-date-pickers/DateTimePicker";
+import dayjs from "dayjs";
+import utc from "dayjs/plugin/utc";
+import timezone from "dayjs/plugin/timezone";
 
-const ProSpan = styled("span")({
-  display: "inline-block",
-  height: "1em",
-  width: "1em",
-  verticalAlign: "middle",
-  marginLeft: "0.3em",
-  marginBottom: "0.08em",
-  backgroundSize: "contain",
-  backgroundRepeat: "no-repeat",
-  backgroundImage: "url(https://mui.com/static/x/pro.svg)",
-});
+dayjs.extend(utc);
+dayjs.extend(timezone);
 
-function Label({ componentName, valueType, isProOnly }) {
-  const content = (
-    <span>
-      <strong>{componentName}</strong> for {valueType} editing
-    </span>
-  );
-  if (isProOnly) {
-    return (
-      <Stack direction="row" spacing={0.5} component="span">
-        <Tooltip title="Included on Pro package">
-          <a
-            href="https://mui.com/x/introduction/licensing/#pro-plan"
-            aria-label="Included on Pro package"
-          >
-            <ProSpan />
-          </a>
-        </Tooltip>
-        {content}
-      </Stack>
-    );
-  }
-
-  return content;
-}
 const EstimationOrderPage = () => {
   const { isMobile } = useContext(AppContext);
 
   const [allOrderID, setAllOrderID] = useState([]);
   const [selectedOrder, setSelectedOrder] = useState([]);
   const [estimasiJadwal, setEstimasiJadwal] = useState([]);
-  console.log(estimasiJadwal);
+
+  console.log(estimasiJadwal)
 
   const addPekerjaan = (index) => {
     setEstimasiJadwal((oldArray) =>
@@ -80,8 +48,9 @@ const EstimationOrderPage = () => {
               pekerjaan: [
                 ...item.pekerjaan,
                 {
-                  tanggalMulai: "",
-                  tanggalSelesai: "",
+                  jenisPekerjaan: "",
+                  tanggalMulai: null,
+                  tanggalSelesai: null,
                   jumlahHari: "",
                 },
               ],
@@ -97,8 +66,9 @@ const EstimationOrderPage = () => {
         bagian: "",
         pekerjaan: [
           {
-            tanggalMulai: "",
-            tanggalSelesai: "",
+            jenisPekerjaan: "",
+            tanggalMulai: null,
+            tanggalSelesai: null,
             jumlahHari: "",
           },
         ],
@@ -107,7 +77,7 @@ const EstimationOrderPage = () => {
   };
 
   const handleInputChange = (event, index, pekerjaanIndex, field) => {
-    const { value } = event.target;
+    const value = event && event.target ? event.target.value : event;
     setEstimasiJadwal((oldArray) =>
       oldArray.map((item, i) =>
         i === index
@@ -122,6 +92,27 @@ const EstimationOrderPage = () => {
           : item
       )
     );
+  };
+
+  const perbedaanHariJam = (startDate, endDate) => {
+    console.log(startDate);
+    console.log(endDate);
+    if (!startDate || !endDate) {
+      return "";
+    }
+
+    const start = dayjs(startDate);
+    const end = dayjs(endDate);
+
+    if (!start.isValid() || !end.isValid()) {
+      return "";
+    }
+
+    const duration = end.diff(start, "hour", true); // Get total hours between start and end
+    const days = Math.floor(duration / 24); // Calculate full days
+    const hours = Math.floor(duration % 24); // Calculate remaining hours
+
+    return `${days} Hari ${hours} Jam`;
   };
 
   const handleSelectId = (orderId) => {
@@ -198,151 +189,158 @@ const EstimationOrderPage = () => {
             marginTop: "24px",
           }}
         >
-          <div
-            style={{
-              width: "100%",
-              border: "2px solid #0F607D",
-              borderRadius: "10px",
-            }}
-          >
-            <div style={{ margin: "24px" }}>
-              <Typography style={{ fontSize: "2.5vw", color: "#0F607D" }}>
-                Order Information
-              </Typography>
+          {selectedOrder.length !== 0 ? (
+            <div
+              style={{
+                width: "100%",
+                border: "2px solid #0F607D",
+                borderRadius: "10px",
+              }}
+            >
+              <div style={{ margin: "24px" }}>
+                <Typography style={{ fontSize: "2.5vw", color: "#0F607D" }}>
+                  Order Information
+                </Typography>
 
-              <div
-                style={{
-                  marginTop: "16px",
-                }}
-              >
-                {selectedOrder.length !== 0 && (
-                  <div
-                    style={{
-                      padding: "16px",
-                      border: "2px solid #0F607D",
-                      borderRadius: "10px",
-                    }}
-                  >
+                <div
+                  style={{
+                    marginTop: "16px",
+                  }}
+                >
+                  {selectedOrder.length !== 0 && (
                     <div
-                      style={{ display: "flex", justifyContent: "flex-start" }}
+                      style={{
+                        padding: "16px",
+                        border: "2px solid #0F607D",
+                        borderRadius: "10px",
+                      }}
                     >
-                      <div style={{ width: "30%  " }}>
-                        <Typography
-                          style={{ fontSize: "1.5vw", color: "#0F607D" }}
-                        >{`Order ID: ${selectedOrder?.data?.id}`}</Typography>
-                      </div>
-                      <div style={{ width: "70%  " }}>
-                        <Typography
-                          style={{ fontSize: "1.5vw", color: "#0F607D" }}
-                        >{`Order Name: ${
-                          selectedOrder?.data?.orderTitle.length < 16
-                            ? selectedOrder?.data?.orderTitle
-                            : selectedOrder?.data?.orderTitle.slice(0, 16) +
-                              "..."
-                        }`}</Typography>
-                      </div>
-                    </div>
-                    <div style={{ marginTop: "8px" }}>
-                      <Typography
-                        style={{ fontSize: "1.5vw", color: "#0F607D" }}
-                      >
-                        Documents:
-                      </Typography>
-                    </div>
-                    <div style={{ display: "flex", overflowX: "auto" }}>
-                      {selectedOrder?.data?.documents.map((result, index) => {
-                        return (
-                          <div>
-                            {index ===
-                            selectedOrder.data.documents.length - 1 ? (
-                              <img
-                                style={{
-                                  height: isMobile ? "100px" : "9vw",
-                                  width: isMobile ? "100px" : "9vw",
-                                }}
-                                srcSet={`http://localhost:3000/uploads/${result.filename}?w=248&fit=crop&auto=format&dpr=2 2x`}
-                                src={`http://localhost:3000/uploads/${result.filename}?w=248&fit=crop&auto=format`}
-                                alt={result.filename}
-                                loading="lazy"
-                              />
-                            ) : (
-                              <img
-                                style={{
-                                  height: isMobile ? "100px" : "9vw",
-                                  width: isMobile ? "100px" : "9vw",
-                                  marginRight: isMobile ? "" : "32px",
-                                }}
-                                srcSet={`http://localhost:3000/uploads/${result.filename}?w=248&fit=crop&auto=format&dpr=2 2x`}
-                                src={`http://localhost:3000/uploads/${result.filename}?w=248&fit=crop&auto=format`}
-                                alt={result.filename}
-                                loading="lazy"
-                              />
-                            )}
-                          </div>
-                        );
-                      })}
-                    </div>
-                    <div style={{ marginTop: "32px" }}>
-                      <Typography
-                        style={{ fontSize: "1.5vw", color: "#0F607D" }}
-                      >
-                        Order Details:
-                      </Typography>
                       <div
-                        style={{ width: "100%", overflowWrap: "break-word" }}
+                        style={{
+                          display: "flex",
+                          justifyContent: "flex-start",
+                        }}
                       >
+                        <div style={{ width: "30%  " }}>
+                          <Typography
+                            style={{ fontSize: "1.5vw", color: "#0F607D" }}
+                          >{`Order ID: ${selectedOrder?.data?.id}`}</Typography>
+                        </div>
+                        <div style={{ width: "70%  " }}>
+                          <Typography
+                            style={{ fontSize: "1.5vw", color: "#0F607D" }}
+                          >{`Order Name: ${
+                            selectedOrder?.data?.orderTitle.length < 16
+                              ? selectedOrder?.data?.orderTitle
+                              : selectedOrder?.data?.orderTitle.slice(0, 16) +
+                                "..."
+                          }`}</Typography>
+                        </div>
+                      </div>
+                      <div style={{ marginTop: "8px" }}>
                         <Typography
-                          style={{
-                            overflowWrap: "break-word",
-                            fontSize: "1.5vw",
-                            color: "#0F607D",
-                          }}
+                          style={{ fontSize: "1.5vw", color: "#0F607D" }}
                         >
-                          {selectedOrder?.data?.orderDetails}
+                          Documents:
                         </Typography>
                       </div>
+                      <div style={{ display: "flex", overflowX: "auto" }}>
+                        {selectedOrder?.data?.documents.map((result, index) => {
+                          return (
+                            <div>
+                              {index ===
+                              selectedOrder.data.documents.length - 1 ? (
+                                <img
+                                  style={{
+                                    height: isMobile ? "100px" : "9vw",
+                                    width: isMobile ? "100px" : "9vw",
+                                  }}
+                                  srcSet={`http://localhost:3000/uploads/${result.filename}?w=248&fit=crop&auto=format&dpr=2 2x`}
+                                  src={`http://localhost:3000/uploads/${result.filename}?w=248&fit=crop&auto=format`}
+                                  alt={result.filename}
+                                  loading="lazy"
+                                />
+                              ) : (
+                                <img
+                                  style={{
+                                    height: isMobile ? "100px" : "9vw",
+                                    width: isMobile ? "100px" : "9vw",
+                                    marginRight: isMobile ? "" : "32px",
+                                  }}
+                                  srcSet={`http://localhost:3000/uploads/${result.filename}?w=248&fit=crop&auto=format&dpr=2 2x`}
+                                  src={`http://localhost:3000/uploads/${result.filename}?w=248&fit=crop&auto=format`}
+                                  alt={result.filename}
+                                  loading="lazy"
+                                />
+                              )}
+                            </div>
+                          );
+                        })}
+                      </div>
+                      <div style={{ marginTop: "32px" }}>
+                        <Typography
+                          style={{ fontSize: "1.5vw", color: "#0F607D" }}
+                        >
+                          Order Details:
+                        </Typography>
+                        <div
+                          style={{ width: "100%", overflowWrap: "break-word" }}
+                        >
+                          <Typography
+                            style={{
+                              overflowWrap: "break-word",
+                              fontSize: "1.5vw",
+                              color: "#0F607D",
+                            }}
+                          >
+                            {selectedOrder?.data?.orderDetails}
+                          </Typography>
+                        </div>
+                      </div>
+                      <div
+                        style={{
+                          display: "flex",
+                          justifyContent: "flex-start",
+                          marginTop: "32px",
+                        }}
+                      >
+                        <div style={{ width: "50%" }}>
+                          <Typography
+                            style={{ fontSize: "1.5vw", color: "#0F607D" }}
+                          >{`Order Quantity: ${selectedOrder?.data?.orderQuantity}`}</Typography>
+                        </div>
+                        <div style={{ width: "50%" }}>
+                          <Typography
+                            style={{ fontSize: "1.5vw", color: "#0F607D" }}
+                          >{`Order Status: ${selectedOrder?.data?.orderStatus}`}</Typography>
+                        </div>
+                      </div>
+                      <div
+                        style={{
+                          display: "flex",
+                          justifyContent: "flex-start",
+                          marginTop: "8px",
+                        }}
+                      >
+                        <div style={{ width: "50%" }}>
+                          <Typography
+                            style={{ fontSize: "1.5vw", color: "#0F607D" }}
+                          >{`Customer Channel: ${selectedOrder?.data?.customerChannel}`}</Typography>
+                        </div>
+                        <div style={{ width: "50%" }}>
+                          <Typography
+                            style={{ fontSize: "1.5vw", color: "#0F607D" }}
+                          >{`Customer Detail: ${selectedOrder?.data?.customerDetail}`}</Typography>
+                        </div>
+                      </div>
                     </div>
-                    <div
-                      style={{
-                        display: "flex",
-                        justifyContent: "flex-start",
-                        marginTop: "32px",
-                      }}
-                    >
-                      <div style={{ width: "50%" }}>
-                        <Typography
-                          style={{ fontSize: "1.5vw", color: "#0F607D" }}
-                        >{`Order Quantity: ${selectedOrder?.data?.orderQuantity}`}</Typography>
-                      </div>
-                      <div style={{ width: "50%" }}>
-                        <Typography
-                          style={{ fontSize: "1.5vw", color: "#0F607D" }}
-                        >{`Order Status: ${selectedOrder?.data?.orderStatus}`}</Typography>
-                      </div>
-                    </div>
-                    <div
-                      style={{
-                        display: "flex",
-                        justifyContent: "flex-start",
-                        marginTop: "8px",
-                      }}
-                    >
-                      <div style={{ width: "50%" }}>
-                        <Typography
-                          style={{ fontSize: "1.5vw", color: "#0F607D" }}
-                        >{`Customer Channel: ${selectedOrder?.data?.customerChannel}`}</Typography>
-                      </div>
-                      <div style={{ width: "50%" }}>
-                        <Typography
-                          style={{ fontSize: "1.5vw", color: "#0F607D" }}
-                        >{`Customer Detail: ${selectedOrder?.data?.customerDetail}`}</Typography>
-                      </div>
-                    </div>
-                  </div>
-                )}
+                  )}
+                </div>
               </div>
             </div>
-          </div>
+          ) : (
+            ""
+          )}
           <div
             style={{
               width: "100%",
@@ -922,7 +920,7 @@ const EstimationOrderPage = () => {
                     <AddIcon style={{ color: "#0F607D" }} />
                   </IconButton>
                 </div>
-                <div>
+                <div style={{ marginTop: "16px" }}>
                   <TableContainer component={Paper}>
                     <Table sx={{ minWidth: 650 }} aria-label="simple table">
                       <TableHead>
@@ -995,20 +993,16 @@ const EstimationOrderPage = () => {
                                     <DemoContainer
                                       components={["DateTimePicker"]}
                                     >
-                                      <DemoItem
-                                        label={
-                                          <Label
-                                            componentName="DateTimePicker"
-                                            valueType="date time"
-                                          />
-                                        }
-                                      >
+                                      <DemoItem>
                                         <DateTimePicker
                                           disablePast
-                                          value={pekerjaan.tanggalMulai}
+                                          // value={pekerjaan.tanggalMulai}
+                                          maxDateTime={dayjs(
+                                            selectedOrder?.data?.orderDueDate
+                                          )}
                                           onChange={(e) =>
                                             handleInputChange(
-                                              e,
+                                              dayjs(e),
                                               index,
                                               pekerjaanIndex,
                                               "tanggalMulai"
@@ -1020,29 +1014,38 @@ const EstimationOrderPage = () => {
                                   </LocalizationProvider>
                                 </TableCell>
                                 <TableCell align="left">
-                                  <TextField
-                                    value={pekerjaan.tanggalSelesai}
-                                    onChange={(e) =>
-                                      handleInputChange(
-                                        e,
-                                        index,
-                                        pekerjaanIndex,
-                                        "tanggalSelesai"
-                                      )
-                                    }
-                                  />
+                                  <LocalizationProvider
+                                    dateAdapter={AdapterDayjs}
+                                  >
+                                    <DemoContainer
+                                      components={["DateTimePicker"]}
+                                    >
+                                      <DemoItem>
+                                        <DateTimePicker
+                                          disablePast
+                                          maxDateTime={dayjs(
+                                            selectedOrder?.data?.orderDueDate
+                                          )}
+                                          onChange={(e) =>
+                                            handleInputChange(
+                                              dayjs(e),
+                                              index,
+                                              pekerjaanIndex,
+                                              "tanggalSelesai"
+                                            )
+                                          }
+                                        />
+                                      </DemoItem>
+                                    </DemoContainer>
+                                  </LocalizationProvider>
                                 </TableCell>
                                 <TableCell align="left">
                                   <TextField
-                                    value={pekerjaan.jumlahHari}
-                                    onChange={(e) =>
-                                      handleInputChange(
-                                        e,
-                                        index,
-                                        pekerjaanIndex,
-                                        "jumlahHari"
-                                      )
-                                    }
+                                    disabled
+                                    value={perbedaanHariJam(
+                                      pekerjaan?.tanggalMulai,
+                                      pekerjaan?.tanggalSelesai
+                                    )}
                                   />
                                 </TableCell>
                                 {pekerjaanIndex === 0 && (
