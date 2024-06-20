@@ -1147,6 +1147,7 @@ const OrderDetail = (props) => {
                       }
                     >
                       <DateTimePicker
+                        disablePast
                         value={orderDueDate}
                         onChange={(event) => setOrderDueDate(event)}
                       />

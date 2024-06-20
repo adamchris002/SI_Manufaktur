@@ -110,6 +110,8 @@ const MaindashboardMarketing = (props) => {
   const navigate = useNavigate();
 
   const { isMobile } = useContext(AppContext);
+  var now = dayjs();
+  var today = new Date();
 
   const { userInformation } = props;
   const { message, clearMessage } = useAuth();
@@ -2133,6 +2135,7 @@ const MaindashboardMarketing = (props) => {
                       }
                     >
                       <DateTimePicker
+                        disablePast
                         onChange={(event) => setOrderDueDate(event)}
                       />
                     </DemoItem>

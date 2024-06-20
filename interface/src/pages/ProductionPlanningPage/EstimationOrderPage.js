@@ -4,6 +4,8 @@ import {
   FormControlLabel,
   IconButton,
   Paper,
+  Stack,
+  styled,
   Switch,
   Table,
   TableBody,
@@ -12,6 +14,7 @@ import {
   TableHead,
   TableRow,
   TextField,
+  Tooltip,
   Typography,
 } from "@mui/material";
 import AddIcon from "@mui/icons-material/Add";
@@ -19,7 +22,47 @@ import DeleteIcon from "@mui/icons-material/Delete";
 import MySelectTextField from "../../components/SelectTextField";
 import axios from "axios";
 import { AppContext } from "../../App";
+import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
+import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
+import { DemoContainer, DemoItem } from "@mui/x-date-pickers/internals/demo";
+import { DateTimePicker } from "@mui/x-date-pickers/DateTimePicker";
 
+const ProSpan = styled("span")({
+  display: "inline-block",
+  height: "1em",
+  width: "1em",
+  verticalAlign: "middle",
+  marginLeft: "0.3em",
+  marginBottom: "0.08em",
+  backgroundSize: "contain",
+  backgroundRepeat: "no-repeat",
+  backgroundImage: "url(https://mui.com/static/x/pro.svg)",
+});
+
+function Label({ componentName, valueType, isProOnly }) {
+  const content = (
+    <span>
+      <strong>{componentName}</strong> for {valueType} editing
+    </span>
+  );
+  if (isProOnly) {
+    return (
+      <Stack direction="row" spacing={0.5} component="span">
+        <Tooltip title="Included on Pro package">
+          <a
+            href="https://mui.com/x/introduction/licensing/#pro-plan"
+            aria-label="Included on Pro package"
+          >
+            <ProSpan />
+          </a>
+        </Tooltip>
+        {content}
+      </Stack>
+    );
+  }
+
+  return content;
+}
 const EstimationOrderPage = () => {
   const { isMobile } = useContext(AppContext);
 
@@ -61,6 +104,24 @@ const EstimationOrderPage = () => {
         ],
       },
     ]);
+  };
+
+  const handleInputChange = (event, index, pekerjaanIndex, field) => {
+    const { value } = event.target;
+    setEstimasiJadwal((oldArray) =>
+      oldArray.map((item, i) =>
+        i === index
+          ? {
+              ...item,
+              pekerjaan: item.pekerjaan.map((pekerjaan, j) =>
+                j === pekerjaanIndex
+                  ? { ...pekerjaan, [field]: value }
+                  : pekerjaan
+              ),
+            }
+          : item
+      )
+    );
   };
 
   const handleSelectId = (orderId) => {
@@ -855,7 +916,7 @@ const EstimationOrderPage = () => {
                   </Typography>
                   <IconButton
                     onClick={() => {
-                      addEstimasiJadwal()
+                      addEstimasiJadwal();
                     }}
                   >
                     <AddIcon style={{ color: "#0F607D" }} />
@@ -869,12 +930,14 @@ const EstimationOrderPage = () => {
                           <TableCell>Bagian</TableCell>
                           <TableCell align="left">
                             Jenis Pekerjaan{" "}
-                            <IconButton onClick={() => {
-                              const lastIndex = estimasiJadwal.length - 1;
-                              if (lastIndex >= 0) {
-                                addPekerjaan(lastIndex);
-                              }
-                            }}>
+                            <IconButton
+                              onClick={() => {
+                                const lastIndex = estimasiJadwal.length - 1;
+                                if (lastIndex >= 0) {
+                                  addPekerjaan(lastIndex);
+                                }
+                              }}
+                            >
                               <AddIcon style={{ color: "#0F607D" }} />
                             </IconButton>
                           </TableCell>
@@ -885,45 +948,126 @@ const EstimationOrderPage = () => {
                       </TableHead>
                       <TableBody>
                         {estimasiJadwal.map((row, index) => (
-                          <TableRow
-                            key={row.name}
-                            sx={{
-                              "&:last-child td, &:last-child th": { border: 0 },
-                            }}
-                          >
-                            <TableCell component="th" scope="row">
-                              <TextField />
-                            </TableCell>
-                            <TableCell align="right">
-                              <TextField />
-                            </TableCell>
-                            <TableCell align="right">
-                              <TextField />
-                            </TableCell>
-                            <TableCell align="right">
-                              <TextField />
-                            </TableCell>
-                            <TableCell align="right">
-                              <div
-                                style={{
-                                  display: "flex",
-                                  alignItems: "center",
+                          <React.Fragment key={index}>
+                            {row.pekerjaan.map((pekerjaan, pekerjaanIndex) => (
+                              <TableRow
+                                key={`${index}-${pekerjaanIndex}`}
+                                sx={{
+                                  "&:last-child td, &:last-child th": {
+                                    border: 0,
+                                  },
                                 }}
                               >
-                                <TextField />
-                                <IconButton
-                                  style={{ marginLeft: "8px", height: "50%" }}
-                                  onClick={() => {
-                                    setEstimasiJadwal((oldArray) =>
-                                      oldArray.filter((_, i) => i !== index)
-                                    );
-                                  }}
-                                >
-                                  <DeleteIcon style={{ color: "red" }} />
-                                </IconButton>
-                              </div>
-                            </TableCell>
-                          </TableRow>
+                                {pekerjaanIndex === 0 ? (
+                                  <TableCell>
+                                    <TextField
+                                      value={row.bagian}
+                                      onChange={(e) =>
+                                        handleInputChange(
+                                          e,
+                                          index,
+                                          pekerjaanIndex,
+                                          "bagian"
+                                        )
+                                      }
+                                    />
+                                  </TableCell>
+                                ) : (
+                                  <TableCell></TableCell>
+                                )}
+                                <TableCell align="left">
+                                  <TextField
+                                    value={pekerjaan.jenisPekerjaan}
+                                    onChange={(e) =>
+                                      handleInputChange(
+                                        e,
+                                        index,
+                                        pekerjaanIndex,
+                                        "jenisPekerjaan"
+                                      )
+                                    }
+                                  />
+                                </TableCell>
+                                <TableCell align="left">
+                                  <LocalizationProvider
+                                    dateAdapter={AdapterDayjs}
+                                  >
+                                    <DemoContainer
+                                      components={["DateTimePicker"]}
+                                    >
+                                      <DemoItem
+                                        label={
+                                          <Label
+                                            componentName="DateTimePicker"
+                                            valueType="date time"
+                                          />
+                                        }
+                                      >
+                                        <DateTimePicker
+                                          disablePast
+                                          value={pekerjaan.tanggalMulai}
+                                          onChange={(e) =>
+                                            handleInputChange(
+                                              e,
+                                              index,
+                                              pekerjaanIndex,
+                                              "tanggalMulai"
+                                            )
+                                          }
+                                        />
+                                      </DemoItem>
+                                    </DemoContainer>
+                                  </LocalizationProvider>
+                                </TableCell>
+                                <TableCell align="left">
+                                  <TextField
+                                    value={pekerjaan.tanggalSelesai}
+                                    onChange={(e) =>
+                                      handleInputChange(
+                                        e,
+                                        index,
+                                        pekerjaanIndex,
+                                        "tanggalSelesai"
+                                      )
+                                    }
+                                  />
+                                </TableCell>
+                                <TableCell align="left">
+                                  <TextField
+                                    value={pekerjaan.jumlahHari}
+                                    onChange={(e) =>
+                                      handleInputChange(
+                                        e,
+                                        index,
+                                        pekerjaanIndex,
+                                        "jumlahHari"
+                                      )
+                                    }
+                                  />
+                                </TableCell>
+                                {pekerjaanIndex === 0 && (
+                                  <TableCell
+                                    align="right"
+                                    rowSpan={row.pekerjaan.length}
+                                  >
+                                    <IconButton
+                                      style={{
+                                        marginLeft: "8px",
+                                        height: "50%",
+                                      }}
+                                      onClick={() => {
+                                        setEstimasiJadwal((oldArray) =>
+                                          oldArray.filter((_, i) => i !== index)
+                                        );
+                                      }}
+                                    >
+                                      <DeleteIcon style={{ color: "red" }} />
+                                    </IconButton>
+                                  </TableCell>
+                                )}
+                              </TableRow>
+                            ))}
+                          </React.Fragment>
                         ))}
                       </TableBody>
                     </Table>
