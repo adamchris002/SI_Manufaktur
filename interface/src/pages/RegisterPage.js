@@ -215,6 +215,7 @@ const RegisterPage = () => {
               registerClicked && email === "" && "Please fill in your E-mail"
             }
             label="E-mail"
+            type="email"
             variant="standard"
             onChange={(current) => {
               setEmail(current.target.value);

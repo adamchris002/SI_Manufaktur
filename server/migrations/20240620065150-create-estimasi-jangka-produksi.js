@@ -2,33 +2,32 @@
 /** @type {import('sequelize-cli').Migration} */
 module.exports = {
   async up(queryInterface, Sequelize) {
-    await queryInterface.createTable('orders', {
+    await queryInterface.createTable('estimasiJangkaProduksis', {
       id: {
         allowNull: false,
         autoIncrement: true,
         primaryKey: true,
         type: Sequelize.INTEGER
       },
-      orderTitle: {
+      jangkaWaktuProduksiId: {
+        type: Sequelize.INTEGER,
+        references: {
+          model: 'jangkaWaktuProduksis',
+          key: 'id',
+        },
+        onDelete: 'CASCADE'
+      },
+      jenisPekerjaan: {
         type: Sequelize.STRING
       },
-      orderQuantity: {
-        type: Sequelize.STRING
+      tanggalMulai: {
+        type: Sequelize.DATE
       },
-      orderDetails: {
-        type: Sequelize.STRING
+      tanggalSelesai: {
+        type: Sequelize.DATE
       },
-      orderStatus: {
-        type: Sequelize.STRING
-      },
-      customerChannel: {
-        type: Sequelize.STRING
-      },
-      customerDetail: {
-        type: Sequelize.STRING
-      },
-      alamatPengiriman: {
-        type: Sequelize.STRING
+      jumlahHari: {
+        type: Sequelize.INTEGER
       },
       createdAt: {
         allowNull: false,
@@ -41,6 +40,6 @@ module.exports = {
     });
   },
   async down(queryInterface, Sequelize) {
-    await queryInterface.dropTable('orders');
+    await queryInterface.dropTable('estimasiJangkaProduksis');
   }
 };

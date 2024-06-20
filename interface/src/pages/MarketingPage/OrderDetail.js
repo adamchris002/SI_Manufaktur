@@ -6,8 +6,10 @@ import {
   Backdrop,
   Button,
   IconButton,
+  Stack,
   styled,
   TextField,
+  Tooltip,
   Typography,
 } from "@mui/material";
 import KeyboardArrowLeftIcon from "@mui/icons-material/KeyboardArrowLeft";
@@ -22,6 +24,12 @@ import RemoveRedEyeIcon from "@mui/icons-material/RemoveRedEye";
 import MySnackbar from "../../components/Snackbar";
 import { useAuth } from "../../components/AuthContext";
 import { AppContext } from "../../App";
+import dayjs from "dayjs";
+import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
+import { DemoContainer, DemoItem } from "@mui/x-date-pickers/internals/demo";
+import { DateTimePicker } from "@mui/x-date-pickers/DateTimePicker";
+import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
+import { NumericFormat } from "react-number-format";
 
 const VisuallyHiddenInput = styled("input")({
   clip: "rect(0 0 0 0)",
@@ -33,6 +41,66 @@ const VisuallyHiddenInput = styled("input")({
   left: 0,
   whiteSpace: "nowrap",
   width: 1,
+});
+
+const ProSpan = styled("span")({
+  display: "inline-block",
+  height: "1em",
+  width: "1em",
+  verticalAlign: "middle",
+  marginLeft: "0.3em",
+  marginBottom: "0.08em",
+  backgroundSize: "contain",
+  backgroundRepeat: "no-repeat",
+  backgroundImage: "url(https://mui.com/static/x/pro.svg)",
+});
+
+function Label({ componentName, valueType, isProOnly }) {
+  const content = (
+    <span>
+      <strong>{componentName}</strong> for {valueType} editing
+    </span>
+  );
+
+  if (isProOnly) {
+    return (
+      <Stack direction="row" spacing={0.5} component="span">
+        <Tooltip title="Included on Pro package">
+          <a
+            href="https://mui.com/x/introduction/licensing/#pro-plan"
+            aria-label="Included on Pro package"
+          >
+            <ProSpan />
+          </a>
+        </Tooltip>
+        {content}
+      </Stack>
+    );
+  }
+
+  return content;
+}
+
+const NumericFormatCustom = React.forwardRef((props, ref) => {
+  const { onChange, ...other } = props;
+
+  return (
+    <NumericFormat
+      {...other}
+      getInputRef={ref}
+      onValueChange={(values) => {
+        onChange({
+          target: {
+            name: props.name,
+            value: values.value,
+          },
+        });
+      }}
+      thousandSeparator
+      valueIsNumericString
+      prefix="Rp."
+    />
+  );
 });
 
 const OrderDetail = (props) => {
@@ -50,6 +118,10 @@ const OrderDetail = (props) => {
   const [orderDocuments, setOrderDocuments] = useState([]);
   const [orderCustomerChannel, setOrderCustomerChannel] = useState("");
   const [orderCustomerDetail, setOrderCustomerDetail] = useState("");
+  const [orderTotalPrice, setOrderTotalPrice] = useState("");
+  const [orderType, setOrderType] = useState("");
+  const [orderNoSeries, setOrderNoSeries] = useState("");
+  const [orderDueDate, setOrderDueDate] = useState(dayjs(""));
   const [openImage, setOpenImage] = useState(false);
   const [imageIndex, setImageIndex] = useState(null);
   const [imageOption, setImageOption] = useState(true);
@@ -105,6 +177,10 @@ const OrderDetail = (props) => {
       setOrderDocuments(result.data.documents);
       setOrderCustomerChannel(result.data.customerChannel);
       setOrderCustomerDetail(result.data.customerDetail);
+      setOrderType(result.data.orderType);
+      setOrderNoSeries(result.data.orderNoSeries);
+      setOrderTotalPrice(result.data.orderTotalPrice);
+      setOrderDueDate(dayjs(result.data.orderDueDate));
       setCheckUpdate(false);
     });
   }, [checkUpdate]);
@@ -125,7 +201,11 @@ const OrderDetail = (props) => {
       orderQuantityUnit === "" ||
       orderDetails === "" ||
       orderCustomerChannel === "" ||
-      orderCustomerDetail === ""
+      orderCustomerDetail === "" ||
+      orderTotalPrice === "" ||
+      orderType === "" ||
+      orderNoSeries === "" ||
+      orderDueDate === ""
     ) {
       setOpenSnackbar(true);
       setSnackbarStatus(false);
@@ -141,6 +221,10 @@ const OrderDetail = (props) => {
       formData.append("orderDetails", orderDetails);
       formData.append("customerChannel", orderCustomerChannel);
       formData.append("customerDetail", orderCustomerDetail);
+      formData.append("orderTotalPrice", orderTotalPrice);
+      formData.append("orderType", orderType);
+      formData.append("orderNoSeries", orderNoSeries);
+      formData.append("orderDueDate", orderDueDate);
 
       for (const file of orderDocuments) {
         if (!file.id) {
@@ -456,13 +540,15 @@ const OrderDetail = (props) => {
             </Typography>
           </div>
           <div style={{ display: "flex" }}>
-            <Typography sx={{ fontSize: isMobile ? "3vw" : "1.8vw", color: "#0F607D" }}>
+            <Typography
+              sx={{ fontSize: isMobile ? "3vw" : "1.8vw", color: "#0F607D" }}
+            >
               {orderDetailInfo?.data?.orderDetails}
             </Typography>
           </div>
-          <div style={{width: isMobile ? "90%" : "60%", marginTop: "32px"}}>
+          <div style={{ width: isMobile ? "90%" : "60%", marginTop: "32px" }}>
             <div style={{ display: "flex", justifyContent: "flex-start" }}>
-              <div style={{width: "50%"}}>
+              <div style={{ width: "50%" }}>
                 <Typography
                   style={{
                     fontSize: isMobile ? "3vw" : "1.8vw",
@@ -480,7 +566,43 @@ const OrderDetail = (props) => {
               </div>
             </div>
             <div style={{ display: "flex", marginTop: "16px" }}>
-              <div style={{width: "50%"}}>
+              <div style={{ width: "50%" }}>
+                <Typography
+                  style={{
+                    fontSize: isMobile ? "3vw" : "1.8vw",
+                    color: "#0F607D",
+                  }}
+                >{`Order Type: ${orderDetailInfo?.data?.orderType}`}</Typography>
+              </div>
+              <div style={{ marginLeft: "16px", width: "50%" }}>
+                <Typography
+                  style={{
+                    fontSize: isMobile ? "3vw" : "1.8vw",
+                    color: "#0F607D",
+                  }}
+                >{`Order No Series: ${orderDetailInfo?.data?.orderNoSeries}`}</Typography>
+              </div>
+            </div>
+            <div style={{ display: "flex", marginTop: "16px" }}>
+              <div style={{ width: "50%" }}>
+                <Typography
+                  style={{
+                    fontSize: isMobile ? "3vw" : "1.8vw",
+                    color: "#0F607D",
+                  }}
+                >{`Order Total Price: ${orderDetailInfo?.data?.orderTotalPrice}`}</Typography>
+              </div>
+              <div style={{ marginLeft: "16px", width: "50%" }}>
+                <Typography
+                  style={{
+                    fontSize: isMobile ? "3vw" : "1.8vw",
+                    color: "#0F607D",
+                  }}
+                >{`Order Due Date: ${orderDetailInfo?.data?.orderDueDate}`}</Typography>
+              </div>
+            </div>
+            <div style={{ display: "flex", marginTop: "16px" }}>
+              <div style={{ width: "50%" }}>
                 <Typography
                   style={{
                     fontSize: isMobile ? "3vw" : "1.8vw",
@@ -508,6 +630,7 @@ const OrderDetail = (props) => {
               margin: isMobile ? "24px" : "0.83vw 1.667vw 0.83vw 1.667vw",
               overflow: "auto",
               width: isMobile ? "80vw" : "50vw",
+              height: "80vh",
             }}
           >
             <div style={{ display: "flex", margin: "1.667vw 0px 1.042vw 0px" }}>
@@ -854,6 +977,182 @@ const OrderDetail = (props) => {
                     setOrderDetails(current.target.value);
                   }}
                 />
+              </div>
+            </div>
+            <div style={{ marginBottom: "1.667vw" }}>
+              <div
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  width: "100%",
+                  justifyContent: "space-between",
+                }}
+              >
+                <div style={{ display: "flex" }}>
+                  <Typography
+                    style={{
+                      color: "#0F607D",
+                      fontSize: isMobile ? "4vw" : "1.5vw",
+                    }}
+                  >
+                    Jenis Cetakan:
+                  </Typography>
+                </div>
+                <TextField
+                  type="text"
+                  value={orderType}
+                  sx={{
+                    "& .MuiOutlinedInput-root": {
+                      height: isMobile ? "15px" : "3vw",
+                      width: isMobile ? "120px" : "20vw",
+                      fontSize: isMobile ? "10px" : "1.5vw",
+                      borderRadius: "10px",
+                      "& fieldset": {
+                        borderColor: "#0F607D",
+                      },
+                      "&:hover fieldset": {
+                        borderColor: "#0F607D",
+                      },
+                      "&.Mui-focused fieldset": {
+                        borderColor: "#0F607D",
+                      },
+                    },
+                  }}
+                  onChange={(event) => {
+                    setOrderType(event.target.value);
+                  }}
+                />
+              </div>
+            </div>
+            <div style={{ marginBottom: "1.667vw" }}>
+              <div
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  width: "100%",
+                  justifyContent: "space-between",
+                }}
+              >
+                <div style={{ display: "flex" }}>
+                  <Typography
+                    style={{
+                      color: "#0F607D",
+                      fontSize: isMobile ? "4vw" : "1.5vw",
+                    }}
+                  >
+                    No Seri:
+                  </Typography>
+                </div>
+                <TextField
+                  type="text"
+                  value={orderNoSeries}
+                  sx={{
+                    "& .MuiOutlinedInput-root": {
+                      height: isMobile ? "15px" : "3vw",
+                      width: isMobile ? "90px" : "15vw",
+                      fontSize: isMobile ? "10px" : "1.5vw",
+                      borderRadius: "10px",
+                      "& fieldset": {
+                        borderColor: "#0F607D",
+                      },
+                      "&:hover fieldset": {
+                        borderColor: "#0F607D",
+                      },
+                      "&.Mui-focused fieldset": {
+                        borderColor: "#0F607D",
+                      },
+                    },
+                  }}
+                  onChange={(event) => {
+                    setOrderNoSeries(event.target.value);
+                  }}
+                />
+              </div>
+            </div>
+            <div style={{ marginBottom: "1.667vw" }}>
+              <div
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  width: "100%",
+                  justifyContent: "space-between",
+                }}
+              >
+                <div style={{ display: "flex" }}>
+                  <Typography
+                    style={{
+                      color: "#0F607D",
+                      fontSize: isMobile ? "4vw" : "1.5vw",
+                    }}
+                  >
+                    Jumlah Harga:
+                  </Typography>
+                </div>
+                <TextField
+                  type="text"
+                  value={orderTotalPrice}
+                  sx={{
+                    "& .MuiOutlinedInput-root": {
+                      height: isMobile ? "15px" : "3vw",
+                      width: isMobile ? "120px" : "20vw",
+                      fontSize: isMobile ? "10px" : "1.5vw",
+                      borderRadius: "10px",
+                      "& fieldset": {
+                        borderColor: "#0F607D",
+                      },
+                      "&:hover fieldset": {
+                        borderColor: "#0F607D",
+                      },
+                      "&.Mui-focused fieldset": {
+                        borderColor: "#0F607D",
+                      },
+                    },
+                  }}
+                  onChange={(event) => {
+                    setOrderTotalPrice(event.target.value);
+                  }}
+                  InputProps={{
+                    inputComponent: NumericFormatCustom,
+                  }}
+                />
+              </div>
+            </div>
+            <div style={{ marginBottom: "1.667vw" }}>
+              <div
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  width: "100%",
+                  justifyContent: "space-between",
+                }}
+              >
+                <div style={{ display: "flex" }}>
+                  <Typography
+                    style={{
+                      color: "#0F607D",
+                      fontSize: isMobile ? "4vw" : "1.5vw",
+                    }}
+                  >
+                    Tanggal Jatuh Tempo:
+                  </Typography>
+                </div>
+                <LocalizationProvider dateAdapter={AdapterDayjs}>
+                  <DemoContainer components={["DateTimePicker"]}>
+                    <DemoItem
+                      label={
+                        <Label
+                          componentName="DateTimePicker"
+                          valueType="date time"
+                        />
+                      }
+                    >
+                      <DateTimePicker
+                        value={orderDueDate}
+                        onChange={(event) => setOrderDueDate(event)}
+                      />
+                    </DemoItem>
+                  </DemoContainer>
+                </LocalizationProvider>
               </div>
             </div>
             <div style={{ marginBottom: "1.667vw" }}>

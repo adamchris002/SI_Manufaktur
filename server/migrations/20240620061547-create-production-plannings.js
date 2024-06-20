@@ -1,33 +1,53 @@
 'use strict';
-/** @type {import('sequelize-cli').Migration} */
 module.exports = {
   async up(queryInterface, Sequelize) {
-    await queryInterface.createTable('orders', {
+    await queryInterface.createTable('productionPlannings', {
       id: {
         allowNull: false,
         autoIncrement: true,
         primaryKey: true,
         type: Sequelize.INTEGER
       },
-      orderTitle: {
+      pemesan: {
         type: Sequelize.STRING
       },
-      orderQuantity: {
+      alamatKirimBarang: {
         type: Sequelize.STRING
       },
-      orderDetails: {
+      tanggalPengirimanBarang: {
         type: Sequelize.STRING
       },
-      orderStatus: {
+      jenisCetakan: {
         type: Sequelize.STRING
       },
-      customerChannel: {
+      ukuran: {
         type: Sequelize.STRING
       },
-      customerDetail: {
+      kuantitas: {
         type: Sequelize.STRING
       },
-      alamatPengiriman: {
+      isiPerBox: {
+        type: Sequelize.STRING
+      },
+      ply: {
+        type: Sequelize.STRING
+      },
+      seri: {
+        type: Sequelize.STRING
+      },
+      nomorator: {
+        type: Sequelize.STRING
+      },
+      contoh: {
+        type: Sequelize.BOOLEAN
+      },
+      plate: {
+        type: Sequelize.BOOLEAN
+      },
+      setting: {
+        type: Sequelize.BOOLEAN
+      },
+      catatan: {
         type: Sequelize.STRING
       },
       createdAt: {
@@ -41,6 +61,6 @@ module.exports = {
     });
   },
   async down(queryInterface, Sequelize) {
-    await queryInterface.dropTable('orders');
+    await queryInterface.dropTable('productionPlannings');
   }
 };

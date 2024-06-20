@@ -23,6 +23,11 @@ module.exports = (sequelize, DataTypes) => {
       orderStatus: DataTypes.STRING,
       customerChannel: DataTypes.STRING,
       customerDetail: DataTypes.STRING,
+      orderTotalPrice: DataTypes.STRING,
+      orderType: DataTypes.STRING,
+      orderNoSeries: DataTypes.STRING,
+      orderDueDate: DataTypes.STRING,
+      alamatPengiriman: DataTypes.STRING,
     },
     {
       sequelize,

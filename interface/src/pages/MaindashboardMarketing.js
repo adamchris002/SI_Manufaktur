@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useState } from "react";
+import React, { forwardRef, useContext, useEffect, useState } from "react";
 import axios from "axios";
 import { useNavigate, Outlet } from "react-router-dom";
 import moment from "moment";
@@ -6,7 +6,12 @@ import "./MaindashbordMarketing.css";
 import factoryBackground from "../assets/factorybackground.png";
 import companyLogo from "../assets/PT_Aridas_Karya_Satria_Logo.png";
 import DefaultButton from "../components/Button";
+import { NumericFormat } from "react-number-format";
 import AccountCircleIcon from "@mui/icons-material/AccountCircle";
+import { DemoContainer, DemoItem } from "@mui/x-date-pickers/internals/demo";
+import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
+import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
+import { DateTimePicker } from "@mui/x-date-pickers/DateTimePicker";
 import {
   Typography,
   TextField,
@@ -14,6 +19,8 @@ import {
   Button,
   Backdrop,
   IconButton,
+  Stack,
+  Tooltip,
 } from "@mui/material";
 import { useAuth } from "../components/AuthContext";
 import MySnackbar from "../components/Snackbar";
@@ -25,6 +32,7 @@ import DeleteIcon from "@mui/icons-material/Delete";
 import RemoveRedEyeIcon from "@mui/icons-material/RemoveRedEye";
 import { AppContext } from "../App";
 import CustomChip from "../components/Chip";
+import dayjs from "dayjs";
 
 const VisuallyHiddenInput = styled("input")({
   clip: "rect(0 0 0 0)",
@@ -36,6 +44,66 @@ const VisuallyHiddenInput = styled("input")({
   left: 0,
   whiteSpace: "nowrap",
   width: 1,
+});
+
+const ProSpan = styled("span")({
+  display: "inline-block",
+  height: "1em",
+  width: "1em",
+  verticalAlign: "middle",
+  marginLeft: "0.3em",
+  marginBottom: "0.08em",
+  backgroundSize: "contain",
+  backgroundRepeat: "no-repeat",
+  backgroundImage: "url(https://mui.com/static/x/pro.svg)",
+});
+
+function Label({ componentName, valueType, isProOnly }) {
+  const content = (
+    <span>
+      <strong>{componentName}</strong> for {valueType} editing
+    </span>
+  );
+
+  if (isProOnly) {
+    return (
+      <Stack direction="row" spacing={0.5} component="span">
+        <Tooltip title="Included on Pro package">
+          <a
+            href="https://mui.com/x/introduction/licensing/#pro-plan"
+            aria-label="Included on Pro package"
+          >
+            <ProSpan />
+          </a>
+        </Tooltip>
+        {content}
+      </Stack>
+    );
+  }
+
+  return content;
+}
+
+const NumericFormatCustom = React.forwardRef((props, ref) => {
+  const { onChange, ...other } = props;
+
+  return (
+    <NumericFormat
+      {...other}
+      getInputRef={ref}
+      onValueChange={(values) => {
+        onChange({
+          target: {
+            name: props.name,
+            value: values.value,
+          },
+        });
+      }}
+      thousandSeparator
+      valueIsNumericString
+      prefix="Rp."
+    />
+  );
 });
 
 const MaindashboardMarketing = (props) => {
@@ -54,6 +122,10 @@ const MaindashboardMarketing = (props) => {
   const [orderQuantityUnit, setOrderQuantityUnit] = useState("");
   const [orderDocuments, setOrderDocuments] = useState([]);
   const [orderDetails, setOrderDetails] = useState("");
+  const [orderTotalPrice, setOrderTotalPrice] = useState("");
+  const [orderType, setOrderType] = useState("");
+  const [orderNoSeries, setOrderNoSeries] = useState("");
+  const [orderDueDate, setOrderDueDate] = useState(dayjs(""));
   const [orderCustomerChannel, setOrderCustomerChannel] = useState("");
   const [orderCustomerDetail, setOrderCustomerDetail] = useState("");
   const [updateNotification, setUpdateNotification] = useState(false);
@@ -61,8 +133,6 @@ const MaindashboardMarketing = (props) => {
   const [openImage, setOpenImage] = useState(false);
   const [imageIndex, setImageIndex] = useState(null);
   const [imageOption, setImageOption] = useState(true);
-
-  console.log(orderDocuments);
 
   useEffect(() => {
     axios({
@@ -114,7 +184,11 @@ const MaindashboardMarketing = (props) => {
       orderQuantityUnit === "" ||
       orderDetails === "" ||
       orderCustomerChannel === "" ||
-      orderCustomerDetail === ""
+      orderCustomerDetail === "" ||
+      orderTotalPrice === "" ||
+      orderType === "" ||
+      orderNoSeries === "" ||
+      orderDueDate === ""
     ) {
       setOpenSnackbar(true);
       setSnackbarStatus(false);
@@ -129,6 +203,10 @@ const MaindashboardMarketing = (props) => {
       formData.append("orderDetails", orderDetails);
       formData.append("customerChannel", orderCustomerChannel);
       formData.append("customerDetail", orderCustomerDetail);
+      formData.append("orderTotalPrice", orderTotalPrice);
+      formData.append("orderType", orderType);
+      formData.append("orderNoSeries", orderNoSeries);
+      formData.append("orderDueDate", orderDueDate);
       formData.append("orderStatus", "Ongoing");
 
       for (const file of orderDocuments) {
@@ -766,14 +844,14 @@ const MaindashboardMarketing = (props) => {
             {allOrderList?.data?.length === 0 ||
             allOrderList?.data === undefined ||
             !allOrderList?.data?.some(
-              (order) => order.orderStatus === "Reviewed"
+              (order) => order.orderStatus === "Estimated"
             ) ? (
               <Typography style={{ fontSize: isMobile ? "12px" : "1.25vw" }}>
                 There are no reviewed orders currently
               </Typography>
             ) : (
               allOrderList?.data
-                ?.filter((order) => order.orderStatus === "Reviewed")
+                ?.filter((order) => order.orderStatus === "Estimated")
                 .map((data, index, filteredArray) => (
                   <div
                     key={index}
@@ -1550,6 +1628,7 @@ const MaindashboardMarketing = (props) => {
               margin: isMobile ? "24px" : "0.83vw 1.667vw 0.83vw 1.667vw",
               overflow: "auto",
               width: isMobile ? "80vw" : "50vw",
+              maxHeight: "80vh",
             }}
           >
             <div style={{ display: "flex", margin: "1.667vw 0px 1.042vw 0px" }}>
@@ -1886,6 +1965,179 @@ const MaindashboardMarketing = (props) => {
                     setOrderDetails(current.target.value);
                   }}
                 />
+              </div>
+            </div>
+
+            <div style={{ marginBottom: "1.667vw" }}>
+              <div
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  width: "100%",
+                  justifyContent: "space-between",
+                }}
+              >
+                <div style={{ display: "flex" }}>
+                  <Typography
+                    style={{
+                      color: "#0F607D",
+                      fontSize: isMobile ? "4vw" : "1.5vw",
+                    }}
+                  >
+                    Jenis Cetakan:
+                  </Typography>
+                </div>
+                <TextField
+                  type="text"
+                  sx={{
+                    "& .MuiOutlinedInput-root": {
+                      height: isMobile ? "15px" : "3vw",
+                      width: isMobile ? "120px" : "20vw",
+                      fontSize: isMobile ? "10px" : "1.5vw",
+                      borderRadius: "10px",
+                      "& fieldset": {
+                        borderColor: "#0F607D",
+                      },
+                      "&:hover fieldset": {
+                        borderColor: "#0F607D",
+                      },
+                      "&.Mui-focused fieldset": {
+                        borderColor: "#0F607D",
+                      },
+                    },
+                  }}
+                  onChange={(event) => {
+                    setOrderType(event.target.value);
+                  }}
+                />
+              </div>
+            </div>
+            <div style={{ marginBottom: "1.667vw" }}>
+              <div
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  width: "100%",
+                  justifyContent: "space-between",
+                }}
+              >
+                <div style={{ display: "flex" }}>
+                  <Typography
+                    style={{
+                      color: "#0F607D",
+                      fontSize: isMobile ? "4vw" : "1.5vw",
+                    }}
+                  >
+                    No Seri:
+                  </Typography>
+                </div>
+                <TextField
+                  type="text"
+                  sx={{
+                    "& .MuiOutlinedInput-root": {
+                      height: isMobile ? "15px" : "3vw",
+                      width: isMobile ? "90px" : "15vw",
+                      fontSize: isMobile ? "10px" : "1.5vw",
+                      borderRadius: "10px",
+                      "& fieldset": {
+                        borderColor: "#0F607D",
+                      },
+                      "&:hover fieldset": {
+                        borderColor: "#0F607D",
+                      },
+                      "&.Mui-focused fieldset": {
+                        borderColor: "#0F607D",
+                      },
+                    },
+                  }}
+                  onChange={(event) => {
+                    setOrderNoSeries(event.target.value);
+                  }}
+                />
+              </div>
+            </div>
+            <div style={{ marginBottom: "1.667vw" }}>
+              <div
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  width: "100%",
+                  justifyContent: "space-between",
+                }}
+              >
+                <div style={{ display: "flex" }}>
+                  <Typography
+                    style={{
+                      color: "#0F607D",
+                      fontSize: isMobile ? "4vw" : "1.5vw",
+                    }}
+                  >
+                    Jumlah Harga:
+                  </Typography>
+                </div>
+                <TextField
+                  type="text"
+                  sx={{
+                    "& .MuiOutlinedInput-root": {
+                      height: isMobile ? "15px" : "3vw",
+                      width: isMobile ? "120px" : "20vw",
+                      fontSize: isMobile ? "10px" : "1.5vw",
+                      borderRadius: "10px",
+                      "& fieldset": {
+                        borderColor: "#0F607D",
+                      },
+                      "&:hover fieldset": {
+                        borderColor: "#0F607D",
+                      },
+                      "&.Mui-focused fieldset": {
+                        borderColor: "#0F607D",
+                      },
+                    },
+                  }}
+                  onChange={(event) => {
+                    setOrderTotalPrice(event.target.value);
+                  }}
+                  InputProps={{
+                    inputComponent: NumericFormatCustom,
+                  }}
+                />
+              </div>
+            </div>
+            <div style={{ marginBottom: "1.667vw" }}>
+              <div
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  width: "100%",
+                  justifyContent: "space-between",
+                }}
+              >
+                <div style={{ display: "flex" }}>
+                  <Typography
+                    style={{
+                      color: "#0F607D",
+                      fontSize: isMobile ? "4vw" : "1.5vw",
+                    }}
+                  >
+                    Tanggal Jatuh Tempo:
+                  </Typography>
+                </div>
+                <LocalizationProvider dateAdapter={AdapterDayjs}>
+                  <DemoContainer components={["DateTimePicker"]}>
+                    <DemoItem
+                      label={
+                        <Label
+                          componentName="DateTimePicker"
+                          valueType="date time"
+                        />
+                      }
+                    >
+                      <DateTimePicker
+                        onChange={(event) => setOrderDueDate(event)}
+                      />
+                    </DemoItem>
+                  </DemoContainer>
+                </LocalizationProvider>
               </div>
             </div>
             <div style={{ marginBottom: "1.667vw" }}>

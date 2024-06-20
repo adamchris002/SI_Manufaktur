@@ -34,6 +34,10 @@ class OrderController {
         customerChannel,
         customerDetail,
         documentsToRemove,
+        orderTotalPrice,
+        orderType,
+        orderNoSeries,
+        orderDueDate,
       } = req.body;
 
       let order = await orders.findOne({
@@ -52,6 +56,10 @@ class OrderController {
           orderDetails,
           customerChannel,
           customerDetail,
+          orderTotalPrice,
+          orderType,
+          orderNoSeries,
+          orderDueDate,
         },
         {
           where: { orderId },
@@ -116,7 +124,6 @@ class OrderController {
   static async deleteOrder(req, res) {
     try {
       const { userId, orderId } = req.query;
-      console.log(orderId);
       const order = await orders.findOne({
         where: { orderId },
         include: [{ model: documents }],
@@ -187,6 +194,10 @@ class OrderController {
         customerChannel,
         customerDetail,
         orderStatus,
+        orderTotalPrice,
+        orderType,
+        orderNoSeries,
+        orderDueDate,
       } = req.body;
 
       const { id } = req.params;
@@ -222,6 +233,10 @@ class OrderController {
         customerChannel,
         customerDetail,
         orderStatus,
+        orderTotalPrice,
+        orderType,
+        orderNoSeries,
+        orderDueDate,
       });
 
       let activityLog = await activitylogs.create({

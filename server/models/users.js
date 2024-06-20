@@ -13,6 +13,10 @@ module.exports = (sequelize, DataTypes) => {
       users.hasMany(models.orders, { foreignKey: "id" });
       // users.hasMany(models.activityLogs, { foreignKey: "userId" });
       users.belongsToMany(models.activitylogs, { through: "UserActivityLogs" });
+      users.belongsToMany(models.productionPlannings, {
+        through: "UserProductionPlanning",
+      });
+      users.hasMany(models.productionPlannings, { foreignKey: "id" });
     }
   }
   users.init(

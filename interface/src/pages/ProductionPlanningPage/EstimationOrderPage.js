@@ -1,6 +1,21 @@
 import React, { useContext, useEffect, useState } from "react";
 import factoryBackground from "../../assets/factorybackground.png";
-import { Typography } from "@mui/material";
+import {
+  FormControlLabel,
+  IconButton,
+  Paper,
+  Switch,
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TableRow,
+  TextField,
+  Typography,
+} from "@mui/material";
+import AddIcon from "@mui/icons-material/Add";
+import DeleteIcon from "@mui/icons-material/Delete";
 import MySelectTextField from "../../components/SelectTextField";
 import axios from "axios";
 import { AppContext } from "../../App";
@@ -10,7 +25,43 @@ const EstimationOrderPage = () => {
 
   const [allOrderID, setAllOrderID] = useState([]);
   const [selectedOrder, setSelectedOrder] = useState([]);
-  console.log(selectedOrder);
+  const [estimasiJadwal, setEstimasiJadwal] = useState([]);
+  console.log(estimasiJadwal);
+
+  const addPekerjaan = (index) => {
+    setEstimasiJadwal((oldArray) =>
+      oldArray.map((item, i) =>
+        i === index
+          ? {
+              ...item,
+              pekerjaan: [
+                ...item.pekerjaan,
+                {
+                  tanggalMulai: "",
+                  tanggalSelesai: "",
+                  jumlahHari: "",
+                },
+              ],
+            }
+          : item
+      )
+    );
+  };
+  const addEstimasiJadwal = () => {
+    setEstimasiJadwal((oldArray) => [
+      ...oldArray,
+      {
+        bagian: "",
+        pekerjaan: [
+          {
+            tanggalMulai: "",
+            tanggalSelesai: "",
+            jumlahHari: "",
+          },
+        ],
+      },
+    ]);
+  };
 
   const handleSelectId = (orderId) => {
     axios({
@@ -41,7 +92,7 @@ const EstimationOrderPage = () => {
     <div
       style={{
         width: "100%",
-        height: "100vh",
+        height: "100%",
         backgroundImage: `url(${factoryBackground})`,
         backgroundSize: "cover",
         // display: "flex",
@@ -49,7 +100,13 @@ const EstimationOrderPage = () => {
       }}
     >
       <div style={{ margin: "32px" }}>
-        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+        <div
+          style={{
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "center",
+          }}
+        >
           <Typography style={{ fontSize: "3.5vw", color: "#0F607D" }}>
             Add Estimation Order
           </Typography>
@@ -75,14 +132,14 @@ const EstimationOrderPage = () => {
         </div>
         <div
           style={{
-            display: "flex",
-            justifyContent: "space-between",
+            // display: "flex",
+            // justifyContent: "space-between",
             marginTop: "24px",
           }}
         >
           <div
             style={{
-              width: "48%",
+              width: "100%",
               border: "2px solid #0F607D",
               borderRadius: "10px",
             }}
@@ -203,7 +260,11 @@ const EstimationOrderPage = () => {
                       </div>
                     </div>
                     <div
-                      style={{ display: "flex", justifyContent: "flex-start", marginTop: "8px" }}
+                      style={{
+                        display: "flex",
+                        justifyContent: "flex-start",
+                        marginTop: "8px",
+                      }}
                     >
                       <div style={{ width: "50%" }}>
                         <Typography
@@ -223,15 +284,652 @@ const EstimationOrderPage = () => {
           </div>
           <div
             style={{
-              width: "48%",
+              width: "100%",
               border: "2px solid #0F607D",
               borderRadius: "10px",
+              marginTop: "32px",
             }}
           >
             <div style={{ margin: "24px" }}>
-              <Typography style={{ fontSize: "1.5vw", color: "#0F607D" }}>
+              <Typography style={{ fontSize: "2.5vw", color: "#0F607D" }}>
                 Estimation Order
               </Typography>
+              <div
+                style={{
+                  width: "100%",
+                  height: "1px",
+                  backgroundColor: "#0F607D",
+                  margin: " 24px 0px ",
+                  borderRadius: "5px",
+                }}
+              />
+              <div
+                style={{
+                  display: "flex",
+                  justifyContent: "space-between",
+                  marginTop: "16px",
+                  width: "100%",
+                }}
+              >
+                <div
+                  style={{
+                    display: "flex",
+                    alignItems: "center",
+                    width: "48%",
+                  }}
+                >
+                  <Typography
+                    style={{
+                      color: "#0F607D",
+                      fontSize: isMobile ? "12px" : "1.5vw",
+                      marginRight: "8px",
+                    }}
+                  >
+                    Pemesan:
+                  </Typography>
+                  <TextField
+                    type="text"
+                    sx={{
+                      "& .MuiOutlinedInput-root": {
+                        height: isMobile ? "15px" : "3vw",
+                        width: isMobile ? "90px" : "10vw",
+                        fontSize: isMobile ? "10px" : "1.5vw",
+                        borderRadius: "10px",
+                        "& fieldset": {
+                          borderColor: "#0F607D",
+                        },
+                        "&:hover fieldset": {
+                          borderColor: "#0F607D",
+                        },
+                        "&.Mui-focused fieldset": {
+                          borderColor: "#0F607D",
+                        },
+                      },
+                    }}
+                    onChange={(current) => {}}
+                  />
+                </div>
+                <div
+                  style={{
+                    display: "flex",
+                    alignItems: "center",
+                    width: "48%",
+                  }}
+                >
+                  <Typography
+                    style={{
+                      color: "#0F607D",
+                      fontSize: isMobile ? "12px" : "1.5vw",
+                      marginRight: "8px",
+                    }}
+                  >
+                    Tanggal Pengiriman:
+                  </Typography>
+                  <TextField
+                    type="text"
+                    sx={{
+                      "& .MuiOutlinedInput-root": {
+                        height: isMobile ? "15px" : "3vw",
+                        width: isMobile ? "90px" : "8vw",
+                        fontSize: isMobile ? "10px" : "1.5vw",
+                        borderRadius: "10px",
+                        "& fieldset": {
+                          borderColor: "#0F607D",
+                        },
+                        "&:hover fieldset": {
+                          borderColor: "#0F607D",
+                        },
+                        "&.Mui-focused fieldset": {
+                          borderColor: "#0F607D",
+                        },
+                      },
+                    }}
+                    onChange={(current) => {}}
+                  />
+                </div>
+              </div>
+              <div
+                style={{
+                  marginTop: "16px",
+                  display: "flex",
+                  alignItems: "center",
+                  width: "100%",
+                }}
+              >
+                <Typography
+                  style={{
+                    fontSize: isMobile ? "12px" : "1.5vw",
+                    color: "#0F607D",
+                    marginRight: "8px",
+                  }}
+                >
+                  Alamat Kirim Barang:
+                </Typography>
+                <TextField
+                  type="text"
+                  sx={{
+                    "& .MuiOutlinedInput-root": {
+                      height: isMobile ? "15px" : "3vw",
+                      width: isMobile ? "150px" : "25vw",
+                      fontSize: isMobile ? "10px" : "1.5vw",
+                      borderRadius: "10px",
+                      "& fieldset": {
+                        borderColor: "#0F607D",
+                      },
+                      "&:hover fieldset": {
+                        borderColor: "#0F607D",
+                      },
+                      "&.Mui-focused fieldset": {
+                        borderColor: "#0F607D",
+                      },
+                    },
+                  }}
+                  onChange={(event) => {}}
+                />
+              </div>
+              <div
+                style={{
+                  marginTop: "32px",
+                  display: "flex",
+                  justifyContent: "space-between",
+                  width: "100%",
+                }}
+              >
+                <div
+                  style={{
+                    display: "flex",
+                    alignItems: "center",
+                    width: "48%",
+                  }}
+                >
+                  <Typography
+                    style={{
+                      fontSize: isMobile ? "12px" : "1.5vw",
+                      color: "#0F607D",
+                      marginRight: "8px",
+                    }}
+                  >
+                    Jenis Cetakan:
+                  </Typography>
+                  <TextField
+                    type="text"
+                    sx={{
+                      "& .MuiOutlinedInput-root": {
+                        height: isMobile ? "15px" : "3vw",
+                        width: isMobile ? "90px" : "10vw",
+                        fontSize: isMobile ? "10px" : "1.5vw",
+                        borderRadius: "10px",
+                        "& fieldset": {
+                          borderColor: "#0F607D",
+                        },
+                        "&:hover fieldset": {
+                          borderColor: "#0F607D",
+                        },
+                        "&.Mui-focused fieldset": {
+                          borderColor: "#0F607D",
+                        },
+                      },
+                    }}
+                    onChange={(current) => {}}
+                  />
+                </div>
+                <div
+                  style={{
+                    display: "flex",
+                    alignItems: "center",
+                    width: "48%",
+                  }}
+                >
+                  <Typography
+                    style={{
+                      fontSize: isMobile ? "12px" : "1.5vw",
+                      color: "#0F607D",
+                      marginRight: "8px",
+                    }}
+                  >
+                    Ply:
+                  </Typography>
+                  <TextField
+                    type="text"
+                    sx={{
+                      "& .MuiOutlinedInput-root": {
+                        height: isMobile ? "15px" : "3vw",
+                        width: isMobile ? "90px" : "10vw",
+                        fontSize: isMobile ? "10px" : "1.5vw",
+                        borderRadius: "10px",
+                        "& fieldset": {
+                          borderColor: "#0F607D",
+                        },
+                        "&:hover fieldset": {
+                          borderColor: "#0F607D",
+                        },
+                        "&.Mui-focused fieldset": {
+                          borderColor: "#0F607D",
+                        },
+                      },
+                    }}
+                    onChange={(current) => {}}
+                  />
+                </div>
+              </div>
+              <div
+                style={{
+                  marginTop: "8px",
+                  display: "flex",
+                  justifyContent: "space-between",
+                  width: "100%",
+                }}
+              >
+                <div
+                  style={{
+                    display: "flex",
+                    alignItems: "center",
+                    width: "48%",
+                  }}
+                >
+                  <Typography
+                    style={{
+                      fontSize: isMobile ? "12px" : "1.5vw",
+                      color: "#0F607D",
+                      marginRight: "8px",
+                    }}
+                  >
+                    Ukuran:
+                  </Typography>
+                  <TextField
+                    type="text"
+                    sx={{
+                      "& .MuiOutlinedInput-root": {
+                        height: isMobile ? "15px" : "3vw",
+                        width: isMobile ? "90px" : "10vw",
+                        fontSize: isMobile ? "10px" : "1.5vw",
+                        borderRadius: "10px",
+                        "& fieldset": {
+                          borderColor: "#0F607D",
+                        },
+                        "&:hover fieldset": {
+                          borderColor: "#0F607D",
+                        },
+                        "&.Mui-focused fieldset": {
+                          borderColor: "#0F607D",
+                        },
+                      },
+                    }}
+                    onChange={(current) => {}}
+                  />
+                </div>
+                <div
+                  style={{
+                    display: "flex",
+                    alignItems: "center",
+                    width: "48%",
+                  }}
+                >
+                  <Typography
+                    style={{
+                      fontSize: isMobile ? "12px" : "1.5vw",
+                      color: "#0F607D",
+                      marginRight: "8px",
+                    }}
+                  >
+                    Seri:
+                  </Typography>
+                  <TextField
+                    type="text"
+                    sx={{
+                      "& .MuiOutlinedInput-root": {
+                        height: isMobile ? "15px" : "3vw",
+                        width: isMobile ? "90px" : "10vw",
+                        fontSize: isMobile ? "10px" : "1.5vw",
+                        borderRadius: "10px",
+                        "& fieldset": {
+                          borderColor: "#0F607D",
+                        },
+                        "&:hover fieldset": {
+                          borderColor: "#0F607D",
+                        },
+                        "&.Mui-focused fieldset": {
+                          borderColor: "#0F607D",
+                        },
+                      },
+                    }}
+                    onChange={(current) => {}}
+                  />
+                </div>
+              </div>
+              <div
+                style={{
+                  marginTop: "8px",
+                  display: "flex",
+                  justifyContent: "space-between",
+                  width: "100%",
+                }}
+              >
+                <div
+                  style={{
+                    display: "flex",
+                    alignItems: "center",
+                    width: "48%",
+                  }}
+                >
+                  <Typography
+                    style={{
+                      fontSize: isMobile ? "12px" : "1.5vw",
+                      color: "#0F607D",
+                      marginRight: "8px",
+                    }}
+                  >
+                    Kuantitas:
+                  </Typography>
+                  <TextField
+                    type="text"
+                    sx={{
+                      "& .MuiOutlinedInput-root": {
+                        height: isMobile ? "15px" : "3vw",
+                        width: isMobile ? "90px" : "10vw",
+                        fontSize: isMobile ? "10px" : "1.5vw",
+                        borderRadius: "10px",
+                        "& fieldset": {
+                          borderColor: "#0F607D",
+                        },
+                        "&:hover fieldset": {
+                          borderColor: "#0F607D",
+                        },
+                        "&.Mui-focused fieldset": {
+                          borderColor: "#0F607D",
+                        },
+                      },
+                    }}
+                    onChange={(current) => {}}
+                  />
+                </div>
+                <div
+                  style={{
+                    display: "flex",
+                    alignItems: "center",
+                    width: "48%",
+                  }}
+                >
+                  <Typography
+                    style={{
+                      fontSize: isMobile ? "12px" : "1.5vw",
+                      color: "#0F607D",
+                      marginRight: "8px",
+                    }}
+                  >
+                    Nomorator:
+                  </Typography>
+                  <TextField
+                    type="text"
+                    sx={{
+                      "& .MuiOutlinedInput-root": {
+                        height: isMobile ? "15px" : "3vw",
+                        width: isMobile ? "90px" : "10vw",
+                        fontSize: isMobile ? "10px" : "1.5vw",
+                        borderRadius: "10px",
+                        "& fieldset": {
+                          borderColor: "#0F607D",
+                        },
+                        "&:hover fieldset": {
+                          borderColor: "#0F607D",
+                        },
+                        "&.Mui-focused fieldset": {
+                          borderColor: "#0F607D",
+                        },
+                      },
+                    }}
+                    onChange={(current) => {}}
+                  />
+                </div>
+              </div>
+              <div
+                style={{
+                  marginTop: "8px",
+                  display: "flex",
+                  alignItems: "center",
+                }}
+              >
+                <Typography
+                  style={{
+                    fontSize: isMobile ? "12px" : "1.5vw",
+                    color: "#0F607D",
+                    marginRight: "8px",
+                  }}
+                >
+                  Isi Per Box:
+                </Typography>
+                <TextField
+                  type="text"
+                  sx={{
+                    "& .MuiOutlinedInput-root": {
+                      height: isMobile ? "15px" : "3vw",
+                      width: isMobile ? "90px" : "10vw",
+                      fontSize: isMobile ? "10px" : "1.5vw",
+                      borderRadius: "10px",
+                      "& fieldset": {
+                        borderColor: "#0F607D",
+                      },
+                      "&:hover fieldset": {
+                        borderColor: "#0F607D",
+                      },
+                      "&.Mui-focused fieldset": {
+                        borderColor: "#0F607D",
+                      },
+                    },
+                  }}
+                  onChange={(current) => {}}
+                />
+              </div>
+              <div
+                style={{
+                  marginTop: "32px",
+                  display: "flex",
+                  justifyContent: "space-between",
+                  width: "100%",
+                }}
+              >
+                <div
+                  style={{
+                    display: "flex",
+                    alignItems: "center",
+                    width: "48%",
+                  }}
+                >
+                  <Typography
+                    style={{
+                      fontSize: isMobile ? "12px" : "1.5vw",
+                      color: "#0F607D",
+                      marginRight: "8px",
+                    }}
+                  >
+                    Contoh:
+                  </Typography>
+                  <FormControlLabel
+                    sx={{
+                      display: "block",
+                    }}
+                    control={
+                      <Switch
+                        // checked={loading}
+                        onChange={() => {}}
+                        name="loading"
+                        color="primary"
+                      />
+                    }
+                  />
+                </div>
+                <div
+                  style={{
+                    display: "flex",
+                    alignItems: "center",
+                    width: "48%",
+                  }}
+                >
+                  <Typography
+                    style={{
+                      fontSize: isMobile ? "12px" : "1.5vw",
+                      color: "#0F607D",
+                      marginRight: "8px",
+                    }}
+                  >
+                    Setting:
+                  </Typography>
+                  <FormControlLabel
+                    sx={{
+                      display: "block",
+                    }}
+                    control={
+                      <Switch
+                        // checked={loading}
+                        onChange={() => {}}
+                        name="loading"
+                        color="primary"
+                      />
+                    }
+                  />
+                </div>
+              </div>
+              <div
+                style={{
+                  marginTop: "8px",
+                  display: "flex",
+                  alignItems: "center",
+                }}
+              >
+                <Typography
+                  style={{
+                    fontSize: isMobile ? "12px" : "1.5vw",
+                    color: "#0F607D",
+                    marginRight: "8px",
+                  }}
+                >
+                  Plate:
+                </Typography>
+                <FormControlLabel
+                  sx={{
+                    display: "block",
+                  }}
+                  control={
+                    <Switch
+                      // checked={loading}
+                      onChange={() => {}}
+                      name="loading"
+                      color="primary"
+                    />
+                  }
+                />
+              </div>
+              <div
+                style={{
+                  width: "100%",
+                  height: "1px",
+                  backgroundColor: "#0F607D",
+                  margin: " 24px 0px ",
+                  borderRadius: "5px",
+                }}
+              />
+              <div style={{ marginTop: "32px" }}>
+                <Typography style={{ color: "#0F607D", fontSize: "2vw" }}>
+                  Bahan Baku
+                </Typography>
+              </div>
+              <div
+                style={{
+                  width: "100%",
+                  height: "1px",
+                  backgroundColor: "#0F607D",
+                  margin: " 24px 0px ",
+                  borderRadius: "5px",
+                }}
+              />
+              <div style={{ marginTop: "32px" }}>
+                <div style={{ display: "flex" }}>
+                  <Typography
+                    style={{
+                      color: "#0F607D",
+                      fontSize: "2vw",
+                      marginRight: "8px",
+                    }}
+                  >
+                    Jangka Waktu Produksi
+                  </Typography>
+                  <IconButton
+                    onClick={() => {
+                      addEstimasiJadwal()
+                    }}
+                  >
+                    <AddIcon style={{ color: "#0F607D" }} />
+                  </IconButton>
+                </div>
+                <div>
+                  <TableContainer component={Paper}>
+                    <Table sx={{ minWidth: 650 }} aria-label="simple table">
+                      <TableHead>
+                        <TableRow>
+                          <TableCell>Bagian</TableCell>
+                          <TableCell align="left">
+                            Jenis Pekerjaan{" "}
+                            <IconButton onClick={() => {
+                              const lastIndex = estimasiJadwal.length - 1;
+                              if (lastIndex >= 0) {
+                                addPekerjaan(lastIndex);
+                              }
+                            }}>
+                              <AddIcon style={{ color: "#0F607D" }} />
+                            </IconButton>
+                          </TableCell>
+                          <TableCell align="left">Tanggal Mulai</TableCell>
+                          <TableCell align="left">Tanggal Selesai</TableCell>
+                          <TableCell align="left">Jumlah Hari</TableCell>
+                        </TableRow>
+                      </TableHead>
+                      <TableBody>
+                        {estimasiJadwal.map((row, index) => (
+                          <TableRow
+                            key={row.name}
+                            sx={{
+                              "&:last-child td, &:last-child th": { border: 0 },
+                            }}
+                          >
+                            <TableCell component="th" scope="row">
+                              <TextField />
+                            </TableCell>
+                            <TableCell align="right">
+                              <TextField />
+                            </TableCell>
+                            <TableCell align="right">
+                              <TextField />
+                            </TableCell>
+                            <TableCell align="right">
+                              <TextField />
+                            </TableCell>
+                            <TableCell align="right">
+                              <div
+                                style={{
+                                  display: "flex",
+                                  alignItems: "center",
+                                }}
+                              >
+                                <TextField />
+                                <IconButton
+                                  style={{ marginLeft: "8px", height: "50%" }}
+                                  onClick={() => {
+                                    setEstimasiJadwal((oldArray) =>
+                                      oldArray.filter((_, i) => i !== index)
+                                    );
+                                  }}
+                                >
+                                  <DeleteIcon style={{ color: "red" }} />
+                                </IconButton>
+                              </div>
+                            </TableCell>
+                          </TableRow>
+                        ))}
+                      </TableBody>
+                    </Table>
+                  </TableContainer>
+                </div>
+              </div>
             </div>
           </div>
         </div>
