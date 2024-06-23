@@ -16,6 +16,7 @@ import {
 } from "@mui/material";
 import AddIcon from "@mui/icons-material/Add";
 import DeleteIcon from "@mui/icons-material/Delete";
+import RemoveIcon from "@mui/icons-material/Remove";
 import MySelectTextField from "../../components/SelectTextField";
 import axios from "axios";
 import { AppContext } from "../../App";
@@ -37,7 +38,19 @@ const EstimationOrderPage = () => {
   const [selectedOrder, setSelectedOrder] = useState([]);
   const [estimasiJadwal, setEstimasiJadwal] = useState([]);
 
-  console.log(estimasiJadwal)
+  const [pemesan, setPemesan] = useState("");
+  const [tanggalPengiriman, setTanggalPengiriman] = useState("");
+  const [alamatPengirimanProduk, setAlamatPengirimanProduk] = useState("");
+  const [jenisCetakan, setJenisCetakan] = useState("");
+  const [ukuran, setUkuran] = useState("");
+  const [ply, setPly] = useState("");
+  const [seri, setSeri] = useState("");
+  const [kuantitas, setKuantitas] = useState("");
+  const [isiPerBox, setIsiPerBox] = useState("");
+  const [nomorator, setNomorator] = useState("");
+  const [contoh, setContoh] = useState(false);
+  const [plate, setPlate] = useState(false);
+  const [setting, setSetting] = useState(false);
 
   const addPekerjaan = (index) => {
     setEstimasiJadwal((oldArray) =>
@@ -76,27 +89,54 @@ const EstimationOrderPage = () => {
     ]);
   };
 
+  const handleRemovePekerjaan = (index, pekerjaanIndex) => {
+    setEstimasiJadwal((oldArray) => {
+      return oldArray.map((item, i) => {
+        if (i === index) {
+          return {
+            ...item,
+            pekerjaan: item.pekerjaan.filter((_, j) => j !== pekerjaanIndex),
+          };
+        }
+        return item;
+      });
+    });
+  };
+
   const handleInputChange = (event, index, pekerjaanIndex, field) => {
     const value = event && event.target ? event.target.value : event;
-    setEstimasiJadwal((oldArray) =>
-      oldArray.map((item, i) =>
-        i === index
-          ? {
-              ...item,
-              pekerjaan: item.pekerjaan.map((pekerjaan, j) =>
-                j === pekerjaanIndex
-                  ? { ...pekerjaan, [field]: value }
-                  : pekerjaan
-              ),
-            }
-          : item
-      )
-    );
+
+    setEstimasiJadwal((oldArray) => {
+      const newArray = oldArray.map((item, i) => {
+        if (i === index) {
+          const newItem = { ...item };
+          if (field === "bagian") {
+            newItem.bagian = value;
+          } else {
+            const pekerjaanArray = newItem.pekerjaan.map((pekerjaan, j) => {
+              if (j === pekerjaanIndex) {
+                const newPekerjaan = { ...pekerjaan, [field]: value };
+                if (field === "tanggalMulai" || field === "tanggalSelesai") {
+                  newPekerjaan.jumlahHari = perbedaanHariJam(
+                    newPekerjaan.tanggalMulai,
+                    newPekerjaan.tanggalSelesai
+                  );
+                }
+                return newPekerjaan;
+              }
+              return pekerjaan;
+            });
+            newItem.pekerjaan = pekerjaanArray;
+          }
+          return newItem;
+        }
+        return item;
+      });
+      return newArray;
+    });
   };
 
   const perbedaanHariJam = (startDate, endDate) => {
-    console.log(startDate);
-    console.log(endDate);
     if (!startDate || !endDate) {
       return "";
     }
@@ -108,9 +148,9 @@ const EstimationOrderPage = () => {
       return "";
     }
 
-    const duration = end.diff(start, "hour", true); // Get total hours between start and end
-    const days = Math.floor(duration / 24); // Calculate full days
-    const hours = Math.floor(duration % 24); // Calculate remaining hours
+    const duration = end.diff(start, "hour", true);
+    const days = Math.floor(duration / 24);
+    const hours = Math.floor(duration % 24);
 
     return `${days} Hari ${hours} Jam`;
   };
@@ -122,6 +162,8 @@ const EstimationOrderPage = () => {
       params: { orderId: orderId.target.value },
     }).then((result) => {
       setSelectedOrder(result);
+      setPemesan(result?.data?.customerDetail);
+      setTanggalPengiriman(result?.data?.orderDueDate);
     });
   };
 
@@ -147,7 +189,6 @@ const EstimationOrderPage = () => {
         height: "100%",
         backgroundImage: `url(${factoryBackground})`,
         backgroundSize: "cover",
-        // display: "flex",
         backgroundAttachment: "fixed",
       }}
     >
@@ -184,8 +225,6 @@ const EstimationOrderPage = () => {
         </div>
         <div
           style={{
-            // display: "flex",
-            // justifyContent: "space-between",
             marginTop: "24px",
           }}
         >
@@ -341,744 +380,805 @@ const EstimationOrderPage = () => {
           ) : (
             ""
           )}
-          <div
-            style={{
-              width: "100%",
-              border: "2px solid #0F607D",
-              borderRadius: "10px",
-              marginTop: "32px",
-            }}
-          >
-            <div style={{ margin: "24px" }}>
-              <Typography style={{ fontSize: "2.5vw", color: "#0F607D" }}>
-                Estimation Order
-              </Typography>
-              <div
-                style={{
-                  width: "100%",
-                  height: "1px",
-                  backgroundColor: "#0F607D",
-                  margin: " 24px 0px ",
-                  borderRadius: "5px",
-                }}
-              />
-              <div
-                style={{
-                  display: "flex",
-                  justifyContent: "space-between",
-                  marginTop: "16px",
-                  width: "100%",
-                }}
-              >
-                <div
-                  style={{
-                    display: "flex",
-                    alignItems: "center",
-                    width: "48%",
-                  }}
-                >
-                  <Typography
-                    style={{
-                      color: "#0F607D",
-                      fontSize: isMobile ? "12px" : "1.5vw",
-                      marginRight: "8px",
-                    }}
-                  >
-                    Pemesan:
-                  </Typography>
-                  <TextField
-                    type="text"
-                    sx={{
-                      "& .MuiOutlinedInput-root": {
-                        height: isMobile ? "15px" : "3vw",
-                        width: isMobile ? "90px" : "10vw",
-                        fontSize: isMobile ? "10px" : "1.5vw",
-                        borderRadius: "10px",
-                        "& fieldset": {
-                          borderColor: "#0F607D",
-                        },
-                        "&:hover fieldset": {
-                          borderColor: "#0F607D",
-                        },
-                        "&.Mui-focused fieldset": {
-                          borderColor: "#0F607D",
-                        },
-                      },
-                    }}
-                    onChange={(current) => {}}
-                  />
-                </div>
-                <div
-                  style={{
-                    display: "flex",
-                    alignItems: "center",
-                    width: "48%",
-                  }}
-                >
-                  <Typography
-                    style={{
-                      color: "#0F607D",
-                      fontSize: isMobile ? "12px" : "1.5vw",
-                      marginRight: "8px",
-                    }}
-                  >
-                    Tanggal Pengiriman:
-                  </Typography>
-                  <TextField
-                    type="text"
-                    sx={{
-                      "& .MuiOutlinedInput-root": {
-                        height: isMobile ? "15px" : "3vw",
-                        width: isMobile ? "90px" : "8vw",
-                        fontSize: isMobile ? "10px" : "1.5vw",
-                        borderRadius: "10px",
-                        "& fieldset": {
-                          borderColor: "#0F607D",
-                        },
-                        "&:hover fieldset": {
-                          borderColor: "#0F607D",
-                        },
-                        "&.Mui-focused fieldset": {
-                          borderColor: "#0F607D",
-                        },
-                      },
-                    }}
-                    onChange={(current) => {}}
-                  />
-                </div>
-              </div>
-              <div
-                style={{
-                  marginTop: "16px",
-                  display: "flex",
-                  alignItems: "center",
-                  width: "100%",
-                }}
-              >
-                <Typography
-                  style={{
-                    fontSize: isMobile ? "12px" : "1.5vw",
-                    color: "#0F607D",
-                    marginRight: "8px",
-                  }}
-                >
-                  Alamat Kirim Barang:
+          {selectedOrder.length !== 0 && (
+            <div
+              style={{
+                width: "100%",
+                border: "2px solid #0F607D",
+                borderRadius: "10px",
+                marginTop: "32px",
+              }}
+            >
+              <div style={{ margin: "24px" }}>
+                <Typography style={{ fontSize: "2.5vw", color: "#0F607D" }}>
+                  Estimation Order
                 </Typography>
-                <TextField
-                  type="text"
-                  sx={{
-                    "& .MuiOutlinedInput-root": {
-                      height: isMobile ? "15px" : "3vw",
-                      width: isMobile ? "150px" : "25vw",
-                      fontSize: isMobile ? "10px" : "1.5vw",
-                      borderRadius: "10px",
-                      "& fieldset": {
-                        borderColor: "#0F607D",
-                      },
-                      "&:hover fieldset": {
-                        borderColor: "#0F607D",
-                      },
-                      "&.Mui-focused fieldset": {
-                        borderColor: "#0F607D",
-                      },
-                    },
+                <div
+                  style={{
+                    width: "100%",
+                    height: "1px",
+                    backgroundColor: "#0F607D",
+                    margin: " 24px 0px ",
+                    borderRadius: "5px",
                   }}
-                  onChange={(event) => {}}
                 />
-              </div>
-              <div
-                style={{
-                  marginTop: "32px",
-                  display: "flex",
-                  justifyContent: "space-between",
-                  width: "100%",
-                }}
-              >
                 <div
                   style={{
                     display: "flex",
-                    alignItems: "center",
-                    width: "48%",
+                    justifyContent: "space-between",
+                    marginTop: "16px",
+                    width: "100%",
                   }}
                 >
-                  <Typography
+                  <div
                     style={{
-                      fontSize: isMobile ? "12px" : "1.5vw",
-                      color: "#0F607D",
-                      marginRight: "8px",
+                      display: "flex",
+                      alignItems: "center",
+                      width: "48%",
                     }}
                   >
-                    Jenis Cetakan:
-                  </Typography>
-                  <TextField
-                    type="text"
-                    sx={{
-                      "& .MuiOutlinedInput-root": {
-                        height: isMobile ? "15px" : "3vw",
-                        width: isMobile ? "90px" : "10vw",
-                        fontSize: isMobile ? "10px" : "1.5vw",
-                        borderRadius: "10px",
-                        "& fieldset": {
-                          borderColor: "#0F607D",
+                    <Typography
+                      style={{
+                        color: "#0F607D",
+                        fontSize: isMobile ? "12px" : "1.5vw",
+                        marginRight: "8px",
+                      }}
+                    >
+                      Pemesan:
+                    </Typography>
+                    <TextField
+                      type="text"
+                      value={pemesan}
+                      sx={{
+                        "& .MuiOutlinedInput-root": {
+                          height: isMobile ? "15px" : "3vw",
+                          width: isMobile ? "90px" : "12vw",
+                          fontSize: isMobile ? "10px" : "1.5vw",
+                          borderRadius: "10px",
+                          "& fieldset": {
+                            borderColor: "#0F607D",
+                          },
+                          "&:hover fieldset": {
+                            borderColor: "#0F607D",
+                          },
+                          "&.Mui-focused fieldset": {
+                            borderColor: "#0F607D",
+                          },
                         },
-                        "&:hover fieldset": {
-                          borderColor: "#0F607D",
-                        },
-                        "&.Mui-focused fieldset": {
-                          borderColor: "#0F607D",
-                        },
-                      },
-                    }}
-                    onChange={(current) => {}}
-                  />
-                </div>
-                <div
-                  style={{
-                    display: "flex",
-                    alignItems: "center",
-                    width: "48%",
-                  }}
-                >
-                  <Typography
-                    style={{
-                      fontSize: isMobile ? "12px" : "1.5vw",
-                      color: "#0F607D",
-                      marginRight: "8px",
-                    }}
-                  >
-                    Ply:
-                  </Typography>
-                  <TextField
-                    type="text"
-                    sx={{
-                      "& .MuiOutlinedInput-root": {
-                        height: isMobile ? "15px" : "3vw",
-                        width: isMobile ? "90px" : "10vw",
-                        fontSize: isMobile ? "10px" : "1.5vw",
-                        borderRadius: "10px",
-                        "& fieldset": {
-                          borderColor: "#0F607D",
-                        },
-                        "&:hover fieldset": {
-                          borderColor: "#0F607D",
-                        },
-                        "&.Mui-focused fieldset": {
-                          borderColor: "#0F607D",
-                        },
-                      },
-                    }}
-                    onChange={(current) => {}}
-                  />
-                </div>
-              </div>
-              <div
-                style={{
-                  marginTop: "8px",
-                  display: "flex",
-                  justifyContent: "space-between",
-                  width: "100%",
-                }}
-              >
-                <div
-                  style={{
-                    display: "flex",
-                    alignItems: "center",
-                    width: "48%",
-                  }}
-                >
-                  <Typography
-                    style={{
-                      fontSize: isMobile ? "12px" : "1.5vw",
-                      color: "#0F607D",
-                      marginRight: "8px",
-                    }}
-                  >
-                    Ukuran:
-                  </Typography>
-                  <TextField
-                    type="text"
-                    sx={{
-                      "& .MuiOutlinedInput-root": {
-                        height: isMobile ? "15px" : "3vw",
-                        width: isMobile ? "90px" : "10vw",
-                        fontSize: isMobile ? "10px" : "1.5vw",
-                        borderRadius: "10px",
-                        "& fieldset": {
-                          borderColor: "#0F607D",
-                        },
-                        "&:hover fieldset": {
-                          borderColor: "#0F607D",
-                        },
-                        "&.Mui-focused fieldset": {
-                          borderColor: "#0F607D",
-                        },
-                      },
-                    }}
-                    onChange={(current) => {}}
-                  />
-                </div>
-                <div
-                  style={{
-                    display: "flex",
-                    alignItems: "center",
-                    width: "48%",
-                  }}
-                >
-                  <Typography
-                    style={{
-                      fontSize: isMobile ? "12px" : "1.5vw",
-                      color: "#0F607D",
-                      marginRight: "8px",
-                    }}
-                  >
-                    Seri:
-                  </Typography>
-                  <TextField
-                    type="text"
-                    sx={{
-                      "& .MuiOutlinedInput-root": {
-                        height: isMobile ? "15px" : "3vw",
-                        width: isMobile ? "90px" : "10vw",
-                        fontSize: isMobile ? "10px" : "1.5vw",
-                        borderRadius: "10px",
-                        "& fieldset": {
-                          borderColor: "#0F607D",
-                        },
-                        "&:hover fieldset": {
-                          borderColor: "#0F607D",
-                        },
-                        "&.Mui-focused fieldset": {
-                          borderColor: "#0F607D",
-                        },
-                      },
-                    }}
-                    onChange={(current) => {}}
-                  />
-                </div>
-              </div>
-              <div
-                style={{
-                  marginTop: "8px",
-                  display: "flex",
-                  justifyContent: "space-between",
-                  width: "100%",
-                }}
-              >
-                <div
-                  style={{
-                    display: "flex",
-                    alignItems: "center",
-                    width: "48%",
-                  }}
-                >
-                  <Typography
-                    style={{
-                      fontSize: isMobile ? "12px" : "1.5vw",
-                      color: "#0F607D",
-                      marginRight: "8px",
-                    }}
-                  >
-                    Kuantitas:
-                  </Typography>
-                  <TextField
-                    type="text"
-                    sx={{
-                      "& .MuiOutlinedInput-root": {
-                        height: isMobile ? "15px" : "3vw",
-                        width: isMobile ? "90px" : "10vw",
-                        fontSize: isMobile ? "10px" : "1.5vw",
-                        borderRadius: "10px",
-                        "& fieldset": {
-                          borderColor: "#0F607D",
-                        },
-                        "&:hover fieldset": {
-                          borderColor: "#0F607D",
-                        },
-                        "&.Mui-focused fieldset": {
-                          borderColor: "#0F607D",
-                        },
-                      },
-                    }}
-                    onChange={(current) => {}}
-                  />
-                </div>
-                <div
-                  style={{
-                    display: "flex",
-                    alignItems: "center",
-                    width: "48%",
-                  }}
-                >
-                  <Typography
-                    style={{
-                      fontSize: isMobile ? "12px" : "1.5vw",
-                      color: "#0F607D",
-                      marginRight: "8px",
-                    }}
-                  >
-                    Nomorator:
-                  </Typography>
-                  <TextField
-                    type="text"
-                    sx={{
-                      "& .MuiOutlinedInput-root": {
-                        height: isMobile ? "15px" : "3vw",
-                        width: isMobile ? "90px" : "10vw",
-                        fontSize: isMobile ? "10px" : "1.5vw",
-                        borderRadius: "10px",
-                        "& fieldset": {
-                          borderColor: "#0F607D",
-                        },
-                        "&:hover fieldset": {
-                          borderColor: "#0F607D",
-                        },
-                        "&.Mui-focused fieldset": {
-                          borderColor: "#0F607D",
-                        },
-                      },
-                    }}
-                    onChange={(current) => {}}
-                  />
-                </div>
-              </div>
-              <div
-                style={{
-                  marginTop: "8px",
-                  display: "flex",
-                  alignItems: "center",
-                }}
-              >
-                <Typography
-                  style={{
-                    fontSize: isMobile ? "12px" : "1.5vw",
-                    color: "#0F607D",
-                    marginRight: "8px",
-                  }}
-                >
-                  Isi Per Box:
-                </Typography>
-                <TextField
-                  type="text"
-                  sx={{
-                    "& .MuiOutlinedInput-root": {
-                      height: isMobile ? "15px" : "3vw",
-                      width: isMobile ? "90px" : "10vw",
-                      fontSize: isMobile ? "10px" : "1.5vw",
-                      borderRadius: "10px",
-                      "& fieldset": {
-                        borderColor: "#0F607D",
-                      },
-                      "&:hover fieldset": {
-                        borderColor: "#0F607D",
-                      },
-                      "&.Mui-focused fieldset": {
-                        borderColor: "#0F607D",
-                      },
-                    },
-                  }}
-                  onChange={(current) => {}}
-                />
-              </div>
-              <div
-                style={{
-                  marginTop: "32px",
-                  display: "flex",
-                  justifyContent: "space-between",
-                  width: "100%",
-                }}
-              >
-                <div
-                  style={{
-                    display: "flex",
-                    alignItems: "center",
-                    width: "48%",
-                  }}
-                >
-                  <Typography
-                    style={{
-                      fontSize: isMobile ? "12px" : "1.5vw",
-                      color: "#0F607D",
-                      marginRight: "8px",
-                    }}
-                  >
-                    Contoh:
-                  </Typography>
-                  <FormControlLabel
-                    sx={{
-                      display: "block",
-                    }}
-                    control={
-                      <Switch
-                        // checked={loading}
-                        onChange={() => {}}
-                        name="loading"
-                        color="primary"
-                      />
-                    }
-                  />
-                </div>
-                <div
-                  style={{
-                    display: "flex",
-                    alignItems: "center",
-                    width: "48%",
-                  }}
-                >
-                  <Typography
-                    style={{
-                      fontSize: isMobile ? "12px" : "1.5vw",
-                      color: "#0F607D",
-                      marginRight: "8px",
-                    }}
-                  >
-                    Setting:
-                  </Typography>
-                  <FormControlLabel
-                    sx={{
-                      display: "block",
-                    }}
-                    control={
-                      <Switch
-                        // checked={loading}
-                        onChange={() => {}}
-                        name="loading"
-                        color="primary"
-                      />
-                    }
-                  />
-                </div>
-              </div>
-              <div
-                style={{
-                  marginTop: "8px",
-                  display: "flex",
-                  alignItems: "center",
-                }}
-              >
-                <Typography
-                  style={{
-                    fontSize: isMobile ? "12px" : "1.5vw",
-                    color: "#0F607D",
-                    marginRight: "8px",
-                  }}
-                >
-                  Plate:
-                </Typography>
-                <FormControlLabel
-                  sx={{
-                    display: "block",
-                  }}
-                  control={
-                    <Switch
-                      // checked={loading}
-                      onChange={() => {}}
-                      name="loading"
-                      color="primary"
+                      }}
+                      onChange={(current) => {
+                        setPemesan(current.target.value);
+                      }}
                     />
-                  }
-                />
-              </div>
-              <div
-                style={{
-                  width: "100%",
-                  height: "1px",
-                  backgroundColor: "#0F607D",
-                  margin: " 24px 0px ",
-                  borderRadius: "5px",
-                }}
-              />
-              <div style={{ marginTop: "32px" }}>
-                <Typography style={{ color: "#0F607D", fontSize: "2vw" }}>
-                  Bahan Baku
-                </Typography>
-              </div>
-              <div
-                style={{
-                  width: "100%",
-                  height: "1px",
-                  backgroundColor: "#0F607D",
-                  margin: " 24px 0px ",
-                  borderRadius: "5px",
-                }}
-              />
-              <div style={{ marginTop: "32px" }}>
-                <div style={{ display: "flex" }}>
+                  </div>
+                  <div
+                    style={{
+                      display: "flex",
+                      alignItems: "center",
+                      width: "48%",
+                    }}
+                  >
+                    <Typography
+                      style={{
+                        color: "#0F607D",
+                        fontSize: isMobile ? "12px" : "1.5vw",
+                        marginRight: "8px",
+                      }}
+                    >
+                      Tanggal Pengiriman:
+                    </Typography>
+                    <TextField
+                      type="text"
+                      value={tanggalPengiriman}
+                      sx={{
+                        "& .MuiOutlinedInput-root": {
+                          height: isMobile ? "15px" : "3vw",
+                          width: isMobile ? "130px" : "17vw",
+                          fontSize: isMobile ? "10px" : "1.5vw",
+                          borderRadius: "10px",
+                          "& fieldset": {
+                            borderColor: "#0F607D",
+                          },
+                          "&:hover fieldset": {
+                            borderColor: "#0F607D",
+                          },
+                          "&.Mui-focused fieldset": {
+                            borderColor: "#0F607D",
+                          },
+                        },
+                      }}
+                      onChange={(current) => {
+                        setTanggalPengiriman(current.target.value);
+                      }}
+                    />
+                  </div>
+                </div>
+                <div
+                  style={{
+                    marginTop: "16px",
+                    display: "flex",
+                    alignItems: "center",
+                    width: "100%",
+                  }}
+                >
                   <Typography
                     style={{
+                      fontSize: isMobile ? "12px" : "1.5vw",
                       color: "#0F607D",
-                      fontSize: "2vw",
                       marginRight: "8px",
                     }}
                   >
-                    Jangka Waktu Produksi
+                    Alamat Kirim Barang:
                   </Typography>
-                  <IconButton
-                    onClick={() => {
-                      addEstimasiJadwal();
+                  <TextField
+                    type="text"
+                    sx={{
+                      "& .MuiOutlinedInput-root": {
+                        height: isMobile ? "15px" : "3vw",
+                        width: isMobile ? "150px" : "25vw",
+                        fontSize: isMobile ? "10px" : "1.5vw",
+                        borderRadius: "10px",
+                        "& fieldset": {
+                          borderColor: "#0F607D",
+                        },
+                        "&:hover fieldset": {
+                          borderColor: "#0F607D",
+                        },
+                        "&.Mui-focused fieldset": {
+                          borderColor: "#0F607D",
+                        },
+                      },
+                    }}
+                    onChange={(event) => {
+                      setAlamatPengirimanProduk(event.target.value);
+                    }}
+                  />
+                </div>
+                <div
+                  style={{
+                    marginTop: "32px",
+                    display: "flex",
+                    justifyContent: "space-between",
+                    width: "100%",
+                  }}
+                >
+                  <div
+                    style={{
+                      display: "flex",
+                      alignItems: "center",
+                      width: "48%",
                     }}
                   >
-                    <AddIcon style={{ color: "#0F607D" }} />
-                  </IconButton>
+                    <Typography
+                      style={{
+                        fontSize: isMobile ? "12px" : "1.5vw",
+                        color: "#0F607D",
+                        marginRight: "8px",
+                      }}
+                    >
+                      Jenis Cetakan:
+                    </Typography>
+                    <TextField
+                      type="text"
+                      sx={{
+                        "& .MuiOutlinedInput-root": {
+                          height: isMobile ? "15px" : "3vw",
+                          width: isMobile ? "90px" : "10vw",
+                          fontSize: isMobile ? "10px" : "1.5vw",
+                          borderRadius: "10px",
+                          "& fieldset": {
+                            borderColor: "#0F607D",
+                          },
+                          "&:hover fieldset": {
+                            borderColor: "#0F607D",
+                          },
+                          "&.Mui-focused fieldset": {
+                            borderColor: "#0F607D",
+                          },
+                        },
+                      }}
+                      onChange={(current) => {
+                        setJenisCetakan(current.target.value);
+                      }}
+                    />
+                  </div>
+                  <div
+                    style={{
+                      display: "flex",
+                      alignItems: "center",
+                      width: "48%",
+                    }}
+                  >
+                    <Typography
+                      style={{
+                        fontSize: isMobile ? "12px" : "1.5vw",
+                        color: "#0F607D",
+                        marginRight: "8px",
+                      }}
+                    >
+                      Ply:
+                    </Typography>
+                    <TextField
+                      type="text"
+                      sx={{
+                        "& .MuiOutlinedInput-root": {
+                          height: isMobile ? "15px" : "3vw",
+                          width: isMobile ? "90px" : "10vw",
+                          fontSize: isMobile ? "10px" : "1.5vw",
+                          borderRadius: "10px",
+                          "& fieldset": {
+                            borderColor: "#0F607D",
+                          },
+                          "&:hover fieldset": {
+                            borderColor: "#0F607D",
+                          },
+                          "&.Mui-focused fieldset": {
+                            borderColor: "#0F607D",
+                          },
+                        },
+                      }}
+                      onChange={(current) => {
+                        setPly(current.target.value);
+                      }}
+                    />
+                  </div>
                 </div>
-                <div style={{ marginTop: "16px" }}>
-                  <TableContainer component={Paper}>
-                    <Table sx={{ minWidth: 650 }} aria-label="simple table">
-                      <TableHead>
-                        <TableRow>
-                          <TableCell>Bagian</TableCell>
-                          <TableCell align="left">
-                            Jenis Pekerjaan{" "}
-                            <IconButton
-                              onClick={() => {
-                                const lastIndex = estimasiJadwal.length - 1;
-                                if (lastIndex >= 0) {
-                                  addPekerjaan(lastIndex);
-                                }
-                              }}
-                            >
-                              <AddIcon style={{ color: "#0F607D" }} />
-                            </IconButton>
-                          </TableCell>
-                          <TableCell align="left">Tanggal Mulai</TableCell>
-                          <TableCell align="left">Tanggal Selesai</TableCell>
-                          <TableCell align="left">Jumlah Hari</TableCell>
-                        </TableRow>
-                      </TableHead>
-                      <TableBody>
-                        {estimasiJadwal.map((row, index) => (
-                          <React.Fragment key={index}>
-                            {row.pekerjaan.map((pekerjaan, pekerjaanIndex) => (
-                              <TableRow
-                                key={`${index}-${pekerjaanIndex}`}
-                                sx={{
-                                  "&:last-child td, &:last-child th": {
-                                    border: 0,
-                                  },
-                                }}
-                              >
-                                {pekerjaanIndex === 0 ? (
-                                  <TableCell>
-                                    <TextField
-                                      value={row.bagian}
-                                      onChange={(e) =>
-                                        handleInputChange(
-                                          e,
-                                          index,
-                                          pekerjaanIndex,
-                                          "bagian"
-                                        )
-                                      }
-                                    />
-                                  </TableCell>
-                                ) : (
-                                  <TableCell></TableCell>
-                                )}
-                                <TableCell align="left">
-                                  <TextField
-                                    value={pekerjaan.jenisPekerjaan}
-                                    onChange={(e) =>
-                                      handleInputChange(
-                                        e,
-                                        index,
-                                        pekerjaanIndex,
-                                        "jenisPekerjaan"
-                                      )
+                <div
+                  style={{
+                    marginTop: "8px",
+                    display: "flex",
+                    justifyContent: "space-between",
+                    width: "100%",
+                  }}
+                >
+                  <div
+                    style={{
+                      display: "flex",
+                      alignItems: "center",
+                      width: "48%",
+                    }}
+                  >
+                    <Typography
+                      style={{
+                        fontSize: isMobile ? "12px" : "1.5vw",
+                        color: "#0F607D",
+                        marginRight: "8px",
+                      }}
+                    >
+                      Ukuran:
+                    </Typography>
+                    <TextField
+                      type="text"
+                      sx={{
+                        "& .MuiOutlinedInput-root": {
+                          height: isMobile ? "15px" : "3vw",
+                          width: isMobile ? "90px" : "10vw",
+                          fontSize: isMobile ? "10px" : "1.5vw",
+                          borderRadius: "10px",
+                          "& fieldset": {
+                            borderColor: "#0F607D",
+                          },
+                          "&:hover fieldset": {
+                            borderColor: "#0F607D",
+                          },
+                          "&.Mui-focused fieldset": {
+                            borderColor: "#0F607D",
+                          },
+                        },
+                      }}
+                      onChange={(current) => {
+                        setUkuran(current.target.value);
+                      }}
+                    />
+                  </div>
+                  <div
+                    style={{
+                      display: "flex",
+                      alignItems: "center",
+                      width: "48%",
+                    }}
+                  >
+                    <Typography
+                      style={{
+                        fontSize: isMobile ? "12px" : "1.5vw",
+                        color: "#0F607D",
+                        marginRight: "8px",
+                      }}
+                    >
+                      Seri:
+                    </Typography>
+                    <TextField
+                      type="text"
+                      sx={{
+                        "& .MuiOutlinedInput-root": {
+                          height: isMobile ? "15px" : "3vw",
+                          width: isMobile ? "90px" : "10vw",
+                          fontSize: isMobile ? "10px" : "1.5vw",
+                          borderRadius: "10px",
+                          "& fieldset": {
+                            borderColor: "#0F607D",
+                          },
+                          "&:hover fieldset": {
+                            borderColor: "#0F607D",
+                          },
+                          "&.Mui-focused fieldset": {
+                            borderColor: "#0F607D",
+                          },
+                        },
+                      }}
+                      onChange={(current) => {
+                        setSeri(current.target.value);
+                      }}
+                    />
+                  </div>
+                </div>
+                <div
+                  style={{
+                    marginTop: "8px",
+                    display: "flex",
+                    justifyContent: "space-between",
+                    width: "100%",
+                  }}
+                >
+                  <div
+                    style={{
+                      display: "flex",
+                      alignItems: "center",
+                      width: "48%",
+                    }}
+                  >
+                    <Typography
+                      style={{
+                        fontSize: isMobile ? "12px" : "1.5vw",
+                        color: "#0F607D",
+                        marginRight: "8px",
+                      }}
+                    >
+                      Kuantitas:
+                    </Typography>
+                    <TextField
+                      type="text"
+                      sx={{
+                        "& .MuiOutlinedInput-root": {
+                          height: isMobile ? "15px" : "3vw",
+                          width: isMobile ? "90px" : "10vw",
+                          fontSize: isMobile ? "10px" : "1.5vw",
+                          borderRadius: "10px",
+                          "& fieldset": {
+                            borderColor: "#0F607D",
+                          },
+                          "&:hover fieldset": {
+                            borderColor: "#0F607D",
+                          },
+                          "&.Mui-focused fieldset": {
+                            borderColor: "#0F607D",
+                          },
+                        },
+                      }}
+                      onChange={(current) => {
+                        setKuantitas(current.target.value);
+                      }}
+                    />
+                  </div>
+                  <div
+                    style={{
+                      display: "flex",
+                      alignItems: "center",
+                      width: "48%",
+                    }}
+                  >
+                    <Typography
+                      style={{
+                        fontSize: isMobile ? "12px" : "1.5vw",
+                        color: "#0F607D",
+                        marginRight: "8px",
+                      }}
+                    >
+                      Nomorator:
+                    </Typography>
+                    <TextField
+                      type="text"
+                      sx={{
+                        "& .MuiOutlinedInput-root": {
+                          height: isMobile ? "15px" : "3vw",
+                          width: isMobile ? "90px" : "10vw",
+                          fontSize: isMobile ? "10px" : "1.5vw",
+                          borderRadius: "10px",
+                          "& fieldset": {
+                            borderColor: "#0F607D",
+                          },
+                          "&:hover fieldset": {
+                            borderColor: "#0F607D",
+                          },
+                          "&.Mui-focused fieldset": {
+                            borderColor: "#0F607D",
+                          },
+                        },
+                      }}
+                      onChange={(current) => {
+                        setNomorator(current.target.value);
+                      }}
+                    />
+                  </div>
+                </div>
+                <div
+                  style={{
+                    marginTop: "8px",
+                    display: "flex",
+                    alignItems: "center",
+                  }}
+                >
+                  <Typography
+                    style={{
+                      fontSize: isMobile ? "12px" : "1.5vw",
+                      color: "#0F607D",
+                      marginRight: "8px",
+                    }}
+                  >
+                    Isi Per Box:
+                  </Typography>
+                  <TextField
+                    type="text"
+                    sx={{
+                      "& .MuiOutlinedInput-root": {
+                        height: isMobile ? "15px" : "3vw",
+                        width: isMobile ? "90px" : "10vw",
+                        fontSize: isMobile ? "10px" : "1.5vw",
+                        borderRadius: "10px",
+                        "& fieldset": {
+                          borderColor: "#0F607D",
+                        },
+                        "&:hover fieldset": {
+                          borderColor: "#0F607D",
+                        },
+                        "&.Mui-focused fieldset": {
+                          borderColor: "#0F607D",
+                        },
+                      },
+                    }}
+                    onChange={(current) => {
+                      setIsiPerBox(current.target.value);
+                    }}
+                  />
+                </div>
+                <div
+                  style={{
+                    marginTop: "32px",
+                    display: "flex",
+                    justifyContent: "space-between",
+                    width: "100%",
+                  }}
+                >
+                  <div
+                    style={{
+                      display: "flex",
+                      alignItems: "center",
+                      width: "48%",
+                    }}
+                  >
+                    <Typography
+                      style={{
+                        fontSize: isMobile ? "12px" : "1.5vw",
+                        color: "#0F607D",
+                        marginRight: "8px",
+                      }}
+                    >
+                      Contoh:
+                    </Typography>
+                    <FormControlLabel
+                      sx={{
+                        display: "block",
+                      }}
+                      control={
+                        <Switch
+                          onChange={() => {
+                            setContoh(!contoh);
+                          }}
+                          name="loading"
+                          color="primary"
+                        />
+                      }
+                    />
+                  </div>
+                  <div
+                    style={{
+                      display: "flex",
+                      alignItems: "center",
+                      width: "48%",
+                    }}
+                  >
+                    <Typography
+                      style={{
+                        fontSize: isMobile ? "12px" : "1.5vw",
+                        color: "#0F607D",
+                        marginRight: "8px",
+                      }}
+                    >
+                      Setting:
+                    </Typography>
+                    <FormControlLabel
+                      sx={{
+                        display: "block",
+                      }}
+                      control={
+                        <Switch
+                          onChange={() => {
+                            setSetting(!setting);
+                          }}
+                          name="loading"
+                          color="primary"
+                        />
+                      }
+                    />
+                  </div>
+                </div>
+                <div
+                  style={{
+                    marginTop: "8px",
+                    display: "flex",
+                    alignItems: "center",
+                  }}
+                >
+                  <Typography
+                    style={{
+                      fontSize: isMobile ? "12px" : "1.5vw",
+                      color: "#0F607D",
+                      marginRight: "8px",
+                    }}
+                  >
+                    Plate:
+                  </Typography>
+                  <FormControlLabel
+                    sx={{
+                      display: "block",
+                    }}
+                    control={
+                      <Switch
+                        onChange={() => {
+                          setPlate(!plate);
+                        }}
+                        name="loading"
+                        color="primary"
+                      />
+                    }
+                  />
+                </div>
+                <div
+                  style={{
+                    width: "100%",
+                    height: "1px",
+                    backgroundColor: "#0F607D",
+                    margin: " 24px 0px ",
+                    borderRadius: "5px",
+                  }}
+                />
+                <div style={{ marginTop: "32px" }}>
+                  <Typography style={{ color: "#0F607D", fontSize: "2vw" }}>
+                    Bahan Baku
+                  </Typography>
+                </div>
+                <div
+                  style={{
+                    width: "100%",
+                    height: "1px",
+                    backgroundColor: "#0F607D",
+                    margin: " 24px 0px ",
+                    borderRadius: "5px",
+                  }}
+                />
+                <div style={{ marginTop: "32px" }}>
+                  <div style={{ display: "flex", alignItems: "center" }}>
+                    <Typography
+                      style={{
+                        color: "#0F607D",
+                        fontSize: "2vw",
+                        marginRight: "8px",
+                      }}
+                    >
+                      Jangka Waktu Produksi
+                    </Typography>
+                    <IconButton
+                      style={{ height: "50%" }}
+                      onClick={() => {
+                        addEstimasiJadwal();
+                      }}
+                    >
+                      <AddIcon style={{ color: "#0F607D" }} />
+                    </IconButton>
+                  </div>
+                  <div style={{ marginTop: "16px" }}>
+                    <TableContainer component={Paper}>
+                      <Table sx={{ minWidth: 650 }} aria-label="simple table">
+                        <TableHead>
+                          <TableRow>
+                            <TableCell>Bagian</TableCell>
+                            <TableCell align="left">
+                              Jenis Pekerjaan{" "}
+                              {estimasiJadwal.length !== 0 && (
+                                <IconButton
+                                  onClick={() => {
+                                    const lastIndex = estimasiJadwal.length - 1;
+                                    if (lastIndex >= 0) {
+                                      addPekerjaan(lastIndex);
                                     }
-                                  />
-                                </TableCell>
-                                <TableCell align="left">
-                                  <LocalizationProvider
-                                    dateAdapter={AdapterDayjs}
+                                  }}
+                                >
+                                  <AddIcon style={{ color: "#0F607D" }} />
+                                </IconButton>
+                              )}
+                            </TableCell>
+                            <TableCell align="left">Tanggal Mulai</TableCell>
+                            <TableCell align="left">Tanggal Selesai</TableCell>
+                            <TableCell align="left">Jumlah Hari</TableCell>
+                          </TableRow>
+                        </TableHead>
+                        <TableBody>
+                          {estimasiJadwal.map((row, index) => (
+                            <React.Fragment key={index}>
+                              {row.pekerjaan.map(
+                                (pekerjaan, pekerjaanIndex) => (
+                                  <TableRow
+                                    key={`${index}-${pekerjaanIndex}`}
+                                    sx={{
+                                      "&:last-child td, &:last-child th": {
+                                        border: 0,
+                                      },
+                                    }}
                                   >
-                                    <DemoContainer
-                                      components={["DateTimePicker"]}
-                                    >
-                                      <DemoItem>
-                                        <DateTimePicker
-                                          disablePast
-                                          // value={pekerjaan.tanggalMulai}
-                                          maxDateTime={dayjs(
-                                            selectedOrder?.data?.orderDueDate
-                                          )}
+                                    {pekerjaanIndex === 0 ? (
+                                      <TableCell>
+                                        <TextField
+                                          value={row.bagian}
                                           onChange={(e) =>
                                             handleInputChange(
-                                              dayjs(e),
+                                              e,
                                               index,
                                               pekerjaanIndex,
-                                              "tanggalMulai"
+                                              "bagian"
                                             )
                                           }
                                         />
-                                      </DemoItem>
-                                    </DemoContainer>
-                                  </LocalizationProvider>
-                                </TableCell>
-                                <TableCell align="left">
-                                  <LocalizationProvider
-                                    dateAdapter={AdapterDayjs}
-                                  >
-                                    <DemoContainer
-                                      components={["DateTimePicker"]}
-                                    >
-                                      <DemoItem>
-                                        <DateTimePicker
-                                          disablePast
-                                          maxDateTime={dayjs(
-                                            selectedOrder?.data?.orderDueDate
-                                          )}
-                                          onChange={(e) =>
-                                            handleInputChange(
-                                              dayjs(e),
-                                              index,
-                                              pekerjaanIndex,
-                                              "tanggalSelesai"
-                                            )
-                                          }
-                                        />
-                                      </DemoItem>
-                                    </DemoContainer>
-                                  </LocalizationProvider>
-                                </TableCell>
-                                <TableCell align="left">
-                                  <TextField
-                                    disabled
-                                    value={perbedaanHariJam(
-                                      pekerjaan?.tanggalMulai,
-                                      pekerjaan?.tanggalSelesai
+                                      </TableCell>
+                                    ) : (
+                                      <TableCell></TableCell>
                                     )}
-                                  />
-                                </TableCell>
-                                {pekerjaanIndex === 0 && (
-                                  <TableCell
-                                    align="right"
-                                    rowSpan={row.pekerjaan.length}
-                                  >
-                                    <IconButton
-                                      style={{
-                                        marginLeft: "8px",
-                                        height: "50%",
-                                      }}
-                                      onClick={() => {
-                                        setEstimasiJadwal((oldArray) =>
-                                          oldArray.filter((_, i) => i !== index)
-                                        );
-                                      }}
-                                    >
-                                      <DeleteIcon style={{ color: "red" }} />
-                                    </IconButton>
-                                  </TableCell>
-                                )}
-                              </TableRow>
-                            ))}
-                          </React.Fragment>
-                        ))}
-                      </TableBody>
-                    </Table>
-                  </TableContainer>
+                                    <TableCell align="left">
+                                      <TextField
+                                        value={pekerjaan.jenisPekerjaan}
+                                        onChange={(e) =>
+                                          handleInputChange(
+                                            e,
+                                            index,
+                                            pekerjaanIndex,
+                                            "jenisPekerjaan"
+                                          )
+                                        }
+                                      />
+                                    </TableCell>
+                                    <TableCell align="left">
+                                      <LocalizationProvider
+                                        dateAdapter={AdapterDayjs}
+                                      >
+                                        <DemoContainer
+                                          sx={{ padding: 0 }}
+                                          components={["DateTimePicker"]}
+                                        >
+                                          <DemoItem sx={{ padding: 0 }}>
+                                            <DateTimePicker
+                                              disablePast
+                                              maxDateTime={dayjs(
+                                                selectedOrder?.data
+                                                  ?.orderDueDate
+                                              )}
+                                              onChange={(e) =>
+                                                handleInputChange(
+                                                  dayjs(e),
+                                                  index,
+                                                  pekerjaanIndex,
+                                                  "tanggalMulai"
+                                                )
+                                              }
+                                            />
+                                          </DemoItem>
+                                        </DemoContainer>
+                                      </LocalizationProvider>
+                                    </TableCell>
+                                    <TableCell align="left">
+                                      <LocalizationProvider
+                                        dateAdapter={AdapterDayjs}
+                                      >
+                                        <DemoContainer
+                                          components={["DateTimePicker"]}
+                                          sx={{ padding: 0 }}
+                                        >
+                                          <DemoItem>
+                                            <DateTimePicker
+                                              disablePast
+                                              maxDateTime={dayjs(
+                                                selectedOrder?.data
+                                                  ?.orderDueDate
+                                              )}
+                                              onChange={(e) =>
+                                                handleInputChange(
+                                                  dayjs(e),
+                                                  index,
+                                                  pekerjaanIndex,
+                                                  "tanggalSelesai"
+                                                )
+                                              }
+                                            />
+                                          </DemoItem>
+                                        </DemoContainer>
+                                      </LocalizationProvider>
+                                    </TableCell>
+                                    <TableCell align="left">
+                                      <div
+                                        style={{
+                                          display: "flex",
+                                          alignItems: "center",
+                                        }}
+                                      >
+                                        <TextField
+                                          disabled
+                                          value={pekerjaan.jumlahHari}
+                                        />
+                                        {pekerjaanIndex !== 0 ? (
+                                          <IconButton
+                                            style={{
+                                              marginLeft: "8px",
+                                              height: "50%",
+                                            }}
+                                            onClick={() => {
+                                              handleRemovePekerjaan(
+                                                index,
+                                                pekerjaanIndex
+                                              );
+                                            }}
+                                          >
+                                            <RemoveIcon
+                                              style={{ color: "red" }}
+                                            />
+                                          </IconButton>
+                                        ) : (
+                                          <IconButton
+                                            style={{
+                                              marginLeft: "8px",
+                                              height: "50%",
+                                            }}
+                                            onClick={() => {
+                                              setEstimasiJadwal((oldArray) =>
+                                                oldArray.filter(
+                                                  (_, i) => i !== index
+                                                )
+                                              );
+                                            }}
+                                          >
+                                            <DeleteIcon
+                                              style={{ color: "red" }}
+                                            />
+                                          </IconButton>
+                                        )}
+                                      </div>
+                                    </TableCell>
+                                    {pekerjaanIndex === 0 && (
+                                      <TableCell
+                                        align="right"
+                                        rowSpan={row.pekerjaan.length}
+                                      ></TableCell>
+                                    )}
+                                  </TableRow>
+                                )
+                              )}
+                            </React.Fragment>
+                          ))}
+                        </TableBody>
+                      </Table>
+                    </TableContainer>
+                  </div>
                 </div>
               </div>
             </div>
-          </div>
+          )}
         </div>
       </div>
     </div>
