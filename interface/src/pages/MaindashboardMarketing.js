@@ -70,8 +70,6 @@ const MaindashboardMarketing = (props) => {
   const navigate = useNavigate();
 
   const { isMobile } = useContext(AppContext);
-  var now = dayjs();
-  var today = new Date();
 
   const { userInformation } = props;
   const { message, clearMessage } = useAuth();
@@ -88,6 +86,7 @@ const MaindashboardMarketing = (props) => {
   const [orderType, setOrderType] = useState("");
   const [orderNoSeries, setOrderNoSeries] = useState("");
   const [orderDueDate, setOrderDueDate] = useState(dayjs(""));
+  const [alamatPengiriman, setAlamatPengirimanProduk] = useState("")
   const [orderCustomerChannel, setOrderCustomerChannel] = useState("");
   const [orderCustomerDetail, setOrderCustomerDetail] = useState("");
   const [updateNotification, setUpdateNotification] = useState(false);
@@ -169,6 +168,7 @@ const MaindashboardMarketing = (props) => {
       formData.append("orderType", orderType);
       formData.append("orderNoSeries", orderNoSeries);
       formData.append("orderDueDate", orderDueDate);
+      formData.append("alamatPengiriman", alamatPengiriman)
       formData.append("orderStatus", "Ongoing");
 
       for (const file of orderDocuments) {
@@ -196,6 +196,11 @@ const MaindashboardMarketing = (props) => {
           setOrderCustomerChannel("");
           setOrderCustomerDetail("");
           setOrderDocuments([]);
+          setOrderTotalPrice("")
+          setOrderType("")
+          setOrderNoSeries("")
+          setOrderDueDate(dayjs(""))
+          setAlamatPengirimanProduk("")
         } else {
           setOpenSnackbar(true);
           setSnackbarStatus(false);
@@ -207,6 +212,11 @@ const MaindashboardMarketing = (props) => {
           setOrderCustomerChannel("");
           setOrderCustomerDetail("");
           setOrderDocuments([]);
+          setOrderTotalPrice("")
+          setOrderType("")
+          setOrderNoSeries("")
+          setOrderDueDate(dayjs(""))
+          setAlamatPengirimanProduk("")
         }
       });
     }
@@ -251,6 +261,11 @@ const MaindashboardMarketing = (props) => {
     setOrderCustomerChannel("");
     setOrderCustomerDetail("");
     setOrderDocuments([]);
+    setOrderTotalPrice("")
+    setOrderType("")
+    setOrderNoSeries("")
+    setOrderDueDate(dayjs(""))
+    setAlamatPengirimanProduk("")
   };
 
   useEffect(() => {
@@ -2167,6 +2182,50 @@ const MaindashboardMarketing = (props) => {
                   }}
                   onChange={(current) => {
                     setOrderCustomerDetail(current.target.value);
+                  }}
+                />
+              </div>
+            </div>
+            <div style={{ marginBottom: "1.667vw" }}>
+              <div
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  width: "100%",
+                  justifyContent: "space-between",
+                }}
+              >
+                <div style={{ display: "flex" }}>
+                  <Typography
+                    style={{
+                      color: "#0F607D",
+                      fontSize: isMobile ? "4vw" : "1.5vw",
+                    }}
+                  >
+                    Alamat Pengiriman:
+                  </Typography>
+                </div>
+                <TextField
+                  type="text"
+                  sx={{
+                    "& .MuiOutlinedInput-root": {
+                      height: isMobile ? "15px" : "3vw",
+                      width: isMobile ? "150px" : "25vw",
+                      fontSize: isMobile ? "10px" : "1.5vw",
+                      borderRadius: "10px",
+                      "& fieldset": {
+                        borderColor: "#0F607D",
+                      },
+                      "&:hover fieldset": {
+                        borderColor: "#0F607D",
+                      },
+                      "&.Mui-focused fieldset": {
+                        borderColor: "#0F607D",
+                      },
+                    },
+                  }}
+                  onChange={(current) => {
+                    setAlamatPengirimanProduk(current.target.value);
                   }}
                 />
               </div>

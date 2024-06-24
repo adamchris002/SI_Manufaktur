@@ -38,6 +38,7 @@ class OrderController {
         orderType,
         orderNoSeries,
         orderDueDate,
+        alamatPengiriman
       } = req.body;
 
       let order = await orders.findOne({
@@ -60,6 +61,7 @@ class OrderController {
           orderType,
           orderNoSeries,
           orderDueDate,
+          alamatPengiriman
         },
         {
           where: { orderId },
@@ -198,6 +200,7 @@ class OrderController {
         orderType,
         orderNoSeries,
         orderDueDate,
+        alamatPengiriman
       } = req.body;
 
       const { id } = req.params;
@@ -237,6 +240,7 @@ class OrderController {
         orderType,
         orderNoSeries,
         orderDueDate,
+        alamatPengiriman
       });
 
       let activityLog = await activitylogs.create({

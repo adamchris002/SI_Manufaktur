@@ -87,6 +87,7 @@ const OrderDetail = (props) => {
   const [orderType, setOrderType] = useState("");
   const [orderNoSeries, setOrderNoSeries] = useState("");
   const [orderDueDate, setOrderDueDate] = useState(dayjs(""));
+  const [alamatPengiriman, setAlamatPengirimanProduk] = useState("");
   const [openImage, setOpenImage] = useState(false);
   const [imageIndex, setImageIndex] = useState(null);
   const [imageOption, setImageOption] = useState(true);
@@ -146,6 +147,7 @@ const OrderDetail = (props) => {
       setOrderNoSeries(result.data.orderNoSeries);
       setOrderTotalPrice(result.data.orderTotalPrice);
       setOrderDueDate(dayjs(result.data.orderDueDate));
+      setAlamatPengirimanProduk(result.data.alamatPengiriman);
       setCheckUpdate(false);
     });
   }, [checkUpdate]);
@@ -157,6 +159,11 @@ const OrderDetail = (props) => {
     setOrderCustomerChannel(orderDetailInfo.data.customerChannel);
     setOrderCustomerDetail(orderDetailInfo.data.customerDetail);
     setOrderDocuments(orderDetailInfo.data.documents);
+    setOrderType(orderDetailInfo.data.orderType);
+    setOrderNoSeries(orderDetailInfo.data.orderNoSeries);
+    setOrderTotalPrice(orderDetailInfo.data.orderTotalPrice);
+    setOrderDueDate(dayjs(orderDetailInfo.data.orderDueDate));
+    setAlamatPengirimanProduk(orderDetailInfo.data.alamatPengiriman);
   };
 
   const handleUpdateOrder = (orderId) => {
@@ -170,7 +177,8 @@ const OrderDetail = (props) => {
       orderTotalPrice === "" ||
       orderType === "" ||
       orderNoSeries === "" ||
-      orderDueDate === ""
+      orderDueDate === "" ||
+      alamatPengiriman === ""
     ) {
       setOpenSnackbar(true);
       setSnackbarStatus(false);
@@ -189,6 +197,7 @@ const OrderDetail = (props) => {
       formData.append("orderTotalPrice", orderTotalPrice);
       formData.append("orderType", orderType);
       formData.append("orderNoSeries", orderNoSeries);
+      formData.append("alamatPengiriman", alamatPengiriman);
       formData.append(
         "orderDueDate",
         dayjs(orderDueDate).format("MM/DD/YYYY hh:mm A")
@@ -228,6 +237,11 @@ const OrderDetail = (props) => {
             setOrderCustomerChannel("");
             setOrderCustomerDetail("");
             setOrderDocuments([]);
+            setOrderTotalPrice("");
+            setOrderType("");
+            setOrderNoSeries("");
+            setOrderDueDate(dayjs(""));
+            setAlamatPengirimanProduk("");
           } else {
             setOpenSnackbar(true);
             setSnackbarStatus(false);
@@ -240,6 +254,11 @@ const OrderDetail = (props) => {
             setOrderCustomerChannel("");
             setOrderCustomerDetail("");
             setOrderDocuments([]);
+            setOrderTotalPrice("");
+            setOrderType("");
+            setOrderNoSeries("");
+            setOrderDueDate(dayjs(""));
+            setAlamatPengirimanProduk("");
           }
         })
         .catch((error) => {
@@ -514,7 +533,7 @@ const OrderDetail = (props) => {
               {orderDetailInfo?.data?.orderDetails}
             </Typography>
           </div>
-          <div style={{ width: isMobile ? "90%" : "60%", marginTop: "32px" }}>
+          <div style={{ width: isMobile ? "90%" : "80%", marginTop: "32px" }}>
             <div style={{ display: "flex", justifyContent: "flex-start" }}>
               <div style={{ width: "50%" }}>
                 <Typography
@@ -588,6 +607,14 @@ const OrderDetail = (props) => {
                   }}
                 >{`Customer Detail: ${orderDetailInfo?.data?.customerDetail}`}</Typography>
               </div>
+            </div>
+            <div style={{marginTop: "16px"}}>
+              <Typography
+                style={{
+                  fontSize: isMobile ? "3vw" : "1.8vw",
+                  color: "#0F607D",
+                }}
+              >{`Alamat Pengiriman Produk: ${orderDetailInfo?.data?.alamatPengiriman}`}</Typography>
             </div>
           </div>
         </div>
@@ -1190,6 +1217,51 @@ const OrderDetail = (props) => {
                   }}
                   onChange={(current) => {
                     setOrderCustomerDetail(current.target.value);
+                  }}
+                />
+              </div>
+            </div>
+            <div style={{ marginBottom: "1.667vw" }}>
+              <div
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  width: "100%",
+                  justifyContent: "space-between",
+                }}
+              >
+                <div style={{ display: "flex" }}>
+                  <Typography
+                    style={{
+                      color: "#0F607D",
+                      fontSize: isMobile ? "4vw" : "1.5vw",
+                    }}
+                  >
+                    Alamat Pengiriman:
+                  </Typography>
+                </div>
+                <TextField
+                  type="text"
+                  value={alamatPengiriman}
+                  sx={{
+                    "& .MuiOutlinedInput-root": {
+                      height: isMobile ? "15px" : "3vw",
+                      width: isMobile ? "150px" : "25vw",
+                      fontSize: isMobile ? "10px" : "1.5vw",
+                      borderRadius: "10px",
+                      "& fieldset": {
+                        borderColor: "#0F607D",
+                      },
+                      "&:hover fieldset": {
+                        borderColor: "#0F607D",
+                      },
+                      "&.Mui-focused fieldset": {
+                        borderColor: "#0F607D",
+                      },
+                    },
+                  }}
+                  onChange={(current) => {
+                    setAlamatPengirimanProduk(current.target.value);
                   }}
                 />
               </div>

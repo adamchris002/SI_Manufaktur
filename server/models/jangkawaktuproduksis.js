@@ -6,6 +6,10 @@ module.exports = (sequelize, DataTypes) => {
       jangkaWaktuProduksis.belongsTo(models.productionPlannings, {
         foreignKey: "productionPlanningId",
       });
+      jangkaWaktuProduksis.hasMany(models.estimasiJangkaProduksis, {
+        foreignKey: "jangkaWaktuProduksiId",
+        onDelete: "CASCADE",
+      });
     }
   }
   jangkaWaktuProduksis.init(

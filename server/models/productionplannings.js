@@ -10,6 +10,10 @@ module.exports = (sequelize, DataTypes) => {
         foreignKey: "productionPlanningId",
         onDelete: "CASCADE",
       });
+      productionPlannings.hasMany(models.estimasiBahanBakus, {
+        foreignKey: "productionPlanningId",
+        onDelete: "CASCADE"
+      })
     }
   }
   productionPlannings.init(

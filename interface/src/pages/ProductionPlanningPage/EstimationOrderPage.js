@@ -1,6 +1,7 @@
 import React, { useContext, useEffect, useState } from "react";
 import factoryBackground from "../../assets/factorybackground.png";
 import {
+  Button,
   FormControlLabel,
   IconButton,
   Paper,
@@ -27,6 +28,9 @@ import { DateTimePicker } from "@mui/x-date-pickers/DateTimePicker";
 import dayjs from "dayjs";
 import utc from "dayjs/plugin/utc";
 import timezone from "dayjs/plugin/timezone";
+import MySnackbar from "../../components/Snackbar";
+import MyModal from "../../components/Modal";
+import DefaultButton from "../../components/Button";
 
 dayjs.extend(utc);
 dayjs.extend(timezone);
@@ -37,6 +41,12 @@ const EstimationOrderPage = () => {
   const [allOrderID, setAllOrderID] = useState([]);
   const [selectedOrder, setSelectedOrder] = useState([]);
   const [estimasiJadwal, setEstimasiJadwal] = useState([]);
+  const [estimasiBahanBaku, setEstimasiBahanBaku] = useState([]);
+
+  const [openModal, setOpenModal] = useState(false);
+  const [openSnackbar, setOpenSnackbar] = useState(false);
+  const [snackbarStatus, setSnackbarStatus] = useState(false);
+  const [snackbarMessage, setSnackbarMessage] = useState("");
 
   const [pemesan, setPemesan] = useState("");
   const [tanggalPengiriman, setTanggalPengiriman] = useState("");
@@ -51,6 +61,133 @@ const EstimationOrderPage = () => {
   const [contoh, setContoh] = useState(false);
   const [plate, setPlate] = useState(false);
   const [setting, setSetting] = useState(false);
+
+  const [jenisBahan, setJenisBahan] = useState("");
+  const [informasiBahan, setInformasiBahan] = useState("");
+
+  console.log(estimasiBahanBaku);
+
+  const handleAddDataJenis = (itemIndex, dataItemIndex) => {
+    setEstimasiBahanBaku((oldArray) =>
+      oldArray.map((item, i) =>
+        i === itemIndex
+          ? {
+              ...item,
+              data: item.data.map((dataItem, j) =>
+                j === dataItemIndex
+                  ? {
+                      ...dataItem,
+                      dataJenis: [
+                        ...dataItem.dataJenis,
+                        {
+                          namaJenis: "",
+                          informasiJenis: "",
+                          warna: "",
+                          estimasiKebutuhan: "",
+                          waste: "",
+                          jumlahKebutuhan: "",
+                        },
+                      ],
+                    }
+                  : dataItem
+              ),
+            }
+          : item
+      )
+    );
+  };
+  
+
+  const handleAddJenis = () => {
+    if (jenisBahan === "" || informasiBahan === "") {
+      setOpenSnackbar(true);
+      setSnackbarStatus(false);
+      setSnackbarMessage("Please fill in all the fields");
+    } else {
+      setEstimasiBahanBaku((oldArray) => [
+        ...oldArray,
+        {
+          jenis: jenisBahan,
+          informasiBahan: informasiBahan,
+          data: [
+            {
+              dataJenis: [
+                {
+                  namaJenis: "",
+                  informasiJenis: "",
+                  warna: "",
+                  estimasiKebutuhan: "",
+                  waste: "",
+                  jumlahKebutuhan: "",
+                },
+              ],
+            },
+          ],
+        },
+      ]);
+      setJenisBahan("");
+      setInformasiBahan("");
+      setOpenModal(false);
+    }
+  };
+
+  const handleAddData = (index) => {
+    setEstimasiBahanBaku((oldArray) =>
+      oldArray.map((item, i) =>
+        i === index
+          ? {
+              ...item,
+              data: [
+                ...item.data,
+                {
+                  dataJenis: [
+                    {
+                      namaJenis: "",
+                      informasiJenis: "",
+                      warna: "",
+                      estimasiKebutuhan: "",
+                      waste: "",
+                      jumlahKebutuhan: "",
+                    },
+                  ],
+                },
+              ],
+            }
+          : item
+      )
+    );
+  };
+
+  const handleAddPerencanaanProduksi = () => {
+    if (
+      pemesan === "" ||
+      tanggalPengiriman === "" ||
+      alamatPengirimanProduk === "" ||
+      jenisCetakan === "" ||
+      ukuran === "" ||
+      ply === "" ||
+      seri === "" ||
+      kuantitas === "" ||
+      isiPerBox === "" ||
+      nomorator === "" ||
+      estimasiJadwal.length === 0
+    ) {
+      setOpenSnackbar(true);
+      setSnackbarStatus(false);
+      setSnackbarMessage("Please fill in all the fields");
+    } else {
+    }
+  };
+
+  const handleCloseModal = () => {
+    setOpenModal(false);
+  };
+
+  const handleCloseSnackbar = () => {
+    setOpenSnackbar(false);
+    setSnackbarMessage("");
+    setSnackbarStatus(true);
+  };
 
   const addPekerjaan = (index) => {
     setEstimasiJadwal((oldArray) =>
@@ -136,6 +273,36 @@ const EstimationOrderPage = () => {
     });
   };
 
+  const handleInputChangeEstimasiBahanBaku = (
+    event,
+    index,
+    dataIndex,
+    field
+  ) => {
+    const value = event.target.value;
+
+    setEstimasiBahanBaku((prevState) => {
+      const newState = prevState.map((item, i) => {
+        if (i === index) {
+          return {
+            ...item,
+            data: item.data.map((dataItem, j) => {
+              if (j === dataIndex) {
+                return {
+                  ...dataItem,
+                  [field]: value,
+                };
+              }
+              return dataItem;
+            }),
+          };
+        }
+        return item;
+      });
+      return newState;
+    });
+  };
+
   const perbedaanHariJam = (startDate, endDate) => {
     if (!startDate || !endDate) {
       return "";
@@ -164,6 +331,7 @@ const EstimationOrderPage = () => {
       setSelectedOrder(result);
       setPemesan(result?.data?.customerDetail);
       setTanggalPengiriman(result?.data?.orderDueDate);
+      setAlamatPengirimanProduk(result?.data?.alamatPengiriman);
     });
   };
 
@@ -508,10 +676,11 @@ const EstimationOrderPage = () => {
                       marginRight: "8px",
                     }}
                   >
-                    Alamat Kirim Barang:
+                    Alamat Pengiriman Produk:
                   </Typography>
                   <TextField
                     type="text"
+                    value={alamatPengirimanProduk}
                     sx={{
                       "& .MuiOutlinedInput-root": {
                         height: isMobile ? "15px" : "3vw",
@@ -952,10 +1121,139 @@ const EstimationOrderPage = () => {
                     borderRadius: "5px",
                   }}
                 />
-                <div style={{ marginTop: "32px" }}>
+                <div
+                  style={{
+                    marginTop: "32px",
+                    display: "flex",
+                    alignItems: "center",
+                  }}
+                >
                   <Typography style={{ color: "#0F607D", fontSize: "2vw" }}>
-                    Bahan Baku
+                    Bahan Baku dan Bahan Pembantu
                   </Typography>
+                  <IconButton
+                    style={{ height: "50%", marginLeft: "8px" }}
+                    onClick={() => {
+                      setOpenModal(true);
+                    }}
+                  >
+                    <AddIcon style={{ color: "#0F607D" }} />
+                  </IconButton>
+                </div>
+                <div>
+                  {estimasiBahanBaku.map((result, index) => {
+                    return (
+                      <div style={{ marginTop: "32px" }}>
+                        <TableContainer component={Paper}>
+                          <Table
+                            sx={{ minWidth: 650 }}
+                            aria-label="simple table"
+                          >
+                            <TableHead>
+                              {estimasiBahanBaku.map((result, index) => (
+                                <TableRow key={index}>
+                                  <TableCell>No.</TableCell>
+                                  <TableCell align="left">
+                                    <div
+                                      style={{
+                                        display: "flex",
+                                        alignItems: "center",
+                                      }}
+                                    >
+                                      {result.jenis}
+                                      <IconButton
+                                        style={{
+                                          height: "50%",
+                                          marginLeft: "8px",
+                                        }}
+                                        onClick={() => handleAddData(index)}
+                                      >
+                                        <AddIcon style={{ color: "#0F607D" }} />
+                                      </IconButton>
+                                    </div>
+                                  </TableCell>
+                                  <TableCell align="left">
+                                    {result.informasiBahan}
+                                  </TableCell>
+                                  <TableCell align="left">Warna</TableCell>
+                                  <TableCell align="left">
+                                    Estimasi Kebutuhan
+                                  </TableCell>
+                                  <TableCell align="left">Waste</TableCell>
+                                  <TableCell align="left">
+                                    Jumlah Kebutuhan
+                                  </TableCell>
+                                  <TableCell>Actions</TableCell>
+                                </TableRow>
+                              ))}
+                            </TableHead>
+                            <TableBody>
+                              {estimasiBahanBaku.map((result, resultIndex) =>
+                                result.data.map((dataItem, dataItemIndex) => (
+                                  <React.Fragment
+                                    key={`${resultIndex}-${dataItemIndex}`}
+                                  >
+                                    {dataItem.dataJenis.map(
+                                      (dataJenis, dataJenisIndex) => (
+                                        <TableRow
+                                          key={`${resultIndex}-${dataItemIndex}-${dataJenisIndex}`}
+                                        >
+                                          <TableCell>
+                                            {dataJenisIndex + 1}
+                                          </TableCell>
+                                          <TableCell>
+                                            <TextField />
+                                            {dataJenis.namaJenis}
+                                          </TableCell>
+                                          <TableCell>
+                                            <TextField />
+                                            {dataJenis.informasiJenis}
+                                          </TableCell>
+                                          <TableCell>
+                                            <TextField />
+                                            {dataJenis.warna}
+                                          </TableCell>
+                                          <TableCell>
+                                            <TextField />
+                                            {dataJenis.estimasiKebutuhan}
+                                          </TableCell>
+                                          <TableCell>
+                                            <TextField />
+                                            {dataJenis.waste}
+                                          </TableCell>
+                                          <TableCell>
+                                            <TextField />
+                                            {dataJenis.jumlahKebutuhan}
+                                          </TableCell>
+                                          <TableCell>
+                                            <div
+                                              style={{
+                                                display: "flex",
+                                                alignItems: "center",
+                                              }}
+                                            >
+                                              <IconButton onClick={() => {
+                                                handleAddDataJenis(resultIndex, dataItemIndex)
+                                              }} style={{height: "50%"}}>
+                                                <AddIcon style={{color: "blue"}}/>
+                                              </IconButton>
+                                              <IconButton style={{height: "50%"}}>
+                                                <DeleteIcon style={{color: "red"}}/>
+                                              </IconButton>
+                                            </div>
+                                          </TableCell>
+                                        </TableRow>
+                                      )
+                                    )}
+                                  </React.Fragment>
+                                ))
+                              )}
+                            </TableBody>
+                          </Table>
+                        </TableContainer>
+                      </div>
+                    );
+                  })}
                 </div>
                 <div
                   style={{
@@ -1181,6 +1479,134 @@ const EstimationOrderPage = () => {
           )}
         </div>
       </div>
+      {snackbarMessage !== ("" || null) && (
+        <MySnackbar
+          open={openSnackbar}
+          handleClose={handleCloseSnackbar}
+          messageStatus={snackbarStatus}
+          popupMessage={snackbarMessage}
+        />
+      )}
+      {openModal === true && (
+        <MyModal open={openModal} handleClose={handleCloseModal}>
+          <div
+            className="hideScrollbar"
+            style={{
+              margin: isMobile ? "24px" : "0.83vw 1.667vw 0.83vw 1.667vw",
+              overflow: "auto",
+              width: isMobile ? "80vw" : "60vw",
+              maxHeight: "80vh",
+            }}
+          >
+            <div style={{ marginBottom: "16px" }}>
+              <Typography
+                style={{
+                  color: "#0F607D",
+                  fontSize: isMobile ? "6vw" : "2vw",
+                }}
+              >
+                Tambah Jenis Bahan Baku dan Bahan Pembantu
+              </Typography>
+            </div>
+            <div
+              style={{ display: "flex", alignItems: "center", width: "100%" }}
+            >
+              <div style={{ width: "50%" }}>
+                <Typography
+                  style={{
+                    color: "#0F607D",
+                    fontSize: isMobile ? "3.5vw" : "1.5vw",
+                  }}
+                >
+                  Jenis Bahan:{" "}
+                </Typography>
+              </div>
+              <div
+                style={{
+                  width: "50% ",
+                  display: "flex",
+                  justifyContent: "center",
+                }}
+              >
+                <TextField
+                  onChange={(current) => {
+                    setJenisBahan(current.target.value);
+                  }}
+                />
+              </div>
+            </div>
+            <div
+              style={{
+                display: "flex",
+                alignItems: "center",
+                width: "100%",
+                marginTop: "8px",
+              }}
+            >
+              <div style={{ width: "50%" }}>
+                <Typography
+                  style={{
+                    color: "#0F607D",
+                    fontSize: isMobile ? "3.5vw" : "1.5vw",
+                  }}
+                >
+                  {"Informasi (contoh: gramatur): "}
+                </Typography>
+              </div>
+              <div
+                style={{
+                  width: "50%",
+                  display: "flex",
+                  justifyContent: "center",
+                }}
+              >
+                <TextField
+                  onChange={(current) => {
+                    setInformasiBahan(current.target.value);
+                  }}
+                />
+              </div>
+            </div>
+            <div
+              style={{
+                width: "100%",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                marginTop: "16px",
+              }}
+            >
+              <DefaultButton
+                height={isMobile ? "30px" : "3vw"}
+                width={isMobile ? "80px" : "10vw"}
+                backgroundColor="#0F607D"
+                borderRadius="10px"
+                fontSize={isMobile ? "10px" : "0.9vw"}
+                onClickFunction={() => {
+                  handleAddJenis();
+                }}
+              >
+                Add Jenis
+              </DefaultButton>
+              <Button
+                variant="outlined"
+                color="error"
+                style={{
+                  marginLeft: "2vw",
+                  height: isMobile ? "30px" : "3vw",
+                  width: isMobile ? "80px" : "10vw",
+                  borderRadius: "10px",
+                  fontSize: isMobile ? "10px" : "0.9vw",
+                  textTransform: "none",
+                }}
+                onClick={() => {}}
+              >
+                Cancel
+              </Button>
+            </div>
+          </div>
+        </MyModal>
+      )}
     </div>
   );
 };

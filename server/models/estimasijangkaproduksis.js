@@ -1,19 +1,20 @@
 "use strict";
 const { Model } = require("sequelize");
 module.exports = (sequelize, DataTypes) => {
-  class estimasiJangkaProduksi extends Model {
+  class estimasiJangkaProduksis extends Model {
     /**
      * Helper method for defining associations.
      * This method is not a part of Sequelize lifecycle.
      * The `models/index` file will call this method automatically.
      */
     static associate(models) {
-      estimasiJangkaProduksi.belongsTo(models.jangkaWaktuProduksis, {
+      estimasiJangkaProduksis.belongsTo(models.jangkaWaktuProduksis, {
         foreignKey: "jangkaWaktuProduksiId",
+        onDelete: "CASCADE",
       });
     }
   }
-  estimasiJangkaProduksi.init(
+  estimasiJangkaProduksis.init(
     {
       jangkaWaktuProduksiId: DataTypes.INTEGER,
       jenisPekerjaan: DataTypes.STRING,
@@ -23,8 +24,8 @@ module.exports = (sequelize, DataTypes) => {
     },
     {
       sequelize,
-      modelName: "estimasiJangkaProduksi",
+      modelName: "estimasiJangkaProduksis",
     }
   );
-  return estimasiJangkaProduksi;
+  return estimasiJangkaProduksis;
 };
