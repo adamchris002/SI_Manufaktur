@@ -67,6 +67,45 @@ const EstimationOrderPage = () => {
 
   console.log(estimasiBahanBaku);
 
+  const handleRemoveDataBahanBaku = (index, dataItemIndex) => {
+    setEstimasiBahanBaku((oldArray) =>
+      oldArray.map((result, i) =>
+        i === index
+          ? {
+              ...result,
+              data: result.data.filter((data, j) => j !== dataItemIndex),
+            }
+          : result
+      )
+    );
+  };
+
+  const handleRemoveJenisDataBahanBaku = (
+    resultIndex,
+    dataItemIndex,
+    dataJenisIndex
+  ) => {
+    setEstimasiBahanBaku((oldArray) =>
+      oldArray.map((result, i) =>
+        i === resultIndex
+          ? {
+              ...result,
+              data: result.data.map((dataItem, j) =>
+                j === dataItemIndex
+                  ? {
+                      ...dataItem,
+                      dataJenis: dataItem.dataJenis.filter(
+                        (dataJenis, k) => k !== dataJenisIndex
+                      ),
+                    }
+                  : dataItem
+              ),
+            }
+          : result
+      )
+    );
+  };
+
   const handleAddDataJenis = (itemIndex, dataItemIndex) => {
     setEstimasiBahanBaku((oldArray) =>
       oldArray.map((item, i) =>
@@ -96,7 +135,6 @@ const EstimationOrderPage = () => {
       )
     );
   };
-  
 
   const handleAddJenis = () => {
     if (jenisBahan === "" || informasiBahan === "") {
@@ -1198,9 +1236,13 @@ const EstimationOrderPage = () => {
                                         <TableRow
                                           key={`${resultIndex}-${dataItemIndex}-${dataJenisIndex}`}
                                         >
-                                          <TableCell>
-                                            {dataJenisIndex + 1}
-                                          </TableCell>
+                                          {dataJenisIndex === 0 ? (
+                                            <TableCell>
+                                              {dataItemIndex + 1}
+                                            </TableCell>
+                                          ) : (
+                                            <TableCell></TableCell>
+                                          )}
                                           <TableCell>
                                             <TextField />
                                             {dataJenis.namaJenis}
@@ -1232,14 +1274,49 @@ const EstimationOrderPage = () => {
                                                 alignItems: "center",
                                               }}
                                             >
-                                              <IconButton onClick={() => {
-                                                handleAddDataJenis(resultIndex, dataItemIndex)
-                                              }} style={{height: "50%"}}>
-                                                <AddIcon style={{color: "blue"}}/>
+                                              <IconButton
+                                                onClick={() => {
+                                                  handleAddDataJenis(
+                                                    resultIndex,
+                                                    dataItemIndex
+                                                  );
+                                                }}
+                                                style={{ height: "50%" }}
+                                              >
+                                                <AddIcon
+                                                  style={{ color: "blue" }}
+                                                />
                                               </IconButton>
-                                              <IconButton style={{height: "50%"}}>
-                                                <DeleteIcon style={{color: "red"}}/>
-                                              </IconButton>
+                                              {dataJenisIndex === 0 ? (
+                                                <IconButton
+                                                  style={{ height: "50%" }}
+                                                >
+                                                  <DeleteIcon
+                                                    onClick={() => {
+                                                      handleRemoveDataBahanBaku(
+                                                        resultIndex,
+                                                        dataItemIndex
+                                                      );
+                                                    }}
+                                                    style={{ color: "red" }}
+                                                  />
+                                                </IconButton>
+                                              ) : (
+                                                <IconButton
+                                                  onClick={() => {
+                                                    handleRemoveJenisDataBahanBaku(
+                                                      resultIndex,
+                                                      dataItemIndex,
+                                                      dataJenisIndex
+                                                    );
+                                                  }}
+                                                  style={{ height: "50%" }}
+                                                >
+                                                  <RemoveIcon
+                                                    style={{ color: "red" }}
+                                                  />
+                                                </IconButton>
+                                              )}
                                             </div>
                                           </TableCell>
                                         </TableRow>
@@ -1550,7 +1627,7 @@ const EstimationOrderPage = () => {
                     fontSize: isMobile ? "3.5vw" : "1.5vw",
                   }}
                 >
-                  {"Informasi (contoh: gramatur): "}
+                  {"Informasi (contoh: Gramatur): "}
                 </Typography>
               </div>
               <div

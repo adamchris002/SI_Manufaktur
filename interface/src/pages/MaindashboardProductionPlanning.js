@@ -763,7 +763,7 @@ const MaindashboardProductionPlanning = (props) => {
             ""
           )}
         </div>
-        <div style={{ margin: isMobile ? "0px 32px 0px 32px" : "1.667vw" }}>
+        {/* <div style={{ margin: isMobile ? "0px 32px 0px 32px" : "1.667vw" }}>
           <div
             style={{
               width: isMobile ? "100%" : "72vw",
@@ -939,7 +939,7 @@ const MaindashboardProductionPlanning = (props) => {
               ))
             )}
           </div>
-        </div>
+        </div> */}
         <div
           style={{
             margin: isMobile
