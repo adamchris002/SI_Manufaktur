@@ -1,7 +1,8 @@
-'use strict';
+"use strict";
+/** @type {import('sequelize-cli').Migration} */
 module.exports = {
   async up(queryInterface, Sequelize) {
-    await queryInterface.createTable("jangkaWaktuProduksis", {
+    await queryInterface.createTable("estimasiJadwalProduksis", {
       id: {
         allowNull: false,
         autoIncrement: true,
@@ -11,10 +12,10 @@ module.exports = {
       productionPlanningId: {
         type: Sequelize.INTEGER,
         references: {
-          model: 'productionPlannings',
-          key: 'id',
+          model: "productionPlannings",
+          key: "id",
         },
-        onDelete: 'CASCADE',
+        onDelete: "CASCADE",
       },
       bagian: {
         type: Sequelize.STRING,
@@ -30,6 +31,6 @@ module.exports = {
     });
   },
   async down(queryInterface, Sequelize) {
-    await queryInterface.dropTable("jangkaWaktuProduksis");
+    await queryInterface.dropTable("estimasiJadwalProduksis"); // Use the correct table name here
   },
 };

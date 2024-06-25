@@ -32,6 +32,7 @@ import timezone from "dayjs/plugin/timezone";
 import MySnackbar from "../../components/Snackbar";
 import MyModal from "../../components/Modal";
 import DefaultButton from "../../components/Button";
+import { useAuth } from "../../components/AuthContext";
 
 dayjs.extend(utc);
 dayjs.extend(timezone);
@@ -52,6 +53,7 @@ const EstimationOrderPage = (props) => {
   const [openSnackbar, setOpenSnackbar] = useState(false);
   const [snackbarStatus, setSnackbarStatus] = useState(false);
   const [snackbarMessage, setSnackbarMessage] = useState("");
+  const { setSuccessMesage } = useAuth();
 
   const [pemesan, setPemesan] = useState("");
   const [tanggalPengiriman, setTanggalPengiriman] = useState("");
@@ -70,7 +72,7 @@ const EstimationOrderPage = (props) => {
   const [jenisBahan, setJenisBahan] = useState("");
   const [informasiBahan, setInformasiBahan] = useState("");
 
-  // console.log(estimasiJadwal);
+  console.log(estimasiJadwal);
 
   const handleRemoveDataEstimasiBahanBaku = (index) => {
     setEstimasiBahanBaku((oldArray) => oldArray.filter((_, i) => i !== index));
@@ -299,8 +301,15 @@ const EstimationOrderPage = (props) => {
         url: `http://localhost:3000/productionPlanning/addProductionPlanning/${userInformation.data.id}`,
         data: perencanaanProduksiData,
       }).then((result) => {
-        // navigate(-1);
-        
+        if (result.status === 200) {
+          setSnackbarStatus(true);
+          setSuccessMesage("You have created a Production Plan!");
+          navigate(-1);
+        } else {
+          setOpenSnackbar(true);
+          setSnackbarStatus(false);
+          setSnackbarMessage("Error in creating Production Plan!");
+        }
       });
     }
   };
@@ -681,7 +690,22 @@ const EstimationOrderPage = (props) => {
               </div>
             </div>
           ) : (
-            ""
+            <div
+              style={{
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+              }}
+            >
+              <Typography
+                style={{
+                  fontSize: isMobile ? "36px" : "3vw",
+                  color: "#0F607D",
+                }}
+              >
+                Please select an order
+              </Typography>
+            </div>
           )}
           {selectedOrder.length !== 0 && (
             <div
@@ -772,7 +796,9 @@ const EstimationOrderPage = (props) => {
                     </Typography>
                     <TextField
                       type="text"
-                      value={tanggalPengiriman}
+                      value={dayjs(tanggalPengiriman).format(
+                        "MM/DD/YYYY hh:mm A"
+                      )}
                       sx={{
                         "& .MuiOutlinedInput-root": {
                           height: isMobile ? "15px" : "3vw",
@@ -1419,33 +1445,35 @@ const EstimationOrderPage = (props) => {
                                               alignItems: "center",
                                             }}
                                           >
-                                            <IconButton
-                                              onClick={() => {
-                                                handleAddDataJenis(
-                                                  index,
-                                                  dataItemIndex
-                                                );
-                                              }}
-                                              style={{ height: "50%" }}
-                                            >
-                                              <AddIcon
-                                                style={{ color: "#0F607D" }}
-                                              />
-                                            </IconButton>
                                             {dataJenisIndex === 0 ? (
-                                              <IconButton
-                                                style={{ height: "50%" }}
-                                              >
-                                                <DeleteIcon
+                                              <>
+                                                <IconButton
                                                   onClick={() => {
-                                                    handleRemoveDataBahanBaku(
+                                                    handleAddDataJenis(
                                                       index,
                                                       dataItemIndex
                                                     );
                                                   }}
-                                                  style={{ color: "red" }}
-                                                />
-                                              </IconButton>
+                                                  style={{ height: "50%" }}
+                                                >
+                                                  <AddIcon
+                                                    style={{ color: "#0F607D" }}
+                                                  />
+                                                </IconButton>
+                                                <IconButton
+                                                  style={{ height: "50%" }}
+                                                >
+                                                  <DeleteIcon
+                                                    onClick={() => {
+                                                      handleRemoveDataBahanBaku(
+                                                        index,
+                                                        dataItemIndex
+                                                      );
+                                                    }}
+                                                    style={{ color: "red" }}
+                                                  />
+                                                </IconButton>
+                                              </>
                                             ) : (
                                               <IconButton
                                                 onClick={() => {
@@ -1530,24 +1558,11 @@ const EstimationOrderPage = (props) => {
                         <TableHead>
                           <TableRow>
                             <TableCell>Bagian</TableCell>
-                            <TableCell align="left">
-                              Jenis Pekerjaan{" "}
-                              {estimasiJadwal.length !== 0 && (
-                                <IconButton
-                                  onClick={() => {
-                                    const lastIndex = estimasiJadwal.length - 1;
-                                    if (lastIndex >= 0) {
-                                      addPekerjaan(lastIndex);
-                                    }
-                                  }}
-                                >
-                                  <AddIcon style={{ color: "#0F607D" }} />
-                                </IconButton>
-                              )}
-                            </TableCell>
+                            <TableCell align="left">Jenis Pekerjaan </TableCell>
                             <TableCell align="left">Tanggal Mulai</TableCell>
                             <TableCell align="left">Tanggal Selesai</TableCell>
                             <TableCell align="left">Jumlah Hari</TableCell>
+                            <TableCell align="left">Actions</TableCell>
                           </TableRow>
                         </TableHead>
                         <TableBody>
@@ -1667,6 +1682,15 @@ const EstimationOrderPage = (props) => {
                                           disabled
                                           value={pekerjaan.jumlahHari}
                                         />
+                                      </div>
+                                    </TableCell>
+                                    <TableCell align="left">
+                                      <div
+                                        style={{
+                                          display: "flex",
+                                          alignItems: "center",
+                                        }}
+                                      >
                                         {pekerjaanIndex !== 0 ? (
                                           <IconButton
                                             style={{
@@ -1685,32 +1709,37 @@ const EstimationOrderPage = (props) => {
                                             />
                                           </IconButton>
                                         ) : (
-                                          <IconButton
-                                            style={{
-                                              marginLeft: "8px",
-                                              height: "50%",
-                                            }}
-                                            onClick={() => {
-                                              setEstimasiJadwal((oldArray) =>
-                                                oldArray.filter(
-                                                  (_, i) => i !== index
-                                                )
-                                              );
-                                            }}
-                                          >
-                                            <DeleteIcon
-                                              style={{ color: "red" }}
-                                            />
-                                          </IconButton>
+                                          <>
+                                            <IconButton
+                                              onClick={() => {
+                                                addPekerjaan(index);
+                                              }}
+                                            >
+                                              <AddIcon
+                                                style={{ color: "#0F607D" }}
+                                              />
+                                            </IconButton>
+                                            <IconButton
+                                              style={{
+                                                marginLeft: "8px",
+                                                height: "50%",
+                                              }}
+                                              onClick={() => {
+                                                setEstimasiJadwal((oldArray) =>
+                                                  oldArray.filter(
+                                                    (_, i) => i !== index
+                                                  )
+                                                );
+                                              }}
+                                            >
+                                              <DeleteIcon
+                                                style={{ color: "red" }}
+                                              />
+                                            </IconButton>
+                                          </>
                                         )}
                                       </div>
                                     </TableCell>
-                                    {pekerjaanIndex === 0 && (
-                                      <TableCell
-                                        align="right"
-                                        rowSpan={row.pekerjaan.length}
-                                      ></TableCell>
-                                    )}
                                   </TableRow>
                                 )
                               )}

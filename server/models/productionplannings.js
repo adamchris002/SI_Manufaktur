@@ -6,7 +6,7 @@ module.exports = (sequelize, DataTypes) => {
       productionPlannings.belongsToMany(models.users, {
         through: "UserProductionPlannings",
       });
-      productionPlannings.hasMany(models.jangkaWaktuProduksis, {
+      productionPlannings.hasMany(models.estimasiJadwalProduksis, {
         foreignKey: "productionPlanningId",
         onDelete: "CASCADE",
       });

@@ -6,8 +6,8 @@ const {
   UserProductionPlannings,
   estimasiBahanBakus,
   bahanBakuAkanDigunakans,
-  jangkaWaktuProduksis,
-  estimasiJangkaProduksis,
+  rencanaJadwalProduksis,
+  estimasiJadwalProduksis,
 } = require("../models");
 
 class ProductionPlanningController {
@@ -71,6 +71,7 @@ class ProductionPlanningController {
             if (bahanBaku.data && Array.isArray(bahanBaku.data)) {
               await Promise.all(
                 bahanBaku.data.map(async (dataItem) => {
+                  console.log(dataItem);
                   await Promise.all(
                     dataItem.dataJenis.map(async (dataJenis) => {
                       await bahanBakuAkanDigunakans.create({
@@ -93,35 +94,31 @@ class ProductionPlanningController {
       if (estimasiJadwal && Array.isArray(estimasiJadwal)) {
         await Promise.all(
           estimasiJadwal.map(async (jadwal) => {
-            console.log("Processing jadwal bagian:", jadwal.bagian);
-            const jadwalRecord = await jangkaWaktuProduksis.create({
+            const jadwalRecord = await estimasiJadwalProduksis.create({
               productionPlanningId: productionPlanning.id,
               bagian: jadwal.bagian,
             });
-            console.log("Created jadwalRecord:", jadwalRecord);
 
             if (jadwal.pekerjaan && Array.isArray(jadwal.pekerjaan)) {
               await Promise.all(
                 jadwal.pekerjaan.map(async (dataPekerjaan) => {
-                  console.log("Processing pekerjaan:", dataPekerjaan);
-                  const pekerjaanRecord = await estimasiJangkaProduksis.create({
-                    jangkaWaktuProduksiId: jadwalRecord.id,
+                  const pekerjaanRecord = await rencanaJadwalProduksis.create({
+                    estimasiJadwalProduksiId: jadwalRecord.id,
                     jenisPekerjaan: dataPekerjaan.jenisPekerjaan,
                     tanggalMulai: dataPekerjaan.tanggalMulai,
                     tanggalSelesai: dataPekerjaan.tanggalSelesai,
                     jumlahHari: dataPekerjaan.jumlahHari,
                   });
-                  console.log("Created pekerjaanRecord:", pekerjaanRecord);
                 })
               );
             } else {
-              console.log("No pekerjaan found for jadwal:", jadwal.bagian);
             }
           })
         );
       } else {
-        console.log("estimasiJadwal is either null or not an array");
+        res.status(500).json({ error: "Error adding Estimasi Jadwal" });
       }
+      res.status(200).json({ message: "Estimasi Jadwal has been created" });
     } catch (error) {
       res.json(error);
     }
