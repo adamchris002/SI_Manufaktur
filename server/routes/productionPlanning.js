@@ -11,5 +11,6 @@ productionPlanningRoutes.get(
 );
 productionPlanningRoutes.get("/getAllOrders", ProductionPlanningController.getAllOrders)
 productionPlanningRoutes.get("/getOneOrder", ProductionPlanningController.getOneOrder)
+productionPlanningRoutes.post("/addProductionPlanning/:id", ProductionPlanningController.addNewProductionPlanning)
 
 module.exports = productionPlanningRoutes;

@@ -19,6 +19,7 @@ import AddIcon from "@mui/icons-material/Add";
 import DeleteIcon from "@mui/icons-material/Delete";
 import RemoveIcon from "@mui/icons-material/Remove";
 import MySelectTextField from "../../components/SelectTextField";
+import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import { AppContext } from "../../App";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
@@ -35,7 +36,11 @@ import DefaultButton from "../../components/Button";
 dayjs.extend(utc);
 dayjs.extend(timezone);
 
-const EstimationOrderPage = () => {
+const EstimationOrderPage = (props) => {
+  const { userInformation } = props;
+
+  const navigate = useNavigate();
+
   const { isMobile } = useContext(AppContext);
 
   const [allOrderID, setAllOrderID] = useState([]);
@@ -65,7 +70,11 @@ const EstimationOrderPage = () => {
   const [jenisBahan, setJenisBahan] = useState("");
   const [informasiBahan, setInformasiBahan] = useState("");
 
-  console.log(estimasiBahanBaku);
+  // console.log(estimasiJadwal);
+
+  const handleRemoveDataEstimasiBahanBaku = (index) => {
+    setEstimasiBahanBaku((oldArray) => oldArray.filter((_, i) => i !== index));
+  };
 
   const handleRemoveDataBahanBaku = (index, dataItemIndex) => {
     setEstimasiBahanBaku((oldArray) =>
@@ -104,6 +113,12 @@ const EstimationOrderPage = () => {
           : result
       )
     );
+  };
+
+  const handleCloseAddJenisModal = () => {
+    setJenisBahan("");
+    setInformasiBahan("");
+    setOpenModal(false);
   };
 
   const handleAddDataJenis = (itemIndex, dataItemIndex) => {
@@ -196,7 +211,69 @@ const EstimationOrderPage = () => {
     );
   };
 
+  const isEstimasiBahanBakuComplete = () => {
+    for (const item of estimasiBahanBaku) {
+      if (!item.jenis || !item.informasiBahan) {
+        return false;
+      }
+      for (const dataItem of item.data) {
+        for (const dataJenisItem of dataItem.dataJenis) {
+          if (
+            !dataJenisItem.estimasiKebutuhan ||
+            !dataJenisItem.informasiJenis ||
+            !dataJenisItem.jumlahKebutuhan ||
+            !dataJenisItem.namaJenis ||
+            !dataJenisItem.warna ||
+            !dataJenisItem.waste
+          ) {
+            return false;
+          }
+        }
+      }
+    }
+    return true;
+  };
+
+  const isEstimasiJadwalEmpty = () => {
+    for (const item of estimasiJadwal) {
+      if (!item.pekerjaan) {
+        return false;
+      }
+      for (const pekerjaanItem of item.pekerjaan) {
+        if (
+          !pekerjaanItem.jenisPekerjaan ||
+          !pekerjaanItem.tanggalMulai ||
+          !pekerjaanItem.tanggalSelesai ||
+          !pekerjaanItem.jumlahHari
+        ) {
+          return false;
+        }
+      }
+    }
+    return true;
+  };
+
   const handleAddPerencanaanProduksi = () => {
+    const checkIfEstimasiBahanBakuEmpty = isEstimasiBahanBakuComplete();
+    const checkIfEstimasiJadwalEmpty = isEstimasiJadwalEmpty();
+
+    const perencanaanProduksiData = {
+      pemesan: pemesan,
+      tanggalPengirimanBarang: tanggalPengiriman,
+      alamatKirimBarang: alamatPengirimanProduk,
+      jenisCetakan: jenisCetakan,
+      ukuran: ukuran,
+      ply: ply,
+      seri: seri,
+      kuantitas: kuantitas,
+      isiPerBox: isiPerBox,
+      nomorator: nomorator,
+      contoh: contoh,
+      plate: plate,
+      setting: setting,
+      estimasiBahanBaku: estimasiBahanBaku,
+      estimasiJadwal: estimasiJadwal,
+    };
     if (
       pemesan === "" ||
       tanggalPengiriman === "" ||
@@ -208,12 +285,23 @@ const EstimationOrderPage = () => {
       kuantitas === "" ||
       isiPerBox === "" ||
       nomorator === "" ||
-      estimasiJadwal.length === 0
+      estimasiJadwal.length === 0 ||
+      estimasiBahanBaku.length === 0 ||
+      checkIfEstimasiBahanBakuEmpty === false ||
+      checkIfEstimasiJadwalEmpty === false
     ) {
       setOpenSnackbar(true);
       setSnackbarStatus(false);
       setSnackbarMessage("Please fill in all the fields");
     } else {
+      axios({
+        method: "POST",
+        url: `http://localhost:3000/productionPlanning/addProductionPlanning/${userInformation.data.id}`,
+        data: perencanaanProduksiData,
+      }).then((result) => {
+        // navigate(-1);
+        
+      });
     }
   };
 
@@ -315,12 +403,13 @@ const EstimationOrderPage = () => {
     event,
     index,
     dataIndex,
+    dataJenisIndex,
     field
   ) => {
     const value = event.target.value;
 
-    setEstimasiBahanBaku((prevState) => {
-      const newState = prevState.map((item, i) => {
+    setEstimasiBahanBaku((oldArray) => {
+      const newState = oldArray.map((item, i) => {
         if (i === index) {
           return {
             ...item,
@@ -328,7 +417,15 @@ const EstimationOrderPage = () => {
               if (j === dataIndex) {
                 return {
                   ...dataItem,
-                  [field]: value,
+                  dataJenis: dataItem.dataJenis.map((dataJenisItem, k) => {
+                    if (k === dataJenisIndex) {
+                      return {
+                        ...dataJenisItem,
+                        [field]: value,
+                      };
+                    }
+                    return dataJenisItem;
+                  }),
                 };
               }
               return dataItem;
@@ -1188,145 +1285,211 @@ const EstimationOrderPage = () => {
                             aria-label="simple table"
                           >
                             <TableHead>
-                              {estimasiBahanBaku.map((result, index) => (
-                                <TableRow key={index}>
-                                  <TableCell>No.</TableCell>
-                                  <TableCell align="left">
-                                    <div
-                                      style={{
-                                        display: "flex",
-                                        alignItems: "center",
-                                      }}
-                                    >
-                                      {result.jenis}
-                                      <IconButton
-                                        style={{
-                                          height: "50%",
-                                          marginLeft: "8px",
-                                        }}
-                                        onClick={() => handleAddData(index)}
-                                      >
-                                        <AddIcon style={{ color: "#0F607D" }} />
-                                      </IconButton>
-                                    </div>
-                                  </TableCell>
-                                  <TableCell align="left">
-                                    {result.informasiBahan}
-                                  </TableCell>
-                                  <TableCell align="left">Warna</TableCell>
-                                  <TableCell align="left">
-                                    Estimasi Kebutuhan
-                                  </TableCell>
-                                  <TableCell align="left">Waste</TableCell>
-                                  <TableCell align="left">
-                                    Jumlah Kebutuhan
-                                  </TableCell>
-                                  <TableCell>Actions</TableCell>
-                                </TableRow>
-                              ))}
+                              <TableRow key={index}>
+                                <TableCell>No.</TableCell>
+                                <TableCell align="left">
+                                  <div
+                                    style={{
+                                      display: "flex",
+                                      alignItems: "center",
+                                    }}
+                                  >
+                                    {result.jenis}
+                                  </div>
+                                </TableCell>
+                                <TableCell align="left">
+                                  {result.informasiBahan}
+                                </TableCell>
+                                <TableCell align="left">Warna</TableCell>
+                                <TableCell align="left">
+                                  Estimasi Kebutuhan
+                                </TableCell>
+                                <TableCell align="left">Waste</TableCell>
+                                <TableCell align="left">
+                                  Jumlah Kebutuhan
+                                </TableCell>
+                                <TableCell>Actions</TableCell>
+                              </TableRow>
                             </TableHead>
                             <TableBody>
-                              {estimasiBahanBaku.map((result, resultIndex) =>
-                                result.data.map((dataItem, dataItemIndex) => (
-                                  <React.Fragment
-                                    key={`${resultIndex}-${dataItemIndex}`}
-                                  >
-                                    {dataItem.dataJenis.map(
-                                      (dataJenis, dataJenisIndex) => (
-                                        <TableRow
-                                          key={`${resultIndex}-${dataItemIndex}-${dataJenisIndex}`}
-                                        >
-                                          {dataJenisIndex === 0 ? (
-                                            <TableCell>
-                                              {dataItemIndex + 1}
-                                            </TableCell>
-                                          ) : (
-                                            <TableCell></TableCell>
-                                          )}
+                              {result.data.map((dataItem, dataItemIndex) => (
+                                <React.Fragment
+                                  key={`${dataItemIndex}-${dataItemIndex}`}
+                                >
+                                  {dataItem.dataJenis.map(
+                                    (dataJenis, dataJenisIndex) => (
+                                      <TableRow
+                                        key={`${dataItemIndex}-${dataItemIndex}-${dataJenisIndex}`}
+                                      >
+                                        {dataJenisIndex === 0 ? (
                                           <TableCell>
-                                            <TextField />
-                                            {dataJenis.namaJenis}
+                                            {dataItemIndex + 1}
                                           </TableCell>
-                                          <TableCell>
-                                            <TextField />
-                                            {dataJenis.informasiJenis}
-                                          </TableCell>
-                                          <TableCell>
-                                            <TextField />
-                                            {dataJenis.warna}
-                                          </TableCell>
-                                          <TableCell>
-                                            <TextField />
-                                            {dataJenis.estimasiKebutuhan}
-                                          </TableCell>
-                                          <TableCell>
-                                            <TextField />
-                                            {dataJenis.waste}
-                                          </TableCell>
-                                          <TableCell>
-                                            <TextField />
-                                            {dataJenis.jumlahKebutuhan}
-                                          </TableCell>
-                                          <TableCell>
-                                            <div
-                                              style={{
-                                                display: "flex",
-                                                alignItems: "center",
+                                        ) : (
+                                          <TableCell></TableCell>
+                                        )}
+                                        <TableCell>
+                                          <TextField
+                                            value={dataJenis.namaJenis}
+                                            onChange={(event) => {
+                                              handleInputChangeEstimasiBahanBaku(
+                                                event,
+                                                index,
+                                                dataItemIndex,
+                                                dataJenisIndex,
+                                                "namaJenis"
+                                              );
+                                            }}
+                                          />
+                                        </TableCell>
+                                        <TableCell>
+                                          <TextField
+                                            value={dataJenis.informasiJenis}
+                                            onChange={(event) => {
+                                              handleInputChangeEstimasiBahanBaku(
+                                                event,
+                                                index,
+                                                dataItemIndex,
+                                                dataJenisIndex,
+                                                "informasiJenis"
+                                              );
+                                            }}
+                                          />
+                                        </TableCell>
+                                        <TableCell>
+                                          <TextField
+                                            value={dataJenis.warna}
+                                            onChange={(event) => {
+                                              handleInputChangeEstimasiBahanBaku(
+                                                event,
+                                                index,
+                                                dataItemIndex,
+                                                dataJenisIndex,
+                                                "warna"
+                                              );
+                                            }}
+                                          />
+                                        </TableCell>
+                                        <TableCell>
+                                          <TextField
+                                            value={dataJenis.estimasiKebutuhan}
+                                            onChange={(event) => {
+                                              handleInputChangeEstimasiBahanBaku(
+                                                event,
+                                                index,
+                                                dataItemIndex,
+                                                dataJenisIndex,
+                                                "estimasiKebutuhan"
+                                              );
+                                            }}
+                                          />
+                                        </TableCell>
+                                        <TableCell>
+                                          <TextField
+                                            value={dataJenis.waste}
+                                            onChange={(event) => {
+                                              handleInputChangeEstimasiBahanBaku(
+                                                event,
+                                                index,
+                                                dataItemIndex,
+                                                dataJenisIndex,
+                                                "waste"
+                                              );
+                                            }}
+                                          />
+                                        </TableCell>
+                                        <TableCell>
+                                          <TextField
+                                            value={dataJenis.jumlahKebutuhan}
+                                            onChange={(event) => {
+                                              handleInputChangeEstimasiBahanBaku(
+                                                event,
+                                                index,
+                                                dataItemIndex,
+                                                dataJenisIndex,
+                                                "jumlahKebutuhan"
+                                              );
+                                            }}
+                                          />
+                                        </TableCell>
+                                        <TableCell>
+                                          <div
+                                            style={{
+                                              display: "flex",
+                                              alignItems: "center",
+                                            }}
+                                          >
+                                            <IconButton
+                                              onClick={() => {
+                                                handleAddDataJenis(
+                                                  index,
+                                                  dataItemIndex
+                                                );
                                               }}
+                                              style={{ height: "50%" }}
                                             >
+                                              <AddIcon
+                                                style={{ color: "#0F607D" }}
+                                              />
+                                            </IconButton>
+                                            {dataJenisIndex === 0 ? (
+                                              <IconButton
+                                                style={{ height: "50%" }}
+                                              >
+                                                <DeleteIcon
+                                                  onClick={() => {
+                                                    handleRemoveDataBahanBaku(
+                                                      index,
+                                                      dataItemIndex
+                                                    );
+                                                  }}
+                                                  style={{ color: "red" }}
+                                                />
+                                              </IconButton>
+                                            ) : (
                                               <IconButton
                                                 onClick={() => {
-                                                  handleAddDataJenis(
-                                                    resultIndex,
-                                                    dataItemIndex
+                                                  handleRemoveJenisDataBahanBaku(
+                                                    index,
+                                                    dataItemIndex,
+                                                    dataJenisIndex
                                                   );
                                                 }}
                                                 style={{ height: "50%" }}
                                               >
-                                                <AddIcon
-                                                  style={{ color: "blue" }}
+                                                <RemoveIcon
+                                                  style={{ color: "red" }}
                                                 />
                                               </IconButton>
-                                              {dataJenisIndex === 0 ? (
-                                                <IconButton
-                                                  style={{ height: "50%" }}
-                                                >
-                                                  <DeleteIcon
-                                                    onClick={() => {
-                                                      handleRemoveDataBahanBaku(
-                                                        resultIndex,
-                                                        dataItemIndex
-                                                      );
-                                                    }}
-                                                    style={{ color: "red" }}
-                                                  />
-                                                </IconButton>
-                                              ) : (
-                                                <IconButton
-                                                  onClick={() => {
-                                                    handleRemoveJenisDataBahanBaku(
-                                                      resultIndex,
-                                                      dataItemIndex,
-                                                      dataJenisIndex
-                                                    );
-                                                  }}
-                                                  style={{ height: "50%" }}
-                                                >
-                                                  <RemoveIcon
-                                                    style={{ color: "red" }}
-                                                  />
-                                                </IconButton>
-                                              )}
-                                            </div>
-                                          </TableCell>
-                                        </TableRow>
-                                      )
-                                    )}
-                                  </React.Fragment>
-                                ))
-                              )}
+                                            )}
+                                          </div>
+                                        </TableCell>
+                                      </TableRow>
+                                    )
+                                  )}
+                                </React.Fragment>
+                              ))}
                             </TableBody>
                           </Table>
+                          <div
+                            style={{
+                              display: "flex",
+                              justifyContent: "flex-end",
+                              margin: "16px",
+                            }}
+                          >
+                            <DefaultButton
+                              onClickFunction={() => handleAddData(index)}
+                            >{`Tambah Kelompok ${result.jenis}`}</DefaultButton>
+                            <Button
+                              onClick={() => {
+                                handleRemoveDataEstimasiBahanBaku(index);
+                              }}
+                              sx={{ marginLeft: "8px", textTransform: "none" }}
+                              variant="outlined"
+                              color="error"
+                            >{`Hapus Tabel ${result.jenis}`}</Button>
+                          </div>
                         </TableContainer>
                       </div>
                     );
@@ -1469,6 +1632,13 @@ const EstimationOrderPage = () => {
                                           <DemoItem>
                                             <DateTimePicker
                                               disablePast
+                                              minDateTime={
+                                                pekerjaan.tanggalMulai !== ""
+                                                  ? dayjs(
+                                                      pekerjaan.tanggalMulai
+                                                    )
+                                                  : ""
+                                              }
                                               maxDateTime={dayjs(
                                                 selectedOrder?.data
                                                   ?.orderDueDate
@@ -1554,6 +1724,32 @@ const EstimationOrderPage = () => {
               </div>
             </div>
           )}
+          {selectedOrder.length !== 0 && (
+            <div
+              style={{
+                display: "flex",
+                justifyContent: "center",
+                marginTop: "32px",
+              }}
+            >
+              <DefaultButton
+                onClickFunction={() => {
+                  handleAddPerencanaanProduksi();
+                }}
+              >
+                <Typography style={{ fontSize: "20px" }}>
+                  Tambah Perencanaan Produksi
+                </Typography>
+              </DefaultButton>
+              <Button
+                sx={{ marginLeft: "8px" }}
+                variant="outlined"
+                color="error"
+              >
+                <Typography>Cancel</Typography>
+              </Button>
+            </div>
+          )}
         </div>
       </div>
       {snackbarMessage !== ("" || null) && (
@@ -1627,7 +1823,7 @@ const EstimationOrderPage = () => {
                     fontSize: isMobile ? "3.5vw" : "1.5vw",
                   }}
                 >
-                  {"Informasi (contoh: Gramatur): "}
+                  {"Informasi (contoh: Gramatur, Ukuran & Dst): "}
                 </Typography>
               </div>
               <div
@@ -1676,7 +1872,9 @@ const EstimationOrderPage = () => {
                   fontSize: isMobile ? "10px" : "0.9vw",
                   textTransform: "none",
                 }}
-                onClick={() => {}}
+                onClick={() => {
+                  handleCloseAddJenisModal();
+                }}
               >
                 Cancel
               </Button>
