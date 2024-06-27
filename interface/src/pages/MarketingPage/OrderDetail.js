@@ -471,45 +471,59 @@ const OrderDetail = (props) => {
               Documents:
             </Typography>
           </div>
-          <div
-            style={{
-              marginTop: "16px",
-              display: "flex",
-              overflowX: "auto",
-              width: "100%",
-            }}
-          >
-            {orderDetailInfo?.data?.documents?.map((result, index) => {
-              return (
-                <div style={{ margin: "0px 32px" }}>
-                  {index === orderDetailInfo.data.documents.length - 1 ? (
-                    <img
-                      style={{
-                        height: isMobile ? "100px" : "9vw",
-                        width: isMobile ? "100px" : "9vw",
-                      }}
-                      srcSet={`http://localhost:3000/uploads/${result.filename}?w=248&fit=crop&auto=format&dpr=2 2x`}
-                      src={`http://localhost:3000/uploads/${result.filename}?w=248&fit=crop&auto=format`}
-                      alt={result.filename}
-                      loading="lazy"
-                    />
-                  ) : (
-                    <img
-                      style={{
-                        height: isMobile ? "100px" : "9vw",
-                        width: isMobile ? "100px" : "9vw",
-                        marginRight: isMobile ? "" : "32px",
-                      }}
-                      srcSet={`http://localhost:3000/uploads/${result.filename}?w=248&fit=crop&auto=format&dpr=2 2x`}
-                      src={`http://localhost:3000/uploads/${result.filename}?w=248&fit=crop&auto=format`}
-                      alt={result.filename}
-                      loading="lazy"
-                    />
-                  )}
-                </div>
-              );
-            })}
-          </div>
+          {orderDetailInfo?.data?.documents.length === 0 ? (
+            <div
+              style={{
+                marginTop: "16px",
+                display: "flex",
+                overflowX: "auto",
+                width: "100%",
+                margin: "0px 32px"
+              }}
+            >
+              <Typography style={{fontSize: isMobile ? "24px" : "2vw", color: "#0F607D"}}>Tidak ada dokumen untuk pesanan ini</Typography>
+            </div>
+          ) : (
+            <div
+              style={{
+                marginTop: "16px",
+                display: "flex",
+                overflowX: "auto",
+                width: "100%",
+              }}
+            >
+              {orderDetailInfo?.data?.documents?.map((result, index) => {
+                return (
+                  <div style={{ margin: "0px 32px" }}>
+                    {index === orderDetailInfo.data.documents.length - 1 ? (
+                      <img
+                        style={{
+                          height: isMobile ? "100px" : "9vw",
+                          width: isMobile ? "100px" : "9vw",
+                        }}
+                        srcSet={`http://localhost:3000/uploads/${result.filename}?w=248&fit=crop&auto=format&dpr=2 2x`}
+                        src={`http://localhost:3000/uploads/${result.filename}?w=248&fit=crop&auto=format`}
+                        alt={result.filename}
+                        loading="lazy"
+                      />
+                    ) : (
+                      <img
+                        style={{
+                          height: isMobile ? "100px" : "9vw",
+                          width: isMobile ? "100px" : "9vw",
+                          marginRight: isMobile ? "" : "32px",
+                        }}
+                        srcSet={`http://localhost:3000/uploads/${result.filename}?w=248&fit=crop&auto=format&dpr=2 2x`}
+                        src={`http://localhost:3000/uploads/${result.filename}?w=248&fit=crop&auto=format`}
+                        alt={result.filename}
+                        loading="lazy"
+                      />
+                    )}
+                  </div>
+                );
+              })}
+            </div>
+          )}
         </div>
         <div
           style={{
@@ -608,7 +622,7 @@ const OrderDetail = (props) => {
                 >{`Customer Detail: ${orderDetailInfo?.data?.customerDetail}`}</Typography>
               </div>
             </div>
-            <div style={{marginTop: "16px"}}>
+            <div style={{ marginTop: "16px" }}>
               <Typography
                 style={{
                   fontSize: isMobile ? "3vw" : "1.8vw",

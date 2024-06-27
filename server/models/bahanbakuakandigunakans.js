@@ -18,6 +18,7 @@ module.exports = (sequelize, DataTypes) => {
     {
       estimasiBahanBakuId: DataTypes.INTEGER,
       namaJenis: DataTypes.STRING,
+      groupIndex: DataTypes.INTEGER,
       dataInformasi: DataTypes.STRING,
       warna: DataTypes.STRING,
       estimasiKebutuhan: DataTypes.STRING,

@@ -2137,7 +2137,7 @@ const MaindashboardMarketing = (props) => {
                   height={isMobile ? "15px" : "3vw"}
                   borderRadius="10px"
                   data={channels}
-                  fontSize={isMobile ? "10px" : ""}
+                  fontSize={isMobile ? "10px" : "1.5vw"}
                   onChange={handleAddSelectCustomerChannel}
                 />
               </div>

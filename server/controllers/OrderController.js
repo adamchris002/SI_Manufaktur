@@ -273,9 +273,9 @@ class OrderController {
         await Promise.all(filePromises);
       }
 
-      order = await orders.findByPk(order.id, {
-        include: [{ model: documents }],
-      });
+      // order = await orders.findByPk(order.id, {
+      //   include: [{ model: documents }],
+      // });
 
       await UserActivityLogs.create({
         userId: id,

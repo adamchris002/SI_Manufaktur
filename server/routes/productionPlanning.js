@@ -9,8 +9,30 @@ productionPlanningRoutes.get(
   "/getEstimatedOrders",
   ProductionPlanningController.getEstimatedOrders
 );
-productionPlanningRoutes.get("/getAllOrders", ProductionPlanningController.getAllOrders)
-productionPlanningRoutes.get("/getOneOrder", ProductionPlanningController.getOneOrder)
-productionPlanningRoutes.post("/addProductionPlanning/:id", ProductionPlanningController.addNewProductionPlanning)
+
+productionPlanningRoutes.get(
+  "/getOneOrder",
+  ProductionPlanningController.getOneOrder
+);
+productionPlanningRoutes.post(
+  "/addProductionPlanning/:id",
+  ProductionPlanningController.addNewProductionPlanning
+);
+productionPlanningRoutes.get(
+  "/productionPlanningActivityLogs",
+  ProductionPlanningController.productionPlanningActivityLog
+);
+productionPlanningRoutes.get(
+  "/getAllProductionPlanning",
+  ProductionPlanningController.getAllProductionPlan
+);
+productionPlanningRoutes.delete(
+  "/deleteProductionPlan/:id",
+  ProductionPlanningController.deleteProductionPlan
+);
+productionPlanningRoutes.get(
+  "/getProductionPlanningWithData/:id",
+  ProductionPlanningController.getProductionPlanWithData
+);
 
 module.exports = productionPlanningRoutes;

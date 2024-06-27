@@ -6,7 +6,19 @@ import factoryBackground from "../assets/factorybackground.png";
 import companyLogo from "../assets/PT_Aridas_Karya_Satria_Logo.png";
 import DefaultButton from "../components/Button";
 import AccountCircleIcon from "@mui/icons-material/AccountCircle";
-import { Typography } from "@mui/material";
+import EditIcon from "@mui/icons-material/Edit";
+import DeleteIcon from "@mui/icons-material/Delete";
+import {
+  IconButton,
+  Paper,
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TableRow,
+  Typography,
+} from "@mui/material";
 import { AppContext } from "../App";
 import moment from "moment";
 import CustomChip from "../components/Chip";
@@ -18,7 +30,10 @@ const MaindashboardProductionPlanning = (props) => {
 
   const [unreviewedOrders, setUnreviewedOrders] = useState([]);
   const [estimatedOrders, setEstimatedOrders] = useState([]);
-  const [allOrders, setAllOrders] = useState([]);
+  const [allProductionPlan, setAllProductionPlan] = useState([]);
+  // console.log(allProductionPlan);
+  const [refreshProductionPlanData, setRefreshProductionPlanData] =
+    useState(true);
 
   useEffect(() => {
     axios({
@@ -47,17 +62,42 @@ const MaindashboardProductionPlanning = (props) => {
   }, []);
 
   useEffect(() => {
+    if (refreshProductionPlanData) {
+      axios({
+        method: "GET",
+        url: "http://localhost:3000/productionPlanning/getAllProductionPlanning",
+      }).then((result) => {
+        try {
+          setAllProductionPlan(result);
+          setRefreshProductionPlanData(false);
+        } catch (error) {
+          console.log(error);
+          setRefreshProductionPlanData(false);
+        }
+      });
+    }
+  }, [refreshProductionPlanData]);
+
+  const handleDeleteProductionPlan = (productionPlanId) => {
     axios({
-      method: "GET",
-      url: "http://localhost:3000/productionPlanning/getAllOrders",
-    }).then((result) => {
+      method: "DELETE",
+      url: `http://localhost:3000/productionPlanning/deleteProductionPlan/${productionPlanId}`,
+    }).then(() => {
       try {
-        setAllOrders(result);
+        setRefreshProductionPlanData(true);
       } catch (error) {
         console.log(error);
       }
     });
-  }, []);
+  };
+
+  const handleMoveToEditPage = (productionPlanId) => {
+    navigate("/productionPlanningDashboard/editProductionPlan", {
+      state: {
+        productionPlanId: productionPlanId,
+      },
+    });
+  };
 
   return (
     <div
@@ -100,6 +140,22 @@ const MaindashboardProductionPlanning = (props) => {
               fontSize="1vw"
               onClickFunction={() => {
                 document
+                  .getElementById("manageestimationorders")
+                  .scrollIntoView({ behavior: "smooth" });
+              }}
+            >
+              Manage Production Plan
+            </DefaultButton>
+          </div>
+          <div style={{ marginTop: "1.667vw", fontSize: "1.25vw" }}>
+            <DefaultButton
+              width="15vw"
+              height="2.08vw"
+              backgroundColor="#0F607D"
+              borderRadius="0.83vw"
+              fontSize="1vw"
+              onClickFunction={() => {
+                document
                   .getElementById("unreviewedorders")
                   .scrollIntoView({ behavior: "smooth" });
               }}
@@ -121,22 +177,6 @@ const MaindashboardProductionPlanning = (props) => {
               }}
             >
               Estimated Orders
-            </DefaultButton>
-          </div>
-          <div style={{ marginTop: "1.667vw", fontSize: "1.25vw" }}>
-            <DefaultButton
-              width="15vw"
-              height="2.08vw"
-              backgroundColor="#0F607D"
-              borderRadius="0.83vw"
-              fontSize="1vw"
-              onClickFunction={() => {
-                document
-                  .getElementById("manageestimationorders")
-                  .scrollIntoView({ behavior: "smooth" });
-              }}
-            >
-              Manage Estimation Orders
             </DefaultButton>
           </div>
           <div style={{ marginTop: "1.667vw", fontSize: "1.25vw" }}>
@@ -224,6 +264,103 @@ const MaindashboardProductionPlanning = (props) => {
             </Typography>
           </div>
         </div>
+        <div
+          style={{
+            margin: isMobile
+              ? "32px 32px 12px 32px"
+              : "3.33vw 1.667vw 0vw 1.667vw",
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "center",
+            width: isMobile ? "" : "72vw",
+          }}
+        >
+          <Typography
+            id="manageestimationorders"
+            style={{ fontSize: isMobile ? "4vw" : "2vw", color: "#0F607D" }}
+          >
+            Manage Production Plan
+          </Typography>
+          {userInformation?.data?.role === "Admin" ||
+          userInformation?.data?.role === "Super Admin" ? (
+            <DefaultButton
+              height={isMobile ? "" : "2.08vw"}
+              width={isMobile ? "" : "15vw"}
+              borderRadius="0.83vw"
+              fontSize={isMobile ? "10px" : "1vw"}
+              onClickFunction={() => {
+                navigate("/productionPlanningDashboard/estimationOrder");
+              }}
+            >
+              Add Production Plan
+            </DefaultButton>
+          ) : (
+            ""
+          )}
+        </div>
+        {allProductionPlan?.data?.length === 0 ? (
+          <div
+            style={{
+              margin: isMobile ? "0px 32px 0px 32px" : "1.667vw",
+              width: isMobile ? "" : "72vw",
+            }}
+          >
+            <Typography>Belum ada rencana produksi</Typography>
+          </div>
+        ) : (
+          <div
+            style={{
+              margin: isMobile ? "0px 32px 0px 32px" : "1.667vw",
+              width: isMobile ? "" : "72vw",
+            }}
+          >
+            <TableContainer component={Paper}>
+              <Table aria-label="simple table">
+                <TableHead>
+                  <TableRow>
+                    <TableCell style={{ width: "auto" }}>
+                      ID Rencana Produksi
+                    </TableCell>
+                    <TableCell align="left">Pemesan</TableCell>
+                    <TableCell align="left">Alamat Pengiriman Produk</TableCell>
+                    <TableCell align="left">
+                      Tanggal Pengiriman Produk
+                    </TableCell>
+                    <TableCell align="left">Actions</TableCell>
+                  </TableRow>
+                </TableHead>
+                <TableBody>
+                  {allProductionPlan?.data?.map((result, index) => (
+                    <TableRow>
+                      <TableCell>{result.id}</TableCell>
+                      <TableCell>{result.pemesan}</TableCell>
+                      <TableCell>{result.alamatKirimBarang}</TableCell>
+                      <TableCell>{result.tanggalPengirimanBarang}</TableCell>
+                      <TableCell>
+                        <div>
+                          <IconButton
+                            onClick={() => {
+                              handleMoveToEditPage(result.id);
+                            }}
+                          >
+                            <EditIcon style={{ color: "#0F607D" }} />
+                          </IconButton>
+                          <IconButton
+                            onClick={() => {
+                              handleDeleteProductionPlan(result.id);
+                            }}
+                          >
+                            <DeleteIcon style={{ color: "red" }} />
+                          </IconButton>
+                        </div>
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </TableContainer>
+          </div>
+        )}
         <div
           style={{
             margin: isMobile
@@ -400,8 +537,8 @@ const MaindashboardProductionPlanning = (props) => {
                       }}
                     >
                       {data.orderTitle.length < 15
-                        ? (data.orderTitle)
-                        : (data.orderTitle.slice(0, 15) + "...")}
+                        ? data.orderTitle
+                        : data.orderTitle.slice(0, 15) + "..."}
                     </Typography>
                   </div>
                   <div
@@ -562,7 +699,7 @@ const MaindashboardProductionPlanning = (props) => {
           >
             {estimatedOrders?.data?.length === 0 ||
             estimatedOrders?.data === undefined ? (
-              <Typography>There are no unreviewed orders available</Typography>
+              <Typography>There are no Estimated orders available</Typography>
             ) : (
               estimatedOrders?.data?.map((data, index, array) => (
                 <div
@@ -655,8 +792,8 @@ const MaindashboardProductionPlanning = (props) => {
                       }}
                     >
                       {data.orderTitle.length < 15
-                        ? (data.orderTitle)
-                        : (data.orderTitle.slice(0, 15) + "...")}
+                        ? data.orderTitle
+                        : data.orderTitle.slice(0, 15) + "..."}
                     </Typography>
                   </div>
                   <div
@@ -729,217 +866,6 @@ const MaindashboardProductionPlanning = (props) => {
             )}
           </div>
         </div>
-        <div
-          style={{
-            margin: isMobile
-              ? "32px 32px 12px 32px"
-              : "3.33vw 1.667vw 0vw 1.667vw",
-            display: "flex",
-            justifyContent: "space-between",
-            alignItems: "center",
-            width: isMobile ? "" : "72vw",
-          }}
-        >
-          <Typography
-            id="manageestimationorders"
-            style={{ fontSize: isMobile ? "4vw" : "2vw", color: "#0F607D" }}
-          >
-            Manage Estimation Orders
-          </Typography>
-          {userInformation?.data?.role === "Admin" ||
-          userInformation?.data?.role === "Super Admin" ? (
-            <DefaultButton
-              height={isMobile ? "" : "2.08vw"}
-              width={isMobile ? "" : "15vw"}
-              borderRadius="0.83vw"
-              fontSize={isMobile ? "10px" : "1vw"}
-              onClickFunction={() => {
-                navigate("/productionPlanningDashboard/estimationOrder")
-              }}
-            >
-              Add Estimation Order
-            </DefaultButton> 
-          ) : (
-            ""
-          )}
-        </div>
-        {/* <div style={{ margin: isMobile ? "0px 32px 0px 32px" : "1.667vw" }}>
-          <div
-            style={{
-              width: isMobile ? "100%" : "72vw",
-              overflowX: "auto",
-              whiteSpace: "nowrap",
-              display: "flex",
-            }}
-          >
-            {allOrders?.data?.length === 0 || allOrders?.data === undefined ? (
-              <Typography>There are no unreviewed orders available</Typography>
-            ) : (
-              allOrders?.data?.map((data, index, array) => (
-                <div
-                  key={index}
-                  className="order-item"
-                  style={{
-                    minWidth: isMobile ? "132px" : "13.33vw",
-                    minHeight: isMobile ? "132px" : "13.33vw",
-                    marginRight: index === array.length - 1 ? "0" : "32px",
-                  }}
-                >
-                  {data?.documents?.length === "" || null || undefined ? (
-                    ""
-                  ) : (
-                    <div style={{ margin: isMobile ? "12px" : "0.83vw" }}>
-                      {data?.documents?.length > 3 ? (
-                        <div style={{ display: "flex", alignItems: "center" }}>
-                          {data.documents
-                            ?.slice(0, 3)
-                            .map((document, index) => {
-                              return (
-                                <div>
-                                  <img
-                                    style={{
-                                      height: isMobile ? "30px" : "3.125vw",
-                                      width: isMobile ? "30px" : "3.125vw",
-                                      marginRight: "4px",
-                                    }}
-                                    srcSet={`http://localhost:3000/uploads/${document.filename}?w=248&fit=crop&auto=format&dpr=2 2x`}
-                                    src={`http://localhost:3000/uploads/${document.filename}?w=248&fit=crop&auto=format`}
-                                    alt=""
-                                    loading="lazy"
-                                  />
-                                </div>
-                              );
-                            })}
-                          <Typography
-                            style={{
-                              marginLeft: "0.417vw",
-                              fontWeight: "bold",
-                              fontSize: isMobile ? "10px" : "1.042vw",
-                            }}
-                          >
-                            + {data?.documents?.length - 3}
-                          </Typography>
-                        </div>
-                      ) : (
-                        <div style={{ display: "flex" }}>
-                          {data.documents?.map((document, index) => {
-                            return (
-                              <div>
-                                <img
-                                  style={{
-                                    height: isMobile ? "30px" : "3.125vw",
-                                    width: isMobile ? "30px" : "3.125vw",
-                                    marginRight: "4px",
-                                  }}
-                                  srcSet={`http://localhost:3000/uploads/${document.filename}?w=248&fit=crop&auto=format&dpr=2 2x`}
-                                  src={`http://localhost:3000/uploads/${document.filename}?w=248&fit=crop&auto=format`}
-                                  alt=""
-                                  loading="lazy"
-                                />
-                              </div>
-                            );
-                          })}
-                        </div>
-                      )}
-                    </div>
-                  )}
-                  <div
-                    style={{
-                      display: "flex",
-                      margin: isMobile
-                        ? "0px 12px 0px 12px"
-                        : "0vw 0.83vw 0vw 0.83vw",
-                      backgroundColor: "transparent",
-                      overflow: "hidden",
-                      textOverflow: "ellipsis",
-                      whiteSpace: "nowrap",
-                    }}
-                  >
-                    <Typography
-                      style={{
-                        color: "#0F607D",
-                        fontWeight: "bold",
-                        overflow: "hidden",
-                        textOverflow: "ellipsis",
-                        whiteSpace: "nowrap",
-                        fontSize: isMobile ? "12px" : "1.25vw",
-                      }}
-                    >
-                      {data.orderTitle.length < 15
-                        ? (data.orderTitle)
-                        : (data.orderTitle.slice(0, 15) + "...")}
-                    </Typography>
-                  </div>
-                  <div
-                    style={{
-                      display: "flex",
-                      margin: isMobile
-                        ? "0px 12px 0px 12px"
-                        : "0vw 0.83vw 0vw 0.83vw",
-                      backgroundColor: "transparent",
-                      overflow: "hidden",
-                      textOverflow: "ellipsis",
-                      whiteSpace: "nowrap",
-                    }}
-                  >
-                    <Typography
-                      style={{
-                        overflow: "hidden",
-                        textOverflow: "ellipsis",
-                        whiteSpace: "nowrap",
-                        fontSize: isMobile ? "10px" : "0.833vw",
-                      }}
-                    >
-                      {data.orderDetails.length < 25
-                        ? data.orderDetails
-                        : data.orderDetails.slice(0, 25) + "..."}
-                    </Typography>
-                  </div>
-                  <div
-                    style={{
-                      display: "flex",
-                      backgroundColor: "transparent",
-                      position: "absolute",
-                      bottom: 12,
-                      left: 12,
-                      flexDirection: "column",
-                    }}
-                  >
-                    <Typography
-                      style={{
-                        color: "#0F607D",
-                        fontWeight: "bold",
-                        fontSize: isMobile ? "8px" : "0.625vw",
-                      }}
-                    >{`Date Added: ${moment(data.createdAt).format(
-                      "DD/MM/YYYY"
-                    )}`}</Typography>
-                  </div>
-                  <div
-                    style={{
-                      display: "flex",
-                      backgroundColor: "transparent",
-                      position: "absolute",
-                      bottom: isMobile ? 24 : 28,
-                      left: 12,
-                      flexDirection: "column",
-                    }}
-                  >
-                    <Typography
-                      style={{
-                        color: "#0F607D",
-                        fontWeight: "bold",
-                        fontSize: isMobile ? "8px" : "0.625vw",
-                      }}
-                    >
-                      {`Order Status: ${data.orderStatus}`}
-                    </Typography>
-                  </div>
-                </div>
-              ))
-            )}
-          </div>
-        </div> */}
         <div
           style={{
             margin: isMobile
@@ -958,7 +884,7 @@ const MaindashboardProductionPlanning = (props) => {
             Estimation Orders History
           </Typography>
           <div>
-            <DefaultButton>
+            <DefaultButton onClickFunction={() => {}}>
               <Typography style={{ fontSize: isMobile ? "12px" : "1.042vw" }}>
                 Go to Estimation Orders History Page
               </Typography>
@@ -985,7 +911,7 @@ const MaindashboardProductionPlanning = (props) => {
           <div>
             <DefaultButton
               onClickFunction={() => {
-                // navigate("/marketingDashboard/activityLog");
+                navigate("/productionPlanningDashboard/activityLog");
               }}
             >
               <Typography style={{ fontSize: isMobile ? "12px" : "1.042vw" }}>

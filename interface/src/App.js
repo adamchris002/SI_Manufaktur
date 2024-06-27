@@ -17,6 +17,8 @@ import UnauthorizedPage from "./pages/UnauthorizedPage";
 import OrderDetail from "./pages/MarketingPage/OrderDetail";
 import MarketingActivityLog from "./pages/MarketingPage/MarketingActivityLog";
 import EstimationOrderPage from "./pages/ProductionPlanningPage/EstimationOrderPage";
+import ProductionPlanningActivityLog from "./pages/ProductionPlanningPage/ProductionPlanningActivityLog";
+import EditProductionPlanPage from "./pages/ProductionPlanningPage/EditProductionPlanPage";
 import { createTheme, useMediaQuery } from "@mui/material";
 
 export const AppContext = createContext({});
@@ -114,9 +116,29 @@ function App() {
                 userCredentials.data.department !== "Production Planning" ? (
                   <Navigate to="/unauthorized" replace />
                 ) : (
-                  <EstimationOrderPage
-                    userInformation={userCredentials}
-                  />
+                  <EstimationOrderPage userInformation={userCredentials} />
+                )
+              }
+            />
+            <Route
+              path="/productionPlanningDashboard/activityLog"
+              element={
+                !userCredentials.data ||
+                userCredentials.data.department !== "Production Planning" ? (
+                  <Navigate to="/unauthorized" replace />
+                ) : (
+                  <ProductionPlanningActivityLog />
+                )
+              }
+            />
+            <Route
+              path="/productionPlanningDashboard/editProductionPlan"
+              element={
+                !userCredentials.data ||
+                userCredentials.data.department !== "Production Planning" ? (
+                  <Navigate to="/unauthorized" replace />
+                ) : (
+                  <EditProductionPlanPage userInformation={userCredentials} />
                 )
               }
             />

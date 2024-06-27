@@ -1,3 +1,4 @@
+const { INTEGER } = require("sequelize");
 const {
   orders,
   documents,
@@ -8,6 +9,8 @@ const {
   bahanBakuAkanDigunakans,
   rencanaJadwalProduksis,
   estimasiJadwalProduksis,
+  activitylogs,
+  UserActivityLogs,
 } = require("../models");
 
 class ProductionPlanningController {
@@ -29,6 +32,7 @@ class ProductionPlanningController {
         setting,
         estimasiBahanBaku,
         estimasiJadwal,
+        selectedOrderId,
       } = req.body;
 
       const { id } = req.params;
@@ -51,6 +55,7 @@ class ProductionPlanningController {
         contoh,
         plate,
         setting,
+        catatan: String(existingUser.id),
       });
 
       await UserProductionPlannings.create({
@@ -70,8 +75,7 @@ class ProductionPlanningController {
             // Loop through data in estimasiBahanBaku
             if (bahanBaku.data && Array.isArray(bahanBaku.data)) {
               await Promise.all(
-                bahanBaku.data.map(async (dataItem) => {
-                  console.log(dataItem);
+                bahanBaku.data.map(async (dataItem, index) => {
                   await Promise.all(
                     dataItem.dataJenis.map(async (dataJenis) => {
                       await bahanBakuAkanDigunakans.create({
@@ -80,6 +84,7 @@ class ProductionPlanningController {
                         dataInformasi: dataJenis.informasiJenis,
                         jumlahKebutuhan: dataJenis.jumlahKebutuhan,
                         namaJenis: dataJenis.namaJenis,
+                        groupIndex: index,
                         warna: dataJenis.warna,
                         waste: dataJenis.waste,
                       });
@@ -112,12 +117,34 @@ class ProductionPlanningController {
                 })
               );
             } else {
+              res.status(500).json({ error: "Error adding Estimasi Jadwal" });
             }
           })
         );
       } else {
         res.status(500).json({ error: "Error adding Estimasi Jadwal" });
       }
+      await orders.update(
+        {
+          orderStatus: "Estimated",
+        },
+        {
+          where: { id: selectedOrderId },
+        }
+      );
+
+      let addProductionPlanningActivity = await activitylogs.create({
+        user: existingUser.name,
+        activity: "Add Production Plan",
+        name: productionPlanning.pemesan,
+        division: "Production Planning",
+      });
+
+      await UserActivityLogs.create({
+        userId: selectedOrderId,
+        id: addProductionPlanningActivity.id,
+        activityLogsId: addProductionPlanningActivity.id,
+      });
       res.status(200).json({ message: "Estimasi Jadwal has been created" });
     } catch (error) {
       res.json(error);
@@ -157,22 +184,12 @@ class ProductionPlanningController {
       res.json(error);
     }
   }
-  static async getAllOrders(req, res) {
-    try {
-      let result = await orders.findAll({
-        include: [{ model: documents }],
-      });
-
-      res.json(result);
-    } catch (error) {
-      res.json(error);
-    }
-  }
   static async getOneOrder(req, res) {
     try {
       const { orderId } = req.query;
+      const id = parseInt(orderId, 10);
       let result = await orders.findOne({
-        where: { id: orderId },
+        where: { id: id },
         include: [
           {
             model: documents,
@@ -181,6 +198,71 @@ class ProductionPlanningController {
         ],
       });
       res.json(result);
+    } catch (error) {
+      res.json(error);
+    }
+  }
+  static async productionPlanningActivityLog(req, res) {
+    try {
+      let result = await activitylogs.findAll({
+        where: { division: "Production Planning" },
+      });
+      res.json(result);
+    } catch (error) {
+      res.json(error);
+    }
+  }
+  static async getAllProductionPlan(req, res) {
+    try {
+      let result = await productionPlannings.findAll({});
+      res.json(result);
+    } catch (error) {
+      res.json(error);
+    }
+  }
+  static async deleteProductionPlan(req, res) {
+    try {
+      const { id } = req.params;
+      let result = await productionPlannings.destroy({
+        where: { id: id },
+      });
+      res.json(result);
+    } catch (error) {
+      res.json(error);
+    }
+  }
+  static async getProductionPlanWithData(req, res) {
+    try {
+      const { id } = req.params;
+      let result = await productionPlannings.findOne({
+        where: { id: id },
+        include: [
+          {
+            model: estimasiBahanBakus,
+            include: [
+              {
+                model: bahanBakuAkanDigunakans,
+              },
+            ],
+          },
+          {
+            model: estimasiJadwalProduksis,
+            include: [
+              {
+                model: rencanaJadwalProduksis,
+              },
+            ],
+          },
+        ],
+      });
+      res.json(result);
+    } catch (error) {
+      res.json(error);
+    }
+  }
+  static async updateProductionPlan(req, res) {
+    try {
+      
     } catch (error) {
       res.json(error);
     }

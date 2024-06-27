@@ -15,6 +15,7 @@ module.exports = {
           model: 'productionPlannings',
           key: 'id',
         },
+        onDelete: "CASCADE"
       },
       jenis: {
         type: Sequelize.STRING

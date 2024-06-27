@@ -20,6 +20,9 @@ module.exports = {
       namaJenis: {
         type: Sequelize.STRING,
       },
+      groupIndex: {
+        type: Sequelize.INTEGER
+      },
       dataInformasi: {
         type: Sequelize.STRING,
       },

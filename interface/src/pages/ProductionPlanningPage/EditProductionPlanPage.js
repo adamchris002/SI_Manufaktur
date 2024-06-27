@@ -18,8 +18,7 @@ import {
 import AddIcon from "@mui/icons-material/Add";
 import DeleteIcon from "@mui/icons-material/Delete";
 import RemoveIcon from "@mui/icons-material/Remove";
-import MySelectTextField from "../../components/SelectTextField";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import axios from "axios";
 import { AppContext } from "../../App";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
@@ -37,18 +36,20 @@ import { useAuth } from "../../components/AuthContext";
 dayjs.extend(utc);
 dayjs.extend(timezone);
 
-const EstimationOrderPage = (props) => {
+const EditProductionPlanPage = (props) => {
   const { userInformation } = props;
+  const location = useLocation();
+  const { productionPlanId } = location.state || {};
 
   const navigate = useNavigate();
 
   const { isMobile } = useContext(AppContext);
 
-  const [allOrderID, setAllOrderID] = useState([]);
+  const [productionPlanWithData, setProductionPlanWithData] = useState([]);
   const [selectedOrder, setSelectedOrder] = useState([]);
   const [estimasiJadwal, setEstimasiJadwal] = useState([]);
   const [estimasiBahanBaku, setEstimasiBahanBaku] = useState([]);
-  // console.log(estimasiBahanBaku)
+  console.log(selectedOrder);
 
   const [openModal, setOpenModal] = useState(false);
   const [openSnackbar, setOpenSnackbar] = useState(false);
@@ -70,8 +71,69 @@ const EstimationOrderPage = (props) => {
   const [plate, setPlate] = useState(false);
   const [setting, setSetting] = useState(false);
 
+  const [callSelectedOrder, setCallSelectedOrder] = useState(false);
+
   const [jenisBahan, setJenisBahan] = useState("");
   const [informasiBahan, setInformasiBahan] = useState("");
+
+  const groupBahanBakuAkanDigunakans = (data) => {
+    return data.map((estimasiBahanBaku) => {
+      const groupedData = estimasiBahanBaku.bahanBakuAkanDigunakans.reduce(
+        (acc, item) => {
+          const { groupIndex } = item;
+          if (!acc[groupIndex]) {
+            acc[groupIndex] = [];
+          }
+          acc[groupIndex].push(item);
+          return acc;
+        },
+        {}
+      );
+
+      const newBahanBakuAkanDigunakans = Object.values(groupedData).map(
+        (dataJenis) => ({
+          dataJenis: dataJenis,
+        })
+      );
+
+      return {
+        ...estimasiBahanBaku,
+        bahanBakuAkanDigunakans: newBahanBakuAkanDigunakans,
+      };
+    });
+  };
+
+  const groupJadwalEstimasi = (data) => {
+    return;
+  };
+
+  useEffect(() => {
+    axios({
+      method: "GET",
+      url: `http://localhost:3000/productionPlanning/getProductionPlanningWithData/${productionPlanId}`,
+    }).then((result) => {
+      setProductionPlanWithData(result);
+      setPemesan(result.data.pemesan);
+      setTanggalPengiriman(result.data.orderDueDate);
+      setAlamatPengirimanProduk(result.data.alamatKirimBarang);
+      setJenisCetakan(result.data.jenisCetakan);
+      setPly(result.data.ply);
+      setUkuran(result.data.ukuran);
+      setSeri(result.data.seri);
+      setIsiPerBox(result.data.isiPerBox);
+      setNomorator(result.data.nomorator);
+      setKuantitas(result.data.kuantitas);
+      setContoh(result.data.contoh);
+      setPlate(result.data.plate);
+      setSetting(result.data.contoh);
+      setEstimasiBahanBaku(
+        groupBahanBakuAkanDigunakans(result.data.estimasiBahanBakus)
+      );
+      //   console.log(result)
+      setEstimasiJadwal(result.data.estimasiJadwalProdukses);
+      setCallSelectedOrder(true);
+    });
+  }, []);
 
   const handleRemoveDataEstimasiBahanBaku = (index) => {
     setEstimasiBahanBaku((oldArray) => oldArray.filter((_, i) => i !== index));
@@ -83,7 +145,9 @@ const EstimationOrderPage = (props) => {
         i === index
           ? {
               ...result,
-              data: result.data.filter((data, j) => j !== dataItemIndex),
+              bahanBakuAkanDigunakans: result.bahanBakuAkanDigunakans.filter(
+                (data, j) => j !== dataItemIndex
+              ),
             }
           : result
       )
@@ -100,15 +164,16 @@ const EstimationOrderPage = (props) => {
         i === resultIndex
           ? {
               ...result,
-              data: result.data.map((dataItem, j) =>
-                j === dataItemIndex
-                  ? {
-                      ...dataItem,
-                      dataJenis: dataItem.dataJenis.filter(
-                        (dataJenis, k) => k !== dataJenisIndex
-                      ),
-                    }
-                  : dataItem
+              bahanBakuAkanDigunakans: result.bahanBakuAkanDigunakans.map(
+                (dataItem, j) =>
+                  j === dataItemIndex
+                    ? {
+                        ...dataItem,
+                        dataJenis: dataItem.dataJenis.filter(
+                          (dataJenis, k) => k !== dataJenisIndex
+                        ),
+                      }
+                    : dataItem
               ),
             }
           : result
@@ -128,23 +193,24 @@ const EstimationOrderPage = (props) => {
         i === itemIndex
           ? {
               ...item,
-              data: item.data.map((dataItem, j) =>
-                j === dataItemIndex
-                  ? {
-                      ...dataItem,
-                      dataJenis: [
-                        ...dataItem.dataJenis,
-                        {
-                          namaJenis: "",
-                          informasiJenis: "",
-                          warna: "",
-                          estimasiKebutuhan: "",
-                          waste: "",
-                          jumlahKebutuhan: "",
-                        },
-                      ],
-                    }
-                  : dataItem
+              bahanBakuAkanDigunakans: item.bahanBakuAkanDigunakans.map(
+                (dataItem, j) =>
+                  j === dataItemIndex
+                    ? {
+                        ...dataItem,
+                        dataJenis: [
+                          ...dataItem.dataJenis,
+                          {
+                            namaJenis: "",
+                            dataInformasi: "",
+                            warna: "",
+                            estimasiKebutuhan: "",
+                            waste: "",
+                            jumlahKebutuhan: "",
+                          },
+                        ],
+                      }
+                    : dataItem
               ),
             }
           : item
@@ -163,12 +229,12 @@ const EstimationOrderPage = (props) => {
         {
           jenis: jenisBahan,
           informasiBahan: informasiBahan,
-          data: [
+          bahanbakuakandigunakans: [
             {
               dataJenis: [
                 {
                   namaJenis: "",
-                  informasiJenis: "",
+                  dataInformasi: "",
                   warna: "",
                   estimasiKebutuhan: "",
                   waste: "",
@@ -191,8 +257,8 @@ const EstimationOrderPage = (props) => {
         i === index
           ? {
               ...item,
-              data: [
-                ...item.data,
+              bahanBakuAkanDigunakans: [
+                ...item.bahanBakuAkanDigunakans,
                 {
                   dataJenis: [
                     {
@@ -217,7 +283,7 @@ const EstimationOrderPage = (props) => {
       if (!item.jenis || !item.informasiBahan) {
         return false;
       }
-      for (const dataItem of item.data) {
+      for (const dataItem of item.bahanBakuAkanDigunakans) {
         for (const dataJenisItem of dataItem.dataJenis) {
           if (
             !dataJenisItem.estimasiKebutuhan ||
@@ -254,7 +320,7 @@ const EstimationOrderPage = (props) => {
     return true;
   };
 
-  const handleAddPerencanaanProduksi = () => {
+  const handleUpdatePerencanaanProduksi = () => {
     const checkIfEstimasiBahanBakuEmpty = isEstimasiBahanBakuComplete();
     const checkIfEstimasiJadwalEmpty = isEstimasiJadwalEmpty();
 
@@ -274,7 +340,7 @@ const EstimationOrderPage = (props) => {
       setting: setting,
       estimasiBahanBaku: estimasiBahanBaku,
       estimasiJadwal: estimasiJadwal,
-      selectedOrderId: selectedOrder.data.id
+      selectedOrderId: selectedOrder.data.id,
     };
     if (
       pemesan === "" ||
@@ -295,15 +361,16 @@ const EstimationOrderPage = (props) => {
       setOpenSnackbar(true);
       setSnackbarStatus(false);
       setSnackbarMessage("Please fill in all the fields");
-    } else {
+    }
+    else {
       axios({
-        method: "POST",
-        url: `http://localhost:3000/productionPlanning/addProductionPlanning/${userInformation.data.id}`,
+        method: "PUT",
+        url: `http://localhost:3000/productionPlanning/editProductionPlanning/${userInformation.data.id}`,
         data: perencanaanProduksiData,
       }).then((result) => {
         if (result.status === 200) {
           setSnackbarStatus(true);
-          setSuccessMessage("You have created a Production Plan!");
+          setSuccessMessage("You have updated a Production Plan!");
           navigate(-1);
         } else {
           setOpenSnackbar(true);
@@ -385,20 +452,22 @@ const EstimationOrderPage = (props) => {
           if (field === "bagian") {
             newItem.bagian = value;
           } else {
-            const pekerjaanArray = newItem.pekerjaan.map((pekerjaan, j) => {
-              if (j === pekerjaanIndex) {
-                const newPekerjaan = { ...pekerjaan, [field]: value };
-                if (field === "tanggalMulai" || field === "tanggalSelesai") {
-                  newPekerjaan.jumlahHari = perbedaanHariJam(
-                    newPekerjaan.tanggalMulai,
-                    newPekerjaan.tanggalSelesai
-                  );
+            const pekerjaanArray = newItem.rencanaJadwalProdukses.map(
+              (pekerjaan, j) => {
+                if (j === pekerjaanIndex) {
+                  const newPekerjaan = { ...pekerjaan, [field]: value };
+                  if (field === "tanggalMulai" || field === "tanggalSelesai") {
+                    newPekerjaan.jumlahHari = perbedaanHariJam(
+                      newPekerjaan.tanggalMulai,
+                      newPekerjaan.tanggalSelesai
+                    );
+                  }
+                  return newPekerjaan;
                 }
-                return newPekerjaan;
+                return pekerjaan;
               }
-              return pekerjaan;
-            });
-            newItem.pekerjaan = pekerjaanArray;
+            );
+            newItem.rencanaJadwalProdukses = pekerjaanArray;
           }
           return newItem;
         }
@@ -422,23 +491,25 @@ const EstimationOrderPage = (props) => {
         if (i === index) {
           return {
             ...item,
-            data: item.data.map((dataItem, j) => {
-              if (j === dataIndex) {
-                return {
-                  ...dataItem,
-                  dataJenis: dataItem.dataJenis.map((dataJenisItem, k) => {
-                    if (k === dataJenisIndex) {
-                      return {
-                        ...dataJenisItem,
-                        [field]: value,
-                      };
-                    }
-                    return dataJenisItem;
-                  }),
-                };
+            bahanBakuAkanDigunakans: item.bahanBakuAkanDigunakans.map(
+              (dataItem, j) => {
+                if (j === dataIndex) {
+                  return {
+                    ...dataItem,
+                    dataJenis: dataItem.dataJenis.map((dataJenisItem, k) => {
+                      if (k === dataJenisIndex) {
+                        return {
+                          ...dataJenisItem,
+                          [field]: value,
+                        };
+                      }
+                      return dataJenisItem;
+                    }),
+                  };
+                }
+                return dataItem;
               }
-              return dataItem;
-            }),
+            ),
           };
         }
         return item;
@@ -466,34 +537,19 @@ const EstimationOrderPage = (props) => {
     return `${days} Hari ${hours} Jam`;
   };
 
-  const handleSelectId = (orderId) => {
-    axios({
-      method: "GET",
-      url: "http://localhost:3000/productionPlanning/getOneOrder",
-      params: { orderId: orderId.target.value },
-    }).then((result) => {
-      setSelectedOrder(result);
-      setPemesan(result?.data?.customerDetail);
-      setTanggalPengiriman(result?.data?.orderDueDate);
-      setAlamatPengirimanProduk(result?.data?.alamatPengiriman);
-    });
-  };
-
   useEffect(() => {
-    axios({
-      method: "GET",
-      url: "http://localhost:3000/productionPlanning/getUnreviewedOrders",
-    }).then((result) => {
-      try {
-        const allOrderIDs = result.data.map((data) => ({
-          value: data.id,
-        }));
-        setAllOrderID(allOrderIDs);
-      } catch (error) {
-        console.log(error);
-      }
-    });
-  }, []);
+    if (callSelectedOrder) {
+      axios({
+        method: "GET",
+        url: "http://localhost:3000/productionPlanning/getOneOrder",
+        params: { orderId: productionPlanWithData?.data?.catatan },
+      }).then((result) => {
+        setSelectedOrder(result);
+        setCallSelectedOrder(false);
+      });
+    }
+  }, [callSelectedOrder]);
+
   return (
     <div
       style={{
@@ -513,202 +569,15 @@ const EstimationOrderPage = (props) => {
           }}
         >
           <Typography style={{ fontSize: "3.5vw", color: "#0F607D" }}>
-            Add Production Plan
+            Edit Rencana Produksi
           </Typography>
-          <div
-            style={{
-              display: "flex",
-              alignItems: "center",
-            }}
-          >
-            <Typography style={{ fontSize: "1.5vw", color: "#0F607D" }}>
-              Select Order ID
-            </Typography>
-            <div style={{ marginLeft: "8px" }}>
-              <MySelectTextField
-                width={"80px"}
-                height={"30px"}
-                data={allOrderID}
-                type="text"
-                onChange={handleSelectId}
-              />
-            </div>
-          </div>
         </div>
         <div
           style={{
             marginTop: "24px",
           }}
         >
-          {selectedOrder.length !== 0 ? (
-            <div
-              style={{
-                width: "100%",
-                border: "2px solid #0F607D",
-                borderRadius: "10px",
-              }}
-            >
-              <div style={{ margin: "24px" }}>
-                <Typography style={{ fontSize: "2.5vw", color: "#0F607D" }}>
-                  Order Information
-                </Typography>
-
-                <div
-                  style={{
-                    marginTop: "16px",
-                  }}
-                >
-                  {selectedOrder.length !== 0 && (
-                    <div
-                      style={{
-                        padding: "16px",
-                        border: "2px solid #0F607D",
-                        borderRadius: "10px",
-                      }}
-                    >
-                      <div
-                        style={{
-                          display: "flex",
-                          justifyContent: "flex-start",
-                        }}
-                      >
-                        <div style={{ width: "30%  " }}>
-                          <Typography
-                            style={{ fontSize: "1.5vw", color: "#0F607D" }}
-                          >{`Order ID: ${selectedOrder?.data?.id}`}</Typography>
-                        </div>
-                        <div style={{ width: "70%  " }}>
-                          <Typography
-                            style={{ fontSize: "1.5vw", color: "#0F607D" }}
-                          >{`Order Name: ${
-                            selectedOrder?.data?.orderTitle.length < 16
-                              ? selectedOrder?.data?.orderTitle
-                              : selectedOrder?.data?.orderTitle.slice(0, 16) +
-                                "..."
-                          }`}</Typography>
-                        </div>
-                      </div>
-                      <div style={{ marginTop: "8px" }}>
-                        <Typography
-                          style={{ fontSize: "1.5vw", color: "#0F607D" }}
-                        >
-                          Documents:
-                        </Typography>
-                      </div>
-                      <div style={{ display: "flex", overflowX: "auto" }}>
-                        {selectedOrder?.data?.documents.map((result, index) => {
-                          return (
-                            <div>
-                              {index ===
-                              selectedOrder.data.documents.length - 1 ? (
-                                <img
-                                  style={{
-                                    height: isMobile ? "100px" : "9vw",
-                                    width: isMobile ? "100px" : "9vw",
-                                  }}
-                                  srcSet={`http://localhost:3000/uploads/${result.filename}?w=248&fit=crop&auto=format&dpr=2 2x`}
-                                  src={`http://localhost:3000/uploads/${result.filename}?w=248&fit=crop&auto=format`}
-                                  alt={result.filename}
-                                  loading="lazy"
-                                />
-                              ) : (
-                                <img
-                                  style={{
-                                    height: isMobile ? "100px" : "9vw",
-                                    width: isMobile ? "100px" : "9vw",
-                                    marginRight: isMobile ? "" : "32px",
-                                  }}
-                                  srcSet={`http://localhost:3000/uploads/${result.filename}?w=248&fit=crop&auto=format&dpr=2 2x`}
-                                  src={`http://localhost:3000/uploads/${result.filename}?w=248&fit=crop&auto=format`}
-                                  alt={result.filename}
-                                  loading="lazy"
-                                />
-                              )}
-                            </div>
-                          );
-                        })}
-                      </div>
-                      <div style={{ marginTop: "32px" }}>
-                        <Typography
-                          style={{ fontSize: "1.5vw", color: "#0F607D" }}
-                        >
-                          Order Details:
-                        </Typography>
-                        <div
-                          style={{ width: "100%", overflowWrap: "break-word" }}
-                        >
-                          <Typography
-                            style={{
-                              overflowWrap: "break-word",
-                              fontSize: "1.5vw",
-                              color: "#0F607D",
-                            }}
-                          >
-                            {selectedOrder?.data?.orderDetails}
-                          </Typography>
-                        </div>
-                      </div>
-                      <div
-                        style={{
-                          display: "flex",
-                          justifyContent: "flex-start",
-                          marginTop: "32px",
-                        }}
-                      >
-                        <div style={{ width: "50%" }}>
-                          <Typography
-                            style={{ fontSize: "1.5vw", color: "#0F607D" }}
-                          >{`Order Quantity: ${selectedOrder?.data?.orderQuantity}`}</Typography>
-                        </div>
-                        <div style={{ width: "50%" }}>
-                          <Typography
-                            style={{ fontSize: "1.5vw", color: "#0F607D" }}
-                          >{`Order Status: ${selectedOrder?.data?.orderStatus}`}</Typography>
-                        </div>
-                      </div>
-                      <div
-                        style={{
-                          display: "flex",
-                          justifyContent: "flex-start",
-                          marginTop: "8px",
-                        }}
-                      >
-                        <div style={{ width: "50%" }}>
-                          <Typography
-                            style={{ fontSize: "1.5vw", color: "#0F607D" }}
-                          >{`Customer Channel: ${selectedOrder?.data?.customerChannel}`}</Typography>
-                        </div>
-                        <div style={{ width: "50%" }}>
-                          <Typography
-                            style={{ fontSize: "1.5vw", color: "#0F607D" }}
-                          >{`Customer Detail: ${selectedOrder?.data?.customerDetail}`}</Typography>
-                        </div>
-                      </div>
-                    </div>
-                  )}
-                </div>
-              </div>
-            </div>
-          ) : (
-            <div
-              style={{
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-                marginTop: "128px"
-              }}
-            >
-              <Typography
-                style={{
-                  fontSize: isMobile ? "36px" : "2vw",
-                  color: "#0F607D",
-                }}
-              >
-                Pilih salah satu pesanan
-              </Typography>
-            </div>
-          )}
-          {selectedOrder.length !== 0 && (
+          {productionPlanWithData.length !== 0 && (
             <div
               style={{
                 width: "100%",
@@ -891,6 +760,7 @@ const EstimationOrderPage = (props) => {
                     </Typography>
                     <TextField
                       type="text"
+                      value={jenisCetakan}
                       sx={{
                         "& .MuiOutlinedInput-root": {
                           height: isMobile ? "15px" : "3vw",
@@ -931,6 +801,7 @@ const EstimationOrderPage = (props) => {
                     </Typography>
                     <TextField
                       type="text"
+                      value={ply}
                       sx={{
                         "& .MuiOutlinedInput-root": {
                           height: isMobile ? "15px" : "3vw",
@@ -980,6 +851,7 @@ const EstimationOrderPage = (props) => {
                     </Typography>
                     <TextField
                       type="text"
+                      value={ukuran}
                       sx={{
                         "& .MuiOutlinedInput-root": {
                           height: isMobile ? "15px" : "3vw",
@@ -1020,6 +892,7 @@ const EstimationOrderPage = (props) => {
                     </Typography>
                     <TextField
                       type="text"
+                      value={seri}
                       sx={{
                         "& .MuiOutlinedInput-root": {
                           height: isMobile ? "15px" : "3vw",
@@ -1069,6 +942,7 @@ const EstimationOrderPage = (props) => {
                     </Typography>
                     <TextField
                       type="text"
+                      value={kuantitas}
                       sx={{
                         "& .MuiOutlinedInput-root": {
                           height: isMobile ? "15px" : "3vw",
@@ -1109,6 +983,7 @@ const EstimationOrderPage = (props) => {
                     </Typography>
                     <TextField
                       type="text"
+                      value={nomorator}
                       sx={{
                         "& .MuiOutlinedInput-root": {
                           height: isMobile ? "15px" : "3vw",
@@ -1150,6 +1025,7 @@ const EstimationOrderPage = (props) => {
                   </Typography>
                   <TextField
                     type="text"
+                    value={isiPerBox}
                     sx={{
                       "& .MuiOutlinedInput-root": {
                         height: isMobile ? "15px" : "3vw",
@@ -1202,6 +1078,7 @@ const EstimationOrderPage = (props) => {
                       }}
                       control={
                         <Switch
+                          value={contoh}
                           onChange={() => {
                             setContoh(!contoh);
                           }}
@@ -1233,6 +1110,7 @@ const EstimationOrderPage = (props) => {
                       }}
                       control={
                         <Switch
+                          value={setting}
                           onChange={() => {
                             setSetting(!setting);
                           }}
@@ -1265,6 +1143,7 @@ const EstimationOrderPage = (props) => {
                     }}
                     control={
                       <Switch
+                        value={plate}
                         onChange={() => {
                           setPlate(!plate);
                         }}
@@ -1303,7 +1182,7 @@ const EstimationOrderPage = (props) => {
                   </IconButton>
                 </div>
                 <div>
-                  {estimasiBahanBaku.map((result, index) => {
+                  {estimasiBahanBaku?.map((result, index) => {
                     return (
                       <div style={{ marginTop: "32px" }}>
                         <TableContainer component={Paper}>
@@ -1321,11 +1200,11 @@ const EstimationOrderPage = (props) => {
                                       alignItems: "center",
                                     }}
                                   >
-                                    {result.jenis}
+                                    {result?.jenis}
                                   </div>
                                 </TableCell>
                                 <TableCell align="left">
-                                  {result.informasiBahan}
+                                  {result?.informasi}
                                 </TableCell>
                                 <TableCell align="left">Warna</TableCell>
                                 <TableCell align="left">
@@ -1339,165 +1218,171 @@ const EstimationOrderPage = (props) => {
                               </TableRow>
                             </TableHead>
                             <TableBody>
-                              {result.data.map((dataItem, dataItemIndex) => (
-                                <React.Fragment
-                                  key={`${dataItemIndex}-${dataItemIndex}`}
-                                >
-                                  {dataItem.dataJenis.map(
-                                    (dataJenis, dataJenisIndex) => (
-                                      <TableRow
-                                        key={`${dataItemIndex}-${dataItemIndex}-${dataJenisIndex}`}
-                                      >
-                                        {dataJenisIndex === 0 ? (
+                              {result?.bahanBakuAkanDigunakans?.map(
+                                (dataItem, dataItemIndex) => (
+                                  <React.Fragment
+                                    key={`${index}-${dataItemIndex}`}
+                                  >
+                                    {dataItem.dataJenis.map(
+                                      (dataJenis, dataJenisIndex) => (
+                                        <TableRow
+                                          key={`${index}-${dataItemIndex}`}
+                                        >
+                                          {dataJenisIndex === 0 ? (
+                                            <TableCell>
+                                              {dataItemIndex + 1}
+                                            </TableCell>
+                                          ) : (
+                                            <TableCell></TableCell>
+                                          )}
                                           <TableCell>
-                                            {dataItemIndex + 1}
+                                            <TextField
+                                              value={dataJenis.namaJenis}
+                                              onChange={(event) => {
+                                                handleInputChangeEstimasiBahanBaku(
+                                                  event,
+                                                  index,
+                                                  dataItemIndex,
+                                                  dataJenisIndex,
+                                                  "namaJenis"
+                                                );
+                                              }}
+                                            />
                                           </TableCell>
-                                        ) : (
-                                          <TableCell></TableCell>
-                                        )}
-                                        <TableCell>
-                                          <TextField
-                                            value={dataJenis.namaJenis}
-                                            onChange={(event) => {
-                                              handleInputChangeEstimasiBahanBaku(
-                                                event,
-                                                index,
-                                                dataItemIndex,
-                                                dataJenisIndex,
-                                                "namaJenis"
-                                              );
-                                            }}
-                                          />
-                                        </TableCell>
-                                        <TableCell>
-                                          <TextField
-                                            value={dataJenis.informasiJenis}
-                                            onChange={(event) => {
-                                              handleInputChangeEstimasiBahanBaku(
-                                                event,
-                                                index,
-                                                dataItemIndex,
-                                                dataJenisIndex,
-                                                "informasiJenis"
-                                              );
-                                            }}
-                                          />
-                                        </TableCell>
-                                        <TableCell>
-                                          <TextField
-                                            value={dataJenis.warna}
-                                            onChange={(event) => {
-                                              handleInputChangeEstimasiBahanBaku(
-                                                event,
-                                                index,
-                                                dataItemIndex,
-                                                dataJenisIndex,
-                                                "warna"
-                                              );
-                                            }}
-                                          />
-                                        </TableCell>
-                                        <TableCell>
-                                          <TextField
-                                            value={dataJenis.estimasiKebutuhan}
-                                            onChange={(event) => {
-                                              handleInputChangeEstimasiBahanBaku(
-                                                event,
-                                                index,
-                                                dataItemIndex,
-                                                dataJenisIndex,
-                                                "estimasiKebutuhan"
-                                              );
-                                            }}
-                                          />
-                                        </TableCell>
-                                        <TableCell>
-                                          <TextField
-                                            value={dataJenis.waste}
-                                            onChange={(event) => {
-                                              handleInputChangeEstimasiBahanBaku(
-                                                event,
-                                                index,
-                                                dataItemIndex,
-                                                dataJenisIndex,
-                                                "waste"
-                                              );
-                                            }}
-                                          />
-                                        </TableCell>
-                                        <TableCell>
-                                          <TextField
-                                            value={dataJenis.jumlahKebutuhan}
-                                            onChange={(event) => {
-                                              handleInputChangeEstimasiBahanBaku(
-                                                event,
-                                                index,
-                                                dataItemIndex,
-                                                dataJenisIndex,
-                                                "jumlahKebutuhan"
-                                              );
-                                            }}
-                                          />
-                                        </TableCell>
-                                        <TableCell>
-                                          <div
-                                            style={{
-                                              display: "flex",
-                                              alignItems: "center",
-                                            }}
-                                          >
-                                            {dataJenisIndex === 0 ? (
-                                              <>
-                                                <IconButton
-                                                  onClick={() => {
-                                                    handleAddDataJenis(
-                                                      index,
-                                                      dataItemIndex
-                                                    );
-                                                  }}
-                                                  style={{ height: "50%" }}
-                                                >
-                                                  <AddIcon
-                                                    style={{ color: "#0F607D" }}
-                                                  />
-                                                </IconButton>
-                                                <IconButton
-                                                  style={{ height: "50%" }}
-                                                >
-                                                  <DeleteIcon
+                                          <TableCell>
+                                            <TextField
+                                              value={dataJenis.dataInformasi}
+                                              onChange={(event) => {
+                                                handleInputChangeEstimasiBahanBaku(
+                                                  event,
+                                                  index,
+                                                  dataItemIndex,
+                                                  dataJenisIndex,
+                                                  "dataInformasi"
+                                                );
+                                              }}
+                                            />
+                                          </TableCell>
+                                          <TableCell>
+                                            <TextField
+                                              value={dataJenis.warna}
+                                              onChange={(event) => {
+                                                handleInputChangeEstimasiBahanBaku(
+                                                  event,
+                                                  index,
+                                                  dataItemIndex,
+                                                  dataJenisIndex,
+                                                  "warna"
+                                                );
+                                              }}
+                                            />
+                                          </TableCell>
+                                          <TableCell>
+                                            <TextField
+                                              value={
+                                                dataJenis.estimasiKebutuhan
+                                              }
+                                              onChange={(event) => {
+                                                handleInputChangeEstimasiBahanBaku(
+                                                  event,
+                                                  index,
+                                                  dataItemIndex,
+                                                  dataJenisIndex,
+                                                  "estimasiKebutuhan"
+                                                );
+                                              }}
+                                            />
+                                          </TableCell>
+                                          <TableCell>
+                                            <TextField
+                                              value={dataJenis.waste}
+                                              onChange={(event) => {
+                                                handleInputChangeEstimasiBahanBaku(
+                                                  event,
+                                                  index,
+                                                  dataItemIndex,
+                                                  dataJenisIndex,
+                                                  "waste"
+                                                );
+                                              }}
+                                            />
+                                          </TableCell>
+                                          <TableCell>
+                                            <TextField
+                                              value={dataJenis.jumlahKebutuhan}
+                                              onChange={(event) => {
+                                                handleInputChangeEstimasiBahanBaku(
+                                                  event,
+                                                  index,
+                                                  dataItemIndex,
+                                                  dataJenisIndex,
+                                                  "jumlahKebutuhan"
+                                                );
+                                              }}
+                                            />
+                                          </TableCell>
+                                          <TableCell>
+                                            <div
+                                              style={{
+                                                display: "flex",
+                                                alignItems: "center",
+                                              }}
+                                            >
+                                              {dataJenisIndex === 0 ? (
+                                                <>
+                                                  <IconButton
                                                     onClick={() => {
-                                                      handleRemoveDataBahanBaku(
+                                                      handleAddDataJenis(
                                                         index,
                                                         dataItemIndex
                                                       );
                                                     }}
+                                                    style={{ height: "50%" }}
+                                                  >
+                                                    <AddIcon
+                                                      style={{
+                                                        color: "#0F607D",
+                                                      }}
+                                                    />
+                                                  </IconButton>
+                                                  <IconButton
+                                                    style={{ height: "50%" }}
+                                                  >
+                                                    <DeleteIcon
+                                                      onClick={() => {
+                                                        handleRemoveDataBahanBaku(
+                                                          index,
+                                                          dataItemIndex
+                                                        );
+                                                      }}
+                                                      style={{ color: "red" }}
+                                                    />
+                                                  </IconButton>
+                                                </>
+                                              ) : (
+                                                <IconButton
+                                                  onClick={() => {
+                                                    handleRemoveJenisDataBahanBaku(
+                                                      index,
+                                                      dataItemIndex,
+                                                      dataJenisIndex
+                                                    );
+                                                  }}
+                                                  style={{ height: "50%" }}
+                                                >
+                                                  <RemoveIcon
                                                     style={{ color: "red" }}
                                                   />
                                                 </IconButton>
-                                              </>
-                                            ) : (
-                                              <IconButton
-                                                onClick={() => {
-                                                  handleRemoveJenisDataBahanBaku(
-                                                    index,
-                                                    dataItemIndex,
-                                                    dataJenisIndex
-                                                  );
-                                                }}
-                                                style={{ height: "50%" }}
-                                              >
-                                                <RemoveIcon
-                                                  style={{ color: "red" }}
-                                                />
-                                              </IconButton>
-                                            )}
-                                          </div>
-                                        </TableCell>
-                                      </TableRow>
-                                    )
-                                  )}
-                                </React.Fragment>
-                              ))}
+                                              )}
+                                            </div>
+                                          </TableCell>
+                                        </TableRow>
+                                      )
+                                    )}
+                                  </React.Fragment>
+                                )
+                              )}
                             </TableBody>
                           </Table>
                           <div
@@ -1567,9 +1452,9 @@ const EstimationOrderPage = (props) => {
                           </TableRow>
                         </TableHead>
                         <TableBody>
-                          {estimasiJadwal.map((row, index) => (
+                          {estimasiJadwal?.map((row, index) => (
                             <React.Fragment key={index}>
-                              {row.pekerjaan.map(
+                              {row.rencanaJadwalProdukses.map(
                                 (pekerjaan, pekerjaanIndex) => (
                                   <TableRow
                                     key={`${index}-${pekerjaanIndex}`}
@@ -1619,6 +1504,9 @@ const EstimationOrderPage = (props) => {
                                         >
                                           <DemoItem sx={{ padding: 0 }}>
                                             <DateTimePicker
+                                              value={dayjs(
+                                                pekerjaan.tanggalMulai
+                                              )}
                                               disablePast
                                               maxDateTime={dayjs(
                                                 selectedOrder?.data
@@ -1647,6 +1535,9 @@ const EstimationOrderPage = (props) => {
                                         >
                                           <DemoItem>
                                             <DateTimePicker
+                                              value={dayjs(
+                                                pekerjaan.tanggalSelesai
+                                              )}
                                               disablePast
                                               minDateTime={
                                                 pekerjaan.tanggalMulai !== ""
@@ -1754,7 +1645,7 @@ const EstimationOrderPage = (props) => {
               </div>
             </div>
           )}
-          {selectedOrder.length !== 0 && (
+          {productionPlanWithData.length !== 0 && (
             <div
               style={{
                 display: "flex",
@@ -1764,18 +1655,20 @@ const EstimationOrderPage = (props) => {
             >
               <DefaultButton
                 onClickFunction={() => {
-                  handleAddPerencanaanProduksi();
+                  handleUpdatePerencanaanProduksi();
                 }}
               >
                 <Typography style={{ fontSize: "20px" }}>
-                  Tambah Perencanaan Produksi
+                  Edit Perencanaan Produksi
                 </Typography>
               </DefaultButton>
               <Button
                 sx={{ marginLeft: "8px" }}
                 variant="outlined"
                 color="error"
-                onClick={() => {navigate(-1)}}
+                onClick={() => {
+                  navigate(-1);
+                }}
               >
                 <Typography>Cancel</Typography>
               </Button>
@@ -1917,4 +1810,4 @@ const EstimationOrderPage = (props) => {
   );
 };
 
-export default EstimationOrderPage;
+export default EditProductionPlanPage;
