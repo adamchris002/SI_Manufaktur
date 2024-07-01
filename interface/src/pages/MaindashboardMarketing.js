@@ -1,4 +1,4 @@
-import React, {  useContext, useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import axios from "axios";
 import { useNavigate, Outlet } from "react-router-dom";
 import moment from "moment";
@@ -86,7 +86,7 @@ const MaindashboardMarketing = (props) => {
   const [orderType, setOrderType] = useState("");
   const [orderNoSeries, setOrderNoSeries] = useState("");
   const [orderDueDate, setOrderDueDate] = useState(dayjs(""));
-  const [alamatPengiriman, setAlamatPengirimanProduk] = useState("")
+  const [alamatPengiriman, setAlamatPengirimanProduk] = useState("");
   const [orderCustomerChannel, setOrderCustomerChannel] = useState("");
   const [orderCustomerDetail, setOrderCustomerDetail] = useState("");
   const [updateNotification, setUpdateNotification] = useState(false);
@@ -149,7 +149,8 @@ const MaindashboardMarketing = (props) => {
       orderTotalPrice === "" ||
       orderType === "" ||
       orderNoSeries === "" ||
-      orderDueDate === ""
+      orderDueDate === "" ||
+      !dayjs(orderDueDate, "MM/DD/YYYY hh:mm A", true).isValid()
     ) {
       setOpenSnackbar(true);
       setSnackbarStatus(false);
@@ -168,7 +169,7 @@ const MaindashboardMarketing = (props) => {
       formData.append("orderType", orderType);
       formData.append("orderNoSeries", orderNoSeries);
       formData.append("orderDueDate", orderDueDate);
-      formData.append("alamatPengiriman", alamatPengiriman)
+      formData.append("alamatPengiriman", alamatPengiriman);
       formData.append("orderStatus", "Ongoing");
 
       for (const file of orderDocuments) {
@@ -196,11 +197,11 @@ const MaindashboardMarketing = (props) => {
           setOrderCustomerChannel("");
           setOrderCustomerDetail("");
           setOrderDocuments([]);
-          setOrderTotalPrice("")
-          setOrderType("")
-          setOrderNoSeries("")
-          setOrderDueDate(dayjs(""))
-          setAlamatPengirimanProduk("")
+          setOrderTotalPrice("");
+          setOrderType("");
+          setOrderNoSeries("");
+          setOrderDueDate(dayjs(""));
+          setAlamatPengirimanProduk("");
         } else {
           setOpenSnackbar(true);
           setSnackbarStatus(false);
@@ -212,11 +213,11 @@ const MaindashboardMarketing = (props) => {
           setOrderCustomerChannel("");
           setOrderCustomerDetail("");
           setOrderDocuments([]);
-          setOrderTotalPrice("")
-          setOrderType("")
-          setOrderNoSeries("")
-          setOrderDueDate(dayjs(""))
-          setAlamatPengirimanProduk("")
+          setOrderTotalPrice("");
+          setOrderType("");
+          setOrderNoSeries("");
+          setOrderDueDate(dayjs(""));
+          setAlamatPengirimanProduk("");
         }
       });
     }
@@ -261,11 +262,11 @@ const MaindashboardMarketing = (props) => {
     setOrderCustomerChannel("");
     setOrderCustomerDetail("");
     setOrderDocuments([]);
-    setOrderTotalPrice("")
-    setOrderType("")
-    setOrderNoSeries("")
-    setOrderDueDate(dayjs(""))
-    setAlamatPengirimanProduk("")
+    setOrderTotalPrice("");
+    setOrderType("");
+    setOrderNoSeries("");
+    setOrderDueDate(dayjs(""));
+    setAlamatPengirimanProduk("");
   };
 
   useEffect(() => {
@@ -2101,11 +2102,10 @@ const MaindashboardMarketing = (props) => {
                 </div>
                 <LocalizationProvider dateAdapter={AdapterDayjs}>
                   <DemoContainer components={["DateTimePicker"]}>
-                    <DemoItem
-                    >
+                    <DemoItem>
                       <DateTimePicker
                         disablePast
-                        onChange={(event) => setOrderDueDate(event)}
+                        onChange={(event) => setOrderDueDate(dayjs(event).format("MM/DD/YYYY hh:mm A"))}
                       />
                     </DemoItem>
                   </DemoContainer>

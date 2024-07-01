@@ -12,8 +12,8 @@ module.exports = (sequelize, DataTypes) => {
       });
       productionPlannings.hasMany(models.estimasiBahanBakus, {
         foreignKey: "productionPlanningId",
-        onDelete: "CASCADE"
-      })
+        onDelete: "CASCADE",
+      });
     }
   }
   productionPlannings.init(
@@ -31,7 +31,7 @@ module.exports = (sequelize, DataTypes) => {
       contoh: DataTypes.BOOLEAN,
       plate: DataTypes.BOOLEAN,
       setting: DataTypes.BOOLEAN,
-      catatan: DataTypes.STRING,
+      orderId: DataTypes.INTEGER,
     },
     {
       sequelize,

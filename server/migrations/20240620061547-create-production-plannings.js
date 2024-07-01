@@ -47,8 +47,8 @@ module.exports = {
       setting: {
         type: Sequelize.BOOLEAN
       },
-      catatan: {
-        type: Sequelize.STRING
+      orderId: {
+        type: Sequelize.INTEGER
       },
       createdAt: {
         allowNull: false,

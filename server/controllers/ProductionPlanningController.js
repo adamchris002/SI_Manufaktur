@@ -33,7 +33,7 @@ class ProductionPlanningController {
         estimasiBahanBaku,
         estimasiJadwal,
         selectedOrderId,
-        catatan,
+        orderId,
       } = req.body;
 
       const { id } = req.params;
@@ -56,7 +56,7 @@ class ProductionPlanningController {
         contoh,
         plate,
         setting,
-        catatan: String(catatan),
+        orderId,
       });
 
       await UserProductionPlannings.create({
@@ -467,7 +467,6 @@ class ProductionPlanningController {
   static async removeJadwal(req, res) {
     try {
       const {id} = req.params
-      // console.log(id)
       let result = await rencanaJadwalProduksis.destroy({
         where: {id: id}
       })
@@ -490,7 +489,6 @@ class ProductionPlanningController {
   static async deleteJenisBahanBaku(req, res) {
     try {
       const { id } = req.params;
-      console.log(id);
       let removeEstimasiBahanBaku = await estimasiBahanBakus.destroy({
         where: { id: id },
       });

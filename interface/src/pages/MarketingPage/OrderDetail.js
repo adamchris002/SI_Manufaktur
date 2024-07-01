@@ -177,8 +177,9 @@ const OrderDetail = (props) => {
       orderTotalPrice === "" ||
       orderType === "" ||
       orderNoSeries === "" ||
+      alamatPengiriman === "" ||
       orderDueDate === "" ||
-      alamatPengiriman === ""
+      !dayjs(orderDueDate, "MM/DD/YYYY hh:mm A", true).isValid()
     ) {
       setOpenSnackbar(true);
       setSnackbarStatus(false);

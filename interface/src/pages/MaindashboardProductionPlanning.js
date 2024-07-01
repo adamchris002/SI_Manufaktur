@@ -22,6 +22,7 @@ import {
 import { AppContext } from "../App";
 import moment from "moment";
 import CustomChip from "../components/Chip";
+import dayjs from "dayjs";
 
 const MaindashboardProductionPlanning = (props) => {
   const { userInformation } = props;
@@ -335,7 +336,7 @@ const MaindashboardProductionPlanning = (props) => {
                       <TableCell>{result.id}</TableCell>
                       <TableCell>{result.pemesan}</TableCell>
                       <TableCell>{result.alamatKirimBarang}</TableCell>
-                      <TableCell>{result.tanggalPengirimanBarang}</TableCell>
+                      <TableCell>{dayjs(result.tanggalPengirimanBarang).format("MM/DD/YYYY hh:mm A")}</TableCell>
                       <TableCell>
                         <div>
                           <IconButton

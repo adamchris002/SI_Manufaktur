@@ -48,7 +48,6 @@ const EstimationOrderPage = (props) => {
   const [selectedOrder, setSelectedOrder] = useState([]);
   const [estimasiJadwal, setEstimasiJadwal] = useState([]);
   const [estimasiBahanBaku, setEstimasiBahanBaku] = useState([]);
-  // console.log(estimasiBahanBaku)
 
   const [openModal, setOpenModal] = useState(false);
   const [openSnackbar, setOpenSnackbar] = useState(false);
@@ -57,7 +56,7 @@ const EstimationOrderPage = (props) => {
   const { setSuccessMessage } = useAuth();
 
   const [pemesan, setPemesan] = useState("");
-  const [tanggalPengiriman, setTanggalPengiriman] = useState("");
+  const [tanggalPengiriman, setTanggalPengiriman] = useState(dayjs(""));
   const [alamatPengirimanProduk, setAlamatPengirimanProduk] = useState("");
   const [jenisCetakan, setJenisCetakan] = useState("");
   const [ukuran, setUkuran] = useState("");
@@ -73,7 +72,47 @@ const EstimationOrderPage = (props) => {
   const [jenisBahan, setJenisBahan] = useState("");
   const [informasiBahan, setInformasiBahan] = useState("");
 
-  console.log(estimasiBahanBaku)
+  const units = [
+    {
+      value: "Kg",
+    },
+    {
+      value: "Ton",
+    },
+    {
+      value: "Roll",
+    },
+    {
+      value: "Kaleng",
+    },
+    {
+      value: "Lembar",
+    },
+    {
+      value: "Box",
+    },
+  ];
+
+  const transformDataForSubmission = (data) => {
+    return data.map((item) => {
+      return {
+        ...item,
+        data: item.data.map((dataItem) => {
+          return {
+            ...dataItem,
+            dataJenis: dataItem.dataJenis.map((dataJenisItem) => {
+              return {
+                ...dataJenisItem,
+                estimasiKebutuhan: `${dataJenisItem.estimasiKebutuhan.value} ${dataJenisItem.estimasiKebutuhan.unit}`,
+                waste: `${dataJenisItem.waste.value} ${dataJenisItem.waste.unit}`,
+                jumlahKebutuhan: `${dataJenisItem.jumlahKebutuhan.value} ${dataJenisItem.jumlahKebutuhan.unit}`,
+              };
+            }),
+          };
+        }),
+      };
+    });
+  };
 
   const handleRemoveDataEstimasiBahanBaku = (index) => {
     setEstimasiBahanBaku((oldArray) => oldArray.filter((_, i) => i !== index));
@@ -222,12 +261,15 @@ const EstimationOrderPage = (props) => {
       for (const dataItem of item.data) {
         for (const dataJenisItem of dataItem.dataJenis) {
           if (
-            !dataJenisItem.estimasiKebutuhan ||
+            !dataJenisItem.estimasiKebutuhan.value ||
+            !dataJenisItem.estimasiKebutuhan.unit ||
             !dataJenisItem.informasiJenis ||
-            !dataJenisItem.jumlahKebutuhan ||
+            !dataJenisItem.jumlahKebutuhan.value ||
+            !dataJenisItem.jumlahKebutuhan.unit ||
             !dataJenisItem.namaJenis ||
             !dataJenisItem.warna ||
-            !dataJenisItem.waste
+            !dataJenisItem.waste.value ||
+            !dataJenisItem.waste.unit
           ) {
             return false;
           }
@@ -260,6 +302,8 @@ const EstimationOrderPage = (props) => {
     const checkIfEstimasiBahanBakuEmpty = isEstimasiBahanBakuComplete();
     const checkIfEstimasiJadwalEmpty = isEstimasiJadwalEmpty();
 
+    const newEstimasiBahanBaku = transformDataForSubmission(estimasiBahanBaku);
+
     const perencanaanProduksiData = {
       pemesan: pemesan,
       tanggalPengirimanBarang: tanggalPengiriman,
@@ -273,15 +317,14 @@ const EstimationOrderPage = (props) => {
       nomorator: nomorator,
       contoh: contoh,
       plate: plate,
-      catatan: selectedOrder.data.id,
+      orderId: selectedOrder.data.id,
       setting: setting,
-      estimasiBahanBaku: estimasiBahanBaku,
+      estimasiBahanBaku: newEstimasiBahanBaku,
       estimasiJadwal: estimasiJadwal,
-      selectedOrderId: selectedOrder.data.id
+      selectedOrderId: selectedOrder.data.id,
     };
     if (
       pemesan === "" ||
-      tanggalPengiriman === "" ||
       alamatPengirimanProduk === "" ||
       jenisCetakan === "" ||
       ukuran === "" ||
@@ -293,7 +336,9 @@ const EstimationOrderPage = (props) => {
       estimasiJadwal.length === 0 ||
       estimasiBahanBaku.length === 0 ||
       checkIfEstimasiBahanBakuEmpty === false ||
-      checkIfEstimasiJadwalEmpty === false
+      checkIfEstimasiJadwalEmpty === false ||
+      tanggalPengiriman === "" ||
+      !dayjs(tanggalPengiriman, "MM/DD/YYYY hh:mm A", true).isValid()
     ) {
       setOpenSnackbar(true);
       setSnackbarStatus(false);
@@ -416,7 +461,8 @@ const EstimationOrderPage = (props) => {
     index,
     dataIndex,
     dataJenisIndex,
-    field
+    field,
+    unit
   ) => {
     const value = event.target.value;
 
@@ -431,10 +477,20 @@ const EstimationOrderPage = (props) => {
                   ...dataItem,
                   dataJenis: dataItem.dataJenis.map((dataJenisItem, k) => {
                     if (k === dataJenisIndex) {
-                      return {
-                        ...dataJenisItem,
-                        [field]: value,
-                      };
+                      if (unit) {
+                        return {
+                          ...dataJenisItem,
+                          [field]: {
+                            value: dataJenisItem[field],
+                            unit: value,
+                          },
+                        };
+                      } else {
+                        return {
+                          ...dataJenisItem,
+                          [field]: value,
+                        };
+                      }
                     }
                     return dataJenisItem;
                   }),
@@ -477,7 +533,6 @@ const EstimationOrderPage = (props) => {
     }).then((result) => {
       setSelectedOrder(result);
       setPemesan(result?.data?.customerDetail);
-      setTanggalPengiriman(result?.data?.orderDueDate);
       setAlamatPengirimanProduk(result?.data?.alamatPengiriman);
     });
   };
@@ -698,7 +753,7 @@ const EstimationOrderPage = (props) => {
                 display: "flex",
                 alignItems: "center",
                 justifyContent: "center",
-                marginTop: "128px"
+                marginTop: "128px",
               }}
             >
               <Typography
@@ -798,32 +853,22 @@ const EstimationOrderPage = (props) => {
                     >
                       Tanggal Pengiriman:
                     </Typography>
-                    <TextField
-                      type="text"
-                      value={dayjs(tanggalPengiriman).format(
-                        "MM/DD/YYYY hh:mm A"
-                      )}
-                      sx={{
-                        "& .MuiOutlinedInput-root": {
-                          height: isMobile ? "15px" : "3vw",
-                          width: isMobile ? "130px" : "17vw",
-                          fontSize: isMobile ? "10px" : "1.5vw",
-                          borderRadius: "10px",
-                          "& fieldset": {
-                            borderColor: "#0F607D",
-                          },
-                          "&:hover fieldset": {
-                            borderColor: "#0F607D",
-                          },
-                          "&.Mui-focused fieldset": {
-                            borderColor: "#0F607D",
-                          },
-                        },
-                      }}
-                      onChange={(current) => {
-                        setTanggalPengiriman(current.target.value);
-                      }}
-                    />
+                    <div>
+                      <LocalizationProvider dateAdapter={AdapterDayjs}>
+                        <DemoContainer components={["DateTimePicker"]}>
+                          <DemoItem>
+                            <DateTimePicker
+                              disablePast
+                              maxDate={dayjs(selectedOrder?.data?.orderDueDate)}
+                              onChange={(event) => setTanggalPengiriman(event)}
+                            />
+                          </DemoItem>
+                        </DemoContainer>
+                      </LocalizationProvider>
+                      <Typography>{`Tanggal jatuh tempo: ${dayjs(
+                        selectedOrder?.data?.orderDueDate
+                      ).format("MM/DD/YYYY hh:mm A")}`}</Typography>
+                    </div>
                   </div>
                 </div>
                 <div
@@ -1401,46 +1446,161 @@ const EstimationOrderPage = (props) => {
                                           />
                                         </TableCell>
                                         <TableCell>
-                                          <TextField
-                                            value={dataJenis.estimasiKebutuhan}
-                                            onChange={(event) => {
-                                              handleInputChangeEstimasiBahanBaku(
-                                                event,
-                                                index,
-                                                dataItemIndex,
-                                                dataJenisIndex,
-                                                "estimasiKebutuhan"
-                                              );
+                                          <div
+                                            style={{
+                                              display: "flex",
+                                              alignItems: "center",
                                             }}
-                                          />
+                                          >
+                                            <TextField
+                                              value={
+                                                dataJenis.estimasiKebutuhan
+                                                  .value
+                                              }
+                                              type="number"
+                                              onChange={(event) => {
+                                                handleInputChangeEstimasiBahanBaku(
+                                                  event,
+                                                  index,
+                                                  dataItemIndex,
+                                                  dataJenisIndex,
+                                                  "estimasiKebutuhan"
+                                                );
+                                              }}
+                                            />
+                                            <div style={{ marginLeft: "8px" }}>
+                                              <MySelectTextField
+                                                type="text"
+                                                width={
+                                                  isMobile ? "50px" : "55px"
+                                                }
+                                                height={
+                                                  isMobile ? "15px" : "55px"
+                                                }
+                                                borderRadius="10px"
+                                                data={units}
+                                                fontSize={
+                                                  isMobile ? "10px" : "0.8vw"
+                                                }
+                                                value={
+                                                  dataJenis.estimasiKebutuhan
+                                                    .unit
+                                                }
+                                                onChange={(event) => {
+                                                  handleInputChangeEstimasiBahanBaku(
+                                                    event,
+                                                    index,
+                                                    dataItemIndex,
+                                                    dataJenisIndex,
+                                                    "estimasiKebutuhan",
+                                                    true
+                                                  );
+                                                }}
+                                              />
+                                            </div>
+                                          </div>
                                         </TableCell>
                                         <TableCell>
-                                          <TextField
-                                            value={dataJenis.waste}
-                                            onChange={(event) => {
-                                              handleInputChangeEstimasiBahanBaku(
-                                                event,
-                                                index,
-                                                dataItemIndex,
-                                                dataJenisIndex,
-                                                "waste"
-                                              );
+                                          <div
+                                            style={{
+                                              display: "flex",
+                                              alignItems: "center",
                                             }}
-                                          />
+                                          >
+                                            <TextField
+                                              value={dataJenis.waste.value}
+                                              type="number"
+                                              onChange={(event) => {
+                                                handleInputChangeEstimasiBahanBaku(
+                                                  event,
+                                                  index,
+                                                  dataItemIndex,
+                                                  dataJenisIndex,
+                                                  "waste"
+                                                );
+                                              }}
+                                            />
+                                            <div style={{ marginLeft: "8px" }}>
+                                              <MySelectTextField
+                                                type="text"
+                                                width={
+                                                  isMobile ? "50px" : "55px"
+                                                }
+                                                height={
+                                                  isMobile ? "15px" : "55px"
+                                                }
+                                                borderRadius="10px"
+                                                data={units}
+                                                fontSize={
+                                                  isMobile ? "10px" : "0.8vw"
+                                                }
+                                                value={dataJenis.waste.unit}
+                                                onChange={(event) => {
+                                                  handleInputChangeEstimasiBahanBaku(
+                                                    event,
+                                                    index,
+                                                    dataItemIndex,
+                                                    dataJenisIndex,
+                                                    "waste",
+                                                    true
+                                                  );
+                                                }}
+                                              />
+                                            </div>
+                                          </div>
                                         </TableCell>
                                         <TableCell>
-                                          <TextField
-                                            value={dataJenis.jumlahKebutuhan}
-                                            onChange={(event) => {
-                                              handleInputChangeEstimasiBahanBaku(
-                                                event,
-                                                index,
-                                                dataItemIndex,
-                                                dataJenisIndex,
-                                                "jumlahKebutuhan"
-                                              );
+                                          <div
+                                            style={{
+                                              display: "flex",
+                                              alignItems: "center",
                                             }}
-                                          />
+                                          >
+                                            <TextField
+                                              type="number"
+                                              value={
+                                                dataJenis.jumlahKebutuhan.value
+                                              }
+                                              onChange={(event) => {
+                                                handleInputChangeEstimasiBahanBaku(
+                                                  event,
+                                                  index,
+                                                  dataItemIndex,
+                                                  dataJenisIndex,
+                                                  "jumlahKebutuhan"
+                                                );
+                                              }}
+                                            />
+                                            <div style={{ marginLeft: "8px" }}>
+                                              <MySelectTextField
+                                                type="text"
+                                                width={
+                                                  isMobile ? "50px" : "55px"
+                                                }
+                                                height={
+                                                  isMobile ? "15px" : "55px"
+                                                }
+                                                borderRadius="10px"
+                                                data={units}
+                                                fontSize={
+                                                  isMobile ? "10px" : "0.8vw"
+                                                }
+                                                value={
+                                                  dataJenis.jumlahKebutuhan.unit
+                                                }
+                                                onChange={(event) => {
+                                                  handleInputChangeEstimasiBahanBaku(
+                                                    event,
+                                                    index,
+                                                    dataItemIndex,
+                                                    dataJenisIndex,
+                                                    "jumlahKebutuhan",
+                                                    true
+                                                  );
+                                                }}
+                                              />
+                                            </div>
+                                          </div>
                                         </TableCell>
                                         <TableCell>
                                           <div
@@ -1623,10 +1783,19 @@ const EstimationOrderPage = (props) => {
                                           <DemoItem sx={{ padding: 0 }}>
                                             <DateTimePicker
                                               disablePast
-                                              maxDateTime={dayjs(
-                                                selectedOrder?.data
-                                                  ?.orderDueDate
-                                              )}
+                                              maxDateTime={
+                                                tanggalPengiriman === "" ||
+                                                !dayjs(
+                                                  tanggalPengiriman,
+                                                  "MM/DD/YYYY hh:mm A",
+                                                  true
+                                                ).isValid()
+                                                  ? dayjs(
+                                                      selectedOrder?.data
+                                                        ?.orderDueDate
+                                                    )
+                                                  : dayjs(tanggalPengiriman)
+                                              }
                                               onChange={(e) =>
                                                 handleInputChange(
                                                   dayjs(e),
@@ -1658,10 +1827,19 @@ const EstimationOrderPage = (props) => {
                                                     )
                                                   : ""
                                               }
-                                              maxDateTime={dayjs(
-                                                selectedOrder?.data
-                                                  ?.orderDueDate
-                                              )}
+                                              maxDateTime={
+                                                tanggalPengiriman === "" ||
+                                                !dayjs(
+                                                  tanggalPengiriman,
+                                                  "MM/DD/YYYY hh:mm A",
+                                                  true
+                                                ).isValid()
+                                                  ? dayjs(
+                                                      selectedOrder?.data
+                                                        ?.orderDueDate
+                                                    )
+                                                  : dayjs(tanggalPengiriman)
+                                              }
                                               onChange={(e) =>
                                                 handleInputChange(
                                                   dayjs(e),
@@ -1778,7 +1956,9 @@ const EstimationOrderPage = (props) => {
                 sx={{ marginLeft: "8px" }}
                 variant="outlined"
                 color="error"
-                onClick={() => {navigate(-1)}}
+                onClick={() => {
+                  navigate(-1);
+                }}
               >
                 <Typography>Cancel</Typography>
               </Button>
