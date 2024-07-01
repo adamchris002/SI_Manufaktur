@@ -49,8 +49,7 @@ const EditProductionPlanPage = (props) => {
   const [selectedOrder, setSelectedOrder] = useState([]);
   const [estimasiJadwal, setEstimasiJadwal] = useState([]);
   const [estimasiBahanBaku, setEstimasiBahanBaku] = useState([]);
-  console.log(selectedOrder);
-
+  
   const [openModal, setOpenModal] = useState(false);
   const [openSnackbar, setOpenSnackbar] = useState(false);
   const [snackbarStatus, setSnackbarStatus] = useState(false);
@@ -71,10 +70,50 @@ const EditProductionPlanPage = (props) => {
   const [plate, setPlate] = useState(false);
   const [setting, setSetting] = useState(false);
 
+  const [refreshProductionPlanData, setRefreshProductionPlanData] =
+    useState(true);
   const [callSelectedOrder, setCallSelectedOrder] = useState(false);
 
   const [jenisBahan, setJenisBahan] = useState("");
   const [informasiBahan, setInformasiBahan] = useState("");
+
+  const removeJadwal = (id) => {
+    console.log(id)
+    axios({
+      method: "DELETE",
+      url: `http://localhost:3000/productionPlanning/removeJadwal/${id}`
+    }).then((result) => {
+      if (result.status === 200) {
+        setOpenSnackbar(true);
+        setSnackbarStatus(true);
+        setSnackbarMessage("Berhasil menghapus data jadwal!");
+        setRefreshProductionPlanData(true);
+      } else {
+        setOpenSnackbar(false);
+        setSnackbarStatus(false);
+        setSnackbarMessage("Tidak berhasil menghapus data jadwal!");
+      }
+    });
+  };
+
+  const deleteJadwal = (id) => {
+    console.log(id)
+    axios({
+      method: "DELETE",
+      url: `http://localhost:3000/productionPlanning/deleteJadwal/${id}`
+    }).then((result) => {
+      if (result.status === 200) {
+        setOpenSnackbar(true);
+        setSnackbarStatus(true);
+        setSnackbarMessage("Berhasil menghapus bagian jadwal!");
+        setRefreshProductionPlanData(true);
+      } else {
+        setOpenSnackbar(false);
+        setSnackbarStatus(false);
+        setSnackbarMessage("Tidak berhasil menghapus bagian jadwal!");
+      }
+    })
+  }
 
   const groupBahanBakuAkanDigunakans = (data) => {
     return data.map((estimasiBahanBaku) => {
@@ -103,82 +142,92 @@ const EditProductionPlanPage = (props) => {
     });
   };
 
-  const groupJadwalEstimasi = (data) => {
-    return;
-  };
-
   useEffect(() => {
-    axios({
-      method: "GET",
-      url: `http://localhost:3000/productionPlanning/getProductionPlanningWithData/${productionPlanId}`,
-    }).then((result) => {
-      setProductionPlanWithData(result);
-      setPemesan(result.data.pemesan);
-      setTanggalPengiriman(result.data.orderDueDate);
-      setAlamatPengirimanProduk(result.data.alamatKirimBarang);
-      setJenisCetakan(result.data.jenisCetakan);
-      setPly(result.data.ply);
-      setUkuran(result.data.ukuran);
-      setSeri(result.data.seri);
-      setIsiPerBox(result.data.isiPerBox);
-      setNomorator(result.data.nomorator);
-      setKuantitas(result.data.kuantitas);
-      setContoh(result.data.contoh);
-      setPlate(result.data.plate);
-      setSetting(result.data.contoh);
-      setEstimasiBahanBaku(
-        groupBahanBakuAkanDigunakans(result.data.estimasiBahanBakus)
-      );
-      //   console.log(result)
-      setEstimasiJadwal(result.data.estimasiJadwalProdukses);
-      setCallSelectedOrder(true);
-    });
-  }, []);
+    if (refreshProductionPlanData) {
+      axios({
+        method: "GET",
+        url: `http://localhost:3000/productionPlanning/getProductionPlanningWithData/${productionPlanId}`,
+      }).then((result) => {
+        setProductionPlanWithData(result);
+        setPemesan(result.data.pemesan);
+        setTanggalPengiriman(result.data.tanggalPengirimanBarang);
+        setAlamatPengirimanProduk(result.data.alamatKirimBarang);
+        setJenisCetakan(result.data.jenisCetakan);
+        setPly(result.data.ply);
+        setUkuran(result.data.ukuran);
+        setSeri(result.data.seri);
+        setIsiPerBox(result.data.isiPerBox);
+        setNomorator(result.data.nomorator);
+        setKuantitas(result.data.kuantitas);
+        setContoh(result.data.contoh);
+        setPlate(result.data.plate);
+        setSetting(result.data.contoh);
+        setEstimasiBahanBaku(
+          groupBahanBakuAkanDigunakans(result.data.estimasiBahanBakus)
+        );
+        setEstimasiJadwal(result.data.estimasiJadwalProdukses);
+        setCallSelectedOrder(true);
+        setRefreshProductionPlanData(false);
+      });
+    }
+  }, [refreshProductionPlanData]);
 
   const handleRemoveDataEstimasiBahanBaku = (index) => {
-    setEstimasiBahanBaku((oldArray) => oldArray.filter((_, i) => i !== index));
+    axios({
+      method: "DELETE",
+      url: `http://localhost:3000/productionPlanning/deleteJenisBahanBaku/${index}`,
+    }).then((result) => {
+      if (result.status === 200) {
+        setOpenSnackbar(true);
+        setSnackbarStatus(true);
+        setSnackbarMessage("Berhasil menghapus tabel jenis!");
+        setRefreshProductionPlanData(true);
+      } else {
+        setOpenSnackbar(false);
+        setSnackbarStatus(false);
+        setSnackbarMessage("Tidak berhasil menghapus tabel jenis!");
+      }
+    });
   };
 
-  const handleRemoveDataBahanBaku = (index, dataItemIndex) => {
-    setEstimasiBahanBaku((oldArray) =>
-      oldArray.map((result, i) =>
-        i === index
-          ? {
-              ...result,
-              bahanBakuAkanDigunakans: result.bahanBakuAkanDigunakans.filter(
-                (data, j) => j !== dataItemIndex
-              ),
-            }
-          : result
-      )
-    );
+  const handleRemoveDataBahanBaku = (estimasiBahanBakuId, groupIndex) => {
+    axios({
+      method: "DELETE",
+      url: "http://localhost:3000/productionPlanning/deleteGroupBahanBaku",
+      params: {
+        estimasiBahanBakuId: estimasiBahanBakuId,
+        groupIndex: groupIndex,
+      },
+    }).then((result) => {
+      if (result.status === 200) {
+        setOpenSnackbar(true);
+        setSnackbarStatus(true);
+        setSnackbarMessage("Berhasil menghapus kelompok bahan baku!");
+        setRefreshProductionPlanData(true);
+      } else {
+        setOpenSnackbar(false);
+        setSnackbarStatus(false);
+        setSnackbarMessage("Tidak berhasil menghapus kelompok bahan baku!");
+      }
+    });
   };
 
-  const handleRemoveJenisDataBahanBaku = (
-    resultIndex,
-    dataItemIndex,
-    dataJenisIndex
-  ) => {
-    setEstimasiBahanBaku((oldArray) =>
-      oldArray.map((result, i) =>
-        i === resultIndex
-          ? {
-              ...result,
-              bahanBakuAkanDigunakans: result.bahanBakuAkanDigunakans.map(
-                (dataItem, j) =>
-                  j === dataItemIndex
-                    ? {
-                        ...dataItem,
-                        dataJenis: dataItem.dataJenis.filter(
-                          (dataJenis, k) => k !== dataJenisIndex
-                        ),
-                      }
-                    : dataItem
-              ),
-            }
-          : result
-      )
-    );
+  const handleRemoveJenisDataBahanBaku = (id) => {
+    axios({
+      method: "DELETE",
+      url: `http://localhost:3000/productionPlanning/deleteBahanBakuId/${id}`,
+    }).then((result) => {
+      if (result.status === 200) {
+        setOpenSnackbar(true);
+        setSnackbarStatus(true);
+        setSnackbarMessage("Berhasil menghapus data bahan baku!");
+        setRefreshProductionPlanData(true);
+      } else {
+        setOpenSnackbar(false);
+        setSnackbarStatus(false);
+        setSnackbarMessage("Tidak berhasil menghapus data bahan baku!");
+      }
+    });
   };
 
   const handleCloseAddJenisModal = () => {
@@ -229,7 +278,8 @@ const EditProductionPlanPage = (props) => {
         {
           jenis: jenisBahan,
           informasiBahan: informasiBahan,
-          bahanbakuakandigunakans: [
+          productionPlanningId: productionPlanId,
+          bahanBakuAkanDigunakans: [
             {
               dataJenis: [
                 {
@@ -280,18 +330,18 @@ const EditProductionPlanPage = (props) => {
 
   const isEstimasiBahanBakuComplete = () => {
     for (const item of estimasiBahanBaku) {
-      if (!item.jenis || !item.informasiBahan) {
+      if (item.jenis === "" || item.informasi === "") {
         return false;
       }
       for (const dataItem of item.bahanBakuAkanDigunakans) {
         for (const dataJenisItem of dataItem.dataJenis) {
           if (
-            !dataJenisItem.estimasiKebutuhan ||
-            !dataJenisItem.informasiJenis ||
-            !dataJenisItem.jumlahKebutuhan ||
-            !dataJenisItem.namaJenis ||
-            !dataJenisItem.warna ||
-            !dataJenisItem.waste
+            dataJenisItem.estimasiKebutuhan === "" ||
+            dataJenisItem.dataInformasi === "" ||
+            dataJenisItem.jumlahKebutuhan === "" ||
+            dataJenisItem.namaJenis === "" ||
+            dataJenisItem.warna === "" ||
+            dataJenisItem.waste === ""
           ) {
             return false;
           }
@@ -303,15 +353,15 @@ const EditProductionPlanPage = (props) => {
 
   const isEstimasiJadwalEmpty = () => {
     for (const item of estimasiJadwal) {
-      if (!item.pekerjaan) {
+      if (item.pekerjaan === "") {
         return false;
       }
-      for (const pekerjaanItem of item.pekerjaan) {
+      for (const pekerjaanItem of item.rencanaJadwalProdukses) {
         if (
-          !pekerjaanItem.jenisPekerjaan ||
-          !pekerjaanItem.tanggalMulai ||
-          !pekerjaanItem.tanggalSelesai ||
-          !pekerjaanItem.jumlahHari
+          pekerjaanItem.jenisPekerjaan === "" ||
+          pekerjaanItem.tanggalMulai === "" ||
+          pekerjaanItem.tanggalSelesai === "" ||
+          pekerjaanItem.jumlahHari === ""
         ) {
           return false;
         }
@@ -323,7 +373,6 @@ const EditProductionPlanPage = (props) => {
   const handleUpdatePerencanaanProduksi = () => {
     const checkIfEstimasiBahanBakuEmpty = isEstimasiBahanBakuComplete();
     const checkIfEstimasiJadwalEmpty = isEstimasiJadwalEmpty();
-
     const perencanaanProduksiData = {
       pemesan: pemesan,
       tanggalPengirimanBarang: tanggalPengiriman,
@@ -340,7 +389,7 @@ const EditProductionPlanPage = (props) => {
       setting: setting,
       estimasiBahanBaku: estimasiBahanBaku,
       estimasiJadwal: estimasiJadwal,
-      selectedOrderId: selectedOrder.data.id,
+      productionPlanId: productionPlanId,
     };
     if (
       pemesan === "" ||
@@ -361,17 +410,17 @@ const EditProductionPlanPage = (props) => {
       setOpenSnackbar(true);
       setSnackbarStatus(false);
       setSnackbarMessage("Please fill in all the fields");
-    }
-    else {
+    } else {
       axios({
         method: "PUT",
-        url: `http://localhost:3000/productionPlanning/editProductionPlanning/${userInformation.data.id}`,
+        url: `http://localhost:3000/productionPlanning/updateProductionPlan/${userInformation.data.id}`,
         data: perencanaanProduksiData,
       }).then((result) => {
         if (result.status === 200) {
           setSnackbarStatus(true);
           setSuccessMessage("You have updated a Production Plan!");
-          navigate(-1);
+          setRefreshProductionPlanData(true);
+          // navigate(-1);
         } else {
           setOpenSnackbar(true);
           setSnackbarStatus(false);
@@ -397,8 +446,8 @@ const EditProductionPlanPage = (props) => {
         i === index
           ? {
               ...item,
-              pekerjaan: [
-                ...item.pekerjaan,
+              rencanaJadwalProdukses: [
+                ...item.rencanaJadwalProdukses,
                 {
                   jenisPekerjaan: "",
                   tanggalMulai: null,
@@ -416,7 +465,8 @@ const EditProductionPlanPage = (props) => {
       ...oldArray,
       {
         bagian: "",
-        pekerjaan: [
+        productionPlanningId: productionPlanId,
+        rencanaJadwalProdukses: [
           {
             jenisPekerjaan: "",
             tanggalMulai: null,
@@ -434,7 +484,9 @@ const EditProductionPlanPage = (props) => {
         if (i === index) {
           return {
             ...item,
-            pekerjaan: item.pekerjaan.filter((_, j) => j !== pekerjaanIndex),
+            rencanaJadwalProdukses: item.rencanaJadwalProdukses.filter(
+              (_, j) => j !== pekerjaanIndex
+            ),
           };
         }
         return item;
@@ -1184,7 +1236,7 @@ const EditProductionPlanPage = (props) => {
                 <div>
                   {estimasiBahanBaku?.map((result, index) => {
                     return (
-                      <div style={{ marginTop: "32px" }}>
+                      <div key={index} style={{ marginTop: "32px" }}>
                         <TableContainer component={Paper}>
                           <Table
                             sx={{ minWidth: 650 }}
@@ -1223,10 +1275,10 @@ const EditProductionPlanPage = (props) => {
                                   <React.Fragment
                                     key={`${index}-${dataItemIndex}`}
                                   >
-                                    {dataItem.dataJenis.map(
+                                    {dataItem?.dataJenis?.map(
                                       (dataJenis, dataJenisIndex) => (
                                         <TableRow
-                                          key={`${index}-${dataItemIndex}`}
+                                          key={`${index}-${dataItemIndex}-${dataJenisIndex}`}
                                         >
                                           {dataJenisIndex === 0 ? (
                                             <TableCell>
@@ -1237,7 +1289,7 @@ const EditProductionPlanPage = (props) => {
                                           )}
                                           <TableCell>
                                             <TextField
-                                              value={dataJenis.namaJenis}
+                                              value={dataJenis?.namaJenis}
                                               onChange={(event) => {
                                                 handleInputChangeEstimasiBahanBaku(
                                                   event,
@@ -1351,8 +1403,8 @@ const EditProductionPlanPage = (props) => {
                                                     <DeleteIcon
                                                       onClick={() => {
                                                         handleRemoveDataBahanBaku(
-                                                          index,
-                                                          dataItemIndex
+                                                          dataJenis.estimasiBahanBakuId,
+                                                          dataJenis.groupIndex
                                                         );
                                                       }}
                                                       style={{ color: "red" }}
@@ -1363,9 +1415,7 @@ const EditProductionPlanPage = (props) => {
                                                 <IconButton
                                                   onClick={() => {
                                                     handleRemoveJenisDataBahanBaku(
-                                                      index,
-                                                      dataItemIndex,
-                                                      dataJenisIndex
+                                                      dataJenis.id
                                                     );
                                                   }}
                                                   style={{ height: "50%" }}
@@ -1397,7 +1447,7 @@ const EditProductionPlanPage = (props) => {
                             >{`Tambah Kelompok ${result.jenis}`}</DefaultButton>
                             <Button
                               onClick={() => {
-                                handleRemoveDataEstimasiBahanBaku(index);
+                                handleRemoveDataEstimasiBahanBaku(result.id);
                               }}
                               sx={{ marginLeft: "8px", textTransform: "none" }}
                               variant="outlined"
@@ -1590,10 +1640,7 @@ const EditProductionPlanPage = (props) => {
                                               height: "50%",
                                             }}
                                             onClick={() => {
-                                              handleRemovePekerjaan(
-                                                index,
-                                                pekerjaanIndex
-                                              );
+                                              removeJadwal(pekerjaan.id)
                                             }}
                                           >
                                             <RemoveIcon
@@ -1617,11 +1664,7 @@ const EditProductionPlanPage = (props) => {
                                                 height: "50%",
                                               }}
                                               onClick={() => {
-                                                setEstimasiJadwal((oldArray) =>
-                                                  oldArray.filter(
-                                                    (_, i) => i !== index
-                                                  )
-                                                );
+                                                deleteJadwal(row.id)
                                               }}
                                             >
                                               <DeleteIcon

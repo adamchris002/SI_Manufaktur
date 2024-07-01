@@ -1,4 +1,4 @@
-const { INTEGER } = require("sequelize");
+const { Op } = require("sequelize");
 const {
   orders,
   documents,
@@ -33,6 +33,7 @@ class ProductionPlanningController {
         estimasiBahanBaku,
         estimasiJadwal,
         selectedOrderId,
+        catatan,
       } = req.body;
 
       const { id } = req.params;
@@ -55,7 +56,7 @@ class ProductionPlanningController {
         contoh,
         plate,
         setting,
-        catatan: String(existingUser.id),
+        catatan: String(catatan),
       });
 
       await UserProductionPlannings.create({
@@ -262,7 +263,263 @@ class ProductionPlanningController {
   }
   static async updateProductionPlan(req, res) {
     try {
-      
+      const { id } = req.params;
+      const {
+        productionPlanId,
+        pemesan,
+        tanggalPengirimanBarang,
+        alamatKirimBarang,
+        jenisCetakan,
+        ukuran,
+        ply,
+        seri,
+        kuantitas,
+        isiPerBox,
+        nomorator,
+        contoh,
+        plate,
+        setting,
+        estimasiBahanBaku,
+        estimasiJadwal,
+      } = req.body;
+
+      let productionPlan = await productionPlannings.findOne({
+        where: { id: productionPlanId },
+        include: [
+          {
+            model: estimasiBahanBakus,
+            include: [
+              {
+                model: bahanBakuAkanDigunakans,
+              },
+            ],
+          },
+          {
+            model: estimasiJadwalProduksis,
+            include: [
+              {
+                model: rencanaJadwalProduksis,
+              },
+            ],
+          },
+        ],
+      });
+
+      let existingUser = users.findOne({
+        where: { id: id },
+      });
+
+      let result = await productionPlan.update(
+        {
+          pemesan,
+          alamatKirimBarang,
+          tanggalPengirimanBarang,
+          jenisCetakan,
+          ukuran,
+          kuantitas,
+          isiPerBox,
+          ply,
+          seri,
+          nomorator,
+          contoh,
+          plate,
+          setting,
+        },
+        {
+          where: { productionPlanId },
+        }
+      );
+
+      let updateProductionPlanningActivity = await activitylogs.create({
+        user: existingUser.name,
+        activity: "Update ProductionPlan",
+        name: pemesan,
+        division: "Production Planning",
+      });
+
+      await UserActivityLogs.create({
+        userId: id,
+        id: updateProductionPlanningActivity.id,
+        activityLogsId: updateProductionPlanningActivity.id,
+      });
+
+      if (estimasiBahanBaku && Array.isArray(estimasiBahanBaku)) {
+        await Promise.all(
+          estimasiBahanBaku.map(async (data) => {
+            let bahanBakuRecord;
+
+            if (!data.id) {
+              bahanBakuRecord = await estimasiBahanBakus.create({
+                jenis: data.jenis,
+                informasi: data.informasiBahan,
+                productionPlanningId: data.productionPlanningId,
+              });
+
+              // Assign the newly created record's ID to data.id
+              data.id = bahanBakuRecord.id;
+            } else {
+              bahanBakuRecord = await estimasiBahanBakus.findOne({
+                where: { id: data.id },
+              });
+            }
+
+            await Promise.all(
+              data.bahanBakuAkanDigunakans.map(
+                async (dataItem, dataItemIndex) => {
+                  await Promise.all(
+                    dataItem.dataJenis.map(async (dataJenis) => {
+                      let dataJenisRecord;
+
+                      if (dataJenis.id) {
+                        dataJenisRecord = await bahanBakuAkanDigunakans.findOne(
+                          {
+                            where: {
+                              id: dataJenis.id,
+                              estimasiBahanBakuId: data.id,
+                            },
+                          }
+                        );
+                      }
+
+                      if (dataJenisRecord) {
+                        await dataJenisRecord.update({
+                          namaJenis: dataJenis.namaJenis,
+                          dataInformasi: dataJenis.dataInformasi,
+                          warna: dataJenis.warna,
+                          estimasiKebutuhan: dataJenis.estimasiKebutuhan,
+                          waste: dataJenis.waste,
+                          jumlahKebutuhan: dataJenis.jumlahKebutuhan,
+                        });
+                      } else if (!dataJenis.id) {
+                        await bahanBakuAkanDigunakans.create({
+                          estimasiBahanBakuId: data.id,
+                          namaJenis: dataJenis.namaJenis,
+                          groupIndex: dataItemIndex,
+                          dataInformasi: dataJenis.dataInformasi,
+                          warna: dataJenis.warna,
+                          estimasiKebutuhan: dataJenis.estimasiKebutuhan,
+                          waste: dataJenis.waste,
+                          jumlahKebutuhan: dataJenis.jumlahKebutuhan,
+                        });
+                      }
+                    })
+                  );
+                }
+              )
+            );
+          })
+        );
+      }
+
+      if (estimasiJadwal && Array.isArray(estimasiJadwal)) {
+        await Promise.all(
+          estimasiJadwal.map(async (data) => {
+            let dataJenisJadwal;
+            if (!data.id) {
+              dataJenisJadwal = await estimasiJadwalProduksis.create({
+                productionPlanningId: data.productionPlanningId,
+                bagian: data.bagian,
+              });
+              data.id = dataJenisJadwal.id;
+            } else {
+              jadwalProduksiRecord = await estimasiJadwalProduksis.findOne({
+                where: { id: data.id },
+              });
+            }
+            await Promise.all(
+              data.rencanaJadwalProdukses.map(async (daftarRencana) => {
+                let dataPekerjaanRecord;
+                if (daftarRencana.id) {
+                  dataPekerjaanRecord = await rencanaJadwalProduksis.findOne({
+                    where: {
+                      id: daftarRencana.id,
+                      estimasiJadwalProduksiId: data.id,
+                    },
+                  });
+                }
+                if (dataPekerjaanRecord) {
+                  await dataPekerjaanRecord.update({
+                    jenisPekerjaan: daftarRencana.jenisPekerjaan,
+                    tanggalMulai: daftarRencana.tanggalMulai,
+                    tanggalSelesai: daftarRencana.tanggalSelesai,
+                    jumlahHari: daftarRencana.jumlahHari,
+                  });
+                } else if (!daftarRencana.id) {
+                  await rencanaJadwalProduksis.create({
+                    estimasiJadwalProduksiId: data.id,
+                    jenisPekerjaan: daftarRencana.jenisPekerjaan,
+                    tanggalMulai: daftarRencana.tanggalMulai,
+                    tanggalSelesai: daftarRencana.tanggalSelesai,
+                    jumlahHari: daftarRencana.jumlahHari,
+                  });
+                }
+              })
+            );
+          })
+        );
+      }
+
+      res.json(result);
+    } catch (error) {
+      res.json(error);
+    }
+  }
+  static async removeJadwal(req, res) {
+    try {
+      const {id} = req.params
+      // console.log(id)
+      let result = await rencanaJadwalProduksis.destroy({
+        where: {id: id}
+      })
+      res.json(result);
+    } catch (error) {
+      res.json(error);
+    }
+  }
+  static async deleteJadwal(req, res) {
+    try {
+      const {id} = req.params
+      let result = await estimasiJadwalProduksis.destroy({
+        where: {id: id}
+      })
+      res.json(result);
+    } catch (error) {
+      res.json(error);
+    }
+  }
+  static async deleteJenisBahanBaku(req, res) {
+    try {
+      const { id } = req.params;
+      console.log(id);
+      let removeEstimasiBahanBaku = await estimasiBahanBakus.destroy({
+        where: { id: id },
+      });
+      res.json(removeEstimasiBahanBaku);
+    } catch (error) {
+      res.json(error);
+    }
+  }
+  static async deleteGroupBahanBaku(req, res) {
+    try {
+      const { estimasiBahanBakuId, groupIndex } = req.query;
+      let removeGroupBahanBaku = await bahanBakuAkanDigunakans.destroy({
+        where: {
+          estimasiBahanBakuId: estimasiBahanBakuId,
+          groupIndex: groupIndex,
+        },
+      });
+      res.json(removeGroupBahanBaku);
+    } catch (error) {
+      res.json(error);
+    }
+  }
+  static async deleteBahanBakuID(req, res) {
+    try {
+      const { id } = req.params;
+      let deleteBahanBakuRow = await bahanBakuAkanDigunakans.destroy({
+        where: { id: id },
+      });
+      res.json(deleteBahanBakuRow);
     } catch (error) {
       res.json(error);
     }

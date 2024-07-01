@@ -73,6 +73,8 @@ const EstimationOrderPage = (props) => {
   const [jenisBahan, setJenisBahan] = useState("");
   const [informasiBahan, setInformasiBahan] = useState("");
 
+  console.log(estimasiBahanBaku)
+
   const handleRemoveDataEstimasiBahanBaku = (index) => {
     setEstimasiBahanBaku((oldArray) => oldArray.filter((_, i) => i !== index));
   };
@@ -271,6 +273,7 @@ const EstimationOrderPage = (props) => {
       nomorator: nomorator,
       contoh: contoh,
       plate: plate,
+      catatan: selectedOrder.data.id,
       setting: setting,
       estimasiBahanBaku: estimasiBahanBaku,
       estimasiJadwal: estimasiJadwal,

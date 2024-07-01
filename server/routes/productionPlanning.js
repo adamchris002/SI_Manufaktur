@@ -1,5 +1,8 @@
 const productionPlanningRoutes = require("express").Router();
 const { ProductionPlanningController } = require("../controllers");
+const {
+  deleleteGroupBahanBaku,
+} = require("../controllers/ProductionPlanningController");
 
 productionPlanningRoutes.get(
   "/getUnreviewedOrders",
@@ -34,5 +37,30 @@ productionPlanningRoutes.get(
   "/getProductionPlanningWithData/:id",
   ProductionPlanningController.getProductionPlanWithData
 );
+productionPlanningRoutes.put(
+  "/updateProductionPlan/:id",
+  ProductionPlanningController.updateProductionPlan
+);
 
+productionPlanningRoutes.delete(
+  "/deleteBahanBakuId/:id",
+  ProductionPlanningController.deleteBahanBakuID
+);
+productionPlanningRoutes.delete(
+  "/deleteGroupBahanBaku",
+  ProductionPlanningController.deleteGroupBahanBaku
+);
+productionPlanningRoutes.delete(
+  "/deleteJenisBahanBaku/:id",
+  ProductionPlanningController.deleteJenisBahanBaku
+);
+
+productionPlanningRoutes.delete(
+  "/removeJadwal/:id",
+  ProductionPlanningController.removeJadwal
+);
+productionPlanningRoutes.delete(
+  "/deleteJadwal/:id",
+  ProductionPlanningController.deleteJadwal
+);
 module.exports = productionPlanningRoutes;
