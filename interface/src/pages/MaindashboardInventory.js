@@ -38,21 +38,59 @@ const MaindashboardInventory = (props) => {
   const [openSnackbar, setOpenSnackbar] = useState(false);
   const [snackbarStatus, setSnackbarStatus] = useState(false);
   const [snackbarMessage, setSnackbarMessage] = useState("");
+  const [allPermohonanPembelian, setAllPermohonanPembelian] = useState([]);
 
-  const [unreviewedOrders, setUnreviewedOrders] = useState([]);
-  const [estimatedOrders, setEstimatedOrders] = useState([]);
-  const [allProductionPlan, setAllProductionPlan] = useState([]);
   const [permohonanPembelian, setPermohonanPembelian] = useState([]);
   const [pembelianBahanBaku, setPembelianBahanBaku] = useState([]);
-  console.log(permohonanPembelian)
 
-  const [refreshProductionPlanData, setRefreshProductionPlanData] =
+  const [refreshPermohonanPembelian, setRefreshPermohonanPembelian] =
     useState(true);
 
   const [openModalPermohonanPembelian, setOpenModalPermohonanPembelian] =
     useState(false);
   const [openModalPembelianBahanBaku, setOpenModalPembelianBahanBaku] =
     useState(false);
+
+  useEffect(() => {
+    if (refreshPermohonanPembelian) {
+      axios({
+        method: "GET",
+        url: "http://localhost:3000/inventory/getAllPermohonanPembelian",
+      }).then((result) => {
+        try {
+          if (result.status === 200) {
+            setAllPermohonanPembelian(result);
+            setRefreshPermohonanPembelian(false);
+          }
+        } catch (error) {
+          setOpenSnackbar(true);
+          setSnackbarStatus(false);
+          setSnackbarMessage("Tidak dapat memanggil data");
+          setRefreshPermohonanPembelian(false);
+        }
+      });
+    }
+  }, [refreshPermohonanPembelian]);
+
+  const handleOpenModalPermohonanPembelian = () => {
+    setOpenModalPermohonanPembelian(true);
+    setPermohonanPembelian((oldArray) => [
+      ...oldArray,
+      {
+        nomor: "",
+        perihal: "",
+        daftarPermohonanPembelian: [
+          {
+            jenisBarang: "",
+            jumlah: { value: "", unit: "" },
+            untukPekerjaan: "",
+            stok: { value: "", unit: "" },
+            keterangan: "",
+          },
+        ],
+      },
+    ]);
+  };
 
   const handleCloseModalPermohonanPembelian = () => {
     setPermohonanPembelian([]);
@@ -139,26 +177,28 @@ const MaindashboardInventory = (props) => {
       return newState;
     });
   };
-  
+
   const transformDataPermohonanPembelian = (data) => {
     return data.map((item) => {
       return {
         ...item,
-        daftarPermohonanPembelian: item.daftarPermohonanPembelian.map((dataPb) => {
-          return {
-            ...dataPb,
-            jumlah: `${dataPb.jumlah.value} ${dataPb.jumlah.unit}`,
-            stok: `${dataPb.stok.value} ${dataPb.stok.unit}`
+        daftarPermohonanPembelian: item.daftarPermohonanPembelian.map(
+          (dataPb) => {
+            return {
+              ...dataPb,
+              jumlah: `${dataPb.jumlah.value} ${dataPb.jumlah.unit}`,
+              stok: `${dataPb.stok.value} ${dataPb.stok.unit}`,
+            };
           }
-        })
-      }
-    })
-  }
+        ),
+      };
+    });
+  };
 
   const handleAddPermohonanPembelian = () => {
     const checkIfPermohonanPembelianEmpty = isPermohonanPembelianEmpty();
-    const transformedPermohonanPembelian = transformDataPermohonanPembelian(permohonanPembelian)
-    console.log(transformedPermohonanPembelian)
+    const transformedPermohonanPembelian =
+      transformDataPermohonanPembelian(permohonanPembelian);
 
     if (checkIfPermohonanPembelianEmpty === false) {
       setOpenSnackbar(true);
@@ -168,13 +208,15 @@ const MaindashboardInventory = (props) => {
       axios({
         method: "POST",
         url: `http://localhost:3000/inventory/addPermohonanPembelian/${userInformation.data.id}`,
-        data: {permohonanPembelian: transformedPermohonanPembelian},
+        data: { permohonanPembelian: transformedPermohonanPembelian },
       }).then((result) => {
         try {
           if (result.status === 200) {
             setOpenSnackbar(true);
             setSnackbarStatus(true);
             setSnackbarMessage(`Berhasil menambahkan Permohonan Pembelian`);
+            setRefreshPermohonanPembelian(true);
+            setOpenModalPermohonanPembelian(false);
           } else {
             setOpenSnackbar(true);
             setSnackbarStatus(false);
@@ -444,205 +486,85 @@ const MaindashboardInventory = (props) => {
           <div
             style={{
               display: "flex",
-              alignContent: "center",
-              justifyContent: "space-evenly",
               alignItems: "center",
             }}
           >
-            <DefaultButton
-              onClickFunction={() => {
-                setOpenModalPermohonanPembelian(true);
-              }}
-            >
-              <Typography>Tambah Permohonan Pembelian</Typography>
-            </DefaultButton>
-          </div>
-        </div>
-        <div style={{ margin: isMobile ? "0px 32px 0px 32px" : "1.667vw" }}>
-          <div
-            style={{
-              width: isMobile ? "100%" : "72vw",
-              overflowX: "auto",
-              whiteSpace: "nowrap",
-              display: "flex",
-            }}
-          >
-            {unreviewedOrders?.data?.length === 0 ||
-            unreviewedOrders?.data === undefined ? (
-              <Typography>Tidak ada Permohonan Pembelian</Typography>
-            ) : (
-              unreviewedOrders?.data?.map((data, index, array) => (
-                <div
-                  key={index}
-                  className="order-item"
-                  style={{
-                    minWidth: isMobile ? "132px" : "13.33vw",
-                    minHeight: isMobile ? "132px" : "13.33vw",
-                    marginRight: index === array.length - 1 ? "0" : "32px",
-                  }}
-                >
-                  {data?.documents?.length === "" || null || undefined ? (
-                    ""
-                  ) : (
-                    <div style={{ margin: isMobile ? "12px" : "0.83vw" }}>
-                      {data?.documents?.length > 3 ? (
-                        <div style={{ display: "flex", alignItems: "center" }}>
-                          {data?.documents
-                            ?.slice(0, 3)
-                            .map((document, index) => {
-                              return (
-                                <div>
-                                  <img
-                                    style={{
-                                      height: isMobile ? "30px" : "3.125vw",
-                                      width: isMobile ? "30px" : "3.125vw",
-                                      marginRight: "4px",
-                                    }}
-                                    srcSet={`http://localhost:3000/uploads/${document.filename}?w=248&fit=crop&auto=format&dpr=2 2x`}
-                                    src={`http://localhost:3000/uploads/${document.filename}?w=248&fit=crop&auto=format`}
-                                    alt=""
-                                    loading="lazy"
-                                  />
-                                </div>
-                              );
-                            })}
-                          <Typography
-                            style={{
-                              marginLeft: "0.417vw",
-                              fontWeight: "bold",
-                              fontSize: isMobile ? "10px" : "1.042vw",
-                            }}
-                          >
-                            + {data?.documents?.length - 3}
-                          </Typography>
-                        </div>
-                      ) : (
-                        <div style={{ display: "flex" }}>
-                          {data?.documents?.map((document, index) => {
-                            return (
-                              <div>
-                                <img
-                                  style={{
-                                    height: isMobile ? "30px" : "3.125vw",
-                                    width: isMobile ? "30px" : "3.125vw",
-                                    marginRight: "4px",
-                                  }}
-                                  srcSet={`http://localhost:3000/uploads/${document.filename}?w=248&fit=crop&auto=format&dpr=2 2x`}
-                                  src={`http://localhost:3000/uploads/${document.filename}?w=248&fit=crop&auto=format`}
-                                  alt=""
-                                  loading="lazy"
-                                />
-                              </div>
-                            );
-                          })}
-                        </div>
-                      )}
-                    </div>
-                  )}
-                  <div
-                    style={{
-                      display: "flex",
-                      margin: isMobile
-                        ? "0px 12px 0px 12px"
-                        : "0vw 0.83vw 0vw 0.83vw",
-                      backgroundColor: "transparent",
-                      overflow: "hidden",
-                      textOverflow: "ellipsis",
-                      whiteSpace: "nowrap",
-                    }}
-                  >
-                    <Typography
-                      style={{
-                        color: "#0F607D",
-                        fontWeight: "bold",
-                        overflow: "hidden",
-                        textOverflow: "ellipsis",
-                        whiteSpace: "nowrap",
-                        fontSize: isMobile ? "12px" : "1.25vw",
-                      }}
-                    >
-                      {data.orderTitle.length < 15
-                        ? data.orderTitle
-                        : data.orderTitle.slice(0, 15) + "..."}
-                    </Typography>
-                  </div>
-                  <div
-                    style={{
-                      display: "flex",
-                      margin: isMobile
-                        ? "0px 12px 0px 12px"
-                        : "0vw 0.83vw 0vw 0.83vw",
-                      backgroundColor: "transparent",
-                      overflow: "hidden",
-                      textOverflow: "ellipsis",
-                      whiteSpace: "nowrap",
-                    }}
-                  >
-                    <Typography
-                      style={{
-                        overflow: "hidden",
-                        textOverflow: "ellipsis",
-                        whiteSpace: "nowrap",
-                        fontSize: isMobile ? "10px" : "0.833vw",
-                      }}
-                    >
-                      {data.orderDetails.length < 25
-                        ? data.orderDetails
-                        : data.orderDetails.slice(0, 25) + "..."}
-                    </Typography>
-                  </div>
-                  <div
-                    style={{
-                      display: "flex",
-                      backgroundColor: "transparent",
-                      position: "absolute",
-                      bottom: 12,
-                      left: 12,
-                      flexDirection: "column",
-                    }}
-                  >
-                    <Typography
-                      style={{
-                        color: "#0F607D",
-                        fontWeight: "bold",
-                        fontSize: isMobile ? "8px" : "0.625vw",
-                      }}
-                    >{`Date Added: ${moment(data.createdAt).format(
-                      "DD/MM/YYYY"
-                    )}`}</Typography>
-                  </div>
-                  <div
-                    style={{
-                      display: "flex",
-                      backgroundColor: "transparent",
-                      position: "absolute",
-                      bottom: isMobile ? 24 : 28,
-                      left: 12,
-                      flexDirection: "column",
-                    }}
-                  >
-                    <Typography
-                      style={{
-                        color: "#0F607D",
-                        fontWeight: "bold",
-                        fontSize: isMobile ? "8px" : "0.625vw",
-                      }}
-                    >
-                      {`Order Status: ${data.orderStatus}`}
-                    </Typography>
-                  </div>
-                </div>
-              ))
+            {userInformation.data.role === "Admin" && (
+              <DefaultButton
+                onClickFunction={() => {
+                  handleOpenModalPermohonanPembelian();
+                }}
+              >
+                <Typography style={{ fontSize: isMobile ? "10px" : "1vw" }}>
+                  Tambah Permohonan Pembelian
+                </Typography>
+              </DefaultButton>
             )}
           </div>
         </div>
+        {allPermohonanPembelian.length !== 0 ? (
+          <div
+            style={{
+              margin: isMobile ? "0px 32px 0px 32px" : "1.667vw",
+              width: isMobile ? "" : "72vw",
+            }}
+          >
+            <div style={{ width: isMobile ? "100%" : "50%" }}>
+              <TableContainer component={Paper}>
+                <Table sx={{ minWidth: 650 }} aria-label="simple table">
+                  <TableHead>
+                    <TableRow>
+                      <TableCell>No.</TableCell>
+                      <TableCell>Nomor</TableCell>
+                      <TableCell>Perihal</TableCell>
+                      <TableCell>Status Permohonan</TableCell>
+                      <TableCell>Actions</TableCell>
+                    </TableRow>
+                  </TableHead>
+                  <TableBody>
+                    {allPermohonanPembelian?.data
+                      ?.filter(
+                        (permohonan) =>
+                          permohonan.statusPermohonan === "Requested"
+                      )
+                      .map((result, index) => {
+                        return (
+                          <TableRow>
+                            <TableCell>{index + 1 + "."}</TableCell>
+                            <TableCell>{result.nomor}</TableCell>
+                            <TableCell>{result.perihal}</TableCell>
+                            <TableCell>{result.statusPermohonan}</TableCell>
+                            <TableCell>
+                              <div>
+                                <IconButton>
+                                  <EditIcon style={{ color: "#0F607D" }} />
+                                </IconButton>
+                                <IconButton>
+                                  <DeleteIcon
+                                    style={{ color: "red", marginLeft: "8px" }}
+                                  />
+                                </IconButton>
+                              </div>
+                            </TableCell>
+                          </TableRow>
+                        );
+                      })}
+                  </TableBody>
+                </Table>
+              </TableContainer>
+            </div>
+          </div>
+        ) : (
+          <div>
+            <Typography>Tidak ada Permohonan Pembelian</Typography>
+          </div>
+        )}
         <div
           style={{
             margin: isMobile
               ? "32px 32px 12px 32px"
               : "3.33vw 1.667vw 0vw 1.667vw",
             display: "flex",
-            justifyContent: "space-between",
             alignItems: "center",
             width: isMobile ? "" : "72vw",
           }}
@@ -653,246 +575,58 @@ const MaindashboardInventory = (props) => {
           >
             Pembelian Bahan Baku
           </Typography>
-          <div
-            style={{
-              display: "flex",
-              alignContent: "center",
-              justifyContent: "space-evenly",
-              alignItems: "center",
-            }}
-          >
-            <Typography
-              style={{
-                marginRight: isMobile ? "4px" : "0.417vw",
-                color: "#0F607D",
-                fontSize: isMobile ? "2.5vw" : "1vw",
-              }}
-            >
-              Sort by:
-            </Typography>
-            <div
-              style={{
-                marginRight: "0.417vw",
-                display: "flex",
-                alignContent: "center",
-              }}
-            >
-              <CustomChip
-                fontSize={isMobile ? "8px" : ""}
-                width="auto"
-                height="15px"
-                text="date"
-              />
-            </div>
-            <div
-              style={{
-                marginRight: "0.417vw",
-                display: "flex",
-                alignContent: "center",
-              }}
-            >
-              <CustomChip
-                fontSize={isMobile ? "8px" : ""}
-                width="auto"
-                height="15px"
-                text="amount"
-              />
-            </div>
-            <div
-              style={{
-                display: "flex",
-                alignContent: "center",
-              }}
-            >
-              <CustomChip
-                fontSize={isMobile ? "8px" : ""}
-                width="auto"
-                height="15px"
-                text="name"
-              />
-            </div>
-          </div>
         </div>
-        <div style={{ margin: isMobile ? "0px 32px 0px 32px" : "1.667vw" }}>
-          <div
-            style={{
-              width: isMobile ? "100%" : "72vw",
-              overflowX: "auto",
-              whiteSpace: "nowrap",
-              display: "flex",
-            }}
-          >
-            {estimatedOrders?.data?.length === 0 ||
-            estimatedOrders?.data === undefined ? (
+        <div
+          style={{
+            margin: isMobile ? "0px 32px 0px 32px" : "1.667vw",
+            width: isMobile ? " " : "72vw",
+          }}
+        >
+          {!allPermohonanPembelian?.data?.some(
+            (permohonan) => permohonan.statusPermohonan === "Accepted"
+          ) ? (
+            <div>
               <Typography>
-                There are no Pembelian Bahan Baku available
+                Belum ada Permohonan Pembelian yang di ACC
               </Typography>
-            ) : (
-              estimatedOrders?.data?.map((data, index, array) => (
-                <div
-                  key={index}
-                  className="order-item"
-                  style={{
-                    minWidth: isMobile ? "132px" : "13.33vw",
-                    minHeight: isMobile ? "132px" : "13.33vw",
-                    marginRight: index === array.length - 1 ? "0" : "32px",
-                  }}
-                >
-                  {data?.documents?.length === "" || null || undefined ? (
-                    ""
-                  ) : (
-                    <div style={{ margin: isMobile ? "12px" : "0.83vw" }}>
-                      {data?.documents?.length > 3 ? (
-                        <div style={{ display: "flex", alignItems: "center" }}>
-                          {data.documents
-                            ?.slice(0, 3)
-                            .map((document, index) => {
-                              return (
-                                <div>
-                                  <img
-                                    style={{
-                                      height: isMobile ? "30px" : "3.125vw",
-                                      width: isMobile ? "30px" : "3.125vw",
-                                      marginRight: "4px",
-                                    }}
-                                    srcSet={`http://localhost:3000/uploads/${document.filename}?w=248&fit=crop&auto=format&dpr=2 2x`}
-                                    src={`http://localhost:3000/uploads/${document.filename}?w=248&fit=crop&auto=format`}
-                                    alt=""
-                                    loading="lazy"
-                                  />
-                                </div>
-                              );
-                            })}
-                          <Typography
-                            style={{
-                              marginLeft: "0.417vw",
-                              fontWeight: "bold",
-                              fontSize: isMobile ? "10px" : "1.042vw",
-                            }}
-                          >
-                            + {data?.documents?.length - 3}
-                          </Typography>
-                        </div>
-                      ) : (
-                        <div style={{ display: "flex" }}>
-                          {data.documents?.map((document, index) => {
-                            return (
-                              <div>
-                                <img
-                                  style={{
-                                    height: isMobile ? "30px" : "3.125vw",
-                                    width: isMobile ? "30px" : "3.125vw",
-                                    marginRight: "4px",
-                                  }}
-                                  srcSet={`http://localhost:3000/uploads/${document.filename}?w=248&fit=crop&auto=format&dpr=2 2x`}
-                                  src={`http://localhost:3000/uploads/${document.filename}?w=248&fit=crop&auto=format`}
-                                  alt=""
-                                  loading="lazy"
-                                />
-                              </div>
-                            );
-                          })}
-                        </div>
-                      )}
-                    </div>
-                  )}
-                  <div
-                    style={{
-                      display: "flex",
-                      margin: isMobile
-                        ? "0px 12px 0px 12px"
-                        : "0vw 0.83vw 0vw 0.83vw",
-                      backgroundColor: "transparent",
-                      overflow: "hidden",
-                      textOverflow: "ellipsis",
-                      whiteSpace: "nowrap",
-                    }}
-                  >
-                    <Typography
-                      style={{
-                        color: "#0F607D",
-                        fontWeight: "bold",
-                        overflow: "hidden",
-                        textOverflow: "ellipsis",
-                        whiteSpace: "nowrap",
-                        fontSize: isMobile ? "12px" : "1.25vw",
-                      }}
-                    >
-                      {data.orderTitle.length < 15
-                        ? data.orderTitle
-                        : data.orderTitle.slice(0, 15) + "..."}
-                    </Typography>
-                  </div>
-                  <div
-                    style={{
-                      display: "flex",
-                      margin: isMobile
-                        ? "0px 12px 0px 12px"
-                        : "0vw 0.83vw 0vw 0.83vw",
-                      backgroundColor: "transparent",
-                      overflow: "hidden",
-                      textOverflow: "ellipsis",
-                      whiteSpace: "nowrap",
-                    }}
-                  >
-                    <Typography
-                      style={{
-                        overflow: "hidden",
-                        textOverflow: "ellipsis",
-                        whiteSpace: "nowrap",
-                        fontSize: isMobile ? "10px" : "0.833vw",
-                      }}
-                    >
-                      {data.orderDetails.length < 25
-                        ? data.orderDetails
-                        : data.orderDetails.slice(0, 25) + "..."}
-                    </Typography>
-                  </div>
-                  <div
-                    style={{
-                      display: "flex",
-                      backgroundColor: "transparent",
-                      position: "absolute",
-                      bottom: 12,
-                      left: 12,
-                      flexDirection: "column",
-                    }}
-                  >
-                    <Typography
-                      style={{
-                        color: "#0F607D",
-                        fontWeight: "bold",
-                        fontSize: isMobile ? "8px" : "0.625vw",
-                      }}
-                    >{`Date Added: ${moment(data.createdAt).format(
-                      "DD/MM/YYYY"
-                    )}`}</Typography>
-                  </div>
-                  <div
-                    style={{
-                      display: "flex",
-                      backgroundColor: "transparent",
-                      position: "absolute",
-                      bottom: isMobile ? 24 : 28,
-                      left: 12,
-                      flexDirection: "column",
-                    }}
-                  >
-                    <Typography
-                      style={{
-                        color: "#0F607D",
-                        fontWeight: "bold",
-                        fontSize: isMobile ? "8px" : "0.625vw",
-                      }}
-                    >
-                      {`Order Status: ${data.orderStatus}`}
-                    </Typography>
-                  </div>
-                </div>
-              ))
-            )}
-          </div>
+            </div>
+          ) : (
+            <div style={{ width: isMobile ? "100%" : "50%" }}>
+              <TableContainer component={Paper}>
+                <Table>
+                  <TableHead>
+                    <TableRow>
+                      <TableCell>No.</TableCell>
+                      <TableCell>Nomor</TableCell>
+                      <TableCell>Perihal</TableCell>
+                      <TableCell>Status Permohonan</TableCell>
+                    </TableRow>
+                  </TableHead>
+                  <TableBody>
+                    {allPermohonanPembelian?.data
+                      ?.filter(
+                        (permohonan) =>
+                          permohonan.statusPermohonan === "Accepted"
+                      )
+                      .map((result, index) => {
+                        return (
+                          <TableRow>
+                            <TableCell>{index + 1 + "."}</TableCell>
+                            <TableCell>{result.nomor}</TableCell>
+                            <TableCell>{result.perihal}</TableCell>
+                            <TableCell>{result.statusPermohonan}</TableCell>
+                          </TableRow>
+                        );
+                      })}
+                  </TableBody>
+                </Table>
+              </TableContainer>
+            </div>
+          )}
         </div>
+        <div
+          style={{ margin: isMobile ? "0px 32px 0px 32px" : "1.667vw" }}
+        ></div>
         <div
           style={{
             margin: isMobile
@@ -978,33 +712,6 @@ const MaindashboardInventory = (props) => {
               >
                 Tambah Permohonan Pembelian
               </Typography>
-              {permohonanPembelian.length !== 0 ? (
-                ""
-              ) : (
-                <IconButton
-                  onClick={() => {
-                    setPermohonanPembelian((oldArray) => [
-                      ...oldArray,
-                      {
-                        nomor: "",
-                        perihal: "",
-                        daftarPermohonanPembelian: [
-                          {
-                            jenisBarang: "",
-                            jumlah: { value: "", unit: "" },
-                            untukPekerjaan: "",
-                            stok: { value: "", unit: "" },
-                            keterangan: "",
-                          },
-                        ],
-                      },
-                    ]);
-                  }}
-                  style={{ height: "50%", width: "auto" }}
-                >
-                  <AddIcon style={{ color: "#0F607D" }} />
-                </IconButton>
-              )}
             </div>
             <div>
               {permohonanPembelian.length !== 0 && (
@@ -1018,7 +725,13 @@ const MaindashboardInventory = (props) => {
                     >
                       Nomor:{" "}
                     </Typography>
-                    <div style={{ marginLeft: "8px" }}>
+                    <div
+                      style={{
+                        marginLeft: "8px",
+                        display: "flex",
+                        alignItems: "center",
+                      }}
+                    >
                       <TextField
                         type="text"
                         value={permohonanPembelian[0].nomor}
@@ -1032,8 +745,8 @@ const MaindashboardInventory = (props) => {
                         }}
                         sx={{
                           "& .MuiOutlinedInput-root": {
-                            height: isMobile ? "15px" : "3vw",
-                            width: isMobile ? "90px" : "12vw",
+                            height: isMobile ? "30px" : "3vw",
+                            width: isMobile ? "200px" : "40vw",
                             fontSize: isMobile ? "10px" : "1.5vw",
                             borderRadius: "10px",
                             "& fieldset": {
@@ -1065,7 +778,13 @@ const MaindashboardInventory = (props) => {
                     >
                       Perihal:{" "}
                     </Typography>
-                    <div style={{ marginLeft: "8px" }}>
+                    <div
+                      style={{
+                        marginLeft: "8px",
+                        display: "flex",
+                        alignItems: "center",
+                      }}
+                    >
                       <TextField
                         type="text"
                         value={permohonanPembelian[0].perihal}
@@ -1079,8 +798,8 @@ const MaindashboardInventory = (props) => {
                         }}
                         sx={{
                           "& .MuiOutlinedInput-root": {
-                            height: isMobile ? "15px" : "3vw",
-                            width: isMobile ? "90px" : "40vw",
+                            height: isMobile ? "30px" : "3vw",
+                            width: isMobile ? "200px" : "40vw",
                             fontSize: isMobile ? "10px" : "1.5vw",
                             borderRadius: "10px",
                             "& fieldset": {
@@ -1154,9 +873,12 @@ const MaindashboardInventory = (props) => {
                                     {indexPermohonan + 1 + "."}
                                   </Typography>
                                 </TableCell>
-                                <TableCell>
+                                <TableCell
+                                  style={{ width: isMobile ? "100px" : "" }}
+                                >
                                   <TextField
                                     type="text"
+                                    style={{ width: isMobile ? "100px" : "" }}
                                     value={dataPermohonan.jenisBarang}
                                     onChange={(event) => {
                                       handleChangeInputPermohonanPembelian(
@@ -1168,7 +890,9 @@ const MaindashboardInventory = (props) => {
                                     }}
                                   />
                                 </TableCell>
-                                <TableCell>
+                                <TableCell
+                                  style={{ width: isMobile ? "200px" : "" }}
+                                >
                                   <div
                                     style={{
                                       display: "flex",
@@ -1177,6 +901,7 @@ const MaindashboardInventory = (props) => {
                                   >
                                     <TextField
                                       type="number"
+                                      style={{ width: isMobile ? "100px" : "" }}
                                       value={dataPermohonan.jumlah.value}
                                       onChange={(event) => {
                                         handleChangeInputPermohonanPembelian(
@@ -1209,9 +934,12 @@ const MaindashboardInventory = (props) => {
                                     </div>
                                   </div>
                                 </TableCell>
-                                <TableCell>
+                                <TableCell
+                                  style={{ width: isMobile ? "100px" : "" }}
+                                >
                                   <TextField
                                     value={dataPermohonan.untukPekerjaan}
+                                    style={{ width: isMobile ? "100px" : "" }}
                                     type="text"
                                     onChange={(event) => {
                                       handleChangeInputPermohonanPembelian(
@@ -1223,7 +951,9 @@ const MaindashboardInventory = (props) => {
                                     }}
                                   />
                                 </TableCell>
-                                <TableCell>
+                                <TableCell
+                                  style={{ width: isMobile ? "100px" : "" }}
+                                >
                                   <div
                                     style={{
                                       display: "flex",
@@ -1232,6 +962,7 @@ const MaindashboardInventory = (props) => {
                                   >
                                     <TextField
                                       value={dataPermohonan.stok.value}
+                                      style={{ width: isMobile ? "100px" : "" }}
                                       type="number"
                                       onChange={(event) => {
                                         handleChangeInputPermohonanPembelian(
@@ -1264,10 +995,11 @@ const MaindashboardInventory = (props) => {
                                     </div>
                                   </div>
                                 </TableCell>
-                                <TableCell>
+                                <TableCell style={{width: isMobile ? "100px" : ""}}>
                                   <TextField
                                     type="text"
                                     value={dataPermohonan.keterangan}
+                                    style={{width: isMobile ? "100px" : ""}}
                                     onChange={(event) => {
                                       handleChangeInputPermohonanPembelian(
                                         event,

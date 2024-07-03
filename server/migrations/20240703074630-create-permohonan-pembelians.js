@@ -15,6 +15,9 @@ module.exports = {
       perihal: {
         type: Sequelize.STRING
       },
+      statusPermohonan: {
+        type: Sequelize.STRING
+      },
       createdAt: {
         allowNull: false,
         type: Sequelize.DATE

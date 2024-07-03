@@ -16,6 +16,7 @@ class InventoryController {
             let createPermohonanPembelian = await permohonanPembelians.create({
               nomor: data.nomor,
               perihal: data.perihal,
+              statusPermohonan: "Requested"
             });
             await UserPermohonanPembelians.create({
               userId: id,
@@ -53,7 +54,9 @@ class InventoryController {
   }
   static async getAllPermohonanPembelian(req, res) {
     try {
-      let result = await permohonanPembelians.findAll({});
+      let result = await permohonanPembelians.findAll({
+        include: [{ model: itemPermohonanPembelians }],
+      });
       res.json(result);
     } catch (error) {
       res.json(error);

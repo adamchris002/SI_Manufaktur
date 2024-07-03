@@ -560,13 +560,13 @@ const EstimationOrderPage = (props) => {
     <div
       style={{
         width: "100%",
-        height: "100%",
+        height: "100vh",
         backgroundImage: `url(${factoryBackground})`,
         backgroundSize: "cover",
         backgroundAttachment: "fixed",
       }}
     >
-      <div style={{ margin: "32px" }}>
+      <div style={{ margin: "32px", height: "100%" }}>
         <div
           style={{
             display: "flex",
@@ -574,7 +574,7 @@ const EstimationOrderPage = (props) => {
             alignItems: "center",
           }}
         >
-          <Typography style={{ fontSize: "3.5vw", color: "#0F607D" }}>
+          <Typography style={{ fontSize: isMobile ? "18px" : "3.5vw", color: "#0F607D" }}>
             Add Production Plan
           </Typography>
           <div
@@ -583,7 +583,7 @@ const EstimationOrderPage = (props) => {
               alignItems: "center",
             }}
           >
-            <Typography style={{ fontSize: "1.5vw", color: "#0F607D" }}>
+            <Typography style={{ fontSize: isMobile ? "12px" : "1.5vw", color: "#0F607D" }}>
               Select Order ID
             </Typography>
             <div style={{ marginLeft: "8px" }}>
@@ -762,7 +762,7 @@ const EstimationOrderPage = (props) => {
             >
               <Typography
                 style={{
-                  fontSize: isMobile ? "36px" : "2vw",
+                  fontSize: isMobile ? "24px" : "2vw",
                   color: "#0F607D",
                 }}
               >

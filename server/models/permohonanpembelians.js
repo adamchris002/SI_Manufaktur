@@ -13,7 +13,7 @@ module.exports = (sequelize, DataTypes) => {
       });
       permohonanPembelians.hasMany(models.itemPermohonanPembelians, {
         foreignKey: "permohonanPembelianId",
-        onDelete: "CASCADE"
+        onDelete: "CASCADE",
       });
     }
   }
@@ -21,6 +21,7 @@ module.exports = (sequelize, DataTypes) => {
     {
       nomor: DataTypes.STRING,
       perihal: DataTypes.STRING,
+      statusPermohonan: DataTypes.STRING,
     },
     {
       sequelize,
