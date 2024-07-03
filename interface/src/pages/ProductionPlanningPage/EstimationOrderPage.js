@@ -49,6 +49,8 @@ const EstimationOrderPage = (props) => {
   const [estimasiJadwal, setEstimasiJadwal] = useState([]);
   const [estimasiBahanBaku, setEstimasiBahanBaku] = useState([]);
 
+  // console.log(estimasiBahanBaku)
+
   const [openModal, setOpenModal] = useState(false);
   const [openSnackbar, setOpenSnackbar] = useState(false);
   const [snackbarStatus, setSnackbarStatus] = useState(false);
@@ -323,6 +325,8 @@ const EstimationOrderPage = (props) => {
       estimasiJadwal: estimasiJadwal,
       selectedOrderId: selectedOrder.data.id,
     };
+
+    console.log(perencanaanProduksiData)
     if (
       pemesan === "" ||
       alamatPengirimanProduk === "" ||

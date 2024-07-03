@@ -1,8 +1,5 @@
 const productionPlanningRoutes = require("express").Router();
 const { ProductionPlanningController } = require("../controllers");
-const {
-  deleleteGroupBahanBaku,
-} = require("../controllers/ProductionPlanningController");
 
 productionPlanningRoutes.get(
   "/getUnreviewedOrders",

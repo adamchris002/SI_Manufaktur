@@ -27,8 +27,8 @@ const MySelectTextField = (props) => {
       select
       onChange={onChange}
     >
-      {data?.map((result) => {
-        return <MenuItem value={result.value}>{result.value}</MenuItem>;
+      {data?.map((result, index) => {
+        return <MenuItem key={index} value={result.value}>{result.value}</MenuItem>;
       })}
     </TextField>
   );

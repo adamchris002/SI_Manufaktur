@@ -483,7 +483,7 @@ const EditProductionPlanPage = (props) => {
           setSnackbarStatus(true);
           setSuccessMessage("You have updated a Production Plan!");
           setRefreshProductionPlanData(true);
-          // navigate(-1);
+          navigate(-1);
         } else {
           setOpenSnackbar(true);
           setSnackbarStatus(false);

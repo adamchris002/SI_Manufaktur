@@ -17,6 +17,10 @@ module.exports = (sequelize, DataTypes) => {
         through: "UserProductionPlanning",
       });
       users.hasMany(models.productionPlannings, { foreignKey: "id" });
+      users.belongsToMany(models.permohonanPembelians, {
+        through: "UserPermohonanPembelians",
+      });
+      users.hasMany(models.permohonanPembelians, { foreignKey: "id" });
     }
   }
   users.init(

@@ -149,7 +149,7 @@ function App() {
                 userCredentials.data.department !== "Inventory" ? (
                   <Navigate to="/unauthorized" replace />
                 ) : (
-                  <MaindashboardInventory />
+                  <MaindashboardInventory userInformation={userCredentials}/>
                 )
               }
             />

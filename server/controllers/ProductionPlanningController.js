@@ -32,7 +32,6 @@ class ProductionPlanningController {
         setting,
         estimasiBahanBaku,
         estimasiJadwal,
-        selectedOrderId,
         orderId,
       } = req.body;
 
@@ -73,7 +72,6 @@ class ProductionPlanningController {
               informasi: bahanBaku.informasiBahan,
             });
 
-            // Loop through data in estimasiBahanBaku
             if (bahanBaku.data && Array.isArray(bahanBaku.data)) {
               await Promise.all(
                 bahanBaku.data.map(async (dataItem, index) => {
@@ -130,7 +128,7 @@ class ProductionPlanningController {
           orderStatus: "Estimated",
         },
         {
-          where: { id: selectedOrderId },
+          where: { id: orderId },
         }
       );
 
@@ -142,7 +140,7 @@ class ProductionPlanningController {
       });
 
       await UserActivityLogs.create({
-        userId: selectedOrderId,
+        userId: id,
         id: addProductionPlanningActivity.id,
         activityLogsId: addProductionPlanningActivity.id,
       });
