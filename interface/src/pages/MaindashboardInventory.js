@@ -41,6 +41,7 @@ const MaindashboardInventory = (props) => {
   const [allPermohonanPembelian, setAllPermohonanPembelian] = useState([]);
 
   const [permohonanPembelian, setPermohonanPembelian] = useState([]);
+  console.log(permohonanPembelian);
   const [pembelianBahanBaku, setPembelianBahanBaku] = useState([]);
 
   const [refreshPermohonanPembelian, setRefreshPermohonanPembelian] =
@@ -49,6 +50,9 @@ const MaindashboardInventory = (props) => {
   const [openModalPermohonanPembelian, setOpenModalPermohonanPembelian] =
     useState(false);
   const [openModalPembelianBahanBaku, setOpenModalPembelianBahanBaku] =
+    useState(false);
+
+  const [isEditPermohonanPembelian, setIsEditPermohonanPembelian] =
     useState(false);
 
   useEffect(() => {
@@ -72,6 +76,32 @@ const MaindashboardInventory = (props) => {
     }
   }, [refreshPermohonanPembelian]);
 
+  const handleDeletePermohonanPembelian = (id) => {
+    axios({
+      method: "DELETE",
+      url: `http://localhost:3000/inventory/deletePermohonanPembelian/${id}`,
+    }).then((result) => {
+      if (result.status === 200) {
+        setRefreshPermohonanPembelian(true);
+        setOpenSnackbar(true);
+        setSnackbarStatus(true);
+        setSnackbarMessage(
+          `Berhasil menghapus permohonan pembelian dengan id ${id}`
+        );
+      } else {
+        setOpenSnackbar(true);
+        setSnackbarStatus(false);
+        setSnackbarMessage(
+          `Tidak berhasil menghapus permohonan pembelian dengan id ${id}`
+        );
+      }
+    });
+  };
+
+  const handleDeleteItemPermohonanPembelian = () => {
+    
+  }
+
   const handleOpenModalPermohonanPembelian = () => {
     setOpenModalPermohonanPembelian(true);
     setPermohonanPembelian((oldArray) => [
@@ -90,6 +120,13 @@ const MaindashboardInventory = (props) => {
         ],
       },
     ]);
+  };
+
+  const handleOpenModalEditPermohonanPembelian = (data) => {
+    setIsEditPermohonanPembelian(true);
+    setOpenModalPermohonanPembelian(true);
+    const permohonanPembelianDataToEdit = modifyDataPermohonanPembelian(data);
+    setPermohonanPembelian(permohonanPembelianDataToEdit);
   };
 
   const handleCloseModalPermohonanPembelian = () => {
@@ -178,6 +215,36 @@ const MaindashboardInventory = (props) => {
     });
   };
 
+  const separateValueAndUnit = (str) => {
+    const parts = str.split(" ");
+    const value = parts[0];
+    const unit = parts.slice(1).join(" ");
+    return { value, unit };
+  };
+
+  const modifyDataPermohonanPembelian = (data) => {
+    const newData = [data];
+    return newData.map((item) => {
+      const daftarPermohonanPembelian = item.itemPermohonanPembelians.map(
+        (permohonan) => {
+          const { jumlah, stok, ...rest } = permohonan;
+          return {
+            ...rest,
+            jumlah: separateValueAndUnit(jumlah),
+            stok: separateValueAndUnit(stok),
+          };
+        }
+      );
+
+      return {
+        id: item.id,
+        nomor: item.nomor || "",
+        perihal: item.perihal || "",
+        daftarPermohonanPembelian: daftarPermohonanPembelian,
+      };
+    });
+  };
+
   const transformDataPermohonanPembelian = (data) => {
     return data.map((item) => {
       return {
@@ -210,26 +277,52 @@ const MaindashboardInventory = (props) => {
         url: `http://localhost:3000/inventory/addPermohonanPembelian/${userInformation.data.id}`,
         data: { permohonanPembelian: transformedPermohonanPembelian },
       }).then((result) => {
-        try {
-          if (result.status === 200) {
-            setOpenSnackbar(true);
-            setSnackbarStatus(true);
-            setSnackbarMessage(`Berhasil menambahkan Permohonan Pembelian`);
-            setRefreshPermohonanPembelian(true);
-            setOpenModalPermohonanPembelian(false);
-          } else {
-            setOpenSnackbar(true);
-            setSnackbarStatus(false);
-            setSnackbarMessage(`error: ${result.message}`);
-          }
-        } catch (error) {
+        if (result.status === 200) {
+          setOpenSnackbar(true);
+          setSnackbarStatus(true);
+          setSnackbarMessage(`Berhasil menambahkan Permohonan Pembelian`);
+          setRefreshPermohonanPembelian(true);
+          setOpenModalPermohonanPembelian(false);
+          setPermohonanPembelian([]);
+        } else {
           setOpenSnackbar(true);
           setSnackbarStatus(false);
-          setSnackbarMessage(`error: ${error}`);
+          setSnackbarMessage(`error: ${result.message}`);
         }
       });
     }
   };
+
+  const handleEditPermohonanPembelian = () => {
+    const checkIfPermohonanPembelianEmpty = isPermohonanPembelianEmpty();
+    const transformedPermohonanPembelian =
+      transformDataPermohonanPembelian(permohonanPembelian);
+
+    if (checkIfPermohonanPembelianEmpty === false) {
+      setOpenSnackbar(true);
+      setSnackbarStatus(false);
+      setSnackbarMessage("Tolong isi semua input!");
+    } else {
+      axios({
+        method: "PUT",
+        url: `http://localhost:3000/inventory/editPermohonanPembelian/${userInformation.data.id}`,
+        data: { permohonanPembelian: transformedPermohonanPembelian },
+      }).then((result) => {
+        if (result.status === 200) {
+          setOpenSnackbar(true);
+          setSnackbarStatus(true);
+          setSnackbarMessage(`Berhasil Mengedit Permohonan Pembelian!`);
+          setRefreshPermohonanPembelian(true);
+          setOpenModalPermohonanPembelian(false);
+          setPermohonanPembelian([]);
+        } else {
+          setOpenSnackbar(true);
+          setSnackbarStatus(false);
+          setSnackbarMessage(`error: ${result.message}`);
+        }
+      });
+    }
+  }
 
   const units = [
     {
@@ -509,50 +602,69 @@ const MaindashboardInventory = (props) => {
               width: isMobile ? "" : "72vw",
             }}
           >
-            <div style={{ width: isMobile ? "100%" : "50%" }}>
-              <TableContainer component={Paper}>
-                <Table sx={{ minWidth: 650 }} aria-label="simple table">
-                  <TableHead>
-                    <TableRow>
-                      <TableCell>No.</TableCell>
-                      <TableCell>Nomor</TableCell>
-                      <TableCell>Perihal</TableCell>
-                      <TableCell>Status Permohonan</TableCell>
-                      <TableCell>Actions</TableCell>
-                    </TableRow>
-                  </TableHead>
-                  <TableBody>
-                    {allPermohonanPembelian?.data
-                      ?.filter(
-                        (permohonan) =>
-                          permohonan.statusPermohonan === "Requested"
-                      )
-                      .map((result, index) => {
-                        return (
-                          <TableRow>
-                            <TableCell>{index + 1 + "."}</TableCell>
-                            <TableCell>{result.nomor}</TableCell>
-                            <TableCell>{result.perihal}</TableCell>
-                            <TableCell>{result.statusPermohonan}</TableCell>
-                            <TableCell>
-                              <div>
-                                <IconButton>
-                                  <EditIcon style={{ color: "#0F607D" }} />
-                                </IconButton>
-                                <IconButton>
-                                  <DeleteIcon
-                                    style={{ color: "red", marginLeft: "8px" }}
-                                  />
-                                </IconButton>
-                              </div>
-                            </TableCell>
-                          </TableRow>
-                        );
-                      })}
-                  </TableBody>
-                </Table>
-              </TableContainer>
-            </div>
+            {!allPermohonanPembelian?.data?.some(
+              (permohonan) => permohonan.statusPermohonan === "Requested"
+            ) ? (
+              <div>
+                <Typography>Belum ada Permohonan Pembelian</Typography>
+              </div>
+            ) : (
+              <div style={{ width: isMobile ? "100%" : "50%" }}>
+                <TableContainer component={Paper}>
+                  <Table sx={{ minWidth: 650 }} aria-label="simple table">
+                    <TableHead>
+                      <TableRow>
+                        <TableCell>No.</TableCell>
+                        <TableCell>Nomor</TableCell>
+                        <TableCell>Perihal</TableCell>
+                        <TableCell>Status Permohonan</TableCell>
+                        <TableCell>Actions</TableCell>
+                      </TableRow>
+                    </TableHead>
+                    <TableBody>
+                      {allPermohonanPembelian?.data
+                        ?.filter(
+                          (permohonan) =>
+                            permohonan.statusPermohonan === "Requested"
+                        )
+                        .map((result, index) => {
+                          return (
+                            <TableRow>
+                              <TableCell>{index + 1 + "."}</TableCell>
+                              <TableCell>{result.nomor}</TableCell>
+                              <TableCell>{result.perihal}</TableCell>
+                              <TableCell>{result.statusPermohonan}</TableCell>
+                              <TableCell>
+                                <div>
+                                  <IconButton
+                                    onClick={() => {
+                                      handleOpenModalEditPermohonanPembelian(
+                                        result
+                                      );
+                                    }}
+                                  >
+                                    <EditIcon style={{ color: "#0F607D" }} />
+                                  </IconButton>
+                                  <IconButton
+                                    onClick={() => {
+                                      handleDeletePermohonanPembelian(
+                                        result.id
+                                      );
+                                    }}
+                                    sx={{ marginLeft: "8px" }}
+                                  >
+                                    <DeleteIcon style={{ color: "red" }} />
+                                  </IconButton>
+                                </div>
+                              </TableCell>
+                            </TableRow>
+                          );
+                        })}
+                    </TableBody>
+                  </Table>
+                </TableContainer>
+              </div>
+            )}
           </div>
         ) : (
           <div>
@@ -593,13 +705,14 @@ const MaindashboardInventory = (props) => {
           ) : (
             <div style={{ width: isMobile ? "100%" : "50%" }}>
               <TableContainer component={Paper}>
-                <Table>
+                <Table sx={{ minWidth: 650 }} aria-label="simple table">
                   <TableHead>
                     <TableRow>
                       <TableCell>No.</TableCell>
                       <TableCell>Nomor</TableCell>
                       <TableCell>Perihal</TableCell>
                       <TableCell>Status Permohonan</TableCell>
+                      <TableCell>Actions</TableCell>
                     </TableRow>
                   </TableHead>
                   <TableBody>
@@ -615,6 +728,21 @@ const MaindashboardInventory = (props) => {
                             <TableCell>{result.nomor}</TableCell>
                             <TableCell>{result.perihal}</TableCell>
                             <TableCell>{result.statusPermohonan}</TableCell>
+                            <TableCell>
+                              <div>
+                                <IconButton>
+                                  <EditIcon style={{ color: "#0F607D" }} />
+                                </IconButton>
+                                <IconButton
+                                  onClick={() => {
+                                    handleDeletePermohonanPembelian(result.id);
+                                  }}
+                                  sx={{ marginLeft: "8px" }}
+                                >
+                                  <DeleteIcon style={{ color: "red" }} />
+                                </IconButton>
+                              </div>
+                            </TableCell>
                           </TableRow>
                         );
                       })}
@@ -710,7 +838,9 @@ const MaindashboardInventory = (props) => {
                   fontSize: isMobile ? "7vw" : "2.5vw",
                 }}
               >
-                Tambah Permohonan Pembelian
+                {isEditPermohonanPembelian
+                  ? "Edit Permohonan Pembelian"
+                  : "Tambah Permohonan Pembelian"}
               </Typography>
             </div>
             <div>
@@ -734,7 +864,7 @@ const MaindashboardInventory = (props) => {
                     >
                       <TextField
                         type="text"
-                        value={permohonanPembelian[0].nomor}
+                        value={permohonanPembelian[0]?.nomor}
                         onChange={(event) => {
                           handleChangeInputPermohonanPembelian(
                             event,
@@ -787,7 +917,7 @@ const MaindashboardInventory = (props) => {
                     >
                       <TextField
                         type="text"
-                        value={permohonanPembelian[0].perihal}
+                        value={permohonanPembelian[0]?.perihal}
                         onChange={(event) => {
                           handleChangeInputPermohonanPembelian(
                             event,
@@ -849,7 +979,7 @@ const MaindashboardInventory = (props) => {
                   </DefaultButton>
                 </div>
               )}
-              {permohonanPembelian.length !== 0 ? (
+              {permohonanPembelian?.length !== 0 ? (
                 <TableContainer style={{ marginTop: "16px" }} component={Paper}>
                   <Table sx={{ minWidth: 650 }} aria-label="simple table">
                     <TableHead>
@@ -863,9 +993,9 @@ const MaindashboardInventory = (props) => {
                       </TableRow>
                     </TableHead>
                     <TableBody>
-                      {permohonanPembelian.map((result, index) => (
+                      {permohonanPembelian?.map((result, index) => (
                         <React.Fragment key={index}>
-                          {result.daftarPermohonanPembelian.map(
+                          {result?.daftarPermohonanPembelian?.map(
                             (dataPermohonan, indexPermohonan) => (
                               <TableRow key={`data of index ${index}`}>
                                 <TableCell>
@@ -995,11 +1125,13 @@ const MaindashboardInventory = (props) => {
                                     </div>
                                   </div>
                                 </TableCell>
-                                <TableCell style={{width: isMobile ? "100px" : ""}}>
+                                <TableCell
+                                  style={{ width: isMobile ? "100px" : "" }}
+                                >
                                   <TextField
                                     type="text"
                                     value={dataPermohonan.keterangan}
-                                    style={{width: isMobile ? "100px" : ""}}
+                                    style={{ width: isMobile ? "100px" : "" }}
                                     onChange={(event) => {
                                       handleChangeInputPermohonanPembelian(
                                         event,
@@ -1066,10 +1198,10 @@ const MaindashboardInventory = (props) => {
             >
               <DefaultButton
                 onClickFunction={() => {
-                  handleAddPermohonanPembelian();
+                  isEditPermohonanPembelian ? handleEditPermohonanPembelian() : handleAddPermohonanPembelian()
                 }}
               >
-                Tambah
+                {isEditPermohonanPembelian ? "Edit" : "Tambah"}
               </DefaultButton>
               <Button
                 variant="outlined"
