@@ -1719,7 +1719,7 @@ const EstimationOrderPage = (props) => {
                     </IconButton>
                   </div>
                   <div style={{ marginTop: "16px" }}>
-                    <TableContainer component={Paper}>
+                    <TableContainer component={Paper} sx={{overflowY: "auto"}}>
                       <Table sx={{ minWidth: 650 }} aria-label="simple table">
                         <TableHead>
                           <TableRow>

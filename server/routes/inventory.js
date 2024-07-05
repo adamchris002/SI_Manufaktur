@@ -28,4 +28,6 @@ inventoryRoutes.put(
   InventoryController.editPermohonanPembelian
 );
 
+inventoryRoutes.delete("/deleteItemsPermohonanPembelian/:id", InventoryController.deleteItemsPermohonanPembelian)
+
 module.exports = inventoryRoutes;

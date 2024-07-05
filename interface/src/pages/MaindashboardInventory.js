@@ -46,6 +46,8 @@ const MaindashboardInventory = (props) => {
 
   const [refreshPermohonanPembelian, setRefreshPermohonanPembelian] =
     useState(true);
+  const [refreshItemsPermohonanPembelian, setRefreshItemsPermohonanPembelian] =
+    useState(false);
 
   const [openModalPermohonanPembelian, setOpenModalPermohonanPembelian] =
     useState(false);
@@ -76,6 +78,23 @@ const MaindashboardInventory = (props) => {
     }
   }, [refreshPermohonanPembelian]);
 
+  useEffect(() => {
+    if (refreshItemsPermohonanPembelian) {
+      axios({
+        method: "GET",
+        url: `http://localhost:3000/inventory/getPermohonanPembelian/${permohonanPembelian[0].id}`,
+      }).then((result) => {
+        if (result.status === 200) {
+          const transformedData = modifyDataPermohonanPembelian(result.data);
+          setPermohonanPembelian(transformedData);
+          setRefreshItemsPermohonanPembelian(false);
+        } else {
+          console.log(result);
+        }
+      });
+    }
+  }, [refreshItemsPermohonanPembelian]);
+
   const handleDeletePermohonanPembelian = (id) => {
     axios({
       method: "DELETE",
@@ -98,7 +117,29 @@ const MaindashboardInventory = (props) => {
     });
   };
 
-  const handleDeleteItemPermohonanPembelian = () => {};
+  const handleDeleteItemPermohonanPembelian = (id, index) => {
+    console.log(id);
+    console.log(index);
+    if (!id || id === undefined) {
+      setPermohonanPembelian((oldArray) => {
+        return oldArray?.map((item, i) => {
+            return {
+              ...item,
+              daftarPermohonanPembelian: item.daftarPermohonanPembelian.filter(
+                (_, j) => j !== index
+              ),
+            };
+          });
+      });
+    } else {
+      axios({
+        method: "DELETE",
+        url: `http://localhost:3000/inventory/deleteItemsPermohonanPembelian/${id}`,
+      }).then((result) => {
+        setRefreshItemsPermohonanPembelian(true);
+      });
+    }
+  };
 
   const handleOpenModalPermohonanPembelian = () => {
     setOpenModalPermohonanPembelian(true);
@@ -665,7 +706,7 @@ const MaindashboardInventory = (props) => {
             )}
           </div>
         ) : (
-          <div>
+          <div style={{ margin: isMobile ? "0px 32px 0px 32px" : "1.667vw" }}>
             <Typography>Tidak ada Permohonan Pembelian</Typography>
           </div>
         )}
@@ -686,25 +727,15 @@ const MaindashboardInventory = (props) => {
           >
             Pembelian Bahan Baku
           </Typography>
-          <DefaultButton onClickFunction={() => {
-            navigate("/inventoryDashboard/pembelianBahan")
-          }}>
+          <DefaultButton
+            onClickFunction={() => {
+              navigate("/inventoryDashboard/pembelianBahan");
+            }}
+          >
             <Typography style={{ fontSize: isMobile ? "10px" : "1vw" }}>
               Tambah Pembelian Bahan
             </Typography>
           </DefaultButton>
-        </div>
-        <div
-          style={{
-            margin: isMobile
-              ? "0px 32px 12px 32px"
-              : "0.833vw 1.667vw 0vw 1.667vw",
-            display: "flex",
-            alignItems: "center",
-            width: isMobile ? "" : "72vw",
-          }}
-        >
-          <Typography>Daftar permohonan pembelian yang sudah di acc</Typography>
         </div>
         <div
           style={{
@@ -721,51 +752,58 @@ const MaindashboardInventory = (props) => {
               </Typography>
             </div>
           ) : (
-            <div style={{ width: isMobile ? "100%" : "50%" }}>
-              <TableContainer component={Paper}>
-                <Table sx={{ minWidth: 650 }} aria-label="simple table">
-                  <TableHead>
-                    <TableRow>
-                      <TableCell>No.</TableCell>
-                      <TableCell>Nomor</TableCell>
-                      <TableCell>Perihal</TableCell>
-                      <TableCell>Status Permohonan</TableCell>
-                      <TableCell>Actions</TableCell>
-                    </TableRow>
-                  </TableHead>
-                  <TableBody>
-                    {allPermohonanPembelian?.data
-                      ?.filter(
-                        (permohonan) =>
-                          permohonan.statusPermohonan === "Accepted"
-                      )
-                      .map((result, index) => {
-                        return (
-                          <TableRow>
-                            <TableCell>{index + 1 + "."}</TableCell>
-                            <TableCell>{result.nomor}</TableCell>
-                            <TableCell>{result.perihal}</TableCell>
-                            <TableCell>{result.statusPermohonan}</TableCell>
-                            <TableCell>
-                              <div>
-                                {/* <DefaultButton><Typography></Typography></DefaultButton> */}
-                                <IconButton
-                                  onClick={() => {
-                                    handleDeletePermohonanPembelian(result.id);
-                                  }}
-                                  sx={{ marginLeft: "8px" }}
-                                >
-                                  <DeleteIcon style={{ color: "red" }} />
-                                </IconButton>
-                              </div>
-                            </TableCell>
-                          </TableRow>
-                        );
-                      })}
-                  </TableBody>
-                </Table>
-              </TableContainer>
-            </div>
+            <>
+              <Typography>
+                Daftar permohonan pembelian yang sudah di acc
+              </Typography>
+              <div style={{ width: isMobile ? "100%" : "50%" }}>
+                <TableContainer component={Paper}>
+                  <Table sx={{ minWidth: 650 }} aria-label="simple table">
+                    <TableHead>
+                      <TableRow>
+                        <TableCell>No.</TableCell>
+                        <TableCell>Nomor</TableCell>
+                        <TableCell>Perihal</TableCell>
+                        <TableCell>Status Permohonan</TableCell>
+                        <TableCell>Actions</TableCell>
+                      </TableRow>
+                    </TableHead>
+                    <TableBody>
+                      {allPermohonanPembelian?.data
+                        ?.filter(
+                          (permohonan) =>
+                            permohonan.statusPermohonan === "Accepted"
+                        )
+                        .map((result, index) => {
+                          return (
+                            <TableRow>
+                              <TableCell>{index + 1 + "."}</TableCell>
+                              <TableCell>{result.nomor}</TableCell>
+                              <TableCell>{result.perihal}</TableCell>
+                              <TableCell>{result.statusPermohonan}</TableCell>
+                              <TableCell>
+                                <div>
+                                  {/* <DefaultButton><Typography></Typography></DefaultButton> */}
+                                  <IconButton
+                                    onClick={() => {
+                                      handleDeletePermohonanPembelian(
+                                        result.id
+                                      );
+                                    }}
+                                    sx={{ marginLeft: "8px" }}
+                                  >
+                                    <DeleteIcon style={{ color: "red" }} />
+                                  </IconButton>
+                                </div>
+                              </TableCell>
+                            </TableRow>
+                          );
+                        })}
+                    </TableBody>
+                  </Table>
+                </TableContainer>
+              </div>
+            </>
           )}
         </div>
         <div
@@ -1006,6 +1044,7 @@ const MaindashboardInventory = (props) => {
                         <TableCell align="left">Untuk Pekerjaan</TableCell>
                         <TableCell align="left">Stok</TableCell>
                         <TableCell align="left">Keterangan</TableCell>
+                        <TableCell align="left">Action</TableCell>
                       </TableRow>
                     </TableHead>
                     <TableBody>
@@ -1158,6 +1197,18 @@ const MaindashboardInventory = (props) => {
                                     }}
                                   />
                                 </TableCell>
+                                <TableCell>
+                                  <IconButton
+                                    onClick={() => {
+                                      handleDeleteItemPermohonanPembelian(
+                                        dataPermohonan?.id,
+                                        indexPermohonan
+                                      );
+                                    }}
+                                  >
+                                    <DeleteIcon style={{ color: "red" }} />
+                                  </IconButton>
+                                </TableCell>
                               </TableRow>
                             )
                           )}
@@ -1233,52 +1284,6 @@ const MaindashboardInventory = (props) => {
               </Button>
             </div>
           )}
-        </MyModal>
-      )}
-      {openModalPembelianBahanBaku === true && (
-        <MyModal
-          open={openModalPembelianBahanBaku}
-          handleClose={handleCloseModalPermohonanPembelian}
-        >
-          <div
-            className="hideScrollbar"
-            style={{
-              margin: isMobile ? "24px" : "0.83vw 1.667vw 0.83vw 1.667vw",
-              overflow: "auto",
-              width: isMobile ? "80vw" : "50vw",
-              maxHeight: "80vh",
-            }}
-          >
-            <div style={{ display: "flex", margin: "1.667vw 0px 1.042vw 0px" }}>
-              <Typography
-                style={{
-                  color: "#0F607D",
-                  fontSize: isMobile ? "7vw" : "2.5vw",
-                }}
-              >
-                Tambah Pembelian Bahan Baku
-              </Typography>
-            </div>
-            <div style={{ marginBottom: "1.667vw" }}>
-              <div
-                style={{
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "space-between",
-                  width: "100%",
-                }}
-              >
-                <div style={{ display: "flex" }}>
-                  <Typography
-                    style={{
-                      color: "#0F607D",
-                      fontSize: isMobile ? "4vw" : "1.5vw",
-                    }}
-                  ></Typography>
-                </div>
-              </div>
-            </div>
-          </div>
         </MyModal>
       )}
       {snackbarMessage !== ("" || null) && (
