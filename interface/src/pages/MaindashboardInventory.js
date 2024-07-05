@@ -98,9 +98,7 @@ const MaindashboardInventory = (props) => {
     });
   };
 
-  const handleDeleteItemPermohonanPembelian = () => {
-    
-  }
+  const handleDeleteItemPermohonanPembelian = () => {};
 
   const handleOpenModalPermohonanPembelian = () => {
     setOpenModalPermohonanPembelian(true);
@@ -322,7 +320,7 @@ const MaindashboardInventory = (props) => {
         }
       });
     }
-  }
+  };
 
   const units = [
     {
@@ -678,6 +676,7 @@ const MaindashboardInventory = (props) => {
               : "3.33vw 1.667vw 0vw 1.667vw",
             display: "flex",
             alignItems: "center",
+            justifyContent: "space-between",
             width: isMobile ? "" : "72vw",
           }}
         >
@@ -687,6 +686,25 @@ const MaindashboardInventory = (props) => {
           >
             Pembelian Bahan Baku
           </Typography>
+          <DefaultButton onClickFunction={() => {
+            navigate("/inventoryDashboard/pembelianBahan")
+          }}>
+            <Typography style={{ fontSize: isMobile ? "10px" : "1vw" }}>
+              Tambah Pembelian Bahan
+            </Typography>
+          </DefaultButton>
+        </div>
+        <div
+          style={{
+            margin: isMobile
+              ? "0px 32px 12px 32px"
+              : "0.833vw 1.667vw 0vw 1.667vw",
+            display: "flex",
+            alignItems: "center",
+            width: isMobile ? "" : "72vw",
+          }}
+        >
+          <Typography>Daftar permohonan pembelian yang sudah di acc</Typography>
         </div>
         <div
           style={{
@@ -730,9 +748,7 @@ const MaindashboardInventory = (props) => {
                             <TableCell>{result.statusPermohonan}</TableCell>
                             <TableCell>
                               <div>
-                                <IconButton>
-                                  <EditIcon style={{ color: "#0F607D" }} />
-                                </IconButton>
+                                {/* <DefaultButton><Typography></Typography></DefaultButton> */}
                                 <IconButton
                                   onClick={() => {
                                     handleDeletePermohonanPembelian(result.id);
@@ -1198,7 +1214,9 @@ const MaindashboardInventory = (props) => {
             >
               <DefaultButton
                 onClickFunction={() => {
-                  isEditPermohonanPembelian ? handleEditPermohonanPembelian() : handleAddPermohonanPembelian()
+                  isEditPermohonanPembelian
+                    ? handleEditPermohonanPembelian()
+                    : handleAddPermohonanPembelian();
                 }}
               >
                 {isEditPermohonanPembelian ? "Edit" : "Tambah"}

@@ -19,6 +19,7 @@ import MarketingActivityLog from "./pages/MarketingPage/MarketingActivityLog";
 import EstimationOrderPage from "./pages/ProductionPlanningPage/EstimationOrderPage";
 import ProductionPlanningActivityLog from "./pages/ProductionPlanningPage/ProductionPlanningActivityLog";
 import EditProductionPlanPage from "./pages/ProductionPlanningPage/EditProductionPlanPage";
+import PembelianBahanBaku from "./pages/InventoryPage/PembelianBahanBaku";
 import { createTheme, useMediaQuery } from "@mui/material";
 
 export const AppContext = createContext({});
@@ -149,7 +150,18 @@ function App() {
                 userCredentials.data.department !== "Inventory" ? (
                   <Navigate to="/unauthorized" replace />
                 ) : (
-                  <MaindashboardInventory userInformation={userCredentials}/>
+                  <MaindashboardInventory userInformation={userCredentials} />
+                )
+              }
+            />
+            <Route
+              path="/inventoryDashboard/pembelianBahan"
+              element={
+                !userCredentials.data ||
+                userCredentials.data.department !== "Inventory" ? (
+                  <Navigate to="/unauthorized" replace />
+                ) : (
+                  <PembelianBahanBaku userInformation={userCredentials} />
                 )
               }
             />

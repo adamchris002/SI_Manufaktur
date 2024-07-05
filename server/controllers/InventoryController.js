@@ -76,13 +76,13 @@ class InventoryController {
   }
   static async deleteItemsPermohonanPembelian(req, res) {
     try {
-      const {id} = req.params;
+      const { id } = req.params;
       let result = await itemPermohonanPembelians.destroy({
-        where: {id: id}
-      })
+        where: { id: id },
+      });
       res.json(result);
     } catch (error) {
-      res.json(error)
+      res.json(error);
     }
   }
   static async addPermohonanPembelian(req, res) {
@@ -138,6 +138,29 @@ class InventoryController {
         include: [{ model: itemPermohonanPembelians }],
       });
       res.json(result);
+    } catch (error) {
+      res.json(error);
+    }
+  }
+  static async getAllAcceptedPermohonanPembelian(req, res) {
+    try {
+      let result = await permohonanPembelians.findAll({
+        where: { statusPermohonan: "Accepted" },
+        include: [{ model: itemPermohonanPembelians }],
+      });
+      res.json(result);
+    } catch (error) {
+      res.json(error);
+    }
+  }
+  static async getPermohonanPembelian(req, res) {
+    try {
+      const { id } = req.params;
+      let result = await permohonanPembelians.findOne({
+        where: { id: id },
+        include: [{ model: itemPermohonanPembelians }],
+      });
+      res.json(result)
     } catch (error) {
       res.json(error);
     }
