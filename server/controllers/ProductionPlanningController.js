@@ -222,6 +222,17 @@ class ProductionPlanningController {
   static async deleteProductionPlan(req, res) {
     try {
       const { id } = req.params;
+      let productionPlanData = await productionPlannings.findOne({
+        where: { id: id },
+      });
+
+      await orders.update(
+        {
+          orderStatus: "Ongoing",
+        },
+        { where: { id: productionPlanData.orderId } }
+      );
+
       let result = await productionPlannings.destroy({
         where: { id: id },
       });
@@ -464,10 +475,10 @@ class ProductionPlanningController {
   }
   static async removeJadwal(req, res) {
     try {
-      const {id} = req.params
+      const { id } = req.params;
       let result = await rencanaJadwalProduksis.destroy({
-        where: {id: id}
-      })
+        where: { id: id },
+      });
       res.json(result);
     } catch (error) {
       res.json(error);
@@ -475,10 +486,10 @@ class ProductionPlanningController {
   }
   static async deleteJadwal(req, res) {
     try {
-      const {id} = req.params
+      const { id } = req.params;
       let result = await estimasiJadwalProduksis.destroy({
-        where: {id: id}
-      })
+        where: { id: id },
+      });
       res.json(result);
     } catch (error) {
       res.json(error);

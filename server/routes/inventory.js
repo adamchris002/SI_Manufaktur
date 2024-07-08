@@ -28,6 +28,28 @@ inventoryRoutes.put(
   InventoryController.editPermohonanPembelian
 );
 
-inventoryRoutes.delete("/deleteItemsPermohonanPembelian/:id", InventoryController.deleteItemsPermohonanPembelian)
+inventoryRoutes.delete(
+  "/deleteItemsPermohonanPembelian/:id",
+  InventoryController.deleteItemsPermohonanPembelian
+);
+
+inventoryRoutes.post(
+  "/addPembelianBahanBaku/:id",
+  InventoryController.addPembelianBahanBaku
+);
+
+inventoryRoutes.get(
+  "/getAllPembelianBahanBaku",
+  InventoryController.getAllPembelianBahanBaku
+);
+
+inventoryRoutes.get("/getPembelianBahanBaku/:id", InventoryController.getPembelianBahanBaku)
+
+inventoryRoutes.delete(
+  "/deletePembelianBahanBaku/:id",
+  InventoryController.deletePembelianBahanBaku
+);
+
+inventoryRoutes.put("/editPembelianBahanBaku/:id", InventoryController.editPembelianBahanBaku)
 
 module.exports = inventoryRoutes;

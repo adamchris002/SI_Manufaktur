@@ -4,6 +4,7 @@ import "./PembelianBahan.css";
 import factoryBackground from "../../assets/factorybackground.png";
 import {
   Button,
+  IconButton,
   Paper,
   Table,
   TableBody,
@@ -18,12 +19,15 @@ import MySelectTextField from "../../components/SelectTextField";
 import axios from "axios";
 import MySnackbar from "../../components/Snackbar";
 import DefaultButton from "../../components/Button";
+import DeleteIcon from "@mui/icons-material/Delete";
 import dayjs from "dayjs";
 import { DateTimePicker } from "@mui/x-date-pickers/DateTimePicker";
 import { DemoContainer, DemoItem } from "@mui/x-date-pickers/internals/demo";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { NumericFormat } from "react-number-format";
+import { useLocation, useNavigate } from "react-router-dom";
+import { useAuth } from "../../components/AuthContext";
 
 const NumericFormatCustom = React.forwardRef((props, ref) => {
   const { onChange, ...other } = props;
@@ -49,12 +53,18 @@ const NumericFormatCustom = React.forwardRef((props, ref) => {
 
 const PembelianBahanBaku = (props) => {
   const { userInformation } = props;
+  const location = useLocation();
+  const { pembelianBahanBakuId } = location.state || {};
+
+  const navigate = useNavigate();
+  const { setSuccessMessage } = useAuth();
 
   const [
     allAcceptedPermohonanPembelianId,
     setAllAcceptedPermohonanPembelianId,
   ] = useState([]);
   const [permohonanPembelian, setPermohonanPembelian] = useState([]);
+  console.log(permohonanPembelian)
   const [pembelianBahanBaku, setPembelianBahanBaku] = useState({
     leveransir: "",
     alamat: "",
@@ -71,7 +81,7 @@ const PembelianBahanBaku = (props) => {
     ],
   });
 
-  // console.log(pembelianBahanBaku);
+  console.log(pembelianBahanBaku);
 
   const units = [
     {
@@ -129,6 +139,52 @@ const PembelianBahanBaku = (props) => {
     });
   };
 
+  const separateValueAndUnit = (str) => {
+    const parts = str.split(" ");
+    const value = parts[0];
+    const unit = parts.slice(1).join(" ");
+    return { value, unit };
+  };
+
+  useEffect(() => {
+    if (pembelianBahanBakuId) {
+      axios({
+        method: "GET",
+        url: `http://localhost:3000/inventory/getPembelianBahanBaku/${pembelianBahanBakuId}`,
+      }).then((result) => {
+        if (result.status === 200) {
+          setPembelianBahanBaku({
+            createdAt: result.data.createdAt,
+            updatedAt: result.data.updatedAt,
+            id: result.data.id,
+            permohonanPembelianId: result.data.permohonanPembelianId,
+            leveransir: result.data.leveransir,
+            alamat: result.data.alamat,
+            items: result?.data?.itemPembelianBahanBakus?.map((data) => {
+              return {
+                id: data.id,
+                jenisBarang: data.jenisBarang,
+                jumlahHarga: data.jumlahHarga,
+                hargaSatuan: data.hargaSatuan,
+                pembelianBahanBakuId: data.pembelianBahanBakuId,
+                tanggal: dayjs(data.tanggal),
+                createdAt: data.createdAt,
+                jumlahOrder: separateValueAndUnit(data.jumlahOrder),
+                rincianBarang: data.rincianBarang,
+                updatedAt: data.updatedAt,
+                noOrder: data.noOrder,
+              };
+            }),
+          });
+        } else {
+          setOpenSnackbar(true);
+          setSnackbarStatus(false);
+          setSnackbarMessage("Tidak dapat memanggil data pembelian bahan baku");
+        }
+      });
+    }
+  }, []);
+
   const handleCloseSnackbar = () => {
     setOpenSnackbar(false);
   };
@@ -144,6 +200,7 @@ const PembelianBahanBaku = (props) => {
       if (
         item.noOrder === "" ||
         item.tanggal === "" ||
+        !dayjs(item.tanggal, "MM/DD/YYYY hh:mm A", true).isValid() ||
         item.jenisBarang === "" ||
         item.rincianBarang === "" ||
         item.jumlahOrder.value === "" ||
@@ -154,11 +211,92 @@ const PembelianBahanBaku = (props) => {
         return false;
       }
     }
+    return true;
   };
 
-  const handleAddPembelianBahanBaku = () => {
+  const transformPembelianBahanBaku = () => {
+    const newPembelianBahanBaku = {
+      leveransir: pembelianBahanBaku.leveransir,
+      alamat: pembelianBahanBaku.alamat,
+      items: pembelianBahanBaku.items.map((result) => {
+        return {
+          ...result,
+          jumlahOrder: `${result.jumlahOrder.value} ${result.jumlahOrder.unit}`,
+        };
+      }),
+    };
+    return newPembelianBahanBaku;
+  };
+
+  const handleRemoveItemPembelianBahanBaku = (id, index) => {
+    if (!id || id === undefined) {
+      setPembelianBahanBaku((oldObject) => {
+        return {
+          ...oldObject,
+          items: oldObject.items.filter((_, j) => j !== index),
+        };
+      });
+    } else {
+      axios({
+        method: "DELETE",
+        url: `http://localhost:3000/inventory/deleteItemPembelianBahanBaku/${id}`,
+      });
+    }
+  };
+
+  const handleEditPembelianBahanBaku = (id) => {
     const isPembelianBahanBakuNotEmpty = isPembelianBahanBakuComplete();
-    console.log(isPembelianBahanBakuNotEmpty);
+    const transformedPembelianBahanBaku = transformPembelianBahanBaku();
+
+    console.log(transformedPembelianBahanBaku);
+
+    if (isPembelianBahanBakuNotEmpty === true) {
+      axios({
+        method: "PUT",
+        url: `http://localhost:3000/inventory/editPembelianBahanBaku/${id}`,
+        data: {
+          pembelianBahanBakuId: pembelianBahanBakuId,
+          dataPembelianBahanBaku: transformedPembelianBahanBaku,
+        },
+      }).then((result) => {
+        if (result.status === 200) {
+        } else {
+          setOpenSnackbar(true);
+          setSnackbarStatus(false);
+          setSnackbarMessage("Tidak berhasil mengedit pembelian bahan baku");
+        }
+      });
+    }
+  };
+
+  const handleAddPembelianBahanBaku = (id) => {
+    const isPembelianBahanBakuNotEmpty = isPembelianBahanBakuComplete();
+    const transformedPembelianBahanBaku = transformPembelianBahanBaku();
+
+    if (isPembelianBahanBakuNotEmpty === true) {
+      axios({
+        method: "POST",
+        url: `http://localhost:3000/inventory/addPembelianBahanBaku/${id}`,
+        data: {
+          permohonanPembelianId: permohonanPembelian?.data?.id,
+          dataPembelianBahanBaku: transformedPembelianBahanBaku,
+        },
+      }).then((result) => {
+        if (result.status === 200) {
+          setSuccessMessage("Berhasil menambahkan pembelian bahan baku");
+          setSnackbarStatus(true);
+          navigate(-1);
+        } else {
+          setOpenSnackbar(true);
+          setSnackbarStatus(false);
+          setSnackbarMessage("Error dalam menambahkan pembelian bahan baku");
+        }
+      });
+    } else {
+      setOpenSnackbar(true);
+      setSnackbarStatus(false);
+      setSnackbarMessage("Error dalam menambahkan pembelian bahan baku");
+    }
   };
 
   const handleChangeInput = (field, event, index, unit) => {
@@ -247,37 +385,42 @@ const PembelianBahanBaku = (props) => {
           <Typography
             style={{ fontSize: isMobile ? "18px" : "2vw", color: "#0F607D" }}
           >
-            Tambah Pembelian Bahan Baku/Bahan Pembantu
+            {pembelianBahanBakuId
+              ? "Edit Pembelian Bahan Baku/Bahan Pembantu"
+              : "Tambah Pembelian Bahan Baku/Bahan Pembantu"}
           </Typography>
-          <div
-            style={{
-              display: "flex",
-              alignItems: "center",
-              marginTop: isMobile ? "16px" : "0px",
-            }}
-          >
-            <Typography
+          {!pembelianBahanBakuId && (
+            <div
               style={{
-                fontSize: isMobile ? "12px" : "1.5vw",
-                color: "#0F607D",
+                display: "flex",
+                alignItems: "center",
+                marginTop: isMobile ? "16px" : "0px",
               }}
             >
-              Pilih Id Permohonan Pembelian
-            </Typography>
-            <div style={{ marginLeft: "8px" }}>
-              <MySelectTextField
-                width={isMobile ? "60px" : "80px"}
-                height={"30px"}
-                value={permohonanPembelian?.data?.id}
-                data={allAcceptedPermohonanPembelianId}
-                type="text"
-                onChange={handleSelectId}
-              />
+              <Typography
+                style={{
+                  fontSize: isMobile ? "12px" : "1.5vw",
+                  color: "#0F607D",
+                }}
+              >
+                Pilih Id Permohonan Pembelian
+              </Typography>
+              <div style={{ marginLeft: "8px" }}>
+                <MySelectTextField
+                  width={isMobile ? "60px" : "80px"}
+                  height={"30px"}
+                  value={permohonanPembelian?.data?.id}
+                  data={allAcceptedPermohonanPembelianId}
+                  type="text"
+                  onChange={handleSelectId}
+                />
+              </div>
             </div>
-          </div>
+          )}
         </div>
         <div style={{ marginTop: "32px" }}>
-          {permohonanPembelian.length !== 0 ? (
+          {permohonanPembelian.length !== 0 ||
+          !pembelianBahanBaku.length !== 0 ? (
             <div>
               <div style={{ display: "flex", alignItems: "center" }}>
                 <Typography
@@ -370,7 +513,7 @@ const PembelianBahanBaku = (props) => {
                 >
                   <Typography
                     style={{
-                      color: "#0F607D",
+                      // color: "#0F607D",
                       fontSize: isMobile ? "12px" : "1vw",
                     }}
                   >
@@ -390,6 +533,7 @@ const PembelianBahanBaku = (props) => {
                       <TableCell align="left">Jumlah Order</TableCell>
                       <TableCell align="left">Harga Satuan</TableCell>
                       <TableCell align="left">Jumlah Harga</TableCell>
+                      <TableCell align="left">Action</TableCell>
                     </TableRow>
                   </TableHead>
                   <TableBody>
@@ -406,6 +550,7 @@ const PembelianBahanBaku = (props) => {
                                 >
                                   <DemoItem sx={{ padding: 0 }}>
                                     <DateTimePicker
+                                      value={result.tanggal}
                                       disablePast
                                       onChange={(event) =>
                                         handleChangeInput(
@@ -548,22 +693,45 @@ const PembelianBahanBaku = (props) => {
                                 }}
                               />
                             </TableCell>
+                            <TableCell><IconButton><DeleteIcon style={{ color: "red" }}/></IconButton></TableCell>
                           </TableRow>
                         </React.Fragment>
                       );
                     })}
                   </TableBody>
                 </Table>
-                <div>
-                <DefaultButton onClickFunction={() => {
-                  handleAddPembelianBahanBaku()
-                }}><Typography>Tambah Pembelian Bahan</Typography></DefaultButton>
-                <Button onClick={() => {
-                  
-                }} variant="outlined" style={{textTransform: "none", marginLeft: "8px"}}>Cancel</Button>
-                </div>
               </TableContainer>
-              
+              <div
+                style={{
+                  display: "flex",
+                  justifyContent: "center",
+                  margin: "32px",
+                }}
+              >
+                <DefaultButton
+                  onClickFunction={() => {
+                    !pembelianBahanBakuId
+                      ? handleAddPembelianBahanBaku(userInformation.data.id)
+                      : handleEditPembelianBahanBaku(userInformation.data.id);
+                  }}
+                >
+                  <Typography>
+                    {!pembelianBahanBakuId
+                      ? "Tambah Pembelian Bahan"
+                      : "Edit Pembelian Bahan"}
+                  </Typography>
+                </DefaultButton>
+                <Button
+                  onClick={() => {
+                    navigate(-1);
+                  }}
+                  variant="outlined"
+                  color="error"
+                  style={{ textTransform: "none", marginLeft: "8px" }}
+                >
+                  Cancel
+                </Button>
+              </div>
             </div>
           ) : (
             <div

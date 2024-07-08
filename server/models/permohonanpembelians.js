@@ -15,6 +15,10 @@ module.exports = (sequelize, DataTypes) => {
         foreignKey: "permohonanPembelianId",
         onDelete: "CASCADE",
       });
+      permohonanPembelians.hasOne(models.pembelianBahanBakus, {
+        foreignKey: "permohonanPembelianId",
+        onDelete: "CASCADE"
+      });
     }
   }
   permohonanPembelians.init(

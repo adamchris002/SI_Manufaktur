@@ -324,7 +324,6 @@ const EstimationOrderPage = (props) => {
       selectedOrderId: selectedOrder.data.id,
     };
 
-    console.log(perencanaanProduksiData)
     if (
       pemesan === "" ||
       alamatPengirimanProduk === "" ||

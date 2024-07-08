@@ -23,11 +23,15 @@ import { AppContext } from "../App";
 import moment from "moment";
 import CustomChip from "../components/Chip";
 import dayjs from "dayjs";
+import { useAuth } from "../components/AuthContext";
+import MySnackbar from "../components/Snackbar";
 
 const MaindashboardProductionPlanning = (props) => {
   const { userInformation } = props;
   const { isMobile } = useContext(AppContext);
   const navigate = useNavigate();
+
+  const { message, clearMessage, setSuccessMessage } = useAuth();
 
   const [unreviewedOrders, setUnreviewedOrders] = useState([]);
   const [estimatedOrders, setEstimatedOrders] = useState([]);
@@ -35,6 +39,10 @@ const MaindashboardProductionPlanning = (props) => {
   // console.log(allProductionPlan);
   const [refreshProductionPlanData, setRefreshProductionPlanData] =
     useState(true);
+
+  const [openSnackbar, setOpenSnackbar] = useState(false);
+  const [snackbarMessage, setSnackbarMessage] = useState("");
+  const [snackbarStatus, setSnackbarStatus] = useState(false);
 
   useEffect(() => {
     axios({
@@ -79,6 +87,17 @@ const MaindashboardProductionPlanning = (props) => {
     }
   }, [refreshProductionPlanData]);
 
+  useEffect(() => {
+    if (message) {
+      setSnackbarMessage(message);
+      setSnackbarStatus(true);
+      setOpenSnackbar(true);
+      clearMessage();
+    }
+  }, [message, clearMessage]);
+
+
+
   const handleDeleteProductionPlan = (productionPlanId) => {
     axios({
       method: "DELETE",
@@ -86,6 +105,9 @@ const MaindashboardProductionPlanning = (props) => {
     }).then(() => {
       try {
         setRefreshProductionPlanData(true);
+        setOpenSnackbar(true);
+        setSnackbarStatus(true);
+        setSnackbarMessage("Berhasil menghapus rencana produksi")
       } catch (error) {
         console.log(error);
       }
@@ -98,6 +120,12 @@ const MaindashboardProductionPlanning = (props) => {
         productionPlanId: productionPlanId,
       },
     });
+  };
+
+  const handleCloseSnackbar = () => {
+    setOpenSnackbar(false);
+    setSnackbarMessage("");
+    setSnackbarStatus(true);
   };
 
   return (
@@ -336,7 +364,11 @@ const MaindashboardProductionPlanning = (props) => {
                       <TableCell>{result.id}</TableCell>
                       <TableCell>{result.pemesan}</TableCell>
                       <TableCell>{result.alamatKirimBarang}</TableCell>
-                      <TableCell>{dayjs(result.tanggalPengirimanBarang).format("MM/DD/YYYY hh:mm A")}</TableCell>
+                      <TableCell>
+                        {dayjs(result.tanggalPengirimanBarang).format(
+                          "MM/DD/YYYY hh:mm A"
+                        )}
+                      </TableCell>
                       <TableCell>
                         <div>
                           <IconButton
@@ -922,6 +954,14 @@ const MaindashboardProductionPlanning = (props) => {
           </div>
         </div>
       </div>
+      {snackbarMessage !== ("" || null) && (
+        <MySnackbar
+          open={openSnackbar}
+          handleClose={handleCloseSnackbar}
+          messageStatus={snackbarStatus}
+          popupMessage={snackbarMessage}
+        />
+      )}
     </div>
   );
 };

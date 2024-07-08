@@ -2,9 +2,88 @@ const {
   permohonanPembelians,
   UserPermohonanPembelians,
   itemPermohonanPembelians,
+  pembelianBahanBakus,
+  itemPembelianBahanBakus,
 } = require("../models");
 
 class InventoryController {
+  static async getPembelianBahanBaku(req, res) {
+    try {
+      const { id } = req.params;
+
+      let result = await pembelianBahanBakus.findOne({
+        where: { id: id },
+        include: [{ model: itemPembelianBahanBakus }],
+      });
+      res.json(result);
+    } catch (error) {
+      res.json(error);
+    }
+  }
+  static async editPembelianBahanBaku(req, res) {
+    try {
+      const { id } = req.params;
+      const { pembelianBahanBakuId, dataPembelianBahanBaku } = req.body;
+      console.log(dataPembelianBahanBaku);
+
+      let result = await pembelianBahanBakus.update(
+        {
+          leveransir: dataPembelianBahanBaku.leveransir,
+          alamat: dataPembelianBahanBaku.alamat,
+        },
+        { where: { id: pembelianBahanBakuId } }
+      );
+
+      if (
+        dataPembelianBahanBaku.items &&
+        Array.isArray(dataPembelianBahanBaku.items)
+      ) {
+        await Promise.all(
+          dataPembelianBahanBaku.items.map(async (data) => {
+            if (!data.id) {
+              await itemPembelianBahanBakus.create({
+                pembelianBahanBakuId: pembelianBahanBakuId,
+                tanggal: data.tanggal,
+                noOrder: data.noOrder,
+                jenisBarang: data.jenisBarang,
+                rincianBarang: data.rincianBarang,
+                jumlahOrder: data.jumlahOrder,
+                hargaSatuan: data.hargaSatuan,
+              });
+            } else {
+              await itemPembelianBahanBakus.update(
+                {
+                  tanggal: data.tanggal,
+                  noOrder: data.noOrder,
+                  jenisBarang: data.jenisBarang,
+                  rincianBarang: data.rincianBarang,
+                  jumlahOrder: data.jumlahOrder,
+                  hargaSatuan: data.hargaSatuan,
+                  jumlahHarga: data.jumlahHarga,
+                },
+                { where: { id: data.id } }
+              );
+            }
+          })
+        );
+      }
+
+      res.json(result);
+    } catch (error) {
+      res.json(error);
+    }
+  }
+  static async deleteItemPermohonanPembelian(req, res) {
+    try {
+      const { id } = req.params;
+      let result = await itemPembelianBahanBakus.destroy({
+        where: { id: id },
+      });
+      res.json(result)
+    } catch (error) {
+      res.json(error);
+    }
+  }
   static async editPermohonanPembelian(req, res) {
     try {
       const { permohonanPembelian } = req.body;
@@ -65,7 +144,6 @@ class InventoryController {
   static async deletePermohonanPembelian(req, res) {
     try {
       const { id } = req.params;
-      console.log(id);
       let result = await permohonanPembelians.destroy({
         where: { id: id },
       });
@@ -160,7 +238,82 @@ class InventoryController {
         where: { id: id },
         include: [{ model: itemPermohonanPembelians }],
       });
-      res.json(result)
+      res.json(result);
+    } catch (error) {
+      res.json(error);
+    }
+  }
+  static async addPembelianBahanBaku(req, res) {
+    try {
+      const { id } = req.params;
+      const { permohonanPembelianId, dataPembelianBahanBaku } = req.body;
+
+      let result = await pembelianBahanBakus.create({
+        permohonanPembelianId: permohonanPembelianId,
+        leveransir: dataPembelianBahanBaku.leveransir,
+        alamat: dataPembelianBahanBaku.alamat,
+      });
+
+      if (
+        dataPembelianBahanBaku.items &&
+        Array.isArray(dataPembelianBahanBaku.items)
+      ) {
+        await Promise.all(
+          dataPembelianBahanBaku.items.map(async (data) => {
+            await itemPembelianBahanBakus.create({
+              pembelianBahanBakuId: result.id,
+              tanggal: data.tanggal,
+              noOrder: data.noOrder,
+              jenisBarang: data.jenisBarang,
+              rincianBarang: data.rincianBarang,
+              jumlahOrder: data.jumlahOrder,
+              hargaSatuan: data.hargaSatuan,
+              jumlahHarga: data.jumlahHarga,
+            });
+          })
+        );
+      }
+
+      await permohonanPembelians.update(
+        {
+          statusPermohonan: "Processed",
+        },
+        { where: { id: permohonanPembelianId } }
+      );
+
+      res.json(result);
+    } catch (error) {
+      res.json(error);
+    }
+  }
+  static async getAllPembelianBahanBaku(req, res) {
+    try {
+      let result = await pembelianBahanBakus.findAll({
+        include: [{ model: itemPembelianBahanBakus }],
+      });
+      res.json(result);
+    } catch (error) {
+      res.json(error);
+    }
+  }
+  static async deletePembelianBahanBaku(req, res) {
+    try {
+      const { id } = req.params;
+
+      let findPembelianBahanBaku = await pembelianBahanBakus.findOne({
+        where: { id: id },
+      });
+
+      await permohonanPembelians.update(
+        {
+          statusPermohonan: "Accepted",
+        },
+        { where: { id: findPembelianBahanBaku.permohonanPembelianId } }
+      );
+      let result = await pembelianBahanBakus.destroy({
+        where: { id: id },
+      });
+      res.json(result);
     } catch (error) {
       res.json(error);
     }

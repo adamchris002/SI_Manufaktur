@@ -29,11 +29,14 @@ import dayjs from "dayjs";
 import MyModal from "../components/Modal";
 import MySelectTextField from "../components/SelectTextField";
 import MySnackbar from "../components/Snackbar";
+import { useAuth } from "../components/AuthContext";
 
 const MaindashboardInventory = (props) => {
   const { userInformation } = props;
   const { isMobile } = useContext(AppContext);
   const navigate = useNavigate();
+
+  const { message, clearMessage, setSuccessMessage } = useAuth();
 
   const [openSnackbar, setOpenSnackbar] = useState(false);
   const [snackbarStatus, setSnackbarStatus] = useState(false);
@@ -41,21 +44,48 @@ const MaindashboardInventory = (props) => {
   const [allPermohonanPembelian, setAllPermohonanPembelian] = useState([]);
 
   const [permohonanPembelian, setPermohonanPembelian] = useState([]);
-  console.log(permohonanPembelian);
+
   const [pembelianBahanBaku, setPembelianBahanBaku] = useState([]);
 
   const [refreshPermohonanPembelian, setRefreshPermohonanPembelian] =
     useState(true);
   const [refreshItemsPermohonanPembelian, setRefreshItemsPermohonanPembelian] =
     useState(false);
+  const [refreshPembelianBahanBaku, setRefreshPembelianBahanBaku] =
+    useState(true);
 
   const [openModalPermohonanPembelian, setOpenModalPermohonanPembelian] =
-    useState(false);
-  const [openModalPembelianBahanBaku, setOpenModalPembelianBahanBaku] =
     useState(false);
 
   const [isEditPermohonanPembelian, setIsEditPermohonanPembelian] =
     useState(false);
+
+  useEffect(() => {
+    if (message) {
+      setSnackbarMessage(message);
+      setSnackbarStatus(true);
+      setOpenSnackbar(true);
+      clearMessage();
+    }
+  }, [message, clearMessage]);
+
+  useEffect(() => {
+    if (refreshPembelianBahanBaku) {
+      axios({
+        method: "GET",
+        url: "http://localhost:3000/inventory/getAllPembelianBahanBaku",
+      }).then((result) => {
+        if (result.status === 200) {
+          setPembelianBahanBaku(result);
+          setRefreshPembelianBahanBaku(false);
+        } else {
+          setOpenSnackbar(true);
+          setSnackbarStatus(false);
+          setSnackbarMessage("Tidak dapat memanggil data pembelian bahan baku");
+        }
+      });
+    }
+  }, [refreshPembelianBahanBaku]);
 
   useEffect(() => {
     if (refreshPermohonanPembelian) {
@@ -95,6 +125,8 @@ const MaindashboardInventory = (props) => {
     }
   }, [refreshItemsPermohonanPembelian]);
 
+  // useEffect(() => {}, []);
+
   const handleDeletePermohonanPembelian = (id) => {
     axios({
       method: "DELETE",
@@ -118,18 +150,16 @@ const MaindashboardInventory = (props) => {
   };
 
   const handleDeleteItemPermohonanPembelian = (id, index) => {
-    console.log(id);
-    console.log(index);
     if (!id || id === undefined) {
       setPermohonanPembelian((oldArray) => {
         return oldArray?.map((item, i) => {
-            return {
-              ...item,
-              daftarPermohonanPembelian: item.daftarPermohonanPembelian.filter(
-                (_, j) => j !== index
-              ),
-            };
-          });
+          return {
+            ...item,
+            daftarPermohonanPembelian: item.daftarPermohonanPembelian.filter(
+              (_, j) => j !== index
+            ),
+          };
+        });
       });
     } else {
       axios({
@@ -177,10 +207,6 @@ const MaindashboardInventory = (props) => {
     setOpenSnackbar(false);
     setSnackbarMessage("");
     setSnackbarStatus(true);
-  };
-
-  const handleCloseModalPembelianBahanBaku = () => {
-    setOpenModalPembelianBahanBaku(false);
   };
 
   const isPermohonanPembelianEmpty = () => {
@@ -362,6 +388,32 @@ const MaindashboardInventory = (props) => {
       });
     }
   };
+  const handleDeletePembelianBahanBaku = (id) => {
+    axios({
+      method: "DELETE",
+      url: `http://localhost:3000/inventory/deletePembelianBahanBaku/${id}`,
+    }).then((result) => {
+      if (result.status === 200) {
+        setOpenSnackbar(true);
+        setSnackbarStatus(true);
+        setSnackbarMessage("Berhasil menghapus data pembelian bahan baku");
+        setRefreshPembelianBahanBaku(true);
+        setRefreshPermohonanPembelian(true);
+      } else {
+        setOpenSnackbar(true);
+        setSnackbarStatus(false);
+        setSnackbarMessage("Error dalam menghapus data pembelian bahan baku");
+      }
+    });
+  };
+
+  const handleMoveToEditPembelianBahanBaku = (id) => {
+    navigate("/inventoryDashboard/pembelianBahan", {
+      state: {
+        pembelianBahanBakuId: id
+      }
+    })
+  }
 
   const units = [
     {
@@ -744,7 +796,9 @@ const MaindashboardInventory = (props) => {
           }}
         >
           {!allPermohonanPembelian?.data?.some(
-            (permohonan) => permohonan.statusPermohonan === "Accepted"
+            (permohonan) =>
+              permohonan.statusPermohonan === "Accepted" ||
+              permohonan.statusPermohonan === "Processed"
           ) ? (
             <div>
               <Typography>
@@ -752,43 +806,111 @@ const MaindashboardInventory = (props) => {
               </Typography>
             </div>
           ) : (
-            <>
-              <Typography>
-                Daftar permohonan pembelian yang sudah di acc
-              </Typography>
-              <div style={{ width: isMobile ? "100%" : "50%" }}>
-                <TableContainer component={Paper}>
-                  <Table sx={{ minWidth: 650 }} aria-label="simple table">
-                    <TableHead>
-                      <TableRow>
-                        <TableCell>No.</TableCell>
-                        <TableCell>Nomor</TableCell>
-                        <TableCell>Perihal</TableCell>
-                        <TableCell>Status Permohonan</TableCell>
-                        <TableCell>Actions</TableCell>
-                      </TableRow>
-                    </TableHead>
-                    <TableBody>
-                      {allPermohonanPembelian?.data
-                        ?.filter(
-                          (permohonan) =>
-                            permohonan.statusPermohonan === "Accepted"
-                        )
-                        .map((result, index) => {
+            <div>
+              <div style={{ display: "flex", justifyContent: "space-between" }}>
+                <div style={{ width: isMobile ? "100%" : "48%" }}>
+                  <Typography>
+                    Permohonan pembelian yang sudah di Accept & proses
+                  </Typography>
+                  <TableContainer component={Paper}>
+                    <Table sx={{ minWidth: 650 }} aria-label="simple table">
+                      <TableHead>
+                        <TableRow>
+                          <TableCell>No.</TableCell>
+                          <TableCell>ID Permohonan Pembelian</TableCell>
+                          <TableCell>Nomor</TableCell>
+                          <TableCell>Perihal</TableCell>
+                          <TableCell>Status Permohonan</TableCell>
+                          <TableCell>Actions</TableCell>
+                        </TableRow>
+                      </TableHead>
+                      <TableBody>
+                        {allPermohonanPembelian?.data
+                          ?.filter(
+                            (permohonan) =>
+                              permohonan.statusPermohonan === "Accepted" ||
+                              permohonan.statusPermohonan === "Processed"
+                          )
+                          .map((result, index) => {
+                            return (
+                              <TableRow>
+                                <TableCell>{index + 1 + "."}</TableCell>
+                                <TableCell style={{ width: "200px" }}>
+                                  {result.id}
+                                </TableCell>
+                                <TableCell>{result.nomor}</TableCell>
+                                <TableCell>{result.perihal}</TableCell>
+                                <TableCell>{result.statusPermohonan}</TableCell>
+                                <TableCell>
+                                  <div>
+                                    <IconButton
+                                      onClick={() => {
+                                        handleDeletePermohonanPembelian(
+                                          result.id
+                                        );
+                                      }}
+                                      sx={{ marginLeft: "8px" }}
+                                    >
+                                      <DeleteIcon style={{ color: "red" }} />
+                                    </IconButton>
+                                  </div>
+                                </TableCell>
+                              </TableRow>
+                            );
+                          })}
+                      </TableBody>
+                    </Table>
+                  </TableContainer>
+                </div>
+                {pembelianBahanBaku?.data?.length === 0 ? (
+                  <div style={{display: 'flex'}}>
+                    <Typography>Tidak ada data pembelian bahan baku</Typography>
+                  </div>
+                ) : (
+                  <div style={{ width: isMobile ? "100%" : "48%" }}>
+                  <Typography>Daftar Pembelian Bahan Baku</Typography>
+                  <TableContainer component={Paper}>
+                    <Table sx={{ minWidth: 650 }} aria-label="simple table">
+                      <TableHead>
+                        <TableRow>
+                          <TableCell>No.</TableCell>
+                          <TableCell>ID Permohonan Pembelian</TableCell>
+                          <TableCell>Leveransir</TableCell>
+                          <TableCell>Alamat</TableCell>
+                          <TableCell>Tanggal Pembuatan</TableCell>
+                          <TableCell>Actions</TableCell>
+                        </TableRow>
+                      </TableHead>
+                      <TableBody>
+                        {pembelianBahanBaku?.data?.map((result, index) => {
                           return (
                             <TableRow>
                               <TableCell>{index + 1 + "."}</TableCell>
-                              <TableCell>{result.nomor}</TableCell>
-                              <TableCell>{result.perihal}</TableCell>
-                              <TableCell>{result.statusPermohonan}</TableCell>
+                              <TableCell style={{ width: "200px" }}>
+                                {result.permohonanPembelianId}
+                              </TableCell>
+                              <TableCell>{result.leveransir}</TableCell>
+                              <TableCell>{result.alamat}</TableCell>
                               <TableCell>
-                                <div>
-                                  {/* <DefaultButton><Typography></Typography></DefaultButton> */}
+                                {dayjs(result.createdAt).format(
+                                  "MM/DD/YYYY hh:mm A"
+                                )}
+                              </TableCell>
+                              <TableCell>
+                                <div
+                                  style={{
+                                    display: "flex",
+                                    alignItems: "center",
+                                  }}
+                                >
+                                  <IconButton onClick={() => {
+                                    handleMoveToEditPembelianBahanBaku(result.id)
+                                  }}>
+                                    <EditIcon style={{ color: "#0F606D" }} />
+                                  </IconButton>
                                   <IconButton
                                     onClick={() => {
-                                      handleDeletePermohonanPembelian(
-                                        result.id
-                                      );
+                                      handleDeletePembelianBahanBaku(result.id);
                                     }}
                                     sx={{ marginLeft: "8px" }}
                                   >
@@ -799,11 +921,13 @@ const MaindashboardInventory = (props) => {
                             </TableRow>
                           );
                         })}
-                    </TableBody>
-                  </Table>
-                </TableContainer>
+                      </TableBody>
+                    </Table>
+                  </TableContainer>
+                </div>
+                ) }
               </div>
-            </>
+            </div>
           )}
         </div>
         <div

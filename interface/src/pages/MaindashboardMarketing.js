@@ -72,7 +72,7 @@ const MaindashboardMarketing = (props) => {
   const { isMobile } = useContext(AppContext);
 
   const { userInformation } = props;
-  const { message, clearMessage } = useAuth();
+  const { message, clearMessage, setSuccessMessage } = useAuth();
   const [snackbarMessage, setSnackbarMessage] = useState("");
   const [snackbarStatus, setSnackbarStatus] = useState(false);
   const [openSnackbar, setOpenSnackbar] = useState(false);
