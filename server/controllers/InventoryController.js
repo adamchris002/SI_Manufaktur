@@ -49,6 +49,7 @@ class InventoryController {
                 rincianBarang: data.rincianBarang,
                 jumlahOrder: data.jumlahOrder,
                 hargaSatuan: data.hargaSatuan,
+                jumlahHarga: data.jumlahHarga,
               });
             } else {
               await itemPembelianBahanBakus.update(
@@ -79,7 +80,7 @@ class InventoryController {
       let result = await itemPembelianBahanBakus.destroy({
         where: { id: id },
       });
-      res.json(result)
+      res.json(result);
     } catch (error) {
       res.json(error);
     }
@@ -311,6 +312,19 @@ class InventoryController {
         { where: { id: findPembelianBahanBaku.permohonanPembelianId } }
       );
       let result = await pembelianBahanBakus.destroy({
+        where: { id: id },
+      });
+      res.json(result);
+    } catch (error) {
+      res.json(error);
+    }
+  }
+  static async deleteItemPembelianBahanBaku(req, res) {
+    try {
+      const { id } = req.params;
+      console.log(id)
+
+      let result = await itemPembelianBahanBakus.destroy({
         where: { id: id },
       });
       res.json(result);

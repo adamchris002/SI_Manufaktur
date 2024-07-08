@@ -64,7 +64,6 @@ const PembelianBahanBaku = (props) => {
     setAllAcceptedPermohonanPembelianId,
   ] = useState([]);
   const [permohonanPembelian, setPermohonanPembelian] = useState([]);
-  console.log(permohonanPembelian)
   const [pembelianBahanBaku, setPembelianBahanBaku] = useState({
     leveransir: "",
     alamat: "",
@@ -81,7 +80,8 @@ const PembelianBahanBaku = (props) => {
     ],
   });
 
-  console.log(pembelianBahanBaku);
+  const [refreshPembelianBahanBaku, setRefreshPembelianBahanbaku] =
+    useState(true);
 
   const units = [
     {
@@ -148,42 +148,47 @@ const PembelianBahanBaku = (props) => {
 
   useEffect(() => {
     if (pembelianBahanBakuId) {
-      axios({
-        method: "GET",
-        url: `http://localhost:3000/inventory/getPembelianBahanBaku/${pembelianBahanBakuId}`,
-      }).then((result) => {
-        if (result.status === 200) {
-          setPembelianBahanBaku({
-            createdAt: result.data.createdAt,
-            updatedAt: result.data.updatedAt,
-            id: result.data.id,
-            permohonanPembelianId: result.data.permohonanPembelianId,
-            leveransir: result.data.leveransir,
-            alamat: result.data.alamat,
-            items: result?.data?.itemPembelianBahanBakus?.map((data) => {
-              return {
-                id: data.id,
-                jenisBarang: data.jenisBarang,
-                jumlahHarga: data.jumlahHarga,
-                hargaSatuan: data.hargaSatuan,
-                pembelianBahanBakuId: data.pembelianBahanBakuId,
-                tanggal: dayjs(data.tanggal),
-                createdAt: data.createdAt,
-                jumlahOrder: separateValueAndUnit(data.jumlahOrder),
-                rincianBarang: data.rincianBarang,
-                updatedAt: data.updatedAt,
-                noOrder: data.noOrder,
-              };
-            }),
-          });
-        } else {
-          setOpenSnackbar(true);
-          setSnackbarStatus(false);
-          setSnackbarMessage("Tidak dapat memanggil data pembelian bahan baku");
-        }
-      });
+      if (refreshPembelianBahanBaku) {
+        axios({
+          method: "GET",
+          url: `http://localhost:3000/inventory/getPembelianBahanBaku/${pembelianBahanBakuId}`,
+        }).then((result) => {
+          if (result.status === 200) {
+            setPembelianBahanBaku({
+              createdAt: result.data.createdAt,
+              updatedAt: result.data.updatedAt,
+              id: result.data.id,
+              permohonanPembelianId: result.data.permohonanPembelianId,
+              leveransir: result.data.leveransir,
+              alamat: result.data.alamat,
+              items: result?.data?.itemPembelianBahanBakus?.map((data) => {
+                return {
+                  id: data.id,
+                  jenisBarang: data.jenisBarang,
+                  jumlahHarga: data.jumlahHarga,
+                  hargaSatuan: data.hargaSatuan,
+                  pembelianBahanBakuId: data.pembelianBahanBakuId,
+                  tanggal: dayjs(data.tanggal),
+                  createdAt: data.createdAt,
+                  jumlahOrder: separateValueAndUnit(data.jumlahOrder),
+                  rincianBarang: data.rincianBarang,
+                  updatedAt: data.updatedAt,
+                  noOrder: data.noOrder,
+                };
+              }),
+            });
+            setRefreshPembelianBahanbaku(false);
+          } else {
+            setOpenSnackbar(true);
+            setSnackbarStatus(false);
+            setSnackbarMessage(
+              "Tidak dapat memanggil data pembelian bahan baku"
+            );
+          }
+        });
+      }
     }
-  }, []);
+  }, [refreshPembelianBahanBaku]);
 
   const handleCloseSnackbar = () => {
     setOpenSnackbar(false);
@@ -240,17 +245,28 @@ const PembelianBahanBaku = (props) => {
       axios({
         method: "DELETE",
         url: `http://localhost:3000/inventory/deleteItemPembelianBahanBaku/${id}`,
+      }).then((result) => {
+        if (result.status === 200) {
+          setRefreshPembelianBahanbaku(true);
+          setOpenSnackbar(true);
+          setSnackbarStatus(true);
+          setSnackbarMessage("Berhasil menghapus item pembelian bahan baku")
+        } else {
+          setOpenSnackbar(true);
+          setSnackbarMessage(
+            "Tidak berhasil menghapus item pembelian bahan baku"
+          );
+          setSnackbarStatus(false);
+        }
       });
     }
   };
 
   const handleEditPembelianBahanBaku = (id) => {
     const isPembelianBahanBakuNotEmpty = isPembelianBahanBakuComplete();
-    const transformedPembelianBahanBaku = transformPembelianBahanBaku();
-
-    console.log(transformedPembelianBahanBaku);
 
     if (isPembelianBahanBakuNotEmpty === true) {
+      const transformedPembelianBahanBaku = transformPembelianBahanBaku();
       axios({
         method: "PUT",
         url: `http://localhost:3000/inventory/editPembelianBahanBaku/${id}`,
@@ -260,6 +276,9 @@ const PembelianBahanBaku = (props) => {
         },
       }).then((result) => {
         if (result.status === 200) {
+          setSuccessMessage("Berhasil mengedit data pembelian bahan baku")
+          setSnackbarStatus(true);
+          navigate(-1)
         } else {
           setOpenSnackbar(true);
           setSnackbarStatus(false);
@@ -271,9 +290,9 @@ const PembelianBahanBaku = (props) => {
 
   const handleAddPembelianBahanBaku = (id) => {
     const isPembelianBahanBakuNotEmpty = isPembelianBahanBakuComplete();
-    const transformedPembelianBahanBaku = transformPembelianBahanBaku();
 
     if (isPembelianBahanBakuNotEmpty === true) {
+      const transformedPembelianBahanBaku = transformPembelianBahanBaku();
       axios({
         method: "POST",
         url: `http://localhost:3000/inventory/addPembelianBahanBaku/${id}`,
@@ -419,8 +438,7 @@ const PembelianBahanBaku = (props) => {
           )}
         </div>
         <div style={{ marginTop: "32px" }}>
-          {permohonanPembelian.length !== 0 ||
-          !pembelianBahanBaku.length !== 0 ? (
+          {permohonanPembelian.length !== 0 || pembelianBahanBaku.id ? (
             <div>
               <div style={{ display: "flex", alignItems: "center" }}>
                 <Typography
@@ -693,7 +711,13 @@ const PembelianBahanBaku = (props) => {
                                 }}
                               />
                             </TableCell>
-                            <TableCell><IconButton><DeleteIcon style={{ color: "red" }}/></IconButton></TableCell>
+                            <TableCell>
+                              <IconButton onClick={() => {
+                                handleRemoveItemPembelianBahanBaku(result.id, index);
+                              }}>
+                                <DeleteIcon style={{ color: "red" }} />
+                              </IconButton>
+                            </TableCell>
                           </TableRow>
                         </React.Fragment>
                       );

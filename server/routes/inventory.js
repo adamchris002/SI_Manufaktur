@@ -43,13 +43,24 @@ inventoryRoutes.get(
   InventoryController.getAllPembelianBahanBaku
 );
 
-inventoryRoutes.get("/getPembelianBahanBaku/:id", InventoryController.getPembelianBahanBaku)
+inventoryRoutes.get(
+  "/getPembelianBahanBaku/:id",
+  InventoryController.getPembelianBahanBaku
+);
 
 inventoryRoutes.delete(
   "/deletePembelianBahanBaku/:id",
   InventoryController.deletePembelianBahanBaku
 );
 
-inventoryRoutes.put("/editPembelianBahanBaku/:id", InventoryController.editPembelianBahanBaku)
+inventoryRoutes.put(
+  "/editPembelianBahanBaku/:id",
+  InventoryController.editPembelianBahanBaku
+);
+
+inventoryRoutes.delete(
+  "/deleteItemPembelianBahanbaku/:id",
+  InventoryController.deleteItemPembelianBahanBaku
+);
 
 module.exports = inventoryRoutes;
