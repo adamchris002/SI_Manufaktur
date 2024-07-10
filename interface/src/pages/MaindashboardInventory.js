@@ -6,7 +6,6 @@ import factoryBackground from "../assets/factorybackground.png";
 import companyLogo from "../assets/PT_Aridas_Karya_Satria_Logo.png";
 import DefaultButton from "../components/Button";
 import AccountCircleIcon from "@mui/icons-material/AccountCircle";
-import AddIcon from "@mui/icons-material/Add";
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
 import {
@@ -23,8 +22,6 @@ import {
   Typography,
 } from "@mui/material";
 import { AppContext } from "../App";
-import moment from "moment";
-import CustomChip from "../components/Chip";
 import dayjs from "dayjs";
 import MyModal from "../components/Modal";
 import MySelectTextField from "../components/SelectTextField";
@@ -641,7 +638,7 @@ const MaindashboardInventory = (props) => {
               borderRadius="0.83vw"
               fontSize={isMobile ? "10px" : "1vw"}
               onClickFunction={() => {
-                navigate("/productionPlanningDashboard/estimationOrder");
+                navigate("/inventoryDashboard/stockPage");
               }}
             >
               Pergi ke halaman stok

@@ -21,6 +21,7 @@ import ProductionPlanningActivityLog from "./pages/ProductionPlanningPage/Produc
 import EditProductionPlanPage from "./pages/ProductionPlanningPage/EditProductionPlanPage";
 import PembelianBahanBaku from "./pages/InventoryPage/PembelianBahanBaku";
 import { createTheme, useMediaQuery } from "@mui/material";
+import StockPage from "./pages/InventoryPage/StockPage";
 
 export const AppContext = createContext({});
 
@@ -162,6 +163,17 @@ function App() {
                   <Navigate to="/unauthorized" replace />
                 ) : (
                   <PembelianBahanBaku userInformation={userCredentials} />
+                )
+              }
+            />
+            <Route
+              path="/inventoryDashboard/stockPage"
+              element={
+                !userCredentials.data ||
+                userCredentials.data.department !== "Inventory" ? (
+                  <Navigate to="/unauthorized" replace />
+                ) : (
+                  <StockPage userInformation={userCredentials} />
                 )
               }
             />

@@ -4,6 +4,11 @@ const {
   itemPermohonanPembelians,
   pembelianBahanBakus,
   itemPembelianBahanBakus,
+  activitylogs,
+  UserActivityLogs,
+  UserInventorys,
+  inventorys,
+  users,
 } = require("../models");
 
 class InventoryController {
@@ -24,7 +29,6 @@ class InventoryController {
     try {
       const { id } = req.params;
       const { pembelianBahanBakuId, dataPembelianBahanBaku } = req.body;
-      console.log(dataPembelianBahanBaku);
 
       let result = await pembelianBahanBakus.update(
         {
@@ -181,6 +185,23 @@ class InventoryController {
               userId: id,
               permohonanPembelianId: createPermohonanPembelian.id,
             });
+
+            let userInformation = await users.findOne({
+              where: { id: id },
+            });
+
+            let createActivityLog = await activitylogs.create({
+              user: userInformation.name,
+              activity: "Menambahkan permohonan pembelian",
+              name: "Nomor: " + data.nomor,
+              division: "Production Planning",
+            });
+
+            await UserActivityLogs.create({
+              userId: id,
+              id: createActivityLog.id,
+              activitylogsId: createActivityLog.id,
+            });
             if (
               data.daftarPermohonanPembelian &&
               Array.isArray(data.daftarPermohonanPembelian)
@@ -322,10 +343,128 @@ class InventoryController {
   static async deleteItemPembelianBahanBaku(req, res) {
     try {
       const { id } = req.params;
-      console.log(id)
 
       let result = await itemPembelianBahanBakus.destroy({
         where: { id: id },
+      });
+      res.json(result);
+    } catch (error) {
+      res.json(error);
+    }
+  }
+  static async getAllInventoryItem(req, res) {
+    try {
+      let result = await inventorys.findAll({});
+
+      res.json(result);
+    } catch (error) {
+      res.json(error);
+    }
+  }
+  static async addInventoryItem(req, res) {
+    try {
+      const { id } = req.params;
+      const { dataInventory } = req.body;
+
+      let createDataInventory = await inventorys.create({
+        namaItem: dataInventory.namaItem,
+        rincianItem: dataInventory.rincianItem,
+        jumlahItem: dataInventory.jumlahItem,
+      });
+
+      await UserInventorys.create({
+        userId: id,
+        inventoryId: createDataInventory.id,
+      });
+
+      let userInformation = await users.findOne({
+        where: { id: id },
+      });
+
+      let createActivityLog = await activitylogs.create({
+        user: userInformation.name,
+        activity: "Menambahkan item bahan baku",
+        name: dataInventory.namaItem,
+        division: "Inventory",
+      });
+
+      await UserActivityLogs.create({
+        userId: id,
+        id: createActivityLog.id,
+        activitylogsId: createActivityLog.id,
+      });
+
+      res.json(createDataInventory);
+    } catch (error) {
+      res.json(error);
+    }
+  }
+  static async updateInventoryItem(req, res) {
+    try {
+      const { id } = req.params;
+      const { dataInventory } = req.body;
+
+      console.log(id)
+      console.log(dataInventory)
+
+      let result = await inventorys.update(
+        {
+          namaItem: dataInventory.namaItem,
+          rincianItem: dataInventory.rincianItem,
+          jumlahItem: dataInventory.jumlahItem,
+        },
+        { where: { id: dataInventory.inventoryItemId } }
+      );
+
+      const userInformation = await users.findOne({
+        where: { id: id },
+      });
+
+      let updateActivityLog = await activitylogs.create({
+        user: userInformation.name,
+        activity: "Update item bahan baku",
+        name: dataInventory.namaItem,
+        division: "Inventory",
+      });
+
+      await UserActivityLogs.create({
+        userId: id,
+        id: updateActivityLog.id,
+        activitylogsId: updateActivityLog.id,
+      });
+
+      res.json(result);
+    } catch (error) {
+      res.json(error);
+    }
+  }
+  static async deleteInventoryItem(req, res) {
+    try {
+      const { userId, inventoryItemId } = req.query;
+
+      const inventoryData = await inventorys.findOne({
+        where: { id: inventoryItemId },
+      });
+
+      let result = await inventorys.destroy({
+        where: { id: inventoryItemId },
+      });
+
+      const userInformation = await users.findOne({
+        where: { id: userId },
+      });
+
+      let deleteActivityLogs = await activitylogs.create({
+        user: userInformation.name,
+        activity: "Delete item bahan baku",
+        name: inventoryData.namaItem,
+        division: "Inventory",
+      });
+
+      await UserActivityLogs.create({
+        userId: userId,
+        id: deleteActivityLogs.id,
+        activitylogsId: deleteActivityLogs.id,
       });
       res.json(result);
     } catch (error) {

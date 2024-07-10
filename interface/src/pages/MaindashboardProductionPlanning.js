@@ -96,18 +96,20 @@ const MaindashboardProductionPlanning = (props) => {
     }
   }, [message, clearMessage]);
 
-
-
   const handleDeleteProductionPlan = (productionPlanId) => {
     axios({
       method: "DELETE",
       url: `http://localhost:3000/productionPlanning/deleteProductionPlan/${productionPlanId}`,
+      params: {
+        userId: userInformation.data.id,
+        productionPlanId: productionPlanId,
+      },
     }).then(() => {
       try {
         setRefreshProductionPlanData(true);
         setOpenSnackbar(true);
         setSnackbarStatus(true);
-        setSnackbarMessage("Berhasil menghapus rencana produksi")
+        setSnackbarMessage("Berhasil menghapus rencana produksi");
       } catch (error) {
         console.log(error);
       }

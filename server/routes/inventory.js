@@ -63,4 +63,22 @@ inventoryRoutes.delete(
   InventoryController.deleteItemPembelianBahanBaku
 );
 
+inventoryRoutes.get(
+  "/getAllInventoryItem",
+  InventoryController.getAllInventoryItem
+);
+
+inventoryRoutes.post(
+  "/addInventoryItem/:id",
+  InventoryController.addInventoryItem
+);
+inventoryRoutes.put(
+  "/editInventoryItem/:id",
+  InventoryController.updateInventoryItem
+);
+inventoryRoutes.delete(
+  "/deleteInventoryItem",
+  InventoryController.deleteInventoryItem
+);
+
 module.exports = inventoryRoutes;

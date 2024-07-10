@@ -221,9 +221,13 @@ class ProductionPlanningController {
   }
   static async deleteProductionPlan(req, res) {
     try {
-      const { id } = req.params;
+      const { userId, productionPlanId } = req.query;
       let productionPlanData = await productionPlannings.findOne({
-        where: { id: id },
+        where: { id: productionPlanId },
+      });
+
+      let oneOrder = await orders.findOne({
+        where: { id: productionPlanData.orderId },
       });
 
       await orders.update(
@@ -233,8 +237,25 @@ class ProductionPlanningController {
         { where: { id: productionPlanData.orderId } }
       );
 
+      let userInformation = await users.findOne({
+        where: { id: userId },
+      });
+
+      let deleteProductionPlan = await activitylogs.create({
+        user: userInformation.name,
+        activity: "Delete a production plan",
+        name: oneOrder.customerDetail,
+        division: "Production Planning",
+      });
+
+      await UserActivityLogs.create({
+        userId: userId,
+        id: deleteProductionPlan.id,
+        activityLogsId: deleteProductionPlan.id,
+      });
+
       let result = await productionPlannings.destroy({
-        where: { id: id },
+        where: { id: productionPlanId },
       });
       res.json(result);
     } catch (error) {
@@ -314,7 +335,7 @@ class ProductionPlanningController {
         ],
       });
 
-      let existingUser = users.findOne({
+      let existingUser = await users.findOne({
         where: { id: id },
       });
 
@@ -341,7 +362,7 @@ class ProductionPlanningController {
 
       let updateProductionPlanningActivity = await activitylogs.create({
         user: existingUser.name,
-        activity: "Update ProductionPlan",
+        activity: "Update Production Plan",
         name: pemesan,
         division: "Production Planning",
       });
