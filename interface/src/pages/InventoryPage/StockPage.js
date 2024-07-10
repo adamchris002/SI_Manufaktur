@@ -16,6 +16,8 @@ import {
 
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
+import ArrowDropDownIcon from "@mui/icons-material/ArrowDropDown";
+import ArrowDropUpIcon from "@mui/icons-material/ArrowDropUp";
 import { AppContext } from "../../App";
 import DefaultButton from "../../components/Button";
 import MyModal from "../../components/Modal";
@@ -31,12 +33,14 @@ const StockPage = (props) => {
 
   const [allInventoryItems, setAllInventoryItems] = useState([]);
   const [inventoryItem, setInventoryItem] = useState(false);
+  const [searchItem, setSearchItem] = useState("");
 
   const [ifId, setIfId] = useState(0);
   const [namaItem, setNamaItem] = useState("");
   const [rincianItem, setRincianItem] = useState("");
   const [jumlahItem, setJumlahItem] = useState("");
   const [jumlahItemUnit, setJumlahItemUnit] = useState("");
+  const [sortName, setSortName] = useState(false);
 
   const [refreshInventoryItem, setRefreshInventoryItem] = useState(true);
   const [openSnackbar, setOpenSnackbar] = useState(false);
@@ -82,6 +86,28 @@ const StockPage = (props) => {
     }
   }, [refreshInventoryItem]);
 
+  const handleSortNamaItem = (property, order = "asc") => {
+    setSortName(!sortName);
+    if (!allInventoryItems?.data) {
+      return;
+    }
+
+    const sortedArray = [...allInventoryItems.data].sort((a, b) => {
+      const aValue = a[property].toString().toLowerCase();
+      const bValue = b[property].toString().toLowerCase();
+
+      if (aValue < bValue) {
+        return order === "asc" ? -1 : 1;
+      }
+      if (aValue > bValue) {
+        return order === "asc" ? 1 : -1;
+      }
+      return 0;
+    });
+
+    setAllInventoryItems({ ...allInventoryItems, data: sortedArray });
+  };
+
   const handleEditInventoryItem = () => {
     if (
       jumlahItem === "" ||
@@ -93,6 +119,10 @@ const StockPage = (props) => {
       setOpenSnackbar(true);
       setSnackbarStatus(false);
       setSnackbarMessage("Tolong isi semua input");
+    } else if (rincianItem.length > 255) {
+      setOpenSnackbar(true);
+      setSnackbarStatus(false);
+      setSnackbarMessage("rincian barang terlalu panjang");
     } else {
       const dataInventory = {
         inventoryItemId: ifId,
@@ -153,6 +183,10 @@ const StockPage = (props) => {
       setOpenSnackbar(true);
       setSnackbarStatus(false);
       setSnackbarMessage("Tolong isi semua input");
+    } else if (rincianItem.length > 255) {
+      setOpenSnackbar(true);
+      setSnackbarStatus(false);
+      setSnackbarMessage("Rincian barang terlalu panjang");
     } else {
       const dataInventory = {
         namaItem: namaItem,
@@ -173,6 +207,7 @@ const StockPage = (props) => {
           setRincianItem("");
           setJumlahItem("");
           setJumlahItemUnit("");
+          setRefreshInventoryItem(true);
         } else {
           setOpenSnackbar(true);
           setSnackbarStatus(false);
@@ -255,54 +290,114 @@ const StockPage = (props) => {
             Tambah Stok Bahan Baku
           </DefaultButton>
         </div>
+        <div style={{ marginTop: "16px" }}>
+          <TextField
+            type="text"
+            placeholder="Search item"
+            onChange={(event) => {
+              setSearchItem(event.target.value);
+            }}
+            sx={{
+              "& .MuiOutlinedInput-root": {
+                height: isMobile ? "15px" : "3vw",
+                width: isMobile ? "150px" : "25vw",
+                fontSize: isMobile ? "10px" : "1.5vw",
+                borderRadius: "10px",
+                boxSizing: "border-box",
+                "& fieldset": {
+                  borderColor: "#0F607D",
+                },
+                "&:hover fieldset": {
+                  borderColor: "#0F607D",
+                },
+                "&.Mui-focused fieldset": {
+                  borderColor: "#0F607D",
+                },
+              },
+            }}
+          />
+        </div>
         <div style={{ width: "100%" }}>
-          {allInventoryItems === "" ? (
-            <Typography>Test</Typography>
+          {allInventoryItems.length === 0 ? (
+            <Typography>Tidak ada item bahan baku</Typography>
           ) : (
             <TableContainer>
               <Table>
                 <TableHead>
                   <TableRow>
                     <TableCell>No.</TableCell>
-                    <TableCell>Nama Item</TableCell>
+                    <TableCell>
+                      {" "}
+                      <div style={{ display: "flex", alignItems: "center" }}>
+                        <Typography style={{ width: "100px" }}>
+                          Nama Item
+                        </Typography>
+                        {sortName ? (
+                          <IconButton
+                            onClick={() => {
+                              handleSortNamaItem("namaItem", "asc");
+                            }}
+                          >
+                            <ArrowDropDownIcon />
+                          </IconButton>
+                        ) : (
+                          <IconButton
+                            onClick={() => {
+                              handleSortNamaItem("namaItem", "desc");
+                            }}
+                          >
+                            <ArrowDropUpIcon />
+                          </IconButton>
+                        )}
+                      </div>
+                    </TableCell>
                     <TableCell>Rincian Item</TableCell>
                     <TableCell>Jumlah Item</TableCell>
                     <TableCell>Actions</TableCell>
                   </TableRow>
                 </TableHead>
                 <TableBody>
-                  {allInventoryItems?.data?.map((result, index) => {
-                    return (
-                      <React.Fragment>
-                        <TableRow>
-                          <TableCell>{index + 1}</TableCell>
-                          <TableCell>{result.namaItem}</TableCell>
-                          <TableCell>{result.rincianItem}</TableCell>
-                          <TableCell>{result.jumlahItem}</TableCell>
-                          <TableCell>
-                            <div
-                              style={{ display: "flex", alignItems: "center" }}
-                            >
-                              <IconButton
-                                onClick={() => {
-                                  handleOpenEditInventoryItems(result);
+                  {allInventoryItems?.data
+                    ?.filter((element) => {
+                      return element.namaItem
+                        .toLowerCase()
+                        .includes(searchItem.toLowerCase());
+                    })
+                    .map((result, index) => {
+                      return (
+                        <React.Fragment key={index}>
+                          <TableRow>
+                            <TableCell>{index + 1}</TableCell>
+                            <TableCell>{result.namaItem}</TableCell>
+                            <TableCell>{result.rincianItem}</TableCell>
+                            <TableCell>{result.jumlahItem}</TableCell>
+                            <TableCell>
+                              <div
+                                style={{
+                                  display: "flex",
+                                  alignItems: "center",
                                 }}
                               >
-                                <EditIcon style={{ color: "#0F607D" }} />
-                              </IconButton>
-                              <IconButton
-                                onClick={() => {
-                                  handleDeleteInventoryItem(result.id);
-                                }}
-                              >
-                                <DeleteIcon style={{ color: "red" }} />
-                              </IconButton>
-                            </div>
-                          </TableCell>
-                        </TableRow>
-                      </React.Fragment>
-                    );
-                  })}
+                                <IconButton
+                                  onClick={() => {
+                                    handleOpenEditInventoryItems(result);
+                                  }}
+                                >
+                                  <EditIcon style={{ color: "#0F607D" }} />
+                                </IconButton>
+                                <IconButton
+                                  onClick={() => {
+                                    handleDeleteInventoryItem(result.id);
+                                  }}
+                                >
+                                  <DeleteIcon style={{ color: "red" }} />
+                                </IconButton>
+                              </div>
+                            </TableCell>
+                          </TableRow>
+                        </React.Fragment>
+                      );
+                    })}
                 </TableBody>
               </Table>
             </TableContainer>
@@ -312,7 +407,7 @@ const StockPage = (props) => {
       {openModal === true && (
         <MyModal open={openModal} handleClose={handleCloseModal}>
           <div
-            className="hideScrollbar"
+            // className="hideScrollbar"
             style={{
               margin: isMobile ? "24px" : "0.83vw 1.667vw 0.83vw 1.667vw",
               overflow: "auto",
@@ -337,7 +432,7 @@ const StockPage = (props) => {
                   marginTop: "16px",
                 }}
               >
-                <div style={{ width: "100px" }}>
+                <div style={{ width: "150px" }}>
                   <Typography
                     style={{
                       color: "#0F607D",
@@ -379,7 +474,7 @@ const StockPage = (props) => {
                   marginTop: "16px",
                 }}
               >
-                <div style={{ width: "100px" }}>
+                <div style={{ width: "150px" }}>
                   <Typography
                     style={{
                       color: "#0F607D",
@@ -421,7 +516,7 @@ const StockPage = (props) => {
                   marginTop: "16px",
                 }}
               >
-                <div style={{ width: "100px" }}>
+                <div style={{ width: "150px" }}>
                   <Typography
                     style={{
                       color: "#0F607D",

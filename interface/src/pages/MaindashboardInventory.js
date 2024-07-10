@@ -407,10 +407,10 @@ const MaindashboardInventory = (props) => {
   const handleMoveToEditPembelianBahanBaku = (id) => {
     navigate("/inventoryDashboard/pembelianBahan", {
       state: {
-        pembelianBahanBakuId: id
-      }
-    })
-  }
+        pembelianBahanBakuId: id,
+      },
+    });
+  };
 
   const units = [
     {
@@ -518,14 +518,14 @@ const MaindashboardInventory = (props) => {
               height="2.08vw"
               backgroundColor="#0F607D"
               borderRadius="0.83vw"
-              fontSize="1vw"
+              fontSize="0.75vw"
               onClickFunction={() => {
                 document
                   .getElementById("pengambilanbarang")
                   .scrollIntoView({ behavior: "smooth" });
               }}
             >
-              Pengambilan Barang
+              Pengambilan/Penyerahan Barang
             </DefaultButton>
           </div>
           <div style={{ marginTop: "1.667vw", fontSize: "1.25vw" }}>
@@ -535,13 +535,13 @@ const MaindashboardInventory = (props) => {
               backgroundColor="#0F607D"
               borderRadius="0.83vw"
               fontSize="1vw"
-              onClickFunction={() => {
-                document
-                  .getElementById("penyerahanbarang")
-                  .scrollIntoView({ behavior: "smooth" });
-              }}
+              // onClickFunction={() => {
+              //   document
+              //     .getElementById("stokOpnam")
+              //     .scrollIntoView({ behavior: "smooth" });
+              // }}
             >
-              Penyerahan Barang
+              Stok Opnam
             </DefaultButton>
           </div>
           <div style={{ marginTop: "1.667vw", fontSize: "1.25vw" }}>
@@ -717,7 +717,7 @@ const MaindashboardInventory = (props) => {
                         )
                         .map((result, index) => {
                           return (
-                            <TableRow>
+                            <TableRow key={index}>
                               <TableCell>{index + 1 + "."}</TableCell>
                               <TableCell>{result.nomor}</TableCell>
                               <TableCell>{result.perihal}</TableCell>
@@ -830,7 +830,7 @@ const MaindashboardInventory = (props) => {
                           )
                           .map((result, index) => {
                             return (
-                              <TableRow>
+                              <TableRow key={index}>
                                 <TableCell>{index + 1 + "."}</TableCell>
                                 <TableCell style={{ width: "200px" }}>
                                   {result.id}
@@ -860,76 +860,79 @@ const MaindashboardInventory = (props) => {
                   </TableContainer>
                 </div>
                 {pembelianBahanBaku?.data?.length === 0 ? (
-                  <div style={{display: 'flex'}}>
+                  <div style={{ display: "flex" }}>
                     <Typography>Tidak ada data pembelian bahan baku</Typography>
                   </div>
                 ) : (
                   <div style={{ width: isMobile ? "100%" : "48%" }}>
-                  <Typography>Daftar Pembelian Bahan Baku</Typography>
-                  <TableContainer component={Paper}>
-                    <Table sx={{ minWidth: 650 }} aria-label="simple table">
-                      <TableHead>
-                        <TableRow>
-                          <TableCell>No.</TableCell>
-                          <TableCell>ID Permohonan Pembelian</TableCell>
-                          <TableCell>Leveransir</TableCell>
-                          <TableCell>Alamat</TableCell>
-                          <TableCell>Tanggal Pembuatan</TableCell>
-                          <TableCell>Actions</TableCell>
-                        </TableRow>
-                      </TableHead>
-                      <TableBody>
-                        {pembelianBahanBaku?.data?.map((result, index) => {
-                          return (
-                            <TableRow>
-                              <TableCell>{index + 1 + "."}</TableCell>
-                              <TableCell style={{ width: "200px" }}>
-                                {result.permohonanPembelianId}
-                              </TableCell>
-                              <TableCell>{result.leveransir}</TableCell>
-                              <TableCell>{result.alamat}</TableCell>
-                              <TableCell>
-                                {dayjs(result.createdAt).format(
-                                  "MM/DD/YYYY hh:mm A"
-                                )}
-                              </TableCell>
-                              <TableCell>
-                                <div
-                                  style={{
-                                    display: "flex",
-                                    alignItems: "center",
-                                  }}
-                                >
-                                  <IconButton onClick={() => {
-                                    handleMoveToEditPembelianBahanBaku(result.id)
-                                  }}>
-                                    <EditIcon style={{ color: "#0F606D" }} />
-                                  </IconButton>
-                                  <IconButton
-                                    onClick={() => {
-                                      handleDeletePembelianBahanBaku(result.id);
+                    <Typography>Daftar Pembelian Bahan Baku</Typography>
+                    <TableContainer component={Paper}>
+                      <Table sx={{ minWidth: 650 }} aria-label="simple table">
+                        <TableHead>
+                          <TableRow>
+                            <TableCell>No.</TableCell>
+                            <TableCell>ID Permohonan Pembelian</TableCell>
+                            <TableCell>Leveransir</TableCell>
+                            <TableCell>Alamat</TableCell>
+                            <TableCell>Tanggal Pembuatan</TableCell>
+                            <TableCell>Actions</TableCell>
+                          </TableRow>
+                        </TableHead>
+                        <TableBody>
+                          {pembelianBahanBaku?.data?.map((result, index) => {
+                            return (
+                              <TableRow key={index}>
+                                <TableCell>{index + 1 + "."}</TableCell>
+                                <TableCell style={{ width: "200px" }}>
+                                  {result.permohonanPembelianId}
+                                </TableCell>
+                                <TableCell>{result.leveransir}</TableCell>
+                                <TableCell>{result.alamat}</TableCell>
+                                <TableCell>
+                                  {dayjs(result.createdAt).format(
+                                    "MM/DD/YYYY hh:mm A"
+                                  )}
+                                </TableCell>
+                                <TableCell>
+                                  <div
+                                    style={{
+                                      display: "flex",
+                                      alignItems: "center",
                                     }}
-                                    sx={{ marginLeft: "8px" }}
                                   >
-                                    <DeleteIcon style={{ color: "red" }} />
-                                  </IconButton>
-                                </div>
-                              </TableCell>
-                            </TableRow>
-                          );
-                        })}
-                      </TableBody>
-                    </Table>
-                  </TableContainer>
-                </div>
-                ) }
+                                    <IconButton
+                                      onClick={() => {
+                                        handleMoveToEditPembelianBahanBaku(
+                                          result.id
+                                        );
+                                      }}
+                                    >
+                                      <EditIcon style={{ color: "#0F606D" }} />
+                                    </IconButton>
+                                    <IconButton
+                                      onClick={() => {
+                                        handleDeletePembelianBahanBaku(
+                                          result.id
+                                        );
+                                      }}
+                                      sx={{ marginLeft: "8px" }}
+                                    >
+                                      <DeleteIcon style={{ color: "red" }} />
+                                    </IconButton>
+                                  </div>
+                                </TableCell>
+                              </TableRow>
+                            );
+                          })}
+                        </TableBody>
+                      </Table>
+                    </TableContainer>
+                  </div>
+                )}
               </div>
             </div>
           )}
         </div>
-        <div
-          style={{ margin: isMobile ? "0px 32px 0px 32px" : "1.667vw" }}
-        ></div>
         <div
           style={{
             margin: isMobile
@@ -942,7 +945,7 @@ const MaindashboardInventory = (props) => {
           }}
         >
           <Typography
-            id="pengambilangbarang"
+            id="pengambilanbarang"
             style={{ fontSize: isMobile ? "4.5vw" : "2vw", color: "#0F607D" }}
           >
             Pengambilan Barang
@@ -967,15 +970,41 @@ const MaindashboardInventory = (props) => {
           }}
         >
           <Typography
+            id="stokopnam"
+            style={{ fontSize: isMobile ? "4.5vw" : "2vw", color: "#0F607D" }}
+          >
+            Stok Opnam
+          </Typography>
+          <div>
+            <DefaultButton onClickFunction={() => {}}>
+              <Typography style={{ fontSize: isMobile ? "12px" : "1.042vw" }}>
+                Go to Stok Opnam Page
+              </Typography>
+            </DefaultButton>
+          </div>
+        </div>
+        <div
+          style={{
+            margin: isMobile
+              ? "32px 32px 12px 32px"
+              : "3.33vw 1.667vw 0vw 1.667vw",
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "center",
+            width: isMobile ? "" : "72vw",
+          }}
+        >
+          <Typography
             id="activitylog"
             style={{ fontSize: isMobile ? "4.5vw" : "2vw", color: "#0F607D" }}
           >
             Activity Log
           </Typography>
+          ''
           <div>
             <DefaultButton
               onClickFunction={() => {
-                navigate("/productionPlanningDashboard/activityLog");
+                navigate("/inventoryDashboard/activityLog");
               }}
             >
               <Typography style={{ fontSize: isMobile ? "12px" : "1.042vw" }}>

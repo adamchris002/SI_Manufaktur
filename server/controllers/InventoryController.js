@@ -471,6 +471,16 @@ class InventoryController {
       res.json(error);
     }
   }
+  static async inventoryActivityLog(req, res) {
+    try {
+      let result = await activitylogs.findAll({
+        where: { division: "Inventory" },
+      });
+      res.json(result);
+    } catch (error) {
+      res.json(error);
+    }
+  }
 }
 
 module.exports = InventoryController;

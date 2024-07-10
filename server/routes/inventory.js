@@ -80,5 +80,9 @@ inventoryRoutes.delete(
   "/deleteInventoryItem",
   InventoryController.deleteInventoryItem
 );
+inventoryRoutes.get(
+  "/inventoryActivityLog",
+  InventoryController.inventoryActivityLog
+);
 
 module.exports = inventoryRoutes;

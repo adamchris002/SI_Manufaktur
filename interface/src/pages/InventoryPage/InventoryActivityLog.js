@@ -17,16 +17,18 @@ import axios from "axios";
 import moment from "moment";
 import { AppContext } from "../../App";
 
-const ProductionPlanningActivityLog = () => {
+const InventoryActivityLog = () => {
   const { isMobile } = useContext(AppContext);
 
   const navigate = useNavigate();
   const [activityLogs, setActivityLogs] = useState([]);
 
+  console.log(activityLogs)
+
   useEffect(() => {
     axios({
       method: "GET",
-      url: "http://localhost:3000/productionPlanning/productionPlanningActivityLogs",
+      url: "http://localhost:3000/inventory/inventoryActivityLog",
     }).then((result) => {
       setActivityLogs(result);
     });
@@ -84,7 +86,7 @@ const ProductionPlanningActivityLog = () => {
                   <TableRow>
                     <TableCell>User</TableCell>
                     <TableCell align="right">Activity</TableCell>
-                    {/* <TableCell align="right">Production Plan ID</TableCell> */}
+                    {/* <TableCell align="right">Order ID</TableCell> */}
                     <TableCell align="right">Element Name</TableCell>
                     <TableCell align="right">Division</TableCell>
                     <TableCell align="right">Created At</TableCell>
@@ -122,4 +124,4 @@ const ProductionPlanningActivityLog = () => {
   );
 };
 
-export default ProductionPlanningActivityLog;
+export default InventoryActivityLog;
