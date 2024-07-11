@@ -6,6 +6,7 @@ import {
   Route,
   Navigate,
 } from "react-router-dom";
+import { createTheme, useMediaQuery } from "@mui/material";
 import LoginPage from "./pages/LoginPage";
 import RegisterPage from "./pages/RegisterPage";
 import MaindashboardMarketing from "./pages/MaindashboardMarketing";
@@ -20,9 +21,9 @@ import EstimationOrderPage from "./pages/ProductionPlanningPage/EstimationOrderP
 import ProductionPlanningActivityLog from "./pages/ProductionPlanningPage/ProductionPlanningActivityLog";
 import EditProductionPlanPage from "./pages/ProductionPlanningPage/EditProductionPlanPage";
 import PembelianBahanBaku from "./pages/InventoryPage/PembelianBahanBaku";
-import { createTheme, useMediaQuery } from "@mui/material";
 import StockPage from "./pages/InventoryPage/StockPage";
 import InventoryActivityLog from "./pages/InventoryPage/InventoryActivityLog";
+import StokOpnam from "./pages/InventoryPage/StokOpnam";
 
 export const AppContext = createContext({});
 
@@ -186,6 +187,17 @@ function App() {
                   <Navigate to="/unauthorized" replace />
                 ) : (
                   <InventoryActivityLog />
+                )
+              }
+            />
+            <Route
+              path="/inventoryDashboard/stokOpnam"
+              element={
+                !userCredentials.data ||
+                userCredentials.data.department !== "Inventory" ? (
+                  <Navigate to="/unauthorized" replace />
+                ) : (
+                  <StokOpnam userInformation={userCredentials} />
                 )
               }
             />

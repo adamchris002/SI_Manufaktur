@@ -250,7 +250,7 @@ const PembelianBahanBaku = (props) => {
           setRefreshPembelianBahanbaku(true);
           setOpenSnackbar(true);
           setSnackbarStatus(true);
-          setSnackbarMessage("Berhasil menghapus item pembelian bahan baku")
+          setSnackbarMessage("Berhasil menghapus item pembelian bahan baku");
         } else {
           setOpenSnackbar(true);
           setSnackbarMessage(
@@ -276,9 +276,9 @@ const PembelianBahanBaku = (props) => {
         },
       }).then((result) => {
         if (result.status === 200) {
-          setSuccessMessage("Berhasil mengedit data pembelian bahan baku")
+          setSuccessMessage("Berhasil mengedit data pembelian bahan baku");
           setSnackbarStatus(true);
-          navigate(-1)
+          navigate(-1);
         } else {
           setOpenSnackbar(true);
           setSnackbarStatus(false);
@@ -539,192 +539,201 @@ const PembelianBahanBaku = (props) => {
                   </Typography>
                 </DefaultButton>
               </div>
-              <TableContainer component={Paper}>
-                <Table sx={{ minWidth: 650 }} aria-label="simple table">
-                  <TableHead>
-                    <TableRow>
-                      <TableCell>No.</TableCell>
-                      <TableCell align="left">Tanggal</TableCell>
-                      <TableCell align="left">No. Order</TableCell>
-                      <TableCell align="left">Jenis Barang</TableCell>
-                      <TableCell align="left">Rincian Barang</TableCell>
-                      <TableCell align="left">Jumlah Order</TableCell>
-                      <TableCell align="left">Harga Satuan</TableCell>
-                      <TableCell align="left">Jumlah Harga</TableCell>
-                      <TableCell align="left">Action</TableCell>
-                    </TableRow>
-                  </TableHead>
-                  <TableBody>
-                    {pembelianBahanBaku.items.map((result, index) => {
-                      return (
-                        <React.Fragment key={index}>
-                          <TableRow>
-                            <TableCell>{index + 1 + "."}</TableCell>
-                            <TableCell>
-                              <LocalizationProvider dateAdapter={AdapterDayjs}>
-                                <DemoContainer
-                                  sx={{ padding: 0 }}
-                                  components={["DateTimePicker"]}
+              <div style={{width: "100%"}}>
+                <TableContainer component={Paper}>
+                  <Table sx={{ minWidth: 650 }} aria-label="simple table">
+                    <TableHead>
+                      <TableRow>
+                        <TableCell>No.</TableCell>
+                        <TableCell align="left">Tanggal</TableCell>
+                        <TableCell align="left">No. Order</TableCell>
+                        <TableCell align="left">Jenis Barang</TableCell>
+                        <TableCell align="left">Rincian Barang</TableCell>
+                        <TableCell align="left">Jumlah Order</TableCell>
+                        <TableCell align="left">Harga Satuan</TableCell>
+                        <TableCell align="left">Jumlah Harga</TableCell>
+                        <TableCell align="left">Action</TableCell>
+                      </TableRow>
+                    </TableHead>
+                    <TableBody>
+                      {pembelianBahanBaku.items.map((result, index) => {
+                        return (
+                          <React.Fragment key={index}>
+                            <TableRow>
+                              <TableCell>{index + 1 + "."}</TableCell>
+                              <TableCell>
+                                <LocalizationProvider
+                                  dateAdapter={AdapterDayjs}
                                 >
-                                  <DemoItem sx={{ padding: 0 }}>
-                                    <DateTimePicker
-                                      value={result.tanggal}
-                                      disablePast
-                                      onChange={(event) =>
-                                        handleChangeInput(
-                                          "tanggal",
-                                          event,
-                                          index
-                                        )
-                                      }
-                                    />
-                                  </DemoItem>
-                                </DemoContainer>
-                              </LocalizationProvider>
-                            </TableCell>
-                            <TableCell>
-                              <TextField
-                                value={result.noOrder}
-                                onChange={(event) => {
-                                  handleChangeInput("noOrder", event, index);
-                                }}
-                              />
-                            </TableCell>
-                            <TableCell>
-                              <TextField
-                                value={result.jenisBarang}
-                                onChange={(event) => {
-                                  handleChangeInput(
-                                    "jenisBarang",
-                                    event,
-                                    index
-                                  );
-                                }}
-                              />
-                            </TableCell>
-                            <TableCell>
-                              <TextField
-                                value={result.rincianBarang}
-                                onChange={(event) => {
-                                  handleChangeInput(
-                                    "rincianBarang",
-                                    event,
-                                    index
-                                  );
-                                }}
-                              />
-                            </TableCell>
-
-                            <TableCell>
-                              <div
-                                style={{
-                                  display: "flex",
-                                  alignItems: "center",
-                                }}
-                              >
+                                  <DemoContainer
+                                    sx={{ padding: 0 }}
+                                    components={["DateTimePicker"]}
+                                  >
+                                    <DemoItem sx={{ padding: 0 }}>
+                                      <DateTimePicker
+                                        value={result.tanggal}
+                                        disablePast
+                                        onChange={(event) =>
+                                          handleChangeInput(
+                                            "tanggal",
+                                            event,
+                                            index
+                                          )
+                                        }
+                                      />
+                                    </DemoItem>
+                                  </DemoContainer>
+                                </LocalizationProvider>
+                              </TableCell>
+                              <TableCell>
                                 <TextField
-                                  type="number"
-                                  value={result.jumlahOrder.value}
+                                  value={result.noOrder}
+                                  onChange={(event) => {
+                                    handleChangeInput("noOrder", event, index);
+                                  }}
+                                />
+                              </TableCell>
+                              <TableCell>
+                                <TextField
+                                  value={result.jenisBarang}
                                   onChange={(event) => {
                                     handleChangeInput(
-                                      "jumlahOrder",
+                                      "jenisBarang",
                                       event,
                                       index
                                     );
                                   }}
                                 />
-                                <div style={{ marginLeft: "8px" }}>
-                                  <MySelectTextField
-                                    data={units}
-                                    width={isMobile ? "50px" : "55px"}
-                                    height={isMobile ? "15px" : "55px"}
-                                    value={result.jumlahOrder.unit}
+                              </TableCell>
+                              <TableCell>
+                                <TextField
+                                  value={result.rincianBarang}
+                                  onChange={(event) => {
+                                    handleChangeInput(
+                                      "rincianBarang",
+                                      event,
+                                      index
+                                    );
+                                  }}
+                                />
+                              </TableCell>
+
+                              <TableCell>
+                                <div
+                                  style={{
+                                    display: "flex",
+                                    alignItems: "center",
+                                  }}
+                                >
+                                  <TextField
+                                    type="number"
+                                    value={result.jumlahOrder.value}
                                     onChange={(event) => {
                                       handleChangeInput(
                                         "jumlahOrder",
                                         event,
-                                        index,
-                                        true
+                                        index
                                       );
                                     }}
                                   />
+                                  <div style={{ marginLeft: "8px" }}>
+                                    <MySelectTextField
+                                      data={units}
+                                      width={isMobile ? "50px" : "55px"}
+                                      height={isMobile ? "15px" : "55px"}
+                                      value={result.jumlahOrder.unit}
+                                      onChange={(event) => {
+                                        handleChangeInput(
+                                          "jumlahOrder",
+                                          event,
+                                          index,
+                                          true
+                                        );
+                                      }}
+                                    />
+                                  </div>
                                 </div>
-                              </div>
-                            </TableCell>
-                            <TableCell>
-                              <TextField
-                                type="text"
-                                value={result.hargaSatuan}
-                                onChange={(event) => {
-                                  handleChangeInput(
-                                    "hargaSatuan",
-                                    event,
-                                    index
-                                  );
-                                }}
-                                sx={{
-                                  "& .MuiOutlinedInput-root": {
-                                    height: isMobile ? "15px" : "3vw",
-                                    width: isMobile ? "120px" : "15vw",
-                                    fontSize: isMobile ? "10px" : "1.5vw",
-                                    borderRadius: "10px",
-                                    "& fieldset": {
-                                      borderColor: "#0F607D",
+                              </TableCell>
+                              <TableCell>
+                                <TextField
+                                  type="text"
+                                  value={result.hargaSatuan}
+                                  onChange={(event) => {
+                                    handleChangeInput(
+                                      "hargaSatuan",
+                                      event,
+                                      index
+                                    );
+                                  }}
+                                  sx={{
+                                    "& .MuiOutlinedInput-root": {
+                                      height: isMobile ? "15px" : "3vw",
+                                      width: isMobile ? "120px" : "15vw",
+                                      fontSize: isMobile ? "10px" : "1.5vw",
+                                      borderRadius: "10px",
+                                      "& fieldset": {
+                                        borderColor: "#0F607D",
+                                      },
+                                      "&:hover fieldset": {
+                                        borderColor: "#0F607D",
+                                      },
+                                      "&.Mui-focused fieldset": {
+                                        borderColor: "#0F607D",
+                                      },
                                     },
-                                    "&:hover fieldset": {
-                                      borderColor: "#0F607D",
+                                  }}
+                                  InputProps={{
+                                    inputComponent: NumericFormatCustom,
+                                  }}
+                                />
+                              </TableCell>
+                              <TableCell>
+                                <TextField
+                                  type="text"
+                                  disabled
+                                  value={result.jumlahHarga}
+                                  sx={{
+                                    "& .MuiOutlinedInput-root": {
+                                      height: isMobile ? "15px" : "3vw",
+                                      width: isMobile ? "120px" : "15vw",
+                                      fontSize: isMobile ? "10px" : "1.5vw",
+                                      borderRadius: "10px",
+                                      "& fieldset": {
+                                        borderColor: "#0F607D",
+                                      },
+                                      "&:hover fieldset": {
+                                        borderColor: "#0F607D",
+                                      },
+                                      "&.Mui-focused fieldset": {
+                                        borderColor: "#0F607D",
+                                      },
                                     },
-                                    "&.Mui-focused fieldset": {
-                                      borderColor: "#0F607D",
-                                    },
-                                  },
-                                }}
-                                InputProps={{
-                                  inputComponent: NumericFormatCustom,
-                                }}
-                              />
-                            </TableCell>
-                            <TableCell>
-                              <TextField
-                                type="text"
-                                disabled
-                                value={result.jumlahHarga}
-                                sx={{
-                                  "& .MuiOutlinedInput-root": {
-                                    height: isMobile ? "15px" : "3vw",
-                                    width: isMobile ? "120px" : "15vw",
-                                    fontSize: isMobile ? "10px" : "1.5vw",
-                                    borderRadius: "10px",
-                                    "& fieldset": {
-                                      borderColor: "#0F607D",
-                                    },
-                                    "&:hover fieldset": {
-                                      borderColor: "#0F607D",
-                                    },
-                                    "&.Mui-focused fieldset": {
-                                      borderColor: "#0F607D",
-                                    },
-                                  },
-                                }}
-                                InputProps={{
-                                  inputComponent: NumericFormatCustom,
-                                }}
-                              />
-                            </TableCell>
-                            <TableCell>
-                              <IconButton onClick={() => {
-                                handleRemoveItemPembelianBahanBaku(result.id, index);
-                              }}>
-                                <DeleteIcon style={{ color: "red" }} />
-                              </IconButton>
-                            </TableCell>
-                          </TableRow>
-                        </React.Fragment>
-                      );
-                    })}
-                  </TableBody>
-                </Table>
-              </TableContainer>
+                                  }}
+                                  InputProps={{
+                                    inputComponent: NumericFormatCustom,
+                                  }}
+                                />
+                              </TableCell>
+                              <TableCell>
+                                <IconButton
+                                  onClick={() => {
+                                    handleRemoveItemPembelianBahanBaku(
+                                      result.id,
+                                      index
+                                    );
+                                  }}
+                                >
+                                  <DeleteIcon style={{ color: "red" }} />
+                                </IconButton>
+                              </TableCell>
+                            </TableRow>
+                          </React.Fragment>
+                        );
+                      })}
+                    </TableBody>
+                  </Table>
+                </TableContainer>
+              </div>
               <div
                 style={{
                   display: "flex",

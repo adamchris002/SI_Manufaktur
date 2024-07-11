@@ -976,7 +976,9 @@ const MaindashboardInventory = (props) => {
             Stok Opnam
           </Typography>
           <div>
-            <DefaultButton onClickFunction={() => {}}>
+            <DefaultButton onClickFunction={() => {
+              navigate("/inventoryDashboard/stokOpnam")
+            }}>
               <Typography style={{ fontSize: isMobile ? "12px" : "1.042vw" }}>
                 Go to Stok Opnam Page
               </Typography>

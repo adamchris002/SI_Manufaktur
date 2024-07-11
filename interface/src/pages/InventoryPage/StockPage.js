@@ -4,6 +4,7 @@ import "./PembelianBahan.css";
 import {
   Button,
   IconButton,
+  Paper,
   Table,
   TableBody,
   TableCell,
@@ -321,8 +322,8 @@ const StockPage = (props) => {
           {allInventoryItems.length === 0 ? (
             <Typography>Tidak ada item bahan baku</Typography>
           ) : (
-            <TableContainer>
-              <Table>
+            <TableContainer component={Paper}>
+              <Table sx={{ minWidth: 650 }} aria-label="simple table">
                 <TableHead>
                   <TableRow>
                     <TableCell>No.</TableCell>
