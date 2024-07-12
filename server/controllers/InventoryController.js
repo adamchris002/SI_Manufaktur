@@ -9,6 +9,8 @@ const {
   UserInventorys,
   inventorys,
   users,
+  stokOpnams,
+  UserStokOpnams
 } = require("../models");
 
 class InventoryController {
@@ -479,6 +481,25 @@ class InventoryController {
       res.json(result);
     } catch (error) {
       res.json(error);
+    }
+  }
+  static async addStokOpnam(req, res) {
+    try {
+      const {id} = req.params
+      const {dataStokOpnam} = req.body
+      function generateRandomId(length) {
+        const min = Math.pow(10, length - 1);
+        const max = Math.pow(10, length) - 1;
+        const randomId = Math.floor(Math.random() * (max - min + 1)) + min;
+
+        return randomId.toString();
+      }
+      const uniqueId = generateRandomId(4)
+      let result = await stokOpnams.create({
+
+      })
+    } catch (error) {
+      res.json(error)
     }
   }
 }

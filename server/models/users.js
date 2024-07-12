@@ -23,6 +23,8 @@ module.exports = (sequelize, DataTypes) => {
       users.hasMany(models.permohonanPembelians, { foreignKey: "id" });
       users.belongsToMany(models.inventorys, { through: "UserInventorys" });
       users.hasMany(models.inventorys, { foreignKey: "id" });
+      users.belongsToMany(models.stokOpnams, { through: "UserStokOpnams" });
+      users.hasMany(models.stokOpnams, { foreignKey: "id" });
     }
   }
   users.init(
