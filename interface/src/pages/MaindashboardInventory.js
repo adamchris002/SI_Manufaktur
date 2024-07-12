@@ -518,14 +518,14 @@ const MaindashboardInventory = (props) => {
               height="2.08vw"
               backgroundColor="#0F607D"
               borderRadius="0.83vw"
-              fontSize="0.75vw"
+              fontSize="1vw"
               onClickFunction={() => {
                 document
-                  .getElementById("pengambilanbarang")
+                  .getElementById("stokOpnam")
                   .scrollIntoView({ behavior: "smooth" });
               }}
             >
-              Pengambilan/Penyerahan Barang
+              Stok Opnam
             </DefaultButton>
           </div>
           <div style={{ marginTop: "1.667vw", fontSize: "1.25vw" }}>
@@ -534,14 +534,14 @@ const MaindashboardInventory = (props) => {
               height="2.08vw"
               backgroundColor="#0F607D"
               borderRadius="0.83vw"
-              fontSize="1vw"
-              // onClickFunction={() => {
-              //   document
-              //     .getElementById("stokOpnam")
-              //     .scrollIntoView({ behavior: "smooth" });
-              // }}
+              fontSize="0.75vw"
+              onClickFunction={() => {
+                document
+                  .getElementById("pengambilanbarang")
+                  .scrollIntoView({ behavior: "smooth" });
+              }}
             >
-              Stok Opnam
+              Pengambilan/Penyerahan Barang
             </DefaultButton>
           </div>
           <div style={{ marginTop: "1.667vw", fontSize: "1.25vw" }}>
@@ -945,15 +945,19 @@ const MaindashboardInventory = (props) => {
           }}
         >
           <Typography
-            id="pengambilanbarang"
+            id="stokOpnam"
             style={{ fontSize: isMobile ? "4.5vw" : "2vw", color: "#0F607D" }}
           >
-            Pengambilan Barang
+            Stok Opnam
           </Typography>
           <div>
-            <DefaultButton onClickFunction={() => {}}>
+            <DefaultButton
+              onClickFunction={() => {
+                navigate("/inventoryDashboard/stokOpnam");
+              }}
+            >
               <Typography style={{ fontSize: isMobile ? "12px" : "1.042vw" }}>
-                Go to Pengambilan Barang Page
+                Tambah Stok Opnam
               </Typography>
             </DefaultButton>
           </div>
@@ -970,21 +974,20 @@ const MaindashboardInventory = (props) => {
           }}
         >
           <Typography
-            id="stokopnam"
+            id="pengambilanbarang"
             style={{ fontSize: isMobile ? "4.5vw" : "2vw", color: "#0F607D" }}
           >
-            Stok Opnam
+            Pengambilan/Penyerahan Barang
           </Typography>
           <div>
-            <DefaultButton onClickFunction={() => {
-              navigate("/inventoryDashboard/stokOpnam")
-            }}>
+            <DefaultButton onClickFunction={() => {}}>
               <Typography style={{ fontSize: isMobile ? "12px" : "1.042vw" }}>
-                Go to Stok Opnam Page
+                Go to Pengambilan Barang Page
               </Typography>
             </DefaultButton>
           </div>
         </div>
+
         <div
           style={{
             margin: isMobile

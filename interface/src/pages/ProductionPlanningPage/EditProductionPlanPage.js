@@ -395,7 +395,9 @@ const EditProductionPlanPage = (props) => {
         if (
           pekerjaanItem.jenisPekerjaan === "" ||
           pekerjaanItem.tanggalMulai === "" ||
+          !dayjs(pekerjaanItem.tanggalMulai, "MM/DD/YYYY hh:mm A", true).isValid() ||
           pekerjaanItem.tanggalSelesai === "" ||
+          !dayjs(pekerjaanItem.tanggalSelesai, "MM/DD/YYYY hh:mm A", true).isValid() ||
           pekerjaanItem.jumlahHari === ""
         ) {
           return false;
@@ -538,22 +540,6 @@ const EditProductionPlanPage = (props) => {
         ],
       },
     ]);
-  };
-
-  const handleRemovePekerjaan = (index, pekerjaanIndex) => {
-    setEstimasiJadwal((oldArray) => {
-      return oldArray.map((item, i) => {
-        if (i === index) {
-          return {
-            ...item,
-            rencanaJadwalProdukses: item.rencanaJadwalProdukses.filter(
-              (_, j) => j !== pekerjaanIndex
-            ),
-          };
-        }
-        return item;
-      });
-    });
   };
 
   const handleInputChange = (event, index, pekerjaanIndex, field) => {

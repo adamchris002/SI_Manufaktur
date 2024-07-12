@@ -10,7 +10,7 @@ const {
   inventorys,
   users,
   stokOpnams,
-  UserStokOpnams
+  UserStokOpnams,
 } = require("../models");
 
 class InventoryController {
@@ -406,9 +406,6 @@ class InventoryController {
       const { id } = req.params;
       const { dataInventory } = req.body;
 
-      console.log(id)
-      console.log(dataInventory)
-
       let result = await inventorys.update(
         {
           namaItem: dataInventory.namaItem,
@@ -485,8 +482,8 @@ class InventoryController {
   }
   static async addStokOpnam(req, res) {
     try {
-      const {id} = req.params
-      const {dataStokOpnam} = req.body
+      const { id } = req.params;
+      const { dataStokOpnam } = req.body;
       function generateRandomId(length) {
         const min = Math.pow(10, length - 1);
         const max = Math.pow(10, length) - 1;
@@ -494,12 +491,51 @@ class InventoryController {
 
         return randomId.toString();
       }
-      const uniqueId = generateRandomId(4)
-      let result = await stokOpnams.create({
+      const uniqueId = generateRandomId(4);
 
-      })
+      let userInformation = await users.findOne({
+        where: { id: id },
+      });
+
+      if (dataStokOpnam && Array.isArray(dataStokOpnam)) {
+        await Promise.all(
+          dataStokOpnam.map(async (item) => {
+            const newStokOpnamData = await stokOpnams.create({
+              suratPesanan: item.suratPesanan,
+              tanggalMasuk: item.tanggalMasuk,
+              tanggalPengembalian: item.tanggalPengembalian,
+              jenisBarang: item.jenisBarang,
+              kodeBarang: item.kodeBarang,
+              lokasiPenyimpanan: item.lokasiPenyimpanan,
+              stokOpnamAwal: item.stokOpnamAwal,
+              stokOpnamAkhir: item.stokOpnamAkhir,
+              tanggalKeluar: item.tanggalKeluar,
+              jumlahPengambilan: item.jumlahPengambilan,
+              diambilOleh: item.diambilOleh,
+              untukPekerjaan: item.untukPekerjaan,
+              stokFisik: item.stokFisik,
+              stokSelisih: item.stokSelisih,
+              keterangan: item.keterangan,
+              uniqueId: uniqueId,
+            });
+          })
+        );
+      }
+
+      let createActivityLog = await activitylogs.create({
+        user: userInformation.name,
+        activity: "Menambahkan data stok opnam",
+        name: "ntar dulu guys",
+        division: "Inventory",
+      });
+
+      await UserActivityLogs.create({
+        userId: id,
+        id: createActivityLog.id,
+        activitylogsId: createActivityLog.id,
+      });
     } catch (error) {
-      res.json(error)
+      res.json(error);
     }
   }
 }

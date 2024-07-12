@@ -85,4 +85,6 @@ inventoryRoutes.get(
   InventoryController.inventoryActivityLog
 );
 
+inventoryRoutes.post("/addStokOpnam/:id", InventoryController.addStokOpnam);
+
 module.exports = inventoryRoutes;
