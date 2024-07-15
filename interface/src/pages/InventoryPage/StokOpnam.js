@@ -21,6 +21,7 @@ import { DateTimePicker } from "@mui/x-date-pickers/DateTimePicker";
 import MySelectTextField from "../../components/SelectTextField";
 import axios from "axios";
 import dayjs from "dayjs";
+import MySnackbar from "../../components/Snackbar";
 
 const StokOpnam = (props) => {
   const { userInformation } = props;
@@ -44,10 +45,13 @@ const StokOpnam = (props) => {
       },
     ],
   });
-  console.log(dataStokOpnam);
   const [allPermohonanPembelianId, setAllPermohonanPembelianId] = useState([]);
   const [refreshPermohonanPembelian, setRefreshPermohonanPembelian] =
     useState(true);
+
+  const [openSnackbar, setOpenSnackbar] = useState(false);
+  const [snackbarStatus, setSnackbarStatus] = useState(false);
+  const [snackbarMessage, setSnackbarMessage] = useState("");
 
   const units = [
     {
@@ -126,48 +130,67 @@ const StokOpnam = (props) => {
   };
 
   const checkStokOpnamIsEmpty = () => {
-    for (const item of dataStokOpnam) {
+    if (
+      dataStokOpnam.judulStokOpnam === "" ||
+      dataStokOpnam.tanggalStokOpnam === "" ||
+      !dayjs(dataStokOpnam.tanggalStokOpnam, "MM/DD/YYYY hh:mm A", true).isValid()
+    ) {
+      return false;
+    }
+  
+    for (const item of dataStokOpnam.itemStokOpnams) {
       if (
-        item.suratPesanan === "" ||
-        item.tanggalMasuk === "" ||
+        !item.suratPesanan ||
+        !item.tanggalMasuk ||
         !dayjs(item.tanggalMasuk, "MM/DD/YYYY hh:mm A", true).isValid() ||
-        item.tanggalPengembalian ||
-        !dayjs(
-          item.tanggalPengembalian,
-          "MM/DD/YYYY hh:mm A",
-          true
-        ).isValid() ||
-        item.jenisBarang === "" ||
-        item.kodeBarang === "" ||
-        item.lokasiPenyimpanan === "" ||
-        item.stokOpnamAwal.value === "" ||
-        item.stokOpnamAwal.unit === "" ||
-        item.stokOpnamAkhir.value === "" ||
-        item.stokOpnamAkhir.unit === "" ||
-        item.tanggalKeluar === "" ||
-        !dayjs(item.tanggalKeluar, "MM/DD/YYYY hh:mm A", true).isValid() ||
-        item.jumlahPengambilan.value === "" ||
-        item.jumlahPengambilan.unit === "" ||
-        item.diambilOleh === "" ||
-        item.untukPekerjaan === "" ||
-        item.stokFisik === "" ||
-        item.stokSelisih === ""
+        !item.tanggalPengembalian ||
+        !dayjs(item.tanggalPengembalian, "MM/DD/YYYY hh:mm A", true).isValid() ||
+        !item.jenisBarang ||
+        !item.kodeBarang ||
+        !item.lokasiPenyimpanan ||
+        !item.stokOpnamAwal.value ||
+        !item.stokOpnamAwal.unit ||
+        !item.stokOpnamAkhir.value ||
+        !item.stokOpnamAkhir.unit ||
+        !item.stokFisik ||
+        !item.stokSelisih
       ) {
         return false;
       }
-      return true;
     }
+    
+    return true;
+  };
+  
+
+  const modifyStokOpnam = () => {
+    const changedStokOpnam = {
+      judulStokOpnam: dataStokOpnam.judulStokOpnam,
+      tanggalStokOpnam: dataStokOpnam.tanggalStokOpnam,
+      itemStokOpnams: dataStokOpnam.itemStokOpnams.map((result) => {
+        return {
+          ...result,
+          stokOpnamAwal: `${result.stokOpnamAwal.value} ${result.stokOpnamAwal.unit}`,
+          stokOpnamAkhir: `${result.stokOpnamAkhir.value} ${result.stokOpnamAkhir.unit}`,
+        };
+      }),
+    };
+    return changedStokOpnam;
   };
 
   const handleAddStokOpnam = () => {
     const checkIfEmpty = checkStokOpnamIsEmpty();
     if (checkIfEmpty === false) {
-      //for snackbar
+      setOpenSnackbar(true);
+      setSnackbarStatus(false);
+      setSnackbarMessage("Tolong isi semua input");
     } else {
-      axios({
-        method: "POST",
-        url: `http://localhost:3000/inventory/addStokOpnam/${userInformation?.data?.id}`,
-      });
+      const modifiedData = modifyStokOpnam();
+      console.log(modifiedData);
+      // axios({
+      //   method: "POST",
+      //   url: `http://localhost:3000/inventory/addStokOpnam/${userInformation?.data?.id}`,
+      // });
     }
   };
 
@@ -197,6 +220,12 @@ const StokOpnam = (props) => {
         ],
       };
     });
+  };
+
+  const handleCloseSnackbar = () => {
+    setOpenSnackbar(false);
+    setSnackbarMessage("");
+    setSnackbarStatus(true);
   };
 
   return (
@@ -310,7 +339,7 @@ const StokOpnam = (props) => {
                                     handleChangeInputStokOpnam(
                                       "tanggalMasuk",
                                       event,
-                                      index,
+                                      index
                                     );
                                   }}
                                 />
@@ -327,7 +356,7 @@ const StokOpnam = (props) => {
                                     handleChangeInputStokOpnam(
                                       "tanggalPengembalian",
                                       event,
-                                      index,
+                                      index
                                     );
                                   }}
                                 />
@@ -341,7 +370,7 @@ const StokOpnam = (props) => {
                                 handleChangeInputStokOpnam(
                                   "jenisBarang",
                                   event,
-                                  index,
+                                  index
                                 );
                               }}
                             />
@@ -353,7 +382,7 @@ const StokOpnam = (props) => {
                                 handleChangeInputStokOpnam(
                                   "kodeBarang",
                                   event,
-                                  index,
+                                  index
                                 );
                               }}
                             />
@@ -367,7 +396,7 @@ const StokOpnam = (props) => {
                                 handleChangeInputStokOpnam(
                                   "lokasiPenyimpanan",
                                   event,
-                                  index,
+                                  index
                                 );
                               }}
                             />
@@ -388,7 +417,7 @@ const StokOpnam = (props) => {
                                   handleChangeInputStokOpnam(
                                     "stokOpnamAwal",
                                     event,
-                                    index,
+                                    index
                                   );
                                 }}
                               />
@@ -423,7 +452,7 @@ const StokOpnam = (props) => {
                                   handleChangeInputStokOpnam(
                                     "stokOpnamAkhir",
                                     event,
-                                    index,
+                                    index
                                   );
                                 }}
                               />
@@ -449,7 +478,7 @@ const StokOpnam = (props) => {
                                 handleChangeInputStokOpnam(
                                   "stokFisik",
                                   event,
-                                  index,
+                                  index
                                 );
                               }}
                             />
@@ -461,7 +490,7 @@ const StokOpnam = (props) => {
                                 handleChangeInputStokOpnam(
                                   "stokSelisih",
                                   event,
-                                  index,
+                                  index
                                 );
                               }}
                             />
@@ -473,7 +502,7 @@ const StokOpnam = (props) => {
                                 handleChangeInputStokOpnam(
                                   "keterangan",
                                   event,
-                                  index,
+                                  index
                                 );
                               }}
                               multiline
@@ -494,7 +523,13 @@ const StokOpnam = (props) => {
               justifyContent: "center",
             }}
           >
-            <DefaultButton>Tambah Stok Opnam</DefaultButton>
+            <DefaultButton
+              onClickFunction={() => {
+                handleAddStokOpnam();
+              }}
+            >
+              Tambah Stok Opnam
+            </DefaultButton>
             <Button
               color="error"
               variant="outlined"
@@ -505,6 +540,14 @@ const StokOpnam = (props) => {
           </div>
         </div>
       </div>
+      {snackbarMessage !== ("" || null) && (
+        <MySnackbar
+          open={openSnackbar}
+          handleClose={handleCloseSnackbar}
+          messageStatus={snackbarStatus}
+          popupMessage={snackbarMessage}
+        />
+      )}
     </div>
   );
 };

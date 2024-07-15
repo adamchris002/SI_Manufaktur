@@ -147,7 +147,6 @@ const PembelianBahanBaku = (props) => {
       url: "http://localhost:3000/order/getAllOrderInfo",
     }).then((result) => {
       if (result.status === 200) {
-        console.log(result);
         const orderIdList = result.data.map((data) => ({
           value: data.id,
         }));
@@ -379,7 +378,6 @@ const PembelianBahanBaku = (props) => {
 
     if (isPembelianBahanBakuNotEmpty === true) {
       const transformedPembelianBahanBaku = transformPembelianBahanBaku();
-      console.log(transformedPembelianBahanBaku);
       axios({
         method: "POST",
         url: `http://localhost:3000/inventory/addPembelianBahanBaku/${id}`,
@@ -428,7 +426,7 @@ const PembelianBahanBaku = (props) => {
 
               if (field === "hargaSatuan") {
                 const hargaSatuan = parseFloat(value.replace(/,/g, ""));
-                const jumlahOrder = parseFloat(result.jumlahOrder);
+                const jumlahOrder = parseFloat(result.jumlahOrder?.value);
                 updatedResult.jumlahHarga = jumlahOrder * hargaSatuan;
               } else if (field === "jumlahOrder") {
                 const jumlahOrder = parseFloat(value.replace(/,/g, ""));
@@ -747,16 +745,6 @@ const PembelianBahanBaku = (props) => {
                                   />
                                 </TableCell>
                                 <TableCell>
-                                  {/* <TextField
-                                    value={result.jenisBarang}
-                                    onChange={(event) => {
-                                      handleChangeInput(
-                                        "jenisBarang",
-                                        event,
-                                        index
-                                      );
-                                    }}
-                                  /> */}
                                   <MySelectTextField
                                     width="200px"
                                     data={allInventoryItems}
@@ -833,7 +821,7 @@ const PembelianBahanBaku = (props) => {
                                     sx={{
                                       "& .MuiOutlinedInput-root": {
                                         height: isMobile ? "15px" : "3vw",
-                                        width: isMobile ? "120px" : "13vw",
+                                        width: isMobile ? "120px" : "200px",
                                         fontSize: isMobile ? "10px" : "1.5vw",
                                         borderRadius: "10px",
                                         "& fieldset": {
@@ -860,7 +848,7 @@ const PembelianBahanBaku = (props) => {
                                     sx={{
                                       "& .MuiOutlinedInput-root": {
                                         height: isMobile ? "15px" : "3vw",
-                                        width: isMobile ? "120px" : "13vw",
+                                        width: isMobile ? "120px" : "200px",
                                         fontSize: isMobile ? "10px" : "1.5vw",
                                         borderRadius: "10px",
                                         "& fieldset": {

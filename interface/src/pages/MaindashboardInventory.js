@@ -43,6 +43,7 @@ const MaindashboardInventory = (props) => {
   const [permohonanPembelian, setPermohonanPembelian] = useState([]);
 
   const [pembelianBahanBaku, setPembelianBahanBaku] = useState([]);
+  console.log(pembelianBahanBaku)
 
   const [refreshPermohonanPembelian, setRefreshPermohonanPembelian] =
     useState(true);
@@ -79,6 +80,7 @@ const MaindashboardInventory = (props) => {
           setOpenSnackbar(true);
           setSnackbarStatus(false);
           setSnackbarMessage("Tidak dapat memanggil data pembelian bahan baku");
+          setRefreshPembelianBahanBaku(false);
         }
       });
     }

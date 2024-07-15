@@ -512,52 +512,47 @@ class InventoryController {
     try {
       const { id } = req.params;
       const { dataStokOpnam } = req.body;
-      function generateRandomId(length) {
-        const min = Math.pow(10, length - 1);
-        const max = Math.pow(10, length) - 1;
-        const randomId = Math.floor(Math.random() * (max - min + 1)) + min;
-
-        return randomId.toString();
-      }
-      const uniqueId = generateRandomId(4);
 
       let userInformation = await users.findOne({
         where: { id: id },
       });
 
-      if (dataStokOpnam && Array.isArray(dataStokOpnam)) {
-        await Promise.all(
-          dataStokOpnam.map(async (item) => {
-            const newStokOpnamData = await stokOpnams.create({
-              suratPesanan: item.suratPesanan,
-              tanggalMasuk: item.tanggalMasuk,
-              tanggalPengembalian: item.tanggalPengembalian,
-              jenisBarang: item.jenisBarang,
-              kodeBarang: item.kodeBarang,
-              lokasiPenyimpanan: item.lokasiPenyimpanan,
-              stokOpnamAwal: item.stokOpnamAwal,
-              stokOpnamAkhir: item.stokOpnamAkhir,
-              stokFisik: item.stokFisik,
-              stokSelisih: item.stokSelisih,
-              keterangan: item.keterangan,
-              uniqueId: uniqueId,
-            });
-          })
-        );
-      }
+      console.log(dataStokOpnam);
+      console.log(userInformation);
 
-      let createActivityLog = await activitylogs.create({
-        user: userInformation.name,
-        activity: "Menambahkan data stok opnam",
-        name: "ntar dulu guys",
-        division: "Inventory",
-      });
+      // if (dataStokOpnam && Array.isArray(dataStokOpnam)) {
+      //   await Promise.all(
+      //     dataStokOpnam.map(async (item) => {
+      //       const newStokOpnamData = await stokOpnams.create({
+      //         suratPesanan: item.suratPesanan,
+      //         tanggalMasuk: item.tanggalMasuk,
+      //         tanggalPengembalian: item.tanggalPengembalian,
+      //         jenisBarang: item.jenisBarang,
+      //         kodeBarang: item.kodeBarang,
+      //         lokasiPenyimpanan: item.lokasiPenyimpanan,
+      //         stokOpnamAwal: item.stokOpnamAwal,
+      //         stokOpnamAkhir: item.stokOpnamAkhir,
+      //         stokFisik: item.stokFisik,
+      //         stokSelisih: item.stokSelisih,
+      //         keterangan: item.keterangan,
+      //         uniqueId: uniqueId,
+      //       });
+      //     })
+      //   );
+      // }
 
-      await UserActivityLogs.create({
-        userId: id,
-        id: createActivityLog.id,
-        activitylogsId: createActivityLog.id,
-      });
+      // let createActivityLog = await activitylogs.create({
+      //   user: userInformation.name,
+      //   activity: "Menambahkan data stok opnam",
+      //   name: "ntar dulu guys",
+      //   division: "Inventory",
+      // });
+
+      // await UserActivityLogs.create({
+      //   userId: id,
+      //   id: createActivityLog.id,
+      //   activitylogsId: createActivityLog.id,
+      // });
     } catch (error) {
       res.json(error);
     }
