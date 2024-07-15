@@ -21,14 +21,10 @@ import { DateTimePicker } from "@mui/x-date-pickers/DateTimePicker";
 import MySelectTextField from "../../components/SelectTextField";
 import axios from "axios";
 import dayjs from "dayjs";
-import MySnackbar from "../../components/Snackbar";
-import { useNavigate } from "react-router-dom";
-import { useAuth } from "../../components/AuthContext";
 
 const StokOpnam = (props) => {
   const { userInformation } = props;
   const { isMobile } = useContext(AppContext);
-  const navigate = useNavigate()
   const [dataStokOpnam, setDataStokOpnam] = useState([
     {
       suratPesanan: "",
@@ -52,11 +48,6 @@ const StokOpnam = (props) => {
   const [allPermohonanPembelianId, setAllPermohonanPembelianId] = useState([]);
   const [refreshPermohonanPembelian, setRefreshPermohonanPembelian] =
     useState(true);
-
-    const {setSuccessMessage} = useAuth()
-  const [openSnackbar, setOpenSnackbar] = useState(false);
-  const [snackbarStatus, setSnackbarStatus] = useState(false);
-  const [snackbarMessage, setSnackbarMessage] = useState("false");
 
   const units = [
     {
@@ -98,9 +89,6 @@ const StokOpnam = (props) => {
           setAllPermohonanPembelianId(newPermohonanPembelianIds);
           setRefreshPermohonanPembelian(false);
         } else {
-          setOpenSnackbar(true);
-          setSnackbarStatus(false);
-          setSnackbarMessage("Tidak dapat memanggil data permohonan pembelian");
         }
       });
     }
@@ -139,7 +127,7 @@ const StokOpnam = (props) => {
         item.suratPesanan === "" ||
         item.tanggalMasuk === "" ||
         !dayjs(item.tanggalMasuk, "MM/DD/YYYY hh:mm A", true).isValid() ||
-        item.tanggalPengembalian === "" ||
+        item.tanggalPengembalian ||
         !dayjs(
           item.tanggalPengembalian,
           "MM/DD/YYYY hh:mm A",
@@ -167,40 +155,14 @@ const StokOpnam = (props) => {
     }
   };
 
-  const transformStokOpnamData = () => {
-    return dataStokOpnam.map((item) => {
-      return {
-        ...item,
-        stokOpnamAwal: `${item.stokOpnamAwal.value} ${item.stokOpnamAwal.unit}`,
-        stokOpnamAkhir: `${item.stokOpnamAkhir.value} ${item.stokOpnamAkhir.unit}`,
-        jumlahPengambilan: `${item.jumlahPengambilan.value} ${item.jumlahPengambilan.unit}`,
-      };
-    });
-  };
-
   const handleAddStokOpnam = () => {
     const checkIfEmpty = checkStokOpnamIsEmpty();
-    console.log(checkIfEmpty);
     if (checkIfEmpty === false) {
-      setOpenSnackbar(true);
-      setSnackbarStatus(false);
-      setSnackbarMessage("Tolong isi semua input");
+      //for snackbar
     } else {
-      const transformedData = transformStokOpnamData();
       axios({
         method: "POST",
         url: `http://localhost:3000/inventory/addStokOpnam/${userInformation?.data?.id}`,
-        data: { dataStokOpnam: transformedData },
-      }).then((result) => {
-        if (result.status === 200) {
-          setSnackbarStatus(true);
-          setSuccessMessage("Berhasil menambah stok opnam");
-          navigate(-1)
-        } else {
-          setOpenSnackbar(true);
-          setSnackbarStatus(true);
-          setSnackbarMessage("Tidak berhasil menambah stok opnam");
-        }
       });
     }
   };
@@ -228,12 +190,6 @@ const StokOpnam = (props) => {
     ]);
   };
 
-  const handleCloseSnackbar = () => {
-    setOpenSnackbar(false);
-    setSnackbarMessage("");
-    setSnackbarStatus(true);
-  };
-
   return (
     <div
       className="hideScrollbar"
@@ -259,7 +215,7 @@ const StokOpnam = (props) => {
           <Typography
             style={{ fontSize: isMobile ? "" : "3vw", color: "#0F607D" }}
           >
-            Tambah Stok Opnam
+            Stok Opnam
           </Typography>
           <DefaultButton
             onClickFunction={() => {
@@ -617,13 +573,7 @@ const StokOpnam = (props) => {
               justifyContent: "center",
             }}
           >
-            <DefaultButton
-              onClickFunction={() => {
-                handleAddStokOpnam();
-              }}
-            >
-              Tambah Stok Opnam
-            </DefaultButton>
+            <DefaultButton>Tambah Stok Opnam</DefaultButton>
             <Button
               color="error"
               variant="outlined"
@@ -634,14 +584,6 @@ const StokOpnam = (props) => {
           </div>
         </div>
       </div>
-      {snackbarMessage !== ("" || null) && (
-        <MySnackbar
-          open={openSnackbar}
-          handleClose={handleCloseSnackbar}
-          messageStatus={snackbarStatus}
-          popupMessage={snackbarMessage}
-        />
-      )}
     </div>
   );
 };

@@ -291,7 +291,7 @@ const StockPage = (props) => {
             Tambah Stok Bahan Baku
           </DefaultButton>
         </div>
-        <div style={{ marginTop: "16px" }}>
+        <div style={{ margin: "16px 0px" }}>
           <TextField
             type="text"
             placeholder="Search item"

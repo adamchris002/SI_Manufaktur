@@ -63,6 +63,9 @@ const PembelianBahanBaku = (props) => {
     allAcceptedPermohonanPembelianId,
     setAllAcceptedPermohonanPembelianId,
   ] = useState([]);
+  const [allOrdersId, setAllOrdersId] = useState([]);
+  const [allInventoryItems, setAllInventoryItems] = useState([]);
+  const [oneInventoryItems, setOneInventoryItems] = useState([]);
   const [permohonanPembelian, setPermohonanPembelian] = useState([]);
   const [pembelianBahanBaku, setPembelianBahanBaku] = useState({
     leveransir: "",
@@ -76,6 +79,15 @@ const PembelianBahanBaku = (props) => {
         jumlahOrder: { unit: "", value: "" },
         hargaSatuan: "",
         jumlahHarga: "",
+        tanggalSuratJalan: dayjs(""),
+        noSuratJalan: "",
+        tanggalTerimaBarang: dayjs(""),
+        diterimaOleh: "",
+        fakturPajak: "",
+        tanggalJatuhTempo: dayjs(""),
+        tanggalPengiriman: dayjs(""),
+        jumlahTerimaPengiriman: { unit: "", value: "" },
+        sisaPengiriman: { unit: "", value: "" },
       },
     ],
   });
@@ -109,6 +121,44 @@ const PembelianBahanBaku = (props) => {
   const [snackbarMessage, setSnackbarMessage] = useState("");
 
   const { isMobile } = useContext(AppContext);
+
+  useEffect(() => {
+    axios({
+      method: "GET",
+      url: "http://localhost:3000/inventory/getAllInventoryItem",
+    }).then((result) => {
+      if (result.status === 200) {
+        const tempInventoryData = result.data.map((data) => ({
+          value: data.namaItem,
+          id: data.id,
+        }));
+        setAllInventoryItems(tempInventoryData);
+      } else {
+        setOpenSnackbar(true);
+        setSnackbarStatus(false);
+        setSnackbarMessage("Tidak dapat memanggil data bahan baku");
+      }
+    });
+  }, []);
+
+  useEffect(() => {
+    axios({
+      method: "GET",
+      url: "http://localhost:3000/order/getAllOrderInfo",
+    }).then((result) => {
+      if (result.status === 200) {
+        console.log(result);
+        const orderIdList = result.data.map((data) => ({
+          value: data.id,
+        }));
+        setAllOrdersId(orderIdList);
+      } else {
+        setOpenSnackbar(true);
+        setSnackbarStatus(false);
+        setSnackbarMessage("Tidak dapat memanggil data pesanan");
+      }
+    });
+  }, []);
 
   useEffect(() => {
     axios({
@@ -174,6 +224,17 @@ const PembelianBahanBaku = (props) => {
                   rincianBarang: data.rincianBarang,
                   updatedAt: data.updatedAt,
                   noOrder: data.noOrder,
+                  tanggalSuratJalan: dayjs(data.tanggalSuratJalan),
+                  noSuratJalan: data.noSuratJalan,
+                  tanggalTerimaBarang: dayjs(data.tanggalTerimaBarang),
+                  diterimaOleh: data.diterimaOleh,
+                  fakturPajak: data.fakturPajak,
+                  tanggalJatuhTempo: dayjs(data.tanggalJatuhTempo),
+                  tanggalPengiriman: dayjs(data.tanggalPengiriman),
+                  jumlahTerimaPengiriman: separateValueAndUnit(
+                    data.jumlahTerimaPengiriman
+                  ),
+                  sisaPengiriman: separateValueAndUnit(data.sisaPengiriman),
                 };
               }),
             });
@@ -203,15 +264,34 @@ const PembelianBahanBaku = (props) => {
     }
     for (const item of pembelianBahanBaku.items) {
       if (
-        item.noOrder === "" ||
-        item.tanggal === "" ||
+        !item.noOrder ||
+        !item.tanggal ||
         !dayjs(item.tanggal, "MM/DD/YYYY hh:mm A", true).isValid() ||
-        item.jenisBarang === "" ||
-        item.rincianBarang === "" ||
-        item.jumlahOrder.value === "" ||
-        item.jumlahOrder.unit === "" ||
-        item.hargaSatuan === "" ||
-        item.jumlahHarga === ""
+        !item.jenisBarang ||
+        !item.rincianBarang ||
+        !item.jumlahOrder.value ||
+        !item.jumlahOrder.unit ||
+        !item.hargaSatuan ||
+        !item.jumlahHarga ||
+        !item.tanggalSuratJalan ||
+        !dayjs(item.tanggalSuratJalan, "MM/DD/YYYY hh:mm A", true).isValid() ||
+        !item.tanggalTerimaBarang ||
+        !dayjs(
+          item.tanggalTerimaBarang,
+          "MM/DD/YYYY hh:mm A",
+          true
+        ).isValid() ||
+        !item.noSuratJalan ||
+        !item.diterimaOleh ||
+        !item.fakturPajak ||
+        !item.tanggalJatuhTempo ||
+        !dayjs(item.tanggalJatuhTempo, "MM/DD/YYYY hh:mm A", true).isValid() ||
+        !item.tanggalPengiriman ||
+        !dayjs(item.tanggalPengiriman, "MM/DD/YYYY hh:mm A", true).isValid() ||
+        !item.jumlahTerimaPengiriman.unit ||
+        !item.jumlahTerimaPengiriman.value ||
+        !item.sisaPengiriman.value ||
+        !item.sisaPengiriman.unit
       ) {
         return false;
       }
@@ -227,6 +307,8 @@ const PembelianBahanBaku = (props) => {
         return {
           ...result,
           jumlahOrder: `${result.jumlahOrder.value} ${result.jumlahOrder.unit}`,
+          jumlahTerimaPengiriman: `${result.jumlahTerimaPengiriman.value} ${result.jumlahTerimaPengiriman.unit}`,
+          sisaPengiriman: `${result.sisaPengiriman.value} ${result.sisaPengiriman.unit}`,
         };
       }),
     };
@@ -285,6 +367,10 @@ const PembelianBahanBaku = (props) => {
           setSnackbarMessage("Tidak berhasil mengedit pembelian bahan baku");
         }
       });
+    } else {
+      setOpenSnackbar(true);
+      setSnackbarStatus(false);
+      setSnackbarMessage("Tolong isi semua input");
     }
   };
 
@@ -293,6 +379,7 @@ const PembelianBahanBaku = (props) => {
 
     if (isPembelianBahanBakuNotEmpty === true) {
       const transformedPembelianBahanBaku = transformPembelianBahanBaku();
+      console.log(transformedPembelianBahanBaku);
       axios({
         method: "POST",
         url: `http://localhost:3000/inventory/addPembelianBahanBaku/${id}`,
@@ -340,12 +427,14 @@ const PembelianBahanBaku = (props) => {
               updatedResult = { ...updatedResult, [field]: value };
 
               if (field === "hargaSatuan") {
-                const hargaSatuan = parseInt(value, 10);
-                const jumlahOrder = parseInt(result.jumlahOrder.value, 10);
+                const hargaSatuan = parseFloat(value.replace(/,/g, ""));
+                const jumlahOrder = parseFloat(result.jumlahOrder);
                 updatedResult.jumlahHarga = jumlahOrder * hargaSatuan;
               } else if (field === "jumlahOrder") {
-                const jumlahOrder = parseInt(value, 10);
-                const hargaSatuan = parseInt(result.hargaSatuan, 10);
+                const jumlahOrder = parseFloat(value.replace(/,/g, ""));
+                const hargaSatuan = parseFloat(
+                  result.hargaSatuan.replace(/,/g, "")
+                );
                 updatedResult.jumlahHarga = jumlahOrder * hargaSatuan;
               }
             }
@@ -393,12 +482,13 @@ const PembelianBahanBaku = (props) => {
         overflow: "auto",
       }}
     >
-      <div style={{ margin: "32px", height: "100%", width: "100%" }}>
+      <div style={{ height: "100%", width: "100%" }}>
         <div
           style={{
             display: isMobile ? "" : "flex",
             justifyContent: "space-between",
             alignItems: "center",
+            margin: "32px",
           }}
         >
           <Typography
@@ -437,10 +527,16 @@ const PembelianBahanBaku = (props) => {
             </div>
           )}
         </div>
-        <div style={{ marginTop: "32px" }}>
+        <div style={{ marginTop: "32px", width: "100%" }}>
           {permohonanPembelian.length !== 0 || pembelianBahanBaku.id ? (
             <div>
-              <div style={{ display: "flex", alignItems: "center" }}>
+              <div
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  margin: "0px 32px",
+                }}
+              >
                 <Typography
                   style={{
                     color: "#0F607D",
@@ -477,7 +573,7 @@ const PembelianBahanBaku = (props) => {
               </div>
               <div
                 style={{
-                  margin: "16px 0px",
+                  margin: "16px 32px",
                   display: "flex",
                   alignItems: "center",
                 }}
@@ -518,10 +614,9 @@ const PembelianBahanBaku = (props) => {
               </div>
               <div
                 style={{
-                  width: "100%",
                   display: "flex",
                   justifyContent: "flex-end",
-                  marginBottom: "16px",
+                  margin: "32px",
                 }}
               >
                 <DefaultButton
@@ -539,200 +634,483 @@ const PembelianBahanBaku = (props) => {
                   </Typography>
                 </DefaultButton>
               </div>
-              <div style={{width: "100%"}}>
-                <TableContainer component={Paper}>
-                  <Table sx={{ minWidth: 650 }} aria-label="simple table">
-                    <TableHead>
-                      <TableRow>
-                        <TableCell>No.</TableCell>
-                        <TableCell align="left">Tanggal</TableCell>
-                        <TableCell align="left">No. Order</TableCell>
-                        <TableCell align="left">Jenis Barang</TableCell>
-                        <TableCell align="left">Rincian Barang</TableCell>
-                        <TableCell align="left">Jumlah Order</TableCell>
-                        <TableCell align="left">Harga Satuan</TableCell>
-                        <TableCell align="left">Jumlah Harga</TableCell>
-                        <TableCell align="left">Action</TableCell>
-                      </TableRow>
-                    </TableHead>
-                    <TableBody>
-                      {pembelianBahanBaku.items.map((result, index) => {
-                        return (
-                          <React.Fragment key={index}>
-                            <TableRow>
-                              <TableCell>{index + 1 + "."}</TableCell>
-                              <TableCell>
-                                <LocalizationProvider
-                                  dateAdapter={AdapterDayjs}
-                                >
-                                  <DemoContainer
-                                    sx={{ padding: 0 }}
-                                    components={["DateTimePicker"]}
+              <div style={{ width: "100%" }}>
+                <div style={{ margin: "32px" }}>
+                  <TableContainer
+                    component={Paper}
+                    style={{ overflowX: "auto" }}
+                  >
+                    <Table
+                      sx={{ minWidth: 650 }}
+                      aria-label="simple table"
+                      style={{ tableLayout: "fixed", overflowX: "auto" }}
+                    >
+                      <TableHead>
+                        <TableRow>
+                          <TableCell style={{ width: 50 }}>No.</TableCell>
+                          <TableCell style={{ width: "300px" }} align="left">
+                            Tanggal
+                          </TableCell>
+                          <TableCell style={{ width: "70px" }} align="left">
+                            No. Order
+                          </TableCell>
+                          <TableCell style={{ width: "200px" }} align="left">
+                            Jenis Barang
+                          </TableCell>
+                          <TableCell style={{ width: "200px" }} align="left">
+                            Rincian Barang
+                          </TableCell>
+                          <TableCell style={{ width: "200px" }} align="left">
+                            Jumlah Order
+                          </TableCell>
+                          <TableCell style={{ width: "200px" }} align="left">
+                            Harga Satuan
+                          </TableCell>
+                          <TableCell style={{ width: "200px" }} align="left">
+                            Jumlah Harga
+                          </TableCell>
+                          <TableCell style={{ width: "300px" }} align="left">
+                            Tanggal Surat Jalan
+                          </TableCell>
+                          <TableCell style={{ width: "200px" }} align="left">
+                            No Surat Jalan
+                          </TableCell>
+                          <TableCell style={{ width: "300px" }} align="left">
+                            Tanggal Terima Barang
+                          </TableCell>
+                          <TableCell style={{ width: "200px" }} align="left">
+                            Diterima Oleh
+                          </TableCell>
+                          <TableCell style={{ width: "200px" }} align="left">
+                            Faktur Pajak & Kwitansi/Invoice
+                          </TableCell>
+                          <TableCell style={{ width: "300px" }} align="left">
+                            Tanggal Jatuh Tempo
+                          </TableCell>
+                          <TableCell style={{ width: "300px" }} align="left">
+                            Tanggal Pengiriman
+                          </TableCell>
+                          <TableCell style={{ width: "200px" }} align="left">
+                            Jumlah Terima Pengiriman
+                          </TableCell>
+                          <TableCell style={{ width: "200px" }} align="left">
+                            Sisa Pengiriman
+                          </TableCell>
+                          <TableCell style={{ width: 50 }} align="left">
+                            Action
+                          </TableCell>
+                        </TableRow>
+                      </TableHead>
+                      <TableBody>
+                        {pembelianBahanBaku.items.map((result, index) => {
+                          return (
+                            <React.Fragment key={index}>
+                              <TableRow>
+                                <TableCell>{index + 1 + "."}</TableCell>
+                                <TableCell>
+                                  <LocalizationProvider
+                                    dateAdapter={AdapterDayjs}
                                   >
-                                    <DemoItem sx={{ padding: 0 }}>
-                                      <DateTimePicker
-                                        value={result.tanggal}
-                                        disablePast
-                                        onChange={(event) =>
-                                          handleChangeInput(
-                                            "tanggal",
-                                            event,
-                                            index
-                                          )
-                                        }
-                                      />
-                                    </DemoItem>
-                                  </DemoContainer>
-                                </LocalizationProvider>
-                              </TableCell>
-                              <TableCell>
-                                <TextField
-                                  value={result.noOrder}
-                                  onChange={(event) => {
-                                    handleChangeInput("noOrder", event, index);
-                                  }}
-                                />
-                              </TableCell>
-                              <TableCell>
-                                <TextField
-                                  value={result.jenisBarang}
-                                  onChange={(event) => {
-                                    handleChangeInput(
-                                      "jenisBarang",
-                                      event,
-                                      index
-                                    );
-                                  }}
-                                />
-                              </TableCell>
-                              <TableCell>
-                                <TextField
-                                  value={result.rincianBarang}
-                                  onChange={(event) => {
-                                    handleChangeInput(
-                                      "rincianBarang",
-                                      event,
-                                      index
-                                    );
-                                  }}
-                                />
-                              </TableCell>
-
-                              <TableCell>
-                                <div
-                                  style={{
-                                    display: "flex",
-                                    alignItems: "center",
-                                  }}
-                                >
-                                  <TextField
-                                    type="number"
-                                    value={result.jumlahOrder.value}
+                                    <DemoContainer
+                                      sx={{ padding: 0 }}
+                                      components={["DateTimePicker"]}
+                                    >
+                                      <DemoItem sx={{ padding: 0 }}>
+                                        <DateTimePicker
+                                          value={result.tanggal}
+                                          disablePast
+                                          onChange={(event) =>
+                                            handleChangeInput(
+                                              "tanggal",
+                                              event,
+                                              index
+                                            )
+                                          }
+                                        />
+                                      </DemoItem>
+                                    </DemoContainer>
+                                  </LocalizationProvider>
+                                </TableCell>
+                                <TableCell>
+                                  <MySelectTextField
+                                    width="70px"
+                                    data={allOrdersId}
+                                    value={result.noOrder}
+                                    type="text"
                                     onChange={(event) => {
                                       handleChangeInput(
-                                        "jumlahOrder",
+                                        "noOrder",
                                         event,
                                         index
                                       );
                                     }}
                                   />
-                                  <div style={{ marginLeft: "8px" }}>
-                                    <MySelectTextField
-                                      data={units}
-                                      width={isMobile ? "50px" : "55px"}
-                                      height={isMobile ? "15px" : "55px"}
-                                      value={result.jumlahOrder.unit}
+                                </TableCell>
+                                <TableCell>
+                                  {/* <TextField
+                                    value={result.jenisBarang}
+                                    onChange={(event) => {
+                                      handleChangeInput(
+                                        "jenisBarang",
+                                        event,
+                                        index
+                                      );
+                                    }}
+                                  /> */}
+                                  <MySelectTextField
+                                    width="200px"
+                                    data={allInventoryItems}
+                                    value={result.jenisBarang}
+                                    onChange={(event) => {
+                                      handleChangeInput(
+                                        "jenisBarang",
+                                        event,
+                                        index
+                                      );
+                                    }}
+                                  />
+                                </TableCell>
+                                <TableCell>
+                                  <TextField
+                                    value={result.rincianBarang}
+                                    onChange={(event) => {
+                                      handleChangeInput(
+                                        "rincianBarang",
+                                        event,
+                                        index
+                                      );
+                                    }}
+                                  />
+                                </TableCell>
+
+                                <TableCell>
+                                  <div
+                                    style={{
+                                      display: "flex",
+                                      alignItems: "center",
+                                    }}
+                                  >
+                                    <TextField
+                                      type="number"
+                                      value={result.jumlahOrder.value}
                                       onChange={(event) => {
                                         handleChangeInput(
                                           "jumlahOrder",
                                           event,
-                                          index,
-                                          true
+                                          index
                                         );
                                       }}
                                     />
+                                    <div style={{ marginLeft: "8px" }}>
+                                      <MySelectTextField
+                                        data={units}
+                                        width={isMobile ? "50px" : "55px"}
+                                        height={isMobile ? "15px" : "55px"}
+                                        value={result.jumlahOrder.unit}
+                                        onChange={(event) => {
+                                          handleChangeInput(
+                                            "jumlahOrder",
+                                            event,
+                                            index,
+                                            true
+                                          );
+                                        }}
+                                      />
+                                    </div>
                                   </div>
-                                </div>
-                              </TableCell>
-                              <TableCell>
-                                <TextField
-                                  type="text"
-                                  value={result.hargaSatuan}
-                                  onChange={(event) => {
-                                    handleChangeInput(
-                                      "hargaSatuan",
-                                      event,
-                                      index
-                                    );
-                                  }}
-                                  sx={{
-                                    "& .MuiOutlinedInput-root": {
-                                      height: isMobile ? "15px" : "3vw",
-                                      width: isMobile ? "120px" : "15vw",
-                                      fontSize: isMobile ? "10px" : "1.5vw",
-                                      borderRadius: "10px",
-                                      "& fieldset": {
-                                        borderColor: "#0F607D",
+                                </TableCell>
+                                <TableCell>
+                                  <TextField
+                                    type="text"
+                                    value={result.hargaSatuan}
+                                    onChange={(event) => {
+                                      handleChangeInput(
+                                        "hargaSatuan",
+                                        event,
+                                        index
+                                      );
+                                    }}
+                                    sx={{
+                                      "& .MuiOutlinedInput-root": {
+                                        height: isMobile ? "15px" : "3vw",
+                                        width: isMobile ? "120px" : "13vw",
+                                        fontSize: isMobile ? "10px" : "1.5vw",
+                                        borderRadius: "10px",
+                                        "& fieldset": {
+                                          borderColor: "#0F607D",
+                                        },
+                                        "&:hover fieldset": {
+                                          borderColor: "#0F607D",
+                                        },
+                                        "&.Mui-focused fieldset": {
+                                          borderColor: "#0F607D",
+                                        },
                                       },
-                                      "&:hover fieldset": {
-                                        borderColor: "#0F607D",
+                                    }}
+                                    InputProps={{
+                                      inputComponent: NumericFormatCustom,
+                                    }}
+                                  />
+                                </TableCell>
+                                <TableCell>
+                                  <TextField
+                                    type="text"
+                                    disabled
+                                    value={result.jumlahHarga}
+                                    sx={{
+                                      "& .MuiOutlinedInput-root": {
+                                        height: isMobile ? "15px" : "3vw",
+                                        width: isMobile ? "120px" : "13vw",
+                                        fontSize: isMobile ? "10px" : "1.5vw",
+                                        borderRadius: "10px",
+                                        "& fieldset": {
+                                          borderColor: "#0F607D",
+                                        },
+                                        "&:hover fieldset": {
+                                          borderColor: "#0F607D",
+                                        },
+                                        "&.Mui-focused fieldset": {
+                                          borderColor: "#0F607D",
+                                        },
                                       },
-                                      "&.Mui-focused fieldset": {
-                                        borderColor: "#0F607D",
-                                      },
-                                    },
-                                  }}
-                                  InputProps={{
-                                    inputComponent: NumericFormatCustom,
-                                  }}
-                                />
-                              </TableCell>
-                              <TableCell>
-                                <TextField
-                                  type="text"
-                                  disabled
-                                  value={result.jumlahHarga}
-                                  sx={{
-                                    "& .MuiOutlinedInput-root": {
-                                      height: isMobile ? "15px" : "3vw",
-                                      width: isMobile ? "120px" : "15vw",
-                                      fontSize: isMobile ? "10px" : "1.5vw",
-                                      borderRadius: "10px",
-                                      "& fieldset": {
-                                        borderColor: "#0F607D",
-                                      },
-                                      "&:hover fieldset": {
-                                        borderColor: "#0F607D",
-                                      },
-                                      "&.Mui-focused fieldset": {
-                                        borderColor: "#0F607D",
-                                      },
-                                    },
-                                  }}
-                                  InputProps={{
-                                    inputComponent: NumericFormatCustom,
-                                  }}
-                                />
-                              </TableCell>
-                              <TableCell>
-                                <IconButton
-                                  onClick={() => {
-                                    handleRemoveItemPembelianBahanBaku(
-                                      result.id,
-                                      index
-                                    );
-                                  }}
-                                >
-                                  <DeleteIcon style={{ color: "red" }} />
-                                </IconButton>
-                              </TableCell>
-                            </TableRow>
-                          </React.Fragment>
-                        );
-                      })}
-                    </TableBody>
-                  </Table>
-                </TableContainer>
+                                    }}
+                                    InputProps={{
+                                      inputComponent: NumericFormatCustom,
+                                    }}
+                                  />
+                                </TableCell>
+                                {/* bagian ini belom dimasukkin ke database */}
+                                <TableCell>
+                                  <LocalizationProvider
+                                    dateAdapter={AdapterDayjs}
+                                  >
+                                    <DemoContainer
+                                      sx={{ padding: 0 }}
+                                      components={["DateTimePicker"]}
+                                    >
+                                      <DemoItem sx={{ padding: 0 }}>
+                                        <DateTimePicker
+                                          disablePast
+                                          value={result.tanggalSuratJalan}
+                                          onChange={(event) => {
+                                            handleChangeInput(
+                                              "tanggalSuratJalan",
+                                              event,
+                                              index
+                                            );
+                                          }}
+                                        />
+                                      </DemoItem>
+                                    </DemoContainer>
+                                  </LocalizationProvider>
+                                </TableCell>
+                                <TableCell>
+                                  <TextField
+                                    type="text"
+                                    value={result.noSuratJalan}
+                                    onChange={(event) => {
+                                      handleChangeInput(
+                                        "noSuratJalan",
+                                        event,
+                                        index
+                                      );
+                                    }}
+                                  />
+                                </TableCell>
+                                <TableCell>
+                                  <LocalizationProvider
+                                    dateAdapter={AdapterDayjs}
+                                  >
+                                    <DemoContainer
+                                      sx={{ padding: 0 }}
+                                      components={["DateTimePicker"]}
+                                    >
+                                      <DemoItem sx={{ padding: 0 }}>
+                                        <DateTimePicker
+                                          disablePast
+                                          value={result.tanggalTerimaBarang}
+                                          onChange={(event) => {
+                                            handleChangeInput(
+                                              "tanggalTerimaBarang",
+                                              event,
+                                              index
+                                            );
+                                          }}
+                                        />
+                                      </DemoItem>
+                                    </DemoContainer>
+                                  </LocalizationProvider>
+                                </TableCell>
+                                <TableCell>
+                                  <TextField
+                                    type="text"
+                                    value={result.diterimaOleh}
+                                    onChange={(event) => {
+                                      handleChangeInput(
+                                        "diterimaOleh",
+                                        event,
+                                        index
+                                      );
+                                    }}
+                                  />
+                                </TableCell>
+                                <TableCell>
+                                  <TextField
+                                    type="text"
+                                    value={result.fakturPajak}
+                                    onChange={(event) => {
+                                      handleChangeInput(
+                                        "fakturPajak",
+                                        event,
+                                        index
+                                      );
+                                    }}
+                                  />
+                                </TableCell>
+                                <TableCell>
+                                  <LocalizationProvider
+                                    dateAdapter={AdapterDayjs}
+                                  >
+                                    <DemoContainer
+                                      sx={{ padding: 0 }}
+                                      components={["DateTimePicker"]}
+                                    >
+                                      <DemoItem sx={{ padding: 0 }}>
+                                        <DateTimePicker
+                                          disablePast
+                                          value={result.tanggalJatuhTempo}
+                                          onChange={(event) => {
+                                            handleChangeInput(
+                                              "tanggalJatuhTempo",
+                                              event,
+                                              index
+                                            );
+                                          }}
+                                        />
+                                      </DemoItem>
+                                    </DemoContainer>
+                                  </LocalizationProvider>
+                                </TableCell>
+                                <TableCell>
+                                  <LocalizationProvider
+                                    dateAdapter={AdapterDayjs}
+                                  >
+                                    <DemoContainer
+                                      sx={{ padding: 0 }}
+                                      components={["DateTimePicker"]}
+                                    >
+                                      <DemoItem sx={{ padding: 0 }}>
+                                        <DateTimePicker
+                                          disablePast
+                                          value={result.tanggalPengiriman}
+                                          onChange={(event) => {
+                                            handleChangeInput(
+                                              "tanggalPengiriman",
+                                              event,
+                                              index
+                                            );
+                                          }}
+                                        />
+                                      </DemoItem>
+                                    </DemoContainer>
+                                  </LocalizationProvider>
+                                </TableCell>
+                                <TableCell>
+                                  <div
+                                    style={{
+                                      display: "flex",
+                                      alignItems: "center",
+                                    }}
+                                  >
+                                    <TextField
+                                      type="number"
+                                      value={
+                                        result.jumlahTerimaPengiriman?.value
+                                      }
+                                      onChange={(event) => {
+                                        handleChangeInput(
+                                          "jumlahTerimaPengiriman",
+                                          event,
+                                          index
+                                        );
+                                      }}
+                                    />
+                                    <div style={{ marginLeft: "8px" }}>
+                                      <MySelectTextField
+                                        data={units}
+                                        width={isMobile ? "50px" : "55px"}
+                                        height={isMobile ? "15px" : "55px"}
+                                        value={
+                                          result.jumlahTerimaPengiriman?.unit
+                                        }
+                                        onChange={(event) => {
+                                          handleChangeInput(
+                                            "jumlahTerimaPengiriman",
+                                            event,
+                                            index,
+                                            true
+                                          );
+                                        }}
+                                      />
+                                    </div>
+                                  </div>
+                                </TableCell>
+                                <TableCell>
+                                  <div
+                                    style={{
+                                      display: "flex",
+                                      alignItems: "center",
+                                    }}
+                                  >
+                                    <TextField
+                                      type="number"
+                                      value={result.sisaPengiriman?.value}
+                                      onChange={(event) => {
+                                        handleChangeInput(
+                                          "sisaPengiriman",
+                                          event,
+                                          index
+                                        );
+                                      }}
+                                    />
+                                    <div style={{ marginLeft: "8px" }}>
+                                      <MySelectTextField
+                                        data={units}
+                                        width={isMobile ? "50px" : "55px"}
+                                        height={isMobile ? "15px" : "55px"}
+                                        value={result.sisaPengiriman?.unit}
+                                        onChange={(event) => {
+                                          handleChangeInput(
+                                            "sisaPengiriman",
+                                            event,
+                                            index,
+                                            true
+                                          );
+                                        }}
+                                      />
+                                    </div>
+                                  </div>
+                                </TableCell>
+                                <TableCell>
+                                  <IconButton
+                                    onClick={() => {
+                                      handleRemoveItemPembelianBahanBaku(
+                                        result.id,
+                                        index
+                                      );
+                                    }}
+                                  >
+                                    <DeleteIcon style={{ color: "red" }} />
+                                  </IconButton>
+                                </TableCell>
+                              </TableRow>
+                            </React.Fragment>
+                          );
+                        })}
+                      </TableBody>
+                    </Table>
+                  </TableContainer>
+                </div>
               </div>
               <div
                 style={{

@@ -56,6 +56,15 @@ class InventoryController {
                 jumlahOrder: data.jumlahOrder,
                 hargaSatuan: data.hargaSatuan,
                 jumlahHarga: data.jumlahHarga,
+                tanggalSuratJalan: data.tanggalSuratJalan,
+                noSuratJalan: data.noSuratJalan,
+                tanggalTerimaBarang: data.tanggalTerimaBarang,
+                diterimaOleh: data.diterimaOleh,
+                fakturPajak: data.fakturPajak,
+                tanggalJatuhTempo: data.tanggalJatuhTempo,
+                tanggalPengiriman: data.tanggalPengiriman,
+                jumlahTerimaPengiriman: data.jumlahTerimaPengiriman,
+                sisaPengiriman: data.sisaPengiriman,
               });
             } else {
               await itemPembelianBahanBakus.update(
@@ -67,6 +76,15 @@ class InventoryController {
                   jumlahOrder: data.jumlahOrder,
                   hargaSatuan: data.hargaSatuan,
                   jumlahHarga: data.jumlahHarga,
+                  tanggalSuratJalan: data.tanggalSuratJalan,
+                  noSuratJalan: data.noSuratJalan,
+                  tanggalTerimaBarang: data.tanggalTerimaBarang,
+                  diterimaOleh: data.diterimaOleh,
+                  fakturPajak: data.fakturPajak,
+                  tanggalJatuhTempo: data.tanggalJatuhTempo,
+                  tanggalPengiriman: data.tanggalPengiriman,
+                  jumlahTerimaPengiriman: data.jumlahTerimaPengiriman,
+                  sisaPengiriman: data.sisaPengiriman,
                 },
                 { where: { id: data.id } }
               );
@@ -271,7 +289,7 @@ class InventoryController {
     try {
       const { id } = req.params;
       const { permohonanPembelianId, dataPembelianBahanBaku } = req.body;
-
+      console.log(dataPembelianBahanBaku);
       let result = await pembelianBahanBakus.create({
         permohonanPembelianId: permohonanPembelianId,
         leveransir: dataPembelianBahanBaku.leveransir,
@@ -293,6 +311,15 @@ class InventoryController {
               jumlahOrder: data.jumlahOrder,
               hargaSatuan: data.hargaSatuan,
               jumlahHarga: data.jumlahHarga,
+              tanggalSuratJalan: data.tanggalSuratJalan,
+              noSuratJalan: data.noSuratJalan,
+              tanggalTerimaBarang: data.tanggalTerimaBarang,
+              diterimaOleh: data.diterimaOleh,
+              fakturPajak: data.fakturPajak,
+              tanggalJatuhTempo: data.tanggalJatuhTempo,
+              tanggalPengiriman: data.tanggalPengiriman,
+              jumlahTerimaPengiriman: data.jumlahTerimaPengiriman,
+              sisaPengiriman: data.sisaPengiriman,
             });
           })
         );
@@ -534,6 +561,18 @@ class InventoryController {
         id: createActivityLog.id,
         activitylogsId: createActivityLog.id,
       });
+    } catch (error) {
+      res.json(error);
+    }
+  }
+  static async findNameInventoryItem(req, res) {
+    try {
+      const { name } = req.params;
+
+      let result = await inventorys.findOne({
+        where: { namaItem: name },
+      });
+      res.json(result);
     } catch (error) {
       res.json(error);
     }

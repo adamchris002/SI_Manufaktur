@@ -87,4 +87,6 @@ inventoryRoutes.get(
 
 inventoryRoutes.post("/addStokOpnam/:id", InventoryController.addStokOpnam);
 
+inventoryRoutes.get("/findNameInventoryItem/:name", InventoryController.findNameInventoryItem)
+
 module.exports = inventoryRoutes;

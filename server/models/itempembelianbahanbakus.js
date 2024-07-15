@@ -10,7 +10,7 @@ module.exports = (sequelize, DataTypes) => {
     static associate(models) {
       itemPembelianBahanBakus.belongsTo(models.pembelianBahanBakus, {
         foreignKey: "pembelianBahanBakuId",
-        onDelete: "CASCADE"
+        onDelete: "CASCADE",
       });
     }
   }
@@ -24,6 +24,15 @@ module.exports = (sequelize, DataTypes) => {
       jumlahOrder: DataTypes.STRING,
       hargaSatuan: DataTypes.STRING,
       jumlahHarga: DataTypes.STRING,
+      tanggalSuratJalan: DataTypes.STRING,
+      noSuratJalan: DataTypes.STRING,
+      tanggalTerimaBarang: DataTypes.STRING,
+      diterimaOleh: DataTypes.STRING,
+      fakturPajak: DataTypes.STRING,
+      tanggalJatuhTempo: DataTypes.STRING,
+      tanggalPengiriman: DataTypes.STRING,
+      jumlahTerimaPengiriman: DataTypes.STRING,
+      sisaPengiriman: DataTypes.STRING,
     },
     {
       sequelize,
