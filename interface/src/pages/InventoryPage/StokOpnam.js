@@ -25,25 +25,25 @@ import dayjs from "dayjs";
 const StokOpnam = (props) => {
   const { userInformation } = props;
   const { isMobile } = useContext(AppContext);
-  const [dataStokOpnam, setDataStokOpnam] = useState([
-    {
-      suratPesanan: "",
-      tanggalMasuk: dayjs(""),
-      tanggalPengembalian: dayjs(""),
-      jenisBarang: "",
-      kodeBarang: "",
-      lokasiPenyimpanan: "",
-      stokOpnamAwal: "",
-      stokOpnamAkhir: "",
-      tanggalKeluar: dayjs(""),
-      jumlahPengambilan: "",
-      diambilOleh: "",
-      untukPekerjaan: "",
-      stokFisik: "",
-      stokSelisih: "",
-      keterangan: "",
-    },
-  ]);
+  const [dataStokOpnam, setDataStokOpnam] = useState({
+    judulStokOpnam: "",
+    tanggalStokOpnam: "",
+    itemStokOpnams: [
+      {
+        suratPesanan: "",
+        tanggalMasuk: dayjs(""),
+        tanggalPengembalian: dayjs(""),
+        jenisBarang: "",
+        kodeBarang: "",
+        lokasiPenyimpanan: "",
+        stokOpnamAwal: "",
+        stokOpnamAkhir: "",
+        stokFisik: "",
+        stokSelisih: "",
+        keterangan: "",
+      },
+    ],
+  });
   console.log(dataStokOpnam);
   const [allPermohonanPembelianId, setAllPermohonanPembelianId] = useState([]);
   const [refreshPermohonanPembelian, setRefreshPermohonanPembelian] =
@@ -94,30 +94,34 @@ const StokOpnam = (props) => {
     }
   }, [refreshPermohonanPembelian]);
 
-  const handleChangeInputStokOpnam = (event, index, field, unit) => {
+  const handleChangeInputStokOpnam = (field, event, index, unit) => {
     const value = event && event.target ? event.target.value : event;
 
-    setDataStokOpnam((oldArray) => {
-      const newArrayData = oldArray.map((item, i) => {
-        if (i === index) {
-          if (unit) {
-            return {
-              ...item,
-              [field]: {
-                value: item[field],
-                unit: value,
-              },
-            };
-          } else {
-            return {
-              ...item,
-              [field]: value,
-            };
+    setDataStokOpnam((oldObject) => {
+      if (field === "judulStokOpnam" || field === "tanggalStokOpnam") {
+        return { ...oldObject, [field]: value };
+      } else {
+        const updatedItems = oldObject.itemStokOpnams.map((item, i) => {
+          if (i === index) {
+            let updatedItem = { ...item };
+            if (unit) {
+              updatedItem = {
+                ...updatedItem,
+                [field]: {
+                  value: item[field],
+                  unit: value,
+                },
+              };
+            } else {
+              updatedItem = { ...updatedItem, [field]: value };
+            }
+            return updatedItem;
           }
-        }
-        return item;
-      });
-      return newArrayData;
+          return item;
+        });
+
+        return { ...oldObject, itemStokOpnams: updatedItems };
+      }
     });
   };
 
@@ -168,26 +172,31 @@ const StokOpnam = (props) => {
   };
 
   const handleAddRow = () => {
-    setDataStokOpnam((oldArray) => [
-      ...oldArray,
-      {
-        suratPesanan: "",
-        tanggalMasuk: dayjs(""),
-        tanggalPengembalian: dayjs(""),
-        jenisBarang: "",
-        kodeBarang: "",
-        lokasiPenyimpanan: "",
-        stokOpnamAwal: "",
-        stokOpnamAkhir: "",
-        tanggalKeluar: dayjs(""),
-        jumlahPengambilan: "",
-        diambilOleh: "",
-        untukPekerjaan: "",
-        stokFisik: "",
-        stokSelisih: "",
-        keterangan: "",
-      },
-    ]);
+    setDataStokOpnam((oldArray) => {
+      return {
+        ...oldArray,
+        itemStokOpnams: [
+          ...oldArray.itemStokOpnams,
+          {
+            suratPesanan: "",
+            tanggalMasuk: dayjs(""),
+            tanggalPengembalian: dayjs(""),
+            jenisBarang: "",
+            kodeBarang: "",
+            lokasiPenyimpanan: "",
+            stokOpnamAwal: "",
+            stokOpnamAkhir: "",
+            tanggalKeluar: dayjs(""),
+            jumlahPengambilan: "",
+            diambilOleh: "",
+            untukPekerjaan: "",
+            stokFisik: "",
+            stokSelisih: "",
+            keterangan: "",
+          },
+        ],
+      };
+    });
   };
 
   return (
@@ -261,18 +270,6 @@ const StokOpnam = (props) => {
                       Stok Opnam Akhir
                     </TableCell>
                     <TableCell align="left" style={{ width: "200px" }}>
-                      Tanggal Keluar
-                    </TableCell>
-                    <TableCell align="left" style={{ width: "200px" }}>
-                      Jumlah Pengambilan
-                    </TableCell>
-                    <TableCell align="left" style={{ width: "200px" }}>
-                      Diambil Oleh
-                    </TableCell>
-                    <TableCell align="left" style={{ width: "200px" }}>
-                      Untuk Pekerjaan
-                    </TableCell>
-                    <TableCell align="left" style={{ width: "200px" }}>
                       Stok Fisik
                     </TableCell>
                     <TableCell align="left" style={{ width: "200px" }}>
@@ -284,7 +281,7 @@ const StokOpnam = (props) => {
                   </TableRow>
                 </TableHead>
                 <TableBody>
-                  {dataStokOpnam.map((result, index) => {
+                  {dataStokOpnam.itemStokOpnams.map((result, index) => {
                     return (
                       <React.Fragment key={index}>
                         <TableRow>
@@ -296,9 +293,9 @@ const StokOpnam = (props) => {
                               value={result.suratPesanan}
                               onChange={(event) => {
                                 handleChangeInputStokOpnam(
+                                  "suratPesanan",
                                   event,
-                                  index,
-                                  "suratPesanan"
+                                  index
                                 );
                               }}
                             />
@@ -308,12 +305,12 @@ const StokOpnam = (props) => {
                               <DemoItem>
                                 <DateTimePicker
                                   disablePast
-                                  value={dayjs(result.tanggalMasuk)}
+                                  value={result?.tanggalMasuk}
                                   onChange={(event) => {
                                     handleChangeInputStokOpnam(
+                                      "tanggalMasuk",
                                       event,
                                       index,
-                                      "tanggalMasuk"
                                     );
                                   }}
                                 />
@@ -325,12 +322,12 @@ const StokOpnam = (props) => {
                               <DemoItem>
                                 <DateTimePicker
                                   disablePast
-                                  value={dayjs(result.tanggalPengembalian)}
+                                  value={result?.tanggalPengembalian}
                                   onChange={(event) => {
                                     handleChangeInputStokOpnam(
+                                      "tanggalPengembalian",
                                       event,
                                       index,
-                                      "tanggalPengembalian"
                                     );
                                   }}
                                 />
@@ -342,9 +339,9 @@ const StokOpnam = (props) => {
                               value={result.jenisBarang}
                               onChange={(event) => {
                                 handleChangeInputStokOpnam(
+                                  "jenisBarang",
                                   event,
                                   index,
-                                  "jenisBarang"
                                 );
                               }}
                             />
@@ -354,9 +351,9 @@ const StokOpnam = (props) => {
                               value={result.kodeBarang}
                               onChange={(event) => {
                                 handleChangeInputStokOpnam(
+                                  "kodeBarang",
                                   event,
                                   index,
-                                  "kodeBarang"
                                 );
                               }}
                             />
@@ -368,9 +365,9 @@ const StokOpnam = (props) => {
                               value={result.lokasi}
                               onChange={(event) => {
                                 handleChangeInputStokOpnam(
+                                  "lokasiPenyimpanan",
                                   event,
                                   index,
-                                  "lokasiPenyimpanan"
                                 );
                               }}
                             />
@@ -389,9 +386,9 @@ const StokOpnam = (props) => {
                                 value={result.stokOpnamAwal?.value}
                                 onChange={(event) => {
                                   handleChangeInputStokOpnam(
+                                    "stokOpnamAwal",
                                     event,
                                     index,
-                                    "stokOpnamAwal"
                                   );
                                 }}
                               />
@@ -401,9 +398,9 @@ const StokOpnam = (props) => {
                                 value={result.stokOpnamAwal?.unit}
                                 onChange={(event) => {
                                   handleChangeInputStokOpnam(
+                                    "stokOpnamAwal",
                                     event,
                                     index,
-                                    "stokOpnamAwal",
                                     true
                                   );
                                 }}
@@ -424,9 +421,9 @@ const StokOpnam = (props) => {
                                 value={result.stokOpnamAkhir?.value}
                                 onChange={(event) => {
                                   handleChangeInputStokOpnam(
+                                    "stokOpnamAkhir",
                                     event,
                                     index,
-                                    "stokOpnamAkhir"
                                   );
                                 }}
                               />
@@ -436,99 +433,23 @@ const StokOpnam = (props) => {
                                 value={result.stokOpnamAkhir?.unit}
                                 onChange={(event) => {
                                   handleChangeInputStokOpnam(
-                                    event,
-                                    index,
                                     "stokOpnamAkhir",
+                                    event,
+                                    index,
                                     true
                                   );
                                 }}
                               />
                             </div>
-                          </TableCell>
-                          <TableCell>
-                            <LocalizationProvider dateAdapter={AdapterDayjs}>
-                              <DemoItem>
-                                <DateTimePicker
-                                  disablePast
-                                  value={result.tanggalKeluar}
-                                  onChange={(event) => {
-                                    handleChangeInputStokOpnam(
-                                      event,
-                                      index,
-                                      "tanggalKeluar"
-                                    );
-                                  }}
-                                />
-                              </DemoItem>
-                            </LocalizationProvider>
-                          </TableCell>
-                          <TableCell>
-                            <div
-                              style={{
-                                display: "flex",
-                                justifyContent: "space-between",
-                                alignItems: "center",
-                              }}
-                            >
-                              <TextField
-                                sx={{ width: "130px" }}
-                                type="number"
-                                value={result.jumlahPengambilan?.value}
-                                onChange={(event) => {
-                                  handleChangeInputStokOpnam(
-                                    event,
-                                    index,
-                                    "jumlahPengambilan"
-                                  );
-                                }}
-                              />
-                              <MySelectTextField
-                                width={"60px"}
-                                data={units}
-                                value={result.jumlahPengambilan?.unit}
-                                onChange={(event) => {
-                                  handleChangeInputStokOpnam(
-                                    event,
-                                    index,
-                                    "jumlahPengambilan",
-                                    true
-                                  );
-                                }}
-                              />
-                            </div>
-                          </TableCell>
-                          <TableCell>
-                            <TextField
-                              value={result.diambilOleh}
-                              onChange={(event) => {
-                                handleChangeInputStokOpnam(
-                                  event,
-                                  index,
-                                  "diambilOleh"
-                                );
-                              }}
-                            />
-                          </TableCell>
-                          <TableCell>
-                            <TextField
-                              value={result.untukPekerjaan}
-                              onChange={(event) => {
-                                handleChangeInputStokOpnam(
-                                  event,
-                                  index,
-                                  "untukPekerjaan"
-                                );
-                              }}
-                            />
                           </TableCell>
                           <TableCell>
                             <TextField
                               value={result.stokFisik}
                               onChange={(event) => {
                                 handleChangeInputStokOpnam(
+                                  "stokFisik",
                                   event,
                                   index,
-                                  "stokFisik"
                                 );
                               }}
                             />
@@ -538,9 +459,9 @@ const StokOpnam = (props) => {
                               value={result.stokSelisih}
                               onChange={(event) => {
                                 handleChangeInputStokOpnam(
+                                  "stokSelisih",
                                   event,
                                   index,
-                                  "stokSelisih"
                                 );
                               }}
                             />
@@ -550,9 +471,9 @@ const StokOpnam = (props) => {
                               value={result.keterangan}
                               onChange={(event) => {
                                 handleChangeInputStokOpnam(
+                                  "keterangan",
                                   event,
                                   index,
-                                  "keterangan"
                                 );
                               }}
                               multiline

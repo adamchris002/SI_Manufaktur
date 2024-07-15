@@ -11,6 +11,7 @@ const {
   users,
   stokOpnams,
   UserStokOpnams,
+  itemStokOpnams,
 } = require("../models");
 
 class InventoryController {
@@ -536,10 +537,6 @@ class InventoryController {
               lokasiPenyimpanan: item.lokasiPenyimpanan,
               stokOpnamAwal: item.stokOpnamAwal,
               stokOpnamAkhir: item.stokOpnamAkhir,
-              tanggalKeluar: item.tanggalKeluar,
-              jumlahPengambilan: item.jumlahPengambilan,
-              diambilOleh: item.diambilOleh,
-              untukPekerjaan: item.untukPekerjaan,
               stokFisik: item.stokFisik,
               stokSelisih: item.stokSelisih,
               keterangan: item.keterangan,

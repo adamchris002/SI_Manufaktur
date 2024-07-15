@@ -2,12 +2,20 @@
 /** @type {import('sequelize-cli').Migration} */
 module.exports = {
   async up(queryInterface, Sequelize) {
-    await queryInterface.createTable("stokOpnams", {
+    await queryInterface.createTable("itemStokOpnams", {
       id: {
         allowNull: false,
         autoIncrement: true,
         primaryKey: true,
         type: Sequelize.INTEGER,
+      },
+      stokOpnamId: {
+        type: Sequelize.INTEGER,
+        references: {
+          model: "stokOpnams",
+          key: "id",
+        },
+        onDelete: "CASCADE",
       },
       suratPesanan: {
         type: Sequelize.STRING,
@@ -33,18 +41,6 @@ module.exports = {
       stokOpnamAkhir: {
         type: Sequelize.STRING,
       },
-      tanggalKeluar: {
-        type: Sequelize.STRING,
-      },
-      jumlahPengambilan: {
-        type: Sequelize.STRING,
-      },
-      diambilOleh: {
-        type: Sequelize.STRING,
-      },
-      untukPekerjaan: {
-        type: Sequelize.STRING,
-      },
       stokFisik: {
         type: Sequelize.STRING,
       },
@@ -62,13 +58,9 @@ module.exports = {
         allowNull: false,
         type: Sequelize.DATE,
       },
-      uniqueId: {
-        allowNull: false,
-        type: Sequelize.INTEGER,
-      },
     });
   },
   async down(queryInterface, Sequelize) {
-    await queryInterface.dropTable("stokOpnams");
+    await queryInterface.dropTable("itemStokOpnams");
   },
 };

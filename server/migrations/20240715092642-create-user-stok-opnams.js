@@ -10,13 +10,13 @@ module.exports = {
         type: Sequelize.INTEGER
       },
       userId: {
-        type: Sequelize.INTEGER,
-        references: { model: "users", key: "id" },
+        type: Sequelize.INTEGER, 
+        references: {model: "users", key: "id"},
         onDelete: "CASCADE"
       },
       stokOpnamId: {
         type: Sequelize.INTEGER,
-        references: { model: "stokOpnams", key: "id" },
+        references: {model: "stokOpnams", key: "id"},
         onDelete: "CASCADE"
       },
       createdAt: {
