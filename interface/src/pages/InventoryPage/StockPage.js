@@ -38,9 +38,11 @@ const StockPage = (props) => {
 
   const [ifId, setIfId] = useState(0);
   const [namaItem, setNamaItem] = useState("");
+  const [kodeBarang, setKodeBarang] = useState("");
   const [rincianItem, setRincianItem] = useState("");
   const [jumlahItem, setJumlahItem] = useState("");
   const [jumlahItemUnit, setJumlahItemUnit] = useState("");
+  const [lokasiPenyimpanan, setLokasiPenyimpanan] = useState("");
   const [sortName, setSortName] = useState(false);
 
   const [refreshInventoryItem, setRefreshInventoryItem] = useState(true);
@@ -67,6 +69,12 @@ const StockPage = (props) => {
     {
       value: "Box",
     },
+  ];
+
+  const lokasi = [
+    { value: "Jakarta" },
+    { value: "Semarang" },
+    { value: "Purwokerto" },
   ];
 
   useEffect(() => {
@@ -130,6 +138,8 @@ const StockPage = (props) => {
         namaItem: namaItem,
         rincianItem: rincianItem,
         jumlahItem: `${jumlahItem} ${jumlahItemUnit}`,
+        lokasiPenyimpanan: lokasiPenyimpanan,
+        kodeBarang: kodeBarang
       };
       axios({
         method: "PUT",
@@ -144,6 +154,8 @@ const StockPage = (props) => {
           setNamaItem("");
           setRincianItem("");
           setJumlahItem("");
+          setLokasiPenyimpanan("");
+          setKodeBarang("");
           setJumlahItemUnit("");
           setRefreshInventoryItem(true);
         } else {
@@ -193,6 +205,8 @@ const StockPage = (props) => {
         namaItem: namaItem,
         rincianItem: rincianItem,
         jumlahItem: `${jumlahItem} ${jumlahItemUnit}`,
+        kodeBarang: kodeBarang,
+        lokasiPenyimpanan: lokasiPenyimpanan
       };
       axios({
         method: "POST",
@@ -208,6 +222,8 @@ const StockPage = (props) => {
           setRincianItem("");
           setJumlahItem("");
           setJumlahItemUnit("");
+          setKodeBarang("");
+          setLokasiPenyimpanan("");
           setRefreshInventoryItem(true);
         } else {
           setOpenSnackbar(true);
@@ -233,6 +249,8 @@ const StockPage = (props) => {
     setRincianItem(data.rincianItem);
     setJumlahItem(jumlahItem.value);
     setJumlahItemUnit(jumlahItem.unit);
+    setKodeBarang(data.kodeBarang)
+    setLokasiPenyimpanan(data.lokasi)
   };
 
   const handleCloseEditInventoryItems = () => {
@@ -242,6 +260,8 @@ const StockPage = (props) => {
     setRincianItem("");
     setJumlahItem("");
     setJumlahItemUnit("");
+    setKodeBarang("");
+    setLokasiPenyimpanan("");
   };
 
   const handleCloseModal = () => {
@@ -250,6 +270,8 @@ const StockPage = (props) => {
     setRincianItem("");
     setJumlahItem("");
     setJumlahItemUnit("");
+    setKodeBarang("");
+    setLokasiPenyimpanan("");
   };
 
   const handleCloseSnackbar = () => {
@@ -326,11 +348,15 @@ const StockPage = (props) => {
                 justifyContent: "center",
                 alignItems: "center",
                 height: "20vw",
-                flexDirection: "column"
+                flexDirection: "column",
               }}
             >
-              <Typography style={{color: "#0F607D", fontSize: "3vw"}}>Tidak ada item bahan baku</Typography>
-              <Typography style={{color: "#0F607D", fontSize: "2vw"}}>Silahkan tambah item bahan baku</Typography>
+              <Typography style={{ color: "#0F607D", fontSize: "3vw" }}>
+                Tidak ada item bahan baku
+              </Typography>
+              <Typography style={{ color: "#0F607D", fontSize: "2vw" }}>
+                Silahkan tambah item bahan baku
+              </Typography>
             </div>
           ) : (
             <TableContainer component={Paper}>
@@ -338,11 +364,11 @@ const StockPage = (props) => {
                 <TableHead>
                   <TableRow>
                     <TableCell>No.</TableCell>
-                    <TableCell>
+                    <TableCell align="left">
                       {" "}
                       <div style={{ display: "flex", alignItems: "center" }}>
                         <Typography style={{ width: "100px" }}>
-                          Nama Item
+                          Nama Barang
                         </Typography>
                         {sortName ? (
                           <IconButton
@@ -363,9 +389,13 @@ const StockPage = (props) => {
                         )}
                       </div>
                     </TableCell>
-                    <TableCell>Rincian Item</TableCell>
-                    <TableCell>Jumlah Item</TableCell>
-                    <TableCell>Actions</TableCell>
+                    <TableCell align="left">Kode Barang</TableCell>
+                    <TableCell align="left">Rincian Item</TableCell>
+                    <TableCell align="left">Jumlah Item</TableCell>
+                    <TableCell align="left">Lokasi Penyimpanan</TableCell>
+                    <TableCell style={{ width: 60 }} align="left">
+                      Actions
+                    </TableCell>
                   </TableRow>
                 </TableHead>
                 <TableBody>
@@ -381,8 +411,10 @@ const StockPage = (props) => {
                           <TableRow>
                             <TableCell>{index + 1}</TableCell>
                             <TableCell>{result.namaItem}</TableCell>
+                            <TableCell>{result.kodeBarang}</TableCell>
                             <TableCell>{result.rincianItem}</TableCell>
                             <TableCell>{result.jumlahItem}</TableCell>
+                            <TableCell>{result.lokasi}</TableCell>
                             <TableCell>
                               <div
                                 style={{
@@ -451,13 +483,55 @@ const StockPage = (props) => {
                       fontSize: isMobile ? "" : "1vw",
                     }}
                   >
-                    Nama Item:
+                    Nama Barang:
                   </Typography>
                 </div>
                 <TextField
                   value={namaItem}
                   onChange={(event) => {
                     setNamaItem(event.target.value);
+                  }}
+                  sx={{
+                    "& .MuiOutlinedInput-root": {
+                      height: isMobile ? "15px" : "3vw",
+                      width: isMobile ? "150px" : "25vw",
+                      fontSize: isMobile ? "10px" : "1.5vw",
+                      borderRadius: "10px",
+                      boxSizing: "border-box",
+                      "& fieldset": {
+                        borderColor: "#0F607D",
+                      },
+                      "&:hover fieldset": {
+                        borderColor: "#0F607D",
+                      },
+                      "&.Mui-focused fieldset": {
+                        borderColor: "#0F607D",
+                      },
+                    },
+                  }}
+                />
+              </div>
+              <div
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  marginTop: "16px",
+                }}
+              >
+                <div style={{ width: "150px" }}>
+                  <Typography
+                    style={{
+                      color: "#0F607D",
+                      fontSize: isMobile ? "" : "1vw",
+                    }}
+                  >
+                    Kode Barang:
+                  </Typography>
+                </div>
+                <TextField
+                  value={kodeBarang}
+                  onChange={(event) => {
+                    setKodeBarang(event.target.value);
                   }}
                   sx={{
                     "& .MuiOutlinedInput-root": {
@@ -577,6 +651,56 @@ const StockPage = (props) => {
                     fontSize={isMobile ? "10px" : "1.5vw"}
                   />
                 </div>
+              </div>
+              <div
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  marginTop: "16px",
+                }}
+              >
+                <div style={{ width: "150px" }}>
+                  <Typography
+                    style={{
+                      color: "#0F607D",
+                      fontSize: isMobile ? "" : "1vw",
+                    }}
+                  >
+                    Lokasi Penyimpanan:
+                  </Typography>
+                </div>
+                {/* <TextField
+                  value={lokasiPenyimpanan}
+                  onChange={(event) => {
+                    setLokasiPenyimpanan(event.target.value);
+                  }}
+                  sx={{
+                    "& .MuiOutlinedInput-root": {
+                      height: isMobile ? "15px" : "3vw",
+                      width: isMobile ? "150px" : "25vw",
+                      fontSize: isMobile ? "10px" : "1.5vw",
+                      borderRadius: "10px",
+                      boxSizing: "border-box",
+                      "& fieldset": {
+                        borderColor: "#0F607D",
+                      },
+                      "&:hover fieldset": {
+                        borderColor: "#0F607D",
+                      },
+                      "&.Mui-focused fieldset": {
+                        borderColor: "#0F607D",
+                      },
+                    },
+                  }}
+                /> */}
+                <MySelectTextField
+                  width={"200px"}
+                  data={lokasi}
+                  value={lokasiPenyimpanan}
+                  onChange={(event) => {
+                    setLokasiPenyimpanan(event.target.value);
+                  }}
+                />
               </div>
             </div>
             <div

@@ -16,6 +16,7 @@ module.exports = (sequelize, DataTypes) => {
   inventorys.init(
     {
       namaItem: DataTypes.STRING,
+      kodeBarang: DataTypes.STRING,
       rincianItem: DataTypes.STRING,
       jumlahItem: DataTypes.STRING,
       lokasi: DataTypes.STRING,

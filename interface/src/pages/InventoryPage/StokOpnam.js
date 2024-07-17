@@ -56,6 +56,9 @@ const StokOpnam = (props) => {
       },
     ],
   });
+  console.log(dataStokOpnam);
+
+  const [allInventoryName, setAllInventoryName] = useState([]);
   const [allPermohonanPembelianId, setAllPermohonanPembelianId] = useState([]);
   const [refreshPermohonanPembelian, setRefreshPermohonanPembelian] =
     useState(true);
@@ -134,6 +137,25 @@ const StokOpnam = (props) => {
   };
 
   useEffect(() => {
+    axios({
+      method: "GET",
+      url: "http://localhost:3000/inventory/getAllInventoryItem",
+    }).then((result) => {
+      if (result.status === 200) {
+        const tempName = result.data.map((data) => ({
+          value: data.namaItem,
+          ...data,
+        }));
+        setAllInventoryName(tempName);
+      } else {
+        setOpenSnackbar(true);
+        setSnackbarStatus(false);
+        setSnackbarMessage("Tidak berhasil memanggil data bahan baku");
+      }
+    });
+  }, []);
+
+  useEffect(() => {
     if (stokOpnamId !== undefined) {
       if (refreshStokOpnams) {
         axios({
@@ -194,6 +216,19 @@ const StokOpnam = (props) => {
               };
             } else {
               updatedItem = { ...updatedItem, [field]: value };
+
+              if (field === "jenisBarang") {
+                const kodeBarang = getSelectedInventoryItem(
+                  updatedItem.jenisBarang,
+                  "kodeBarang"
+                );
+                const lokasiPenyimpanan = getSelectedInventoryItem(
+                  updatedItem.jenisBarang,
+                  "lokasi"
+                );
+                updatedItem.kodeBarang = kodeBarang;
+                updatedItem.lokasiPenyimpanan = lokasiPenyimpanan;
+              }
             }
             return updatedItem;
           }
@@ -310,7 +345,7 @@ const StokOpnam = (props) => {
         if (result.status === 200) {
           setSuccessMessage("Berhasil mengedit stok opnam");
           setSnackbarStatus(true);
-          navigate(-1)
+          navigate(-1);
         } else {
           setOpenSnackbar(true);
           setSnackbarStatus(false);
@@ -378,6 +413,13 @@ const StokOpnam = (props) => {
     setOpenSnackbar(false);
     setSnackbarMessage("");
     setSnackbarStatus(true);
+  };
+
+  const getSelectedInventoryItem = (value, field) => {
+    const selectedItem = allInventoryName?.find(
+      (result) => value === result.value
+    );
+    return selectedItem ? selectedItem[field] : null;
   };
 
   return (
@@ -512,7 +554,9 @@ const StokOpnam = (props) => {
                       <TableCell align="left" style={{ width: "200px" }}>
                         Keterangan
                       </TableCell>
-                      <TableCell style={{width: 50}} align="left">Actions</TableCell>
+                      <TableCell style={{ width: 50 }} align="left">
+                        Actions
+                      </TableCell>
                     </TableRow>
                   </TableHead>
                   <TableBody>
@@ -570,8 +614,10 @@ const StokOpnam = (props) => {
                               </LocalizationProvider>
                             </TableCell>
                             <TableCell>
-                              <TextField
+                              <MySelectTextField
                                 value={result.jenisBarang}
+                                data={allInventoryName}
+                                width={200}
                                 onChange={(event) => {
                                   handleChangeInputStokOpnam(
                                     "jenisBarang",
@@ -583,7 +629,11 @@ const StokOpnam = (props) => {
                             </TableCell>
                             <TableCell>
                               <TextField
-                                value={result.kodeBarang}
+                                disabled
+                                value={getSelectedInventoryItem(
+                                  result.jenisBarang,
+                                  "kodeBarang"
+                                )}
                                 onChange={(event) => {
                                   handleChangeInputStokOpnam(
                                     "kodeBarang",
@@ -595,9 +645,13 @@ const StokOpnam = (props) => {
                             </TableCell>
                             <TableCell>
                               <MySelectTextField
+                                disabled
                                 width="200px"
                                 data={lokasi}
-                                value={result.lokasiPenyimpanan}
+                                value={getSelectedInventoryItem(
+                                  result.jenisBarang,
+                                  "lokasi"
+                                )}
                                 onChange={(event) => {
                                   handleChangeInputStokOpnam(
                                     "lokasiPenyimpanan",

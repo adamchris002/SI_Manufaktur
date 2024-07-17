@@ -76,7 +76,7 @@ const MaindashboardInventory = (props) => {
         }
       });
     }
-  }, []);
+  }, [refresDataStokOpnam]);
 
   useEffect(() => {
     if (message) {
@@ -434,6 +434,24 @@ const MaindashboardInventory = (props) => {
         setOpenSnackbar(true);
         setSnackbarStatus(false);
         setSnackbarMessage("Error dalam menghapus data pembelian bahan baku");
+      }
+    });
+  };
+
+  const handleDeleteStokOpnam = (id) => {
+    axios({
+      method: "DELETE",
+      url: `http://localhost:3000/inventory/deleteStokOpnam/${id}`,
+    }).then((result) => {
+      if (result.status === 200) {
+        setOpenSnackbar(true);
+        setSnackbarStatus(true);
+        setSnackbarMessage("Berhasil menghapus data stok opnam");
+        setRefereshDataStokOpnam(true);
+      } else {
+        setOpenSnackbar(true);
+        setSnackbarStatus(false);
+        setSnackbarMessage("Error dalam menghapus data stok opnam");
       }
     });
   };
@@ -997,9 +1015,11 @@ const MaindashboardInventory = (props) => {
           </div>
         </div>
         {allStokOpnam.length === 0 ? (
-          <Typography>Tidak ada data stok opnam</Typography>
+          <div style={{ margin: "32px" }}>
+            <Typography>Tidak ada data stok opnam</Typography>
+          </div>
         ) : (
-          <div style={{ width: "70%" }}>
+          <div style={{ width: "70%", margin: "32px" }}>
             <TableContainer component={Paper}>
               <Table sx={{ minWidth: 650 }} aria-label="simple table">
                 <TableHead>
@@ -1033,7 +1053,12 @@ const MaindashboardInventory = (props) => {
                               >
                                 <EditIcon style={{ color: "#0F607D" }} />
                               </IconButton>
-                              <IconButton style={{ marginLeft: "8px" }}>
+                              <IconButton
+                                onClick={() => {
+                                  handleDeleteStokOpnam(result.id)
+                                }}
+                                style={{ marginLeft: "8px" }}
+                              >
                                 <DeleteIcon style={{ color: "red" }} />
                               </IconButton>
                             </div>
@@ -1065,11 +1090,13 @@ const MaindashboardInventory = (props) => {
             Pengambilan/Penyerahan Barang
           </Typography>
           <div>
-            <DefaultButton onClickFunction={() => {
-              navigate('/inventoryDashboard/penyerahanBarang')
-            }}>
+            <DefaultButton
+              onClickFunction={() => {
+                navigate("/inventoryDashboard/penyerahanBarang");
+              }}
+            >
               <Typography style={{ fontSize: isMobile ? "12px" : "1.042vw" }}>
-                Pergi ke halaman Pengambilan/Penyerahan Barang 
+                Pergi ke halaman Pengambilan/Penyerahan Barang
               </Typography>
             </DefaultButton>
           </div>

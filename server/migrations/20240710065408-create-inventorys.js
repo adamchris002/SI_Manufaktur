@@ -12,6 +12,9 @@ module.exports = {
       namaItem: {
         type: Sequelize.STRING
       },
+      kodeBarang: {
+        type: Sequelize.STRING
+      },
       rincianItem: {
         type: Sequelize.STRING
       },

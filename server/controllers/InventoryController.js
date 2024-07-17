@@ -399,6 +399,8 @@ class InventoryController {
         namaItem: dataInventory.namaItem,
         rincianItem: dataInventory.rincianItem,
         jumlahItem: dataInventory.jumlahItem,
+        lokasi: dataInventory.lokasiPenyimpanan,
+        kodeBarang: dataInventory.kodeBarang,
       });
 
       await UserInventorys.create({
@@ -438,6 +440,8 @@ class InventoryController {
           namaItem: dataInventory.namaItem,
           rincianItem: dataInventory.rincianItem,
           jumlahItem: dataInventory.jumlahItem,
+          kodeBarang: dataInventory.kodeBarang,
+          lokasi: dataInventory.lokasiPenyimpanan
         },
         { where: { id: dataInventory.inventoryItemId } }
       );
@@ -675,7 +679,7 @@ class InventoryController {
       let result = await stokOpnams.destroy({
         where: { id: id },
       });
-      res.json(result)
+      res.json(result);
     } catch (error) {
       res.json(error);
     }

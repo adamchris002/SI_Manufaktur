@@ -84,19 +84,33 @@ inventoryRoutes.get(
   "/inventoryActivityLog",
   InventoryController.inventoryActivityLog
 );
-
-inventoryRoutes.post("/addStokOpnam/:id", InventoryController.addStokOpnam);
-
+inventoryRoutes.post(
+  "/addStokOpnam/:id", 
+  InventoryController.addStokOpnam
+);
 inventoryRoutes.get(
   "/findNameInventoryItem/:name",
   InventoryController.findNameInventoryItem
 );
-inventoryRoutes.get("/getAllStokOpnam", InventoryController.getAllStokOpnam);
-inventoryRoutes.get("/getStokOpnam/:id", InventoryController.getStokOpnam);
-inventoryRoutes.put("/editStokOpnam/:id", InventoryController.editStokOpnam);
+inventoryRoutes.get(
+  "/getAllStokOpnam", 
+  InventoryController.getAllStokOpnam
+);
+inventoryRoutes.get(
+  "/getStokOpnam/:id", 
+  InventoryController.getStokOpnam
+);
+inventoryRoutes.put(
+  "/editStokOpnam/:id", 
+  InventoryController.editStokOpnam
+);
 inventoryRoutes.delete(
   "/deleteItemStokOpnam/:id",
   InventoryController.deleteItemStokOpnam
+);
+inventoryRoutes.delete(
+  "/deleteStokOpnam/:id",
+  InventoryController.deleteStokOpnam
 );
 
 module.exports = inventoryRoutes;
