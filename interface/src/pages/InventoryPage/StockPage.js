@@ -319,8 +319,19 @@ const StockPage = (props) => {
           />
         </div>
         <div style={{ width: "100%" }}>
-          {allInventoryItems.length === 0 ? (
-            <Typography>Tidak ada item bahan baku</Typography>
+          {allInventoryItems.data.length === 0 ? (
+            <div
+              style={{
+                display: "flex",
+                justifyContent: "center",
+                alignItems: "center",
+                height: "20vw",
+                flexDirection: "column"
+              }}
+            >
+              <Typography style={{color: "#0F607D", fontSize: "3vw"}}>Tidak ada item bahan baku</Typography>
+              <Typography style={{color: "#0F607D", fontSize: "2vw"}}>Silahkan tambah item bahan baku</Typography>
+            </div>
           ) : (
             <TableContainer component={Paper}>
               <Table sx={{ minWidth: 650 }} aria-label="simple table">

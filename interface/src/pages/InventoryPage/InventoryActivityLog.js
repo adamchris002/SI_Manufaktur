@@ -23,8 +23,6 @@ const InventoryActivityLog = () => {
   const navigate = useNavigate();
   const [activityLogs, setActivityLogs] = useState([]);
 
-  console.log(activityLogs)
-
   useEffect(() => {
     axios({
       method: "GET",

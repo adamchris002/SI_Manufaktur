@@ -33,17 +33,17 @@ const MaindashboardInventory = (props) => {
   const { isMobile } = useContext(AppContext);
   const navigate = useNavigate();
 
-  const { message, clearMessage, setSuccessMessage } = useAuth();
+  const { message, clearMessage } = useAuth();
 
   const [openSnackbar, setOpenSnackbar] = useState(false);
   const [snackbarStatus, setSnackbarStatus] = useState(false);
   const [snackbarMessage, setSnackbarMessage] = useState("");
   const [allPermohonanPembelian, setAllPermohonanPembelian] = useState([]);
+  const [allStokOpnam, setAllStokOpnam] = useState([]);
 
   const [permohonanPembelian, setPermohonanPembelian] = useState([]);
-
   const [pembelianBahanBaku, setPembelianBahanBaku] = useState([]);
-  console.log(pembelianBahanBaku)
+  const [dataStokOpnam, setDataStokOpnam] = useState({});
 
   const [refreshPermohonanPembelian, setRefreshPermohonanPembelian] =
     useState(true);
@@ -51,12 +51,32 @@ const MaindashboardInventory = (props) => {
     useState(false);
   const [refreshPembelianBahanBaku, setRefreshPembelianBahanBaku] =
     useState(true);
+  const [refresDataStokOpnam, setRefereshDataStokOpnam] = useState(true);
 
   const [openModalPermohonanPembelian, setOpenModalPermohonanPembelian] =
     useState(false);
 
   const [isEditPermohonanPembelian, setIsEditPermohonanPembelian] =
     useState(false);
+
+  useEffect(() => {
+    if (refresDataStokOpnam) {
+      axios({
+        method: "GET",
+        url: "http://localhost:3000/inventory/getAllStokOpnam",
+      }).then((result) => {
+        if (result.status === 200) {
+          setAllStokOpnam(result.data);
+          setRefereshDataStokOpnam(false);
+        } else {
+          setOpenSnackbar(true);
+          setSnackbarStatus(false);
+          setSnackbarMessage("Tidak berhasil memanggil data stok opnam");
+          setRefereshDataStokOpnam(false);
+        }
+      });
+    }
+  }, []);
 
   useEffect(() => {
     if (message) {
@@ -118,7 +138,9 @@ const MaindashboardInventory = (props) => {
           setPermohonanPembelian(transformedData);
           setRefreshItemsPermohonanPembelian(false);
         } else {
-          console.log(result);
+          setOpenSnackbar(true);
+          setSnackbarStatus(false);
+          setSnackbarMessage("Tidak dapat memanggil data permohonan pembelian");
         }
       });
     }
@@ -145,6 +167,14 @@ const MaindashboardInventory = (props) => {
           `Tidak berhasil menghapus permohonan pembelian dengan id ${id}`
         );
       }
+    });
+  };
+
+  const handleMoveToEditStokOpnam = (id) => {
+    navigate("/inventoryDashboard/stokOpnam", {
+      state: {
+        stokOpnamId: id,
+      },
     });
   };
 
@@ -200,6 +230,7 @@ const MaindashboardInventory = (props) => {
   const handleCloseModalPermohonanPembelian = () => {
     setPermohonanPembelian([]);
     setOpenModalPermohonanPembelian(false);
+    setIsEditPermohonanPembelian(false);
   };
 
   const handleCloseSnackbar = () => {
@@ -328,14 +359,14 @@ const MaindashboardInventory = (props) => {
 
   const handleAddPermohonanPembelian = () => {
     const checkIfPermohonanPembelianEmpty = isPermohonanPembelianEmpty();
-    const transformedPermohonanPembelian =
-      transformDataPermohonanPembelian(permohonanPembelian);
 
     if (checkIfPermohonanPembelianEmpty === false) {
       setOpenSnackbar(true);
       setSnackbarStatus(false);
       setSnackbarMessage("Tolong isi semua input!");
     } else {
+      const transformedPermohonanPembelian =
+        transformDataPermohonanPembelian(permohonanPembelian);
       axios({
         method: "POST",
         url: `http://localhost:3000/inventory/addPermohonanPembelian/${userInformation.data.id}`,
@@ -348,6 +379,7 @@ const MaindashboardInventory = (props) => {
           setRefreshPermohonanPembelian(true);
           setOpenModalPermohonanPembelian(false);
           setPermohonanPembelian([]);
+          setIsEditPermohonanPembelian(false);
         } else {
           setOpenSnackbar(true);
           setSnackbarStatus(false);
@@ -964,6 +996,57 @@ const MaindashboardInventory = (props) => {
             </DefaultButton>
           </div>
         </div>
+        {allStokOpnam.length === 0 ? (
+          <Typography>Tidak ada data stok opnam</Typography>
+        ) : (
+          <div style={{ width: "70%" }}>
+            <TableContainer component={Paper}>
+              <Table sx={{ minWidth: 650 }} aria-label="simple table">
+                <TableHead>
+                  <TableRow>
+                    <TableCell>No.</TableCell>
+                    <TableCell>Judul Stok Opnam</TableCell>
+                    <TableCell>Tanggal Pembuatan Stok Opnam</TableCell>
+                    <TableCell>Actions</TableCell>
+                  </TableRow>
+                </TableHead>
+                <TableBody>
+                  {allStokOpnam?.map((result, index) => {
+                    return (
+                      <React.Fragment>
+                        <TableRow>
+                          <TableCell>{index + 1 + "."}</TableCell>
+                          <TableCell>{result.judulStokOpnam}</TableCell>
+                          <TableCell>
+                            {dayjs(result.tanggalStokOpnam).format(
+                              "MM/DD/YYYY hh:mm A"
+                            )}
+                          </TableCell>
+                          <TableCell>
+                            <div
+                              style={{ display: "flex", alignItems: "center" }}
+                            >
+                              <IconButton
+                                onClick={() => {
+                                  handleMoveToEditStokOpnam(result.id);
+                                }}
+                              >
+                                <EditIcon style={{ color: "#0F607D" }} />
+                              </IconButton>
+                              <IconButton style={{ marginLeft: "8px" }}>
+                                <DeleteIcon style={{ color: "red" }} />
+                              </IconButton>
+                            </div>
+                          </TableCell>
+                        </TableRow>
+                      </React.Fragment>
+                    );
+                  })}
+                </TableBody>
+              </Table>
+            </TableContainer>
+          </div>
+        )}
         <div
           style={{
             margin: isMobile

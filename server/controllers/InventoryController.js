@@ -202,6 +202,25 @@ class InventoryController {
               perihal: data.perihal,
               statusPermohonan: "Requested",
             });
+            if (
+              data.daftarPermohonanPembelian &&
+              Array.isArray(data.daftarPermohonanPembelian)
+            ) {
+              await Promise.all(
+                data.daftarPermohonanPembelian.map(
+                  async (itemPermohonanPembelian) => {
+                    await itemPermohonanPembelians.create({
+                      permohonanPembelianId: createPermohonanPembelian.id,
+                      jenisBarang: itemPermohonanPembelian.jenisBarang,
+                      jumlah: itemPermohonanPembelian.jumlah,
+                      untukPekerjaan: itemPermohonanPembelian.untukPekerjaan,
+                      stok: itemPermohonanPembelian.stok,
+                      keterangan: itemPermohonanPembelian.keterangan,
+                    });
+                  }
+                )
+              );
+            }
             await UserPermohonanPembelians.create({
               userId: id,
               permohonanPembelianId: createPermohonanPembelian.id,
@@ -223,25 +242,6 @@ class InventoryController {
               id: createActivityLog.id,
               activitylogsId: createActivityLog.id,
             });
-            if (
-              data.daftarPermohonanPembelian &&
-              Array.isArray(data.daftarPermohonanPembelian)
-            ) {
-              await Promise.all(
-                data.daftarPermohonanPembelian.map(
-                  async (itemPermohonanPembelian) => {
-                    await itemPermohonanPembelians.create({
-                      permohonanPembelianId: createPermohonanPembelian.id,
-                      jenisBarang: itemPermohonanPembelian.jenisBarang,
-                      jumlah: itemPermohonanPembelian.jumlah,
-                      untukPekerjaan: itemPermohonanPembelian.untukPekerjaan,
-                      stok: itemPermohonanPembelian.stok,
-                      keterangan: itemPermohonanPembelian.keterangan,
-                    });
-                  }
-                )
-              );
-            }
           })
         );
       }
@@ -290,7 +290,6 @@ class InventoryController {
     try {
       const { id } = req.params;
       const { permohonanPembelianId, dataPembelianBahanBaku } = req.body;
-      console.log(dataPembelianBahanBaku);
       let result = await pembelianBahanBakus.create({
         permohonanPembelianId: permohonanPembelianId,
         leveransir: dataPembelianBahanBaku.leveransir,
@@ -517,42 +516,48 @@ class InventoryController {
         where: { id: id },
       });
 
-      console.log(dataStokOpnam);
-      console.log(userInformation);
+      let result = await stokOpnams.create({
+        judulStokOpnam: dataStokOpnam.judulStokOpnam,
+        tanggalStokOpnam: dataStokOpnam.tanggalStokOpnam,
+      });
 
-      // if (dataStokOpnam && Array.isArray(dataStokOpnam)) {
-      //   await Promise.all(
-      //     dataStokOpnam.map(async (item) => {
-      //       const newStokOpnamData = await stokOpnams.create({
-      //         suratPesanan: item.suratPesanan,
-      //         tanggalMasuk: item.tanggalMasuk,
-      //         tanggalPengembalian: item.tanggalPengembalian,
-      //         jenisBarang: item.jenisBarang,
-      //         kodeBarang: item.kodeBarang,
-      //         lokasiPenyimpanan: item.lokasiPenyimpanan,
-      //         stokOpnamAwal: item.stokOpnamAwal,
-      //         stokOpnamAkhir: item.stokOpnamAkhir,
-      //         stokFisik: item.stokFisik,
-      //         stokSelisih: item.stokSelisih,
-      //         keterangan: item.keterangan,
-      //         uniqueId: uniqueId,
-      //       });
-      //     })
-      //   );
-      // }
+      if (
+        dataStokOpnam.itemStokOpnams &&
+        Array.isArray(dataStokOpnam.itemStokOpnams)
+      ) {
+        await Promise.all(
+          dataStokOpnam.itemStokOpnams.map(async (item) => {
+            await itemStokOpnams.create({
+              stokOpnamId: result.id,
+              suratPesanan: item.suratPesanan,
+              tanggalMasuk: item.tanggalMasuk,
+              tanggalPengembalian: item.tanggalPengembalian,
+              jenisBarang: item.jenisBarang,
+              kodeBarang: item.kodeBarang,
+              lokasiPenyimpanan: item.lokasiPenyimpanan,
+              stokOpnamAwal: item.stokOpnamAwal,
+              stokOpnamAkhir: item.stokOpnamAkhir,
+              stokFisik: item.stokFisik,
+              stokSelisih: item.stokSelisih,
+              keterangan: item.keterangan,
+            });
+          })
+        );
+      }
 
-      // let createActivityLog = await activitylogs.create({
-      //   user: userInformation.name,
-      //   activity: "Menambahkan data stok opnam",
-      //   name: "ntar dulu guys",
-      //   division: "Inventory",
-      // });
+      let createActivityLog = await activitylogs.create({
+        user: userInformation.name,
+        activity: "Menambahkan data stok opnam",
+        name: dataStokOpnam.judulStokOpnam,
+        division: "Inventory",
+      });
 
-      // await UserActivityLogs.create({
-      //   userId: id,
-      //   id: createActivityLog.id,
-      //   activitylogsId: createActivityLog.id,
-      // });
+      await UserActivityLogs.create({
+        userId: id,
+        id: createActivityLog.id,
+        activitylogsId: createActivityLog.id,
+      });
+      res.json(result);
     } catch (error) {
       res.json(error);
     }
@@ -565,6 +570,112 @@ class InventoryController {
         where: { namaItem: name },
       });
       res.json(result);
+    } catch (error) {
+      res.json(error);
+    }
+  }
+  static async getAllStokOpnam(req, res) {
+    try {
+      let result = await stokOpnams.findAll({
+        include: [{ model: itemStokOpnams }],
+      });
+
+      res.json(result);
+    } catch (error) {
+      res.json(error);
+    }
+  }
+  static async getStokOpnam(req, res) {
+    try {
+      const { id } = req.params;
+      let result = await stokOpnams.findOne({
+        where: { id: id },
+        include: [{ model: itemStokOpnams }],
+      });
+      res.json(result);
+    } catch (error) {
+      res.json(error);
+    }
+  }
+  static async editStokOpnam(req, res) {
+    try {
+      const { id } = req.params;
+      const { dataStokOpnam } = req.body;
+      console.log(dataStokOpnam);
+      let result = await stokOpnams.update(
+        {
+          judulStokOpnam: dataStokOpnam.judulStokOpnam,
+          tanggalStokOpnam: dataStokOpnam.tanggalStokOpnam,
+        },
+        {
+          where: { id: dataStokOpnam.id },
+        }
+      );
+      if (
+        dataStokOpnam.itemStokOpnams &&
+        Array.isArray(dataStokOpnam.itemStokOpnams)
+      ) {
+        Promise.all(
+          dataStokOpnam.itemStokOpnams.map(async (data) => {
+            if (!data.id) {
+              await itemStokOpnams.create({
+                stokOpnamId: dataStokOpnam.id,
+                suratPesanan: data.suratPesanan,
+                tanggalMasuk: data.tanggalMasuk,
+                tanggalPengembalian: data.tanggalPengembalian,
+                jenisBarang: data.jenisBarang,
+                kodeBarang: data.kodeBarang,
+                lokasiPenyimpanan: data.lokasiPenyimpanan,
+                stokOpnamAwal: data.stokOpnamAwal,
+                stokOpnamAkhir: data.stokOpnamAkhir,
+                stokFisik: data.stokFisik,
+                stokSelisih: data.stokSelisih,
+                keterangan: data.keterangan,
+              });
+            } else {
+              await itemStokOpnams.update(
+                {
+                  suratPesanan: data.suratPesanan,
+                  tanggalMasuk: data.tanggalMasuk,
+                  tanggalPengembalian: data.tanggalPengembalian,
+                  jenisBarang: data.jenisBarang,
+                  kodeBarang: data.kodeBarang,
+                  lokasiPenyimpanan: data.lokasiPenyimpanan,
+                  stokOpnamAwal: data.stokOpnamAwal,
+                  stokOpnamAkhir: data.stokOpnamAkhir,
+                  stokFisik: data.stokFisik,
+                  stokSelisih: data.stokSelisih,
+                  keterangan: data.keterangan,
+                },
+                { where: { id: data.id } }
+              );
+            }
+          })
+        );
+      }
+      res.json(result);
+    } catch (error) {
+      res.json(error);
+    }
+  }
+  static async deleteItemStokOpnam(req, res) {
+    try {
+      const { id } = req.params;
+      let result = await itemStokOpnams.destroy({
+        where: { id: id },
+      });
+      res.json(result);
+    } catch (error) {
+      res.json(error);
+    }
+  }
+  static async deleteStokOpnam(req, res) {
+    try {
+      const { id } = req.params;
+      let result = await stokOpnams.destroy({
+        where: { id: id },
+      });
+      res.json(result)
     } catch (error) {
       res.json(error);
     }
