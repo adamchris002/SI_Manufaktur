@@ -154,7 +154,7 @@ const StokOpnam = (props) => {
         });
       }
     }
-  }, []);
+  }, [refreshStokOpnams]);
 
   useEffect(() => {
     if (refreshPermohonanPembelian) {
