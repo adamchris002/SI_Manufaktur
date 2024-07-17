@@ -24,6 +24,7 @@ import PembelianBahanBaku from "./pages/InventoryPage/PembelianBahanBaku";
 import StockPage from "./pages/InventoryPage/StockPage";
 import InventoryActivityLog from "./pages/InventoryPage/InventoryActivityLog";
 import StokOpnam from "./pages/InventoryPage/StokOpnam";
+import PenyerahanBarang from "./pages/InventoryPage/PenyerahanBarang";
 
 export const AppContext = createContext({});
 
@@ -198,6 +199,17 @@ function App() {
                   <Navigate to="/unauthorized" replace />
                 ) : (
                   <StokOpnam userInformation={userCredentials} />
+                )
+              }
+            />
+            <Route
+              path="/inventoryDashboard/penyerahanBarang"
+              element={
+                !userCredentials.data ||
+                userCredentials.data.department !== "Inventory" ? (
+                  <Navigate to="/unauthorized" replace />
+                ) : (
+                  <PenyerahanBarang userInformation={userCredentials} />
                 )
               }
             />

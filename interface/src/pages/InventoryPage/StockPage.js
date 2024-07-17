@@ -319,7 +319,7 @@ const StockPage = (props) => {
           />
         </div>
         <div style={{ width: "100%" }}>
-          {allInventoryItems.data.length === 0 ? (
+          {allInventoryItems?.data?.length === 0 ? (
             <div
               style={{
                 display: "flex",

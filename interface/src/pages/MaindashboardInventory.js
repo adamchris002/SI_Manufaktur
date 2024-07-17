@@ -1065,9 +1065,11 @@ const MaindashboardInventory = (props) => {
             Pengambilan/Penyerahan Barang
           </Typography>
           <div>
-            <DefaultButton onClickFunction={() => {}}>
+            <DefaultButton onClickFunction={() => {
+              navigate('/inventoryDashboard/penyerahanBarang')
+            }}>
               <Typography style={{ fontSize: isMobile ? "12px" : "1.042vw" }}>
-                Go to Pengambilan Barang Page
+                Pergi ke halaman Pengambilan/Penyerahan Barang 
               </Typography>
             </DefaultButton>
           </div>
