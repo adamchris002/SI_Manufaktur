@@ -213,7 +213,26 @@ class ProductionPlanningController {
   }
   static async getAllProductionPlan(req, res) {
     try {
-      let result = await productionPlannings.findAll({});
+      let result = await productionPlannings.findAll({
+        include: [
+          {
+            model: estimasiBahanBakus,
+            include: [
+              {
+                model: bahanBakuAkanDigunakans,
+              },
+            ],
+          },
+          {
+            model: estimasiJadwalProduksis,
+            include: [
+              {
+                model: rencanaJadwalProduksis,
+              },
+            ],
+          },
+        ],
+      });
       res.json(result);
     } catch (error) {
       res.json(error);

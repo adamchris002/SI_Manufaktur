@@ -49,6 +49,7 @@ const EditProductionPlanPage = (props) => {
   const [productionPlanWithData, setProductionPlanWithData] = useState([]);
   const [selectedOrder, setSelectedOrder] = useState([]);
   const [estimasiJadwal, setEstimasiJadwal] = useState([]);
+  console.log(estimasiJadwal)
   const [estimasiBahanBaku, setEstimasiBahanBaku] = useState([]);
 
   const [openModal, setOpenModal] = useState(false);
@@ -392,12 +393,14 @@ const EditProductionPlanPage = (props) => {
         return false;
       }
       for (const pekerjaanItem of item.rencanaJadwalProdukses) {
+        const tanggalMulai = dayjs(pekerjaanItem.tanggalMulai)
+        const tanggalSelesai = dayjs(pekerjaanItem.tanggalSelesai)
         if (
           pekerjaanItem.jenisPekerjaan === "" ||
-          pekerjaanItem.tanggalMulai === "" ||
-          !dayjs(pekerjaanItem.tanggalMulai, "MM/DD/YYYY hh:mm A", true).isValid() ||
-          pekerjaanItem.tanggalSelesai === "" ||
-          !dayjs(pekerjaanItem.tanggalSelesai, "MM/DD/YYYY hh:mm A", true).isValid() ||
+          tanggalMulai === "" ||
+          !dayjs(tanggalMulai, "MM/DD/YYYY hh:mm A", true).isValid() ||
+          tanggalSelesai === "" ||
+          !dayjs(tanggalSelesai, "MM/DD/YYYY hh:mm A", true).isValid() ||
           pekerjaanItem.jumlahHari === ""
         ) {
           return false;
@@ -433,6 +436,8 @@ const EditProductionPlanPage = (props) => {
   const handleUpdatePerencanaanProduksi = () => {
     const checkIfEstimasiBahanBakuEmpty = isEstimasiBahanBakuComplete();
     const checkIfEstimasiJadwalEmpty = isEstimasiJadwalEmpty();
+    console.log(checkIfEstimasiBahanBakuEmpty)
+    console.log(checkIfEstimasiJadwalEmpty)
 
     const updatedEstimasiBahanBaku =
       transformDataForSubmission(estimasiBahanBaku);

@@ -1033,7 +1033,7 @@ const MaindashboardInventory = (props) => {
                 <TableBody>
                   {allStokOpnam?.map((result, index) => {
                     return (
-                      <React.Fragment>
+                      <React.Fragment key={index}>
                         <TableRow>
                           <TableCell>{index + 1 + "."}</TableCell>
                           <TableCell>{result.judulStokOpnam}</TableCell>
@@ -1321,7 +1321,7 @@ const MaindashboardInventory = (props) => {
                         <React.Fragment key={index}>
                           {result?.daftarPermohonanPembelian?.map(
                             (dataPermohonan, indexPermohonan) => (
-                              <TableRow key={`data of index ${index}`}>
+                              <TableRow key={`data of index ${indexPermohonan}`}>
                                 <TableCell>
                                   <Typography>
                                     {indexPermohonan + 1 + "."}
