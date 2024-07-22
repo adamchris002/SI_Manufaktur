@@ -17,24 +17,43 @@ import {
 import DeleteIcon from "@mui/icons-material/Delete";
 import MySelectTextField from "../../components/SelectTextField";
 import DefaultButton from "../../components/Button";
+import MySnackbar from "../../components/Snackbar";
 
 const PenyerahanBarang = () => {
   const [estimatedOrders, setEstimatedOrders] = useState([]);
   const [selectedEstimatedOrdersId, setSelectedEstimatedOrdersId] =
     useState("");
   const [inventoryItems, setInventoryItems] = useState([]);
-  const [dataBarangYangDiambil, setDatabarangYangDiambil] = useState([
-    {
-      namaItem: "",
-      kodebarang: "",
-      rincianItem: "",
-      jumlahYangDiambil: { value: "", unit: "" },
-      jumlahDigudang: { value: "", unit: "" },
-      lokasiPeyimpanan: "",
-    },
-  ]);
+  // console.log(inventoryItems);
+  const [dataBarangYangDiambil, setDatabarangYangDiambil] = useState({
+    diambilOleh: "",
+    tanggalPengambilan: "",
+    tanggalPenyerahan: "",
+    dataPengambilanPenyerahan: [
+      {
+        namaItem: "",
+        kodeBarang: "",
+        rincianItem: "",
+        jumlahYangDiambil: { value: "", unit: "" },
+        jumlahDigudang: { value: "", unit: "" },
+        lokasiPeyimpanan: "",
+      },
+    ],
+  });
 
   console.log(dataBarangYangDiambil);
+
+  const [showError, setShowError] = useState([]);
+  console.log(showError);
+  const [openSnackbar, setOpenSnackbar] = useState(false);
+  const [snackbarStatus, setSnackbarStatus] = useState(false);
+  const [snackbarMessage, setSnackbarMessage] = useState("");
+
+  const handleCloseSnackbar = () => {
+    setOpenSnackbar(false);
+    setSnackbarMessage("");
+    setSnackbarStatus(true);
+  };
 
   const units = [
     {
@@ -71,7 +90,7 @@ const PenyerahanBarang = () => {
       url: "http://localhost:3000/inventory/getAllInventoryItem",
     }).then((result) => {
       if (result.status === 200) {
-        const tempName = result.data.map((data) => ({
+        const tempName = result?.data?.map((data) => ({
           value: data.namaItem,
           jumlahItem: separateValueAndUnit(data?.jumlahItem),
           ...data,
@@ -88,7 +107,7 @@ const PenyerahanBarang = () => {
       url: "http://localhost:3000/productionPlanning/getAllProductionPlanning",
     }).then((result) => {
       if (result.status === 200) {
-        const tempName = result.data.map((data) => ({
+        const tempName = result?.data?.map((data) => ({
           value: data.id,
           ...data,
         }));
@@ -99,58 +118,210 @@ const PenyerahanBarang = () => {
   }, []);
 
   const getSelectedInventoryItem = (value, field, unit) => {
+    const selectedItem = inventoryItems?.find(
+      (result) => value === result.value
+    );
     if (unit) {
-      const selectedItem = inventoryItems?.find(
-        (result) => value === result.value
-      );
       const valueAndUnit = separateValueAndUnit(selectedItem?.[field]);
       return selectedItem ? valueAndUnit : null;
-    } else {
-      const selectedItem = inventoryItems?.find(
-        (result) => value === result.value
-      );
-      return selectedItem ? selectedItem[field] : null;
     }
+    return selectedItem ? selectedItem[field] : null;
   };
 
   const handleAddRow = () => {
-    setDatabarangYangDiambil((oldArray) => [
-      ...oldArray,
-      {
-        namaItem: "",
-        kodebarang: "",
-        rincianItem: "",
-        jumlahYangDiambil: { value: "", unit: "" },
-        jumlahDigudang: { value: "", unit: "" },
-        lokasiPeyimpanan: "",
-      },
-    ]);
+    setDatabarangYangDiambil((oldArray) => {
+      return {
+        ...oldArray,
+        dataPengambilanPenyerahan: [
+          ...oldArray.dataPengambilanPenyerahan,
+          {
+            namaItem: "",
+            kodeBarang: "",
+            rincianItem: "",
+            jumlahYangDiambil: { value: "", unit: "" },
+            jumlahDigudang: { value: "", unit: "" },
+            lokasiPeyimpanan: "",
+          },
+        ],
+      };
+    });
+  };
+
+  const handleRemoveItem = (id, index) => {
+    console.log(id);
+    console.log(index);
+    if (!id || id === undefined) {
+      setDatabarangYangDiambil((oldObject) => {
+        return {
+          ...oldObject,
+          dataPengambilanPenyerahan: oldObject.dataPengambilanPenyerahan.filter(
+            (_, j) => j !== index
+          ),
+        };
+      });
+    }
   };
 
   const handleChangeInput = (field, event, index, unit) => {
-    const value = event.target.value;
-    setDatabarangYangDiambil((oldArray) => {
-      const updatedItems = oldArray.map((item, i) => {
-        if (i === index) {
-          let updatedItem = { ...item };
-          if (unit) {
-            updatedItem = {
-              ...updatedItem,
-              [field]: {
-                vlaue: item[field],
-                unit: value,
-              },
-            };
-          } else {
-            updatedItem = { ...updatedItem, [field]: value };
+    const value = event.target.value
+  
+    setDatabarangYangDiambil((oldObject) => {
+      if (
+        field === "diambilOleh" ||
+        field === "tanggalPengambilan" ||
+        field === "tanggalPenyerahan"
+      ) {
+        return {
+          ...oldObject,
+          [field]: value,
+        };
+      } else {
+        const updatedItems = oldObject.dataPengambilanPenyerahan.map(
+          (item, i) => {
+            if (i === index) {
+              let updatedItem = { ...item };
+              let hasError = false;
+  
+              if (unit) {
+                const newUnit = value;
+                const jumlahItem = getSelectedInventoryItem(
+                  updatedItem.namaItem,
+                  "jumlahItem",
+                  true
+                );
+  
+                if (
+                  newUnit === jumlahItem.unit ||
+                  (newUnit === "Kg" && jumlahItem.unit === "Ton")
+                ) {
+                  updatedItem = {
+                    ...updatedItem,
+                    [field]: {
+                      value: updatedItem.jumlahYangDiambil.value,
+                      unit: newUnit,
+                    },
+                  };
+                } else {
+                  hasError = true;
+                  setOpenSnackbar(true);
+                  setSnackbarStatus(false);
+                  setSnackbarMessage(
+                    "Satuan pada barang yang diambil tidak sesuai dengan satuan pada jumlah barang"
+                  );
+                  return item;
+                }
+              } else {
+                if (field === "namaItem") {
+                  updatedItem = { ...updatedItem, [field]: value };
+                  const kodeBarang = getSelectedInventoryItem(
+                    updatedItem.namaItem,
+                    "kodeBarang"
+                  );
+                  const lokasiPenyimpanan = getSelectedInventoryItem(
+                    updatedItem.namaItem,
+                    "lokasi"
+                  );
+                  const rincianBarang = getSelectedInventoryItem(
+                    updatedItem.namaItem,
+                    "rincianItem"
+                  );
+                  const jumlahDigudang = getSelectedInventoryItem(
+                    updatedItem.namaItem,
+                    "jumlahItem",
+                    true
+                  );
+                  updatedItem.kodeBarang = kodeBarang;
+                  updatedItem.lokasiPeyimpanan = lokasiPenyimpanan;
+                  updatedItem.rincianItem = rincianBarang;
+                  updatedItem.jumlahDigudang = {
+                    value: jumlahDigudang.value,
+                    unit: jumlahDigudang.unit,
+                  };
+                }
+  
+                if (field === "jumlahYangDiambil") {
+                  const jumlahDigudang = getSelectedInventoryItem(
+                    updatedItem.namaItem,
+                    "jumlahItem",
+                    true
+                  );
+                  const jumlahDigudangValue = jumlahDigudang.value;
+                  const jumlahDigudangUnit = jumlahDigudang.unit;
+  
+                  if (
+                    updatedItem.jumlahYangDiambil.unit === jumlahDigudangUnit
+                  ) {
+                    if (value > jumlahDigudangValue) {
+                      setOpenSnackbar(true);
+                      setSnackbarStatus(false);
+                      setSnackbarMessage(
+                        "Jumlah barang yang diambil tidak boleh lebih besar daripada jumlah barang yang ada di gudang."
+                      );
+                      hasError = true;
+                    } else {
+                      hasError = false;
+                    }
+                    updatedItem = {
+                      ...updatedItem,
+                      jumlahYangDiambil: {
+                        value: value,
+                        unit: updatedItem.jumlahYangDiambil.unit,
+                      },
+                      selisihJumlahItem: `${
+                        jumlahDigudangValue - value
+                      } ${jumlahDigudangUnit}`,
+                    };
+                  } else if (
+                    updatedItem.jumlahYangDiambil.unit === "Kg" &&
+                    jumlahDigudangUnit === "Ton"
+                  ) {
+                    const tempValue = jumlahDigudangValue * 1000;
+                    if (value > tempValue) {
+                      setOpenSnackbar(true);
+                      setSnackbarStatus(false);
+                      setSnackbarMessage(
+                        "Jumlah barang yang diambil tidak boleh lebih besar daripada jumlah barang yang ada di gudang dalam satuan Kg."
+                      );
+                      hasError = true;
+                    } else {
+                      hasError = false;
+                    }
+                    updatedItem = {
+                      ...updatedItem,
+                      jumlahYangDiambil: {
+                        value: value,
+                        unit: updatedItem.jumlahYangDiambil.unit,
+                      },
+                      selisihJumlahItem: `${
+                        (tempValue - value) / 1000
+                      } ${jumlahDigudangUnit}`,
+                    };
+                  } else {
+                    setOpenSnackbar(true);
+                    setSnackbarStatus(false);
+                    setSnackbarMessage(
+                      "Satuan pada barang yang diambil tidak sesuai dengan satuan pada jumlah barang"
+                    );
+                    hasError = true;
+                  }
+                }
+              }
+  
+              // Update the error state
+              const updatedErrorStates = [...showError];
+              updatedErrorStates[index] = hasError;
+              setShowError(updatedErrorStates);
+  
+              return updatedItem;
+            }
+            return item;
           }
-          return updatedItem;
-        }
-        return item;
-      });
-      return updatedItems;
+        );
+        return { ...oldObject, dataPengambilanPenyerahan: updatedItems };
+      }
     });
   };
+  
 
   return (
     <div
@@ -266,6 +437,65 @@ const PenyerahanBarang = () => {
                 Form Penyerahan/Pengambilan Barang{" "}
               </Typography>
               <div>
+                <div>
+                  <div
+                    style={{
+                      display: "flex",
+                      alignItems: "center",
+                      margin: "16px 0px",
+                    }}
+                  >
+                    <div style={{ width: "200px" }}>
+                      <Typography>Diambil Oleh: </Typography>
+                    </div>
+                    <Typography>
+                      <TextField
+                        value={dataBarangYangDiambil.diambilOleh}
+                        onChange={(event) => {
+                          handleChangeInput("diambilOleh", event);
+                        }}
+                      />
+                    </Typography>
+                  </div>
+                  <div
+                    style={{
+                      display: "flex",
+                      alignItems: "center",
+                      margin: "16px 0px",
+                    }}
+                  >
+                    <div style={{ width: "200px" }}>
+                      <Typography>Tanggal Pengambilan: </Typography>
+                    </div>
+                    <Typography>
+                      <TextField
+                        value={dataBarangYangDiambil.tanggalPengambilan}
+                        onChange={(event) => {
+                          handleChangeInput("tanggalPengambilan", event);
+                        }}
+                      />
+                    </Typography>
+                  </div>
+                  <div
+                    style={{
+                      display: "flex",
+                      alignItems: "center",
+                      margin: "16px 0px",
+                    }}
+                  >
+                    <div style={{ width: "200px" }}>
+                      <Typography>Tanggal Penyerahan: </Typography>
+                    </div>
+                    <Typography>
+                      <TextField
+                        value={dataBarangYangDiambil.tanggalPenyerahan}
+                        onChange={(event) => {
+                          handleChangeInput("tanggalPenyerahan", event);
+                        }}
+                      />
+                    </Typography>
+                  </div>
+                </div>
                 <div
                   style={{
                     display: "flex",
@@ -273,7 +503,9 @@ const PenyerahanBarang = () => {
                     justifyContent: "space-between",
                   }}
                 >
-                  <Typography>Barang yang Diambil:</Typography>
+                  <Typography style={{ color: "#0F607D", fontSize: "1.5vw" }}>
+                    Barang yang Diambil:
+                  </Typography>
                   <DefaultButton
                     onClickFunction={() => {
                       handleAddRow();
@@ -311,107 +543,150 @@ const PenyerahanBarang = () => {
                       </TableRow>
                     </TableHead>
                     <TableBody>
-                      {dataBarangYangDiambil.map((result, index) => {
-                        const jumlahItemValueAndUnit = getSelectedInventoryItem(
-                          result.namaItem,
-                          "jumlahItem",
-                          true
-                        );
-                        console.log(jumlahItemValueAndUnit);
-                        return (
-                          <React.Fragment key={index}>
-                            <TableRow>
-                              <TableCell>{index + 1 + "."}</TableCell>
-                              <TableCell>
-                                <MySelectTextField
-                                  data={inventoryItems}
-                                  value={result.namaItem}
-                                  onChange={(event) => {
-                                    handleChangeInput("namaItem", event, index);
-                                  }}
-                                  width={"200px"}
-                                />
-                              </TableCell>
-                              <TableCell>
-                                <TextField
-                                  value={getSelectedInventoryItem(
-                                    result.namaItem,
-                                    "kodeBarang"
-                                  )}
-                                  disabled
-                                />
-                              </TableCell>
-                              <TableCell>
-                                <TextField
-                                  value={getSelectedInventoryItem(
-                                    result.namaItem,
-                                    "kodeBarang"
-                                  )}
-                                  disabled
-                                />
-                              </TableCell>
-                              <TableCell>
-                                <div
-                                  style={{
-                                    display: "flex",
-                                    alignItems: "center",
-                                    justifyContent: "space-between",
-                                  }}
-                                >
-                                  <TextField
-                                    type="number"
-                                    style={{ width: "140px" }}
-                                  />
+                      {dataBarangYangDiambil?.dataPengambilanPenyerahan?.map(
+                        (result, index) => {
+                          const jumlahItemValueAndUnit =
+                            getSelectedInventoryItem(
+                              result.namaItem,
+                              "jumlahItem",
+                              true
+                            );
+
+                          return (
+                            <React.Fragment key={index}>
+                              <TableRow>
+                                <TableCell>{index + 1 + "."}</TableCell>
+                                <TableCell>
                                   <MySelectTextField
-                                    data={units}
-                                    width={"70px"}
+                                    data={inventoryItems}
+                                    value={result.namaItem}
+                                    onChange={(event) => {
+                                      handleChangeInput(
+                                        "namaItem",
+                                        event,
+                                        index
+                                      );
+                                    }}
+                                    width={"200px"}
                                   />
-                                </div>
-                              </TableCell>
-                              <TableCell>
-                                <div
-                                  style={{
-                                    display: "flex",
-                                    alignItems: "center",
-                                    justifyContent: "space-between",
-                                  }}
-                                >
+                                </TableCell>
+                                <TableCell>
                                   <TextField
-                                    type="number"
-                                    style={{ width: "140px" }}
+                                    value={getSelectedInventoryItem(
+                                      result.namaItem,
+                                      "kodeBarang"
+                                    )}
                                     disabled
-                                    value={jumlahItemValueAndUnit?.value}
+                                    onChange={(event) => {
+                                      handleChangeInput(
+                                        "kodeBarang",
+                                        event,
+                                        index
+                                      );
+                                    }}
                                   />
-                                  <MySelectTextField
-                                    disabled={true}
-                                    data={units}
-                                    width={"70px"}
-                                    value={
-                                      jumlahItemValueAndUnit !== null
-                                        ? jumlahItemValueAndUnit?.unit
-                                        : ""
-                                    }
+                                </TableCell>
+                                <TableCell>
+                                  <TextField
+                                    value={getSelectedInventoryItem(
+                                      result.namaItem,
+                                      "rincianItem"
+                                    )}
+                                    disabled
+                                    onChange={(event) => {
+                                      handleChangeInput(
+                                        "rincianItem",
+                                        event,
+                                        index
+                                      );
+                                    }}
                                   />
-                                </div>
-                              </TableCell>
-                              <TableCell>
-                                <TextField
-                                  value={getSelectedInventoryItem(
-                                    result.namaItem,
-                                    "lokasi"
-                                  )}
-                                  disabled
-                                />
-                              </TableCell>
-                              <TableCell>
-                                <IconButton>
-                                  <DeleteIcon sx={{ color: "red" }} />
-                                </IconButton>
-                              </TableCell>
-                            </TableRow>
-                          </React.Fragment>
-                        );
-                      })}
+                                </TableCell>
+                                <TableCell>
+                                  <div
+                                    style={{
+                                      display: "flex",
+                                      alignItems: "center",
+                                      justifyContent: "space-between",
+                                    }}
+                                  >
+                                    <TextField
+                                      type="number"
+                                      style={{ width: "140px" }}
+                                      error={showError[index] || false}
+                                      value={result?.jumlahYangDiambil?.value}
+                                      onChange={(event) => {
+                                        handleChangeInput(
+                                          "jumlahYangDiambil",
+                                          event,
+                                          index
+                                        );
+                                      }}
+                                    />
+                                    <MySelectTextField
+                                      data={units}
+                                      width={"70px"}
+                                      value={result?.jumlahYangDiambil?.unit}
+                                      onChange={(event) => {
+                                        handleChangeInput(
+                                          "jumlahYangDiambil",
+                                          event,
+                                          index,
+                                          true
+                                        );
+                                      }}
+                                    />
+                                  </div>
+                                </TableCell>
+                                <TableCell>
+                                  <div
+                                    style={{
+                                      display: "flex",
+                                      alignItems: "center",
+                                      justifyContent: "space-between",
+                                    }}
+                                  >
+                                    <TextField
+                                      type="number"
+                                      style={{ width: "140px" }}
+                                      disabled
+                                      value={jumlahItemValueAndUnit?.value}
+                                    />
+                                    <MySelectTextField
+                                      disabled={true}
+                                      data={units}
+                                      width={"70px"}
+                                      value={
+                                        jumlahItemValueAndUnit !== null
+                                          ? jumlahItemValueAndUnit?.unit
+                                          : ""
+                                      }
+                                    />
+                                  </div>
+                                </TableCell>
+                                <TableCell>
+                                  <TextField
+                                    value={getSelectedInventoryItem(
+                                      result.namaItem,
+                                      "lokasi"
+                                    )}
+                                    disabled
+                                  />
+                                </TableCell>
+                                <TableCell>
+                                  <IconButton
+                                    onClick={() => {
+                                      handleRemoveItem(result?.id, index);
+                                    }}
+                                  >
+                                    <DeleteIcon sx={{ color: "red" }} />
+                                  </IconButton>
+                                </TableCell>
+                              </TableRow>
+                            </React.Fragment>
+                          );
+                        }
+                      )}
                     </TableBody>
                   </Table>
                 </TableContainer>
@@ -437,6 +712,14 @@ const PenyerahanBarang = () => {
           </div>
         </div>
       </div>
+      {snackbarMessage !== ("" || null) && (
+        <MySnackbar
+          open={openSnackbar}
+          handleClose={handleCloseSnackbar}
+          messageStatus={snackbarStatus}
+          popupMessage={snackbarMessage}
+        />
+      )}
     </div>
   );
 };
