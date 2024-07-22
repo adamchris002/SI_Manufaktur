@@ -499,10 +499,23 @@ const StokOpnam = (props) => {
                     <DemoItem>
                       <DateTimePicker
                         disablePast
-                        value={dayjs(dataStokOpnam.tanggalStokOpnam)}
+                        value={
+                          dataStokOpnam.tanggalStokOpnam.isValid()
+                            ? dataStokOpnam.tanggalStokOpnam
+                            : null
+                        }
                         onChange={(event) => {
                           handleChangeInputStokOpnam("tanggalStokOpnam", event);
                         }}
+                        renderInput={(params) => (
+                          <TextField
+                            {...params}
+                            error={params.error || !params.value}
+                            helperText={
+                              params.error ? "Invalid date format" : ""
+                            }
+                          />
+                        )}
                       />
                     </DemoItem>
                   </DemoContainer>
@@ -584,7 +597,11 @@ const StokOpnam = (props) => {
                                 <DemoItem>
                                   <DateTimePicker
                                     disablePast
-                                    value={dayjs(result?.tanggalMasuk)}
+                                    value={
+                                      result?.tanggalMasuk?.isValid()
+                                        ? result.tanggalMasuk
+                                        : null
+                                    }
                                     onChange={(event) => {
                                       handleChangeInputStokOpnam(
                                         "tanggalMasuk",
@@ -592,6 +609,17 @@ const StokOpnam = (props) => {
                                         index
                                       );
                                     }}
+                                    renderInput={(params) => (
+                                      <TextField
+                                        {...params}
+                                        error={params.error || !params.value}
+                                        helperText={
+                                          params.error
+                                            ? "Invalid date format"
+                                            : ""
+                                        }
+                                      />
+                                    )}
                                   />
                                 </DemoItem>
                               </LocalizationProvider>
@@ -601,7 +629,11 @@ const StokOpnam = (props) => {
                                 <DemoItem>
                                   <DateTimePicker
                                     disablePast
-                                    value={dayjs(result?.tanggalPengembalian)}
+                                    value={
+                                      result.tanggalPengembalian.isValid()
+                                        ? result?.tanggalPengembalian
+                                        : null
+                                    }
                                     onChange={(event) => {
                                       handleChangeInputStokOpnam(
                                         "tanggalPengembalian",
@@ -609,6 +641,17 @@ const StokOpnam = (props) => {
                                         index
                                       );
                                     }}
+                                    renderInput={(params) => (
+                                      <TextField
+                                        {...params}
+                                        error={params.error || !params.value}
+                                        helperText={
+                                          params.error
+                                            ? "Invalid date format"
+                                            : ""
+                                        }
+                                      />
+                                    )}
                                   />
                                 </DemoItem>
                               </LocalizationProvider>

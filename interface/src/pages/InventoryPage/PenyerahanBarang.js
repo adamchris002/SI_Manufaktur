@@ -18,6 +18,11 @@ import DeleteIcon from "@mui/icons-material/Delete";
 import MySelectTextField from "../../components/SelectTextField";
 import DefaultButton from "../../components/Button";
 import MySnackbar from "../../components/Snackbar";
+import dayjs from "dayjs";
+import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
+import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
+import { DemoContainer, DemoItem } from "@mui/x-date-pickers/internals/demo";
+import { DateTimePicker } from "@mui/x-date-pickers/DateTimePicker";
 
 const PenyerahanBarang = () => {
   const [estimatedOrders, setEstimatedOrders] = useState([]);
@@ -27,8 +32,8 @@ const PenyerahanBarang = () => {
   // console.log(inventoryItems);
   const [dataBarangYangDiambil, setDatabarangYangDiambil] = useState({
     diambilOleh: "",
-    tanggalPengambilan: "",
-    tanggalPenyerahan: "",
+    tanggalPengambilan: dayjs(""),
+    tanggalPenyerahan: dayjs(""),
     dataPengambilanPenyerahan: [
       {
         namaItem: "",
@@ -44,7 +49,6 @@ const PenyerahanBarang = () => {
   console.log(dataBarangYangDiambil);
 
   const [showError, setShowError] = useState([]);
-  console.log(showError);
   const [openSnackbar, setOpenSnackbar] = useState(false);
   const [snackbarStatus, setSnackbarStatus] = useState(false);
   const [snackbarMessage, setSnackbarMessage] = useState("");
@@ -76,10 +80,95 @@ const PenyerahanBarang = () => {
     },
   ];
 
+  const checkForSubmission = () => {
+    if (
+      !dataBarangYangDiambil.diambilOleh ||
+      !dataBarangYangDiambil.tanggalPengambilan ||
+      !dayjs(
+        dataBarangYangDiambil.tanggalPengambilan,
+        "MM/DD/YYYY hh:mm A",
+        true
+      ).isValid() ||
+      !dataBarangYangDiambil.tanggalPenyerahan ||
+      !dayjs(
+        dataBarangYangDiambil.tanggalPenyerahan,
+        "MM/DD/YYYY hh:mm A",
+        true
+      ).isValid()
+    ) {
+      return false;
+    }
+
+    for (const item of dataBarangYangDiambil.dataPengambilanPenyerahan) {
+      if (
+        !item.namaItem ||
+        !item.kodeBarang ||
+        !item.rincianItem ||
+        !item.jumlahYangDiambil.value ||
+        !item.jumlahYangDiambil.unit ||
+        !item.jumlahDigudang.value ||
+        !item.jumlahDigudang.unit ||
+        !item.lokasiPeyimpanan
+      ) {
+        return false;
+      }
+
+      const jumlahDigudangValue = item.jumlahDigudang.value;
+      const jumlahDigudangUnit = item.jumlahDigudang.unit;
+      const jumlahYangDiambilValue = parseFloat(item.jumlahYangDiambil.value);
+      const jumlahYangDiambilUnit = item.jumlahYangDiambil.unit;
+
+      if (jumlahYangDiambilUnit === jumlahDigudangUnit) {
+        if (jumlahYangDiambilValue > jumlahDigudangValue) {
+          return false;
+        }
+      } else if (
+        jumlahYangDiambilUnit === "Kg" &&
+        jumlahDigudangUnit === "Ton"
+      ) {
+        const tempValue = jumlahDigudangValue * 1000;
+        if (jumlahYangDiambilValue > tempValue) {
+          return false;
+        }
+      } else {
+        return false;
+      }
+    }
+
+    return true;
+  };
+
+  const transformDataForSubmission = (data) => {
+    return {
+      ...data,
+      dataPengambilanPenyerahan: data.dataPengambilanPenyerahan.map((item) => {
+        return {
+          ...item,
+          jumlahDigudang: `${item.jumlahDigudang.value} ${item.jumlahDigudang.unit}`,
+          jumlahYangDiambil: `${item.jumlahYangDiambil.value} ${item.jumlahYangDiambil.unit}`,
+        };
+      }),
+    };
+  };
+
+  const handleAddPengambilanBarang = () => {
+    const checkIfDataPengambilanComplete = checkForSubmission();
+    if (checkIfDataPengambilanComplete === false) {
+      setOpenSnackbar(true);
+      setSnackbarStatus(false);
+      setSnackbarMessage(
+        "Tolong isi input dengan lengkap atau perbaiki data pada input"
+      );
+    } else {
+      const transformedData = transformDataForSubmission(dataBarangYangDiambil);
+      console.log(transformedData);
+    }
+  };
+
   const separateValueAndUnit = (str) => {
     if (!str) return { value: null, unit: null };
     const parts = str.split(" ");
-    const value = parts[0];
+    const value = parseFloat(parts[0]);
     const unit = parts.slice(1).join(" ");
     return { value, unit };
   };
@@ -148,8 +237,6 @@ const PenyerahanBarang = () => {
   };
 
   const handleRemoveItem = (id, index) => {
-    console.log(id);
-    console.log(index);
     if (!id || id === undefined) {
       setDatabarangYangDiambil((oldObject) => {
         return {
@@ -163,8 +250,8 @@ const PenyerahanBarang = () => {
   };
 
   const handleChangeInput = (field, event, index, unit) => {
-    const value = event.target.value
-  
+    const value = event && event.target ? event.target.value : event;
+
     setDatabarangYangDiambil((oldObject) => {
       if (
         field === "diambilOleh" ||
@@ -181,7 +268,7 @@ const PenyerahanBarang = () => {
             if (i === index) {
               let updatedItem = { ...item };
               let hasError = false;
-  
+
               if (unit) {
                 const newUnit = value;
                 const jumlahItem = getSelectedInventoryItem(
@@ -189,17 +276,30 @@ const PenyerahanBarang = () => {
                   "jumlahItem",
                   true
                 );
-  
-                if (
-                  newUnit === jumlahItem.unit ||
-                  (newUnit === "Kg" && jumlahItem.unit === "Ton")
-                ) {
+
+                if (newUnit === jumlahItem.unit) {
                   updatedItem = {
                     ...updatedItem,
                     [field]: {
                       value: updatedItem.jumlahYangDiambil.value,
                       unit: newUnit,
                     },
+                    selisihJumlahItem: `${
+                      jumlahItem.value - updatedItem.jumlahYangDiambil.value
+                    } ${jumlahItem.unit}`,
+                  };
+                } else if (newUnit === "Kg" && jumlahItem.unit === "Ton") {
+                  updatedItem = {
+                    ...updatedItem,
+                    [field]: {
+                      value: updatedItem.jumlahYangDiambil.value,
+                      unit: newUnit,
+                    },
+                    selisihJumlahItem: `${
+                      (jumlahItem.value * 1000 -
+                        updatedItem.jumlahYangDiambil.value) /
+                      1000
+                    } ${jumlahItem.unit}`,
                   };
                 } else {
                   hasError = true;
@@ -208,7 +308,7 @@ const PenyerahanBarang = () => {
                   setSnackbarMessage(
                     "Satuan pada barang yang diambil tidak sesuai dengan satuan pada jumlah barang"
                   );
-                  return item;
+                  // return item;
                 }
               } else {
                 if (field === "namaItem") {
@@ -238,7 +338,7 @@ const PenyerahanBarang = () => {
                     unit: jumlahDigudang.unit,
                   };
                 }
-  
+
                 if (field === "jumlahYangDiambil") {
                   const jumlahDigudang = getSelectedInventoryItem(
                     updatedItem.namaItem,
@@ -247,11 +347,12 @@ const PenyerahanBarang = () => {
                   );
                   const jumlahDigudangValue = jumlahDigudang.value;
                   const jumlahDigudangUnit = jumlahDigudang.unit;
-  
+
                   if (
                     updatedItem.jumlahYangDiambil.unit === jumlahDigudangUnit
                   ) {
-                    if (value > jumlahDigudangValue) {
+                    const changeToNumber = parseFloat(value);
+                    if (changeToNumber > jumlahDigudangValue) {
                       setOpenSnackbar(true);
                       setSnackbarStatus(false);
                       setSnackbarMessage(
@@ -268,7 +369,7 @@ const PenyerahanBarang = () => {
                         unit: updatedItem.jumlahYangDiambil.unit,
                       },
                       selisihJumlahItem: `${
-                        jumlahDigudangValue - value
+                        jumlahDigudangValue - changeToNumber
                       } ${jumlahDigudangUnit}`,
                     };
                   } else if (
@@ -276,7 +377,8 @@ const PenyerahanBarang = () => {
                     jumlahDigudangUnit === "Ton"
                   ) {
                     const tempValue = jumlahDigudangValue * 1000;
-                    if (value > tempValue) {
+                    const changeToNumber = parseFloat(value);
+                    if (changeToNumber > tempValue) {
                       setOpenSnackbar(true);
                       setSnackbarStatus(false);
                       setSnackbarMessage(
@@ -286,6 +388,7 @@ const PenyerahanBarang = () => {
                     } else {
                       hasError = false;
                     }
+                    let selisihJumlahItem = tempValue - changeToNumber;
                     updatedItem = {
                       ...updatedItem,
                       jumlahYangDiambil: {
@@ -293,8 +396,14 @@ const PenyerahanBarang = () => {
                         unit: updatedItem.jumlahYangDiambil.unit,
                       },
                       selisihJumlahItem: `${
-                        (tempValue - value) / 1000
-                      } ${jumlahDigudangUnit}`,
+                        selisihJumlahItem < 1000
+                          ? selisihJumlahItem
+                          : selisihJumlahItem / 1000
+                      } ${
+                        selisihJumlahItem < 1000
+                          ? updatedItem.jumlahYangDiambil.unit
+                          : jumlahDigudangUnit
+                      }`,
                     };
                   } else {
                     setOpenSnackbar(true);
@@ -306,12 +415,11 @@ const PenyerahanBarang = () => {
                   }
                 }
               }
-  
-              // Update the error state
+
               const updatedErrorStates = [...showError];
               updatedErrorStates[index] = hasError;
               setShowError(updatedErrorStates);
-  
+
               return updatedItem;
             }
             return item;
@@ -321,7 +429,6 @@ const PenyerahanBarang = () => {
       }
     });
   };
-  
 
   return (
     <div
@@ -467,14 +574,32 @@ const PenyerahanBarang = () => {
                     <div style={{ width: "200px" }}>
                       <Typography>Tanggal Pengambilan: </Typography>
                     </div>
-                    <Typography>
-                      <TextField
-                        value={dataBarangYangDiambil.tanggalPengambilan}
-                        onChange={(event) => {
-                          handleChangeInput("tanggalPengambilan", event);
-                        }}
-                      />
-                    </Typography>
+                    <LocalizationProvider dateAdapter={AdapterDayjs}>
+                      <DemoContainer components={["DateTimePicker"]}>
+                        <DemoItem>
+                          <DateTimePicker
+                            disablePast
+                            value={
+                              dataBarangYangDiambil.tanggalPengambilan.isValid()
+                                ? dataBarangYangDiambil.tanggalPengambilan
+                                : null
+                            }
+                            onChange={(event) => {
+                              handleChangeInput("tanggalPengambilan", event);
+                            }}
+                            renderInput={(params) => (
+                              <TextField
+                                {...params}
+                                error={params.error || !params.value}
+                                helperText={
+                                  params.error ? "Invalid date format" : ""
+                                }
+                              />
+                            )}
+                          />
+                        </DemoItem>
+                      </DemoContainer>
+                    </LocalizationProvider>
                   </div>
                   <div
                     style={{
@@ -486,14 +611,37 @@ const PenyerahanBarang = () => {
                     <div style={{ width: "200px" }}>
                       <Typography>Tanggal Penyerahan: </Typography>
                     </div>
-                    <Typography>
-                      <TextField
-                        value={dataBarangYangDiambil.tanggalPenyerahan}
-                        onChange={(event) => {
-                          handleChangeInput("tanggalPenyerahan", event);
-                        }}
-                      />
-                    </Typography>
+                    <LocalizationProvider dateAdapter={AdapterDayjs}>
+                      <DemoContainer components={["DateTimePicker"]}>
+                        <DemoItem>
+                          <DateTimePicker
+                            disablePast
+                            minDate={
+                              !dataBarangYangDiambil.tanggalPengambilan.isValid()
+                                ? undefined
+                                : dataBarangYangDiambil.tanggalPengambilan
+                            }
+                            value={
+                              dataBarangYangDiambil.tanggalPenyerahan.isValid()
+                                ? dataBarangYangDiambil.tanggalPenyerahan
+                                : null
+                            }
+                            onChange={(event) => {
+                              handleChangeInput("tanggalPenyerahan", event);
+                            }}
+                            renderInput={(params) => (
+                              <TextField
+                                {...params}
+                                error={params.error || !params.value}
+                                helperText={
+                                  params.error ? "Invalid date format" : ""
+                                }
+                              />
+                            )}
+                          />
+                        </DemoItem>
+                      </DemoContainer>
+                    </LocalizationProvider>
                   </div>
                 </div>
                 <div
@@ -699,7 +847,13 @@ const PenyerahanBarang = () => {
                   alignItems: "center",
                 }}
               >
-                <DefaultButton>Tambah Form</DefaultButton>
+                <DefaultButton
+                  onClickFunction={() => {
+                    handleAddPengambilanBarang();
+                  }}
+                >
+                  Tambah Form
+                </DefaultButton>
                 <Button
                   style={{ marginLeft: "8px" }}
                   color="error"

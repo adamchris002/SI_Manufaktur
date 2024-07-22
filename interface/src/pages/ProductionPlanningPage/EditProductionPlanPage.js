@@ -436,8 +436,6 @@ const EditProductionPlanPage = (props) => {
   const handleUpdatePerencanaanProduksi = () => {
     const checkIfEstimasiBahanBakuEmpty = isEstimasiBahanBakuComplete();
     const checkIfEstimasiJadwalEmpty = isEstimasiJadwalEmpty();
-    console.log(checkIfEstimasiBahanBakuEmpty)
-    console.log(checkIfEstimasiJadwalEmpty)
 
     const updatedEstimasiBahanBaku =
       transformDataForSubmission(estimasiBahanBaku);
