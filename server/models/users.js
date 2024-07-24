@@ -25,6 +25,10 @@ module.exports = (sequelize, DataTypes) => {
       users.hasMany(models.inventorys, { foreignKey: "id" });
       users.belongsToMany(models.stokOpnams, { through: "UserStokOpnams" });
       users.hasMany(models.stokOpnams, { foreignKey: "id" });
+      users.belongsToMany(models.penyerahanBarangs, {
+        through: "UserPenyerahanBarangs",
+      });
+      users.hasMany(models.penyerahanBarangs, { foreignKey: "id" });
     }
   }
   users.init(

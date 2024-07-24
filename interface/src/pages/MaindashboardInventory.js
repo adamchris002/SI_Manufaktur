@@ -40,10 +40,10 @@ const MaindashboardInventory = (props) => {
   const [snackbarMessage, setSnackbarMessage] = useState("");
   const [allPermohonanPembelian, setAllPermohonanPembelian] = useState([]);
   const [allStokOpnam, setAllStokOpnam] = useState([]);
+  const [allPenyerahanBarang, setAllPenyerahanBarang] = useState([]);
 
   const [permohonanPembelian, setPermohonanPembelian] = useState([]);
   const [pembelianBahanBaku, setPembelianBahanBaku] = useState([]);
-  const [dataStokOpnam, setDataStokOpnam] = useState({});
 
   const [refreshPermohonanPembelian, setRefreshPermohonanPembelian] =
     useState(true);
@@ -52,12 +52,34 @@ const MaindashboardInventory = (props) => {
   const [refreshPembelianBahanBaku, setRefreshPembelianBahanBaku] =
     useState(true);
   const [refresDataStokOpnam, setRefereshDataStokOpnam] = useState(true);
+  const [refreshPenyerahanBarang, setRefreshPenyerahanBarang] = useState(true);
 
   const [openModalPermohonanPembelian, setOpenModalPermohonanPembelian] =
     useState(false);
 
   const [isEditPermohonanPembelian, setIsEditPermohonanPembelian] =
     useState(false);
+
+  useEffect(() => {
+    if (refreshPenyerahanBarang) {
+      axios({
+        method: "GET",
+        url: "http://localhost:3000/inventory/getAllPengambilanBarang",
+      }).then((result) => {
+        if (result.status === 200) {
+          setAllPenyerahanBarang(result.data);
+          setRefreshPenyerahanBarang(false);
+        } else {
+          setOpenSnackbar(true);
+          setSnackbarStatus(false);
+          setSnackbarMessage(
+            "Tidak berhasil memanggil data pengambilan/penyerahan barang"
+          );
+          setRefreshPenyerahanBarang(false);
+        }
+      });
+    }
+  }, [refreshPenyerahanBarang]);
 
   useEffect(() => {
     if (refresDataStokOpnam) {
@@ -146,8 +168,6 @@ const MaindashboardInventory = (props) => {
     }
   }, [refreshItemsPermohonanPembelian]);
 
-  // useEffect(() => {}, []);
-
   const handleDeletePermohonanPembelian = (id) => {
     axios({
       method: "DELETE",
@@ -165,6 +185,28 @@ const MaindashboardInventory = (props) => {
         setSnackbarStatus(false);
         setSnackbarMessage(
           `Tidak berhasil menghapus permohonan pembelian dengan id ${id}`
+        );
+      }
+    });
+  };
+
+  const handleDeletePenyerahanBarang = (id) => {
+    axios({
+      method: "DELETE",
+      url: `http://localhost:3000/inventory/deletePenyerahanBarang/${id}`,
+    }).then((result) => {
+      if (result.status === 200) {
+        setOpenSnackbar(true);
+        setSnackbarStatus(true);
+        setSnackbarMessage(
+          `Berhasil menghapus form penyerahan/pengambilan barang dengan id ${id}`
+        );
+        setRefreshPenyerahanBarang(true);
+      } else {
+        setOpenSnackbar(true);
+        setSnackbarStatus(false);
+        setSnackbarMessage(
+          `Tidak berhasil menghapus form penyerahan/pengambilan barang dengan id ${id}`
         );
       }
     });
@@ -460,6 +502,14 @@ const MaindashboardInventory = (props) => {
     navigate("/inventoryDashboard/pembelianBahan", {
       state: {
         pembelianBahanBakuId: id,
+      },
+    });
+  };
+
+  const handleMoveToEditPenyerahanBarang = (id) => {
+    navigate("/inventoryDashboard/penyerahanBarang", {
+      state: {
+        penyerahanBarangId: id,
       },
     });
   };
@@ -859,7 +909,7 @@ const MaindashboardInventory = (props) => {
               <div style={{ display: "flex", justifyContent: "space-between" }}>
                 <div style={{ width: isMobile ? "100%" : "48%" }}>
                   <Typography>
-                    Permohonan pembelian yang sudah di Accept & proses
+                    Permohonan pembelian yang sudah diacc & diproses
                   </Typography>
                   <TableContainer component={Paper}>
                     <Table sx={{ minWidth: 650 }} aria-label="simple table">
@@ -1019,7 +1069,7 @@ const MaindashboardInventory = (props) => {
             <Typography>Tidak ada data stok opnam</Typography>
           </div>
         ) : (
-          <div style={{ width: "70%", margin: "32px" }}>
+          <div style={{ width: "70%", margin: "1.667vw" }}>
             <TableContainer component={Paper}>
               <Table sx={{ minWidth: 650 }} aria-label="simple table">
                 <TableHead>
@@ -1055,7 +1105,7 @@ const MaindashboardInventory = (props) => {
                               </IconButton>
                               <IconButton
                                 onClick={() => {
-                                  handleDeleteStokOpnam(result.id)
+                                  handleDeleteStokOpnam(result.id);
                                 }}
                                 style={{ marginLeft: "8px" }}
                               >
@@ -1101,7 +1151,59 @@ const MaindashboardInventory = (props) => {
             </DefaultButton>
           </div>
         </div>
-
+        {allPenyerahanBarang.length === 0 ? (
+          <div style={{ margin: "32px" }}>
+            <Typography>Tidak ada data penyerahan/pengambilan barang</Typography>
+          </div>
+        ) : (
+          <div style={{ width: "70%", margin: "1.667vw" }}>
+            <TableContainer component={Paper}>
+              <Table sx={{ minWidth: 650 }} aria-label="simple table">
+                <TableHead>
+                  <TableRow>
+                    <TableCell>Tanggal Pengambilan</TableCell>
+                    <TableCell>Tanggal Penyerahan</TableCell>
+                    <TableCell>Status Pengambilan/Penyerahan</TableCell>
+                    <TableCell>Actions</TableCell>
+                  </TableRow>
+                </TableHead>
+                <TableBody>
+                  {allPenyerahanBarang?.map((result, index) => {
+                    return (
+                      <React.Fragment key={index}>
+                        <TableRow>
+                          <TableCell>{result.tanggalPengambilan}</TableCell>
+                          <TableCell>{result.tanggalPenyerahan}</TableCell>
+                          <TableCell>{result.statusPenyerahan}</TableCell>
+                          <TableCell>
+                            <div
+                              style={{ display: "flex", alignItems: "center" }}
+                            >
+                              <IconButton
+                                onClick={() => {
+                                  handleMoveToEditPenyerahanBarang(result.id);
+                                }}
+                              >
+                                <EditIcon style={{ color: "#0F607D" }} />
+                              </IconButton>
+                              <IconButton
+                                onClick={() => {
+                                  handleDeletePenyerahanBarang(result.id);
+                                }}
+                              >
+                                <DeleteIcon style={{ color: "red" }} />
+                              </IconButton>
+                            </div>
+                          </TableCell>
+                        </TableRow>
+                      </React.Fragment>
+                    );
+                  })}
+                </TableBody>
+              </Table>
+            </TableContainer>
+          </div>
+        )}
         <div
           style={{
             margin: isMobile
@@ -1321,7 +1423,9 @@ const MaindashboardInventory = (props) => {
                         <React.Fragment key={index}>
                           {result?.daftarPermohonanPembelian?.map(
                             (dataPermohonan, indexPermohonan) => (
-                              <TableRow key={`data of index ${indexPermohonan}`}>
+                              <TableRow
+                                key={`data of index ${indexPermohonan}`}
+                              >
                                 <TableCell>
                                   <Typography>
                                     {indexPermohonan + 1 + "."}

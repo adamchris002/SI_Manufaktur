@@ -12,6 +12,9 @@ const {
   stokOpnams,
   UserStokOpnams,
   itemStokOpnams,
+  penyerahanBarangs,
+  itemPenyerahanBarangs,
+  UserPenyerahanBarangs,
 } = require("../models");
 
 class InventoryController {
@@ -441,7 +444,7 @@ class InventoryController {
           rincianItem: dataInventory.rincianItem,
           jumlahItem: dataInventory.jumlahItem,
           kodeBarang: dataInventory.kodeBarang,
-          lokasi: dataInventory.lokasiPenyimpanan
+          lokasi: dataInventory.lokasiPenyimpanan,
         },
         { where: { id: dataInventory.inventoryItemId } }
       );
@@ -605,7 +608,6 @@ class InventoryController {
     try {
       const { id } = req.params;
       const { dataStokOpnam } = req.body;
-      console.log(dataStokOpnam);
       let result = await stokOpnams.update(
         {
           judulStokOpnam: dataStokOpnam.judulStokOpnam,
@@ -679,6 +681,147 @@ class InventoryController {
       let result = await stokOpnams.destroy({
         where: { id: id },
       });
+      res.json(result);
+    } catch (error) {
+      res.json(error);
+    }
+  }
+  static async addPenyerahanBarang(req, res) {
+    try {
+      const { id } = req.params;
+      const { dataPenyerahanBarang } = req.body;
+      console.log(dataPenyerahanBarang)
+      let result = await penyerahanBarangs.create({
+        diambilOleh: dataPenyerahanBarang.diambilOleh,
+        tanggalPenyerahan: dataPenyerahanBarang.tanggalPenyerahan,
+        tanggalPengambilan: dataPenyerahanBarang.tanggalPengambilan,
+        statusPenyerahan: dataPenyerahanBarang.statusPenyerahan,
+      });
+      await UserPenyerahanBarangs.create({
+        userId: id,
+        penyerahanBarangId: result.id,
+      });
+      if (
+        dataPenyerahanBarang.itemPenyerahanBarangs &&
+        Array.isArray(dataPenyerahanBarang.itemPenyerahanBarangs)
+      ) {
+        Promise.all(
+          dataPenyerahanBarang.itemPenyerahanBarangs.map(async (data) => {
+            await itemPenyerahanBarangs.create({
+              penyerahanBarangId: result.id,
+              namaBarang: data.namaItem,
+              kodeBarang: data.kodeBarang,
+              rincianItem: data.rincianItem,
+              jumlahYangDiambil: data.jumlahYangDiambil,
+              selisihBarang: data.selisihJumlahItem,
+              lokasiPenyimpanan: data.lokasiPeyimpanan,
+            });
+            // await inventorys.update(
+            //   {
+            //     jumlahItem: data.selisihJumlahItem,
+            //   },
+            //   { where: { id: data.idBarang } }
+            // );
+          })
+        );
+      }
+      res.json(result);
+    } catch (error) {
+      res.json(error);
+    }
+  }
+  static async getAllPengambilanBarang(req, res) {
+    try {
+      let result = await penyerahanBarangs.findAll({
+        include: [{ model: itemPenyerahanBarangs }],
+      });
+      res.json(result);
+    } catch (error) {
+      res.json(error);
+    }
+  }
+  static async deletePenyerahanBarang(req, res) {
+    try {
+      const { id } = req.params;
+      let result = penyerahanBarangs.destroy({
+        where: { id: id },
+      });
+      res.json(result);
+    } catch (error) {
+      res.json(error);
+    }
+  }
+  static async getPenyerahanBarang(req, res) {
+    try {
+      const { id } = req.params;
+      let result = await penyerahanBarangs.findOne({
+        where: { id: id },
+        include: [{ model: itemPenyerahanBarangs }],
+      });
+      res.json(result);
+    } catch (error) {
+      res.json(error);
+    }
+  }
+  static async deleteItemPenyerahanBarang(req, res) {
+    try {
+      const { id } = req.params;
+      let result = await itemPenyerahanBarangs.destroy({
+        where: { id: id },
+      });
+      res.json(result);
+    } catch (error) {
+      res.json(error);
+    }
+  }
+  static async editPenyerahanBarang(req, res) {
+    try {
+      const { id } = req.params;
+      const { dataPenyerahanBarang } = req.body;
+      let result = await penyerahanBarangs.update(
+        {
+          diambilOleh: dataPenyerahanBarang.diambilOleh,
+          tanggalPenyarahan: dataPenyerahanBarang.tanggalPenyerahan,
+          tanggalPengambilan: dataPenyerahanBarang.tanggalPengambilan,
+          statusPenyerahan: dataPenyerahanBarang.statusPenyerahan,
+        },
+        { where: { id: dataPenyerahanBarang.id } }
+      );
+
+      if (
+        dataPenyerahanBarang.itemPenyerahanBarangs &&
+        Array.isArray(dataPenyerahanBarang.itemPenyerahanBarangs)
+      ) {
+        Promise.all(
+          dataPenyerahanBarang.itemPenyerahanBarangs.map(async (data) => {
+            if (!data.id) {
+              await itemPenyerahanBarangs.create({
+                penyerahanBarangId: result.id,
+                namaBarang: data.namaItem,
+                kodeBarang: data.kodeBarang,
+                rincianItem: data.rincianItem,
+                jumlahYangDiambil: data.jumlahYangDiambil,
+                selisihBarang: data.selisihBarang,
+                lokasiPenyimpanan: data.lokasiPeyimpanan,
+              });
+            } else {
+              await itemPenyerahanBarangs.update(
+                {
+                  penyerahanBarangId: result.id,
+                  namaBarang: data.namaItem,
+                  kodeBarang: data.kodeBarang,
+                  rincianItem: data.rincianItem,
+                  jumlahYangDiambil: data.jumlahYangDiambil,
+                  selisihBarang: data.selisihJumlahItem,
+                  lokasiPenyimpanan: data.lokasiPeyimpanan,
+                },
+                { where: { id: data.id } }
+              );
+            }
+          })
+        );
+      }
+
       res.json(result);
     } catch (error) {
       res.json(error);

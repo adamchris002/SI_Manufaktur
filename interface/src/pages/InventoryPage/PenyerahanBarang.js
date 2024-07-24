@@ -23,18 +23,25 @@ import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { DemoContainer, DemoItem } from "@mui/x-date-pickers/internals/demo";
 import { DateTimePicker } from "@mui/x-date-pickers/DateTimePicker";
+import { useLocation, useNavigate } from "react-router-dom";
+import { useAuth } from "../../components/AuthContext";
 
-const PenyerahanBarang = () => {
+const PenyerahanBarang = (props) => {
+  const location = useLocation();
+  const { penyerahanBarangId } = location.state || "";
+  const { userInformation } = props;
+  const navigate = useNavigate();
+  const { setSuccessMessage } = useAuth();
   const [estimatedOrders, setEstimatedOrders] = useState([]);
   const [selectedEstimatedOrdersId, setSelectedEstimatedOrdersId] =
     useState("");
   const [inventoryItems, setInventoryItems] = useState([]);
-  // console.log(inventoryItems);
   const [dataBarangYangDiambil, setDatabarangYangDiambil] = useState({
     diambilOleh: "",
     tanggalPengambilan: dayjs(""),
     tanggalPenyerahan: dayjs(""),
-    dataPengambilanPenyerahan: [
+    statusPenyerahan: "",
+    itemPenyerahanBarangs: [
       {
         namaItem: "",
         kodeBarang: "",
@@ -42,6 +49,7 @@ const PenyerahanBarang = () => {
         jumlahYangDiambil: { value: "", unit: "" },
         jumlahDigudang: { value: "", unit: "" },
         lokasiPeyimpanan: "",
+        idBarang: "",
       },
     ],
   });
@@ -52,6 +60,8 @@ const PenyerahanBarang = () => {
   const [openSnackbar, setOpenSnackbar] = useState(false);
   const [snackbarStatus, setSnackbarStatus] = useState(false);
   const [snackbarMessage, setSnackbarMessage] = useState("");
+
+  const [refreshGetData, setRefreshGetData] = useState(true);
 
   const handleCloseSnackbar = () => {
     setOpenSnackbar(false);
@@ -80,6 +90,18 @@ const PenyerahanBarang = () => {
     },
   ];
 
+  const statusPenyerahan = [
+    {
+      value: "Barang sedang diambil",
+    },
+    {
+      value: "Barang siap diambil",
+    },
+    {
+      value: "Barang sudah diambil",
+    },
+  ];
+
   const checkForSubmission = () => {
     if (
       !dataBarangYangDiambil.diambilOleh ||
@@ -94,44 +116,60 @@ const PenyerahanBarang = () => {
         dataBarangYangDiambil.tanggalPenyerahan,
         "MM/DD/YYYY hh:mm A",
         true
-      ).isValid()
+      ).isValid() ||
+      !dataBarangYangDiambil.statusPenyerahan
     ) {
       return false;
     }
 
-    for (const item of dataBarangYangDiambil.dataPengambilanPenyerahan) {
-      if (
-        !item.namaItem ||
-        !item.kodeBarang ||
-        !item.rincianItem ||
-        !item.jumlahYangDiambil.value ||
-        !item.jumlahYangDiambil.unit ||
-        !item.jumlahDigudang.value ||
-        !item.jumlahDigudang.unit ||
-        !item.lokasiPeyimpanan
-      ) {
-        return false;
+    if (penyerahanBarangId !== undefined) {
+      for (const item of dataBarangYangDiambil.itemPenyerahanBarangs) {
+        if (
+          !item.namaItem ||
+          !item.kodeBarang ||
+          !item.rincianItem ||
+          !item.jumlahYangDiambil.value ||
+          !item.jumlahYangDiambil.unit ||
+          !item.selisihBarang
+        ) {
+          return false;
+        }
       }
-
-      const jumlahDigudangValue = item.jumlahDigudang.value;
-      const jumlahDigudangUnit = item.jumlahDigudang.unit;
-      const jumlahYangDiambilValue = parseFloat(item.jumlahYangDiambil.value);
-      const jumlahYangDiambilUnit = item.jumlahYangDiambil.unit;
-
-      if (jumlahYangDiambilUnit === jumlahDigudangUnit) {
-        if (jumlahYangDiambilValue > jumlahDigudangValue) {
+    } else {
+      for (const item of dataBarangYangDiambil.itemPenyerahanBarangs) {
+        if (
+          !item.namaItem ||
+          !item.kodeBarang ||
+          !item.rincianItem ||
+          !item.jumlahYangDiambil.value ||
+          !item.jumlahYangDiambil.unit ||
+          !item.jumlahDigudang.value ||
+          !item.jumlahDigudang.unit ||
+          !item.lokasiPeyimpanan
+        ) {
           return false;
         }
-      } else if (
-        jumlahYangDiambilUnit === "Kg" &&
-        jumlahDigudangUnit === "Ton"
-      ) {
-        const tempValue = jumlahDigudangValue * 1000;
-        if (jumlahYangDiambilValue > tempValue) {
+
+        const jumlahDigudangValue = item.jumlahDigudang.value;
+        const jumlahDigudangUnit = item.jumlahDigudang.unit;
+        const jumlahYangDiambilValue = parseFloat(item.jumlahYangDiambil.value);
+        const jumlahYangDiambilUnit = item.jumlahYangDiambil.unit;
+
+        if (jumlahYangDiambilUnit === jumlahDigudangUnit) {
+          if (jumlahYangDiambilValue > jumlahDigudangValue) {
+            return false;
+          }
+        } else if (
+          jumlahYangDiambilUnit === "Kg" &&
+          jumlahDigudangUnit === "Ton"
+        ) {
+          const tempValue = jumlahDigudangValue * 1000;
+          if (jumlahYangDiambilValue > tempValue) {
+            return false;
+          }
+        } else {
           return false;
         }
-      } else {
-        return false;
       }
     }
 
@@ -141,12 +179,19 @@ const PenyerahanBarang = () => {
   const transformDataForSubmission = (data) => {
     return {
       ...data,
-      dataPengambilanPenyerahan: data.dataPengambilanPenyerahan.map((item) => {
-        return {
-          ...item,
-          jumlahDigudang: `${item.jumlahDigudang.value} ${item.jumlahDigudang.unit}`,
-          jumlahYangDiambil: `${item.jumlahYangDiambil.value} ${item.jumlahYangDiambil.unit}`,
-        };
+      itemPenyerahanBarangs: data.itemPenyerahanBarangs.map((item) => {
+        if (penyerahanBarangId !== undefined) {
+          return {
+            ...item,
+            jumlahYangDiambil: `${item.jumlahYangDiambil.value} ${item.jumlahYangDiambil.unit}`,
+          };
+        } else {
+          return {
+            ...item,
+            jumlahDigudang: `${item.jumlahDigudang.value} ${item.jumlahDigudang.unit}`,
+            jumlahYangDiambil: `${item.jumlahYangDiambil.value} ${item.jumlahYangDiambil.unit}`,
+          };
+        }
       }),
     };
   };
@@ -161,7 +206,53 @@ const PenyerahanBarang = () => {
       );
     } else {
       const transformedData = transformDataForSubmission(dataBarangYangDiambil);
-      console.log(transformedData);
+      axios({
+        method: "POST",
+        url: `http://localhost:3000/inventory/addPenyerahanBarang/${userInformation?.data?.id}`,
+        data: { dataPenyerahanBarang: transformedData },
+      }).then((result) => {
+        if (result.status === 200) {
+          setSuccessMessage("Berhasil menambahkan form penyerahan barang");
+          setSnackbarStatus(true);
+          navigate(-1);
+        } else {
+          setOpenSnackbar(true);
+          setSnackbarStatus(false);
+          setSnackbarMessage(
+            "Tidak berhasil menambahkan data penyerahan/pengambilan barang"
+          );
+        }
+      });
+    }
+  };
+
+  const handleEditPenyerahanBarang = () => {
+    const checkIfDataPengambilanComplete = checkForSubmission();
+    if (checkIfDataPengambilanComplete === false) {
+      setOpenSnackbar(true);
+      setSnackbarStatus(false);
+      setSnackbarMessage(
+        "Tolong isi input dengan lengkap atau perbaiki data pada input"
+      );
+    } else {
+      const transformedData = transformDataForSubmission(dataBarangYangDiambil);
+      axios({
+        method: "PUT",
+        url: `http://localhost:3000/inventory/editPenyerahanBarang/${userInformation?.data?.id}`,
+        data: { dataPenyerahanBarang: transformedData },
+      }).then((result) => {
+        if (result.status === 200) {
+          setSuccessMessage("Berhasil menambahkan form penyerahan barang");
+          setSnackbarStatus(true);
+          navigate(-1);
+        } else {
+          setOpenSnackbar(true);
+          setSnackbarStatus(false);
+          setSnackbarMessage(
+            "Tidak berhasil menambahkan data penyerahan/pengambilan barang"
+          );
+        }
+      });
     }
   };
 
@@ -171,6 +262,20 @@ const PenyerahanBarang = () => {
     const value = parseFloat(parts[0]);
     const unit = parts.slice(1).join(" ");
     return { value, unit };
+  };
+
+  const modifyDataForEdit = (data) => {
+    const modifiedData = {
+      ...data,
+      tanggalPengambilan: dayjs(data.tanggalPengambilan),
+      tanggalPenyerahan: dayjs(data.tanggalPenyerahan),
+      itemPenyerahanBarangs: data.itemPenyerahanBarangs.map((result) => ({
+        ...result,
+        jumlahYangDiambil: separateValueAndUnit(result.jumlahYangDiambil),
+        namaItem: result.namaBarang,
+      })),
+    };
+    return modifiedData;
   };
 
   useEffect(() => {
@@ -186,6 +291,9 @@ const PenyerahanBarang = () => {
         }));
         setInventoryItems(tempName);
       } else {
+        setOpenSnackbar(true);
+        setSnackbarStatus(false);
+        setSnackbarMessage("Tidak dapat memanggil data bahan baku");
       }
     });
   }, []);
@@ -202,9 +310,36 @@ const PenyerahanBarang = () => {
         }));
         setEstimatedOrders(tempName);
       } else {
+        setOpenSnackbar(true);
+        setSnackbarStatus(false);
+        setSnackbarMessage("Tidak dapat memanggil data perencanaan produksi");
       }
     });
   }, []);
+
+  useEffect(() => {
+    if (penyerahanBarangId !== undefined) {
+      if (refreshGetData) {
+        axios({
+          method: "GET",
+          url: `http://localhost:3000/inventory/getPenyerahanBarang/${penyerahanBarangId}`,
+        }).then((result) => {
+          if (result.status === 200) {
+            const modifiedPenyerahanBarang = modifyDataForEdit(result.data);
+            setDatabarangYangDiambil(modifiedPenyerahanBarang);
+            setRefreshGetData(false);
+          } else {
+            setOpenSnackbar(true);
+            setSnackbarStatus(false);
+            setSnackbarMessage(
+              "Tidak dapat memanggil data form pengambilan/penyerahan barang untuk diedit"
+            );
+            setRefreshGetData(false);
+          }
+        });
+      }
+    }
+  }, [refreshGetData]);
 
   const getSelectedInventoryItem = (value, field, unit) => {
     const selectedItem = inventoryItems?.find(
@@ -221,8 +356,8 @@ const PenyerahanBarang = () => {
     setDatabarangYangDiambil((oldArray) => {
       return {
         ...oldArray,
-        dataPengambilanPenyerahan: [
-          ...oldArray.dataPengambilanPenyerahan,
+        itemPenyerahanBarangs: [
+          ...oldArray.itemPenyerahanBarangs,
           {
             namaItem: "",
             kodeBarang: "",
@@ -241,10 +376,30 @@ const PenyerahanBarang = () => {
       setDatabarangYangDiambil((oldObject) => {
         return {
           ...oldObject,
-          dataPengambilanPenyerahan: oldObject.dataPengambilanPenyerahan.filter(
+          itemPenyerahanBarangs: oldObject.itemPenyerahanBarangs.filter(
             (_, j) => j !== index
           ),
         };
+      });
+    } else {
+      axios({
+        method: "DELETE",
+        url: `http://localhost:3000/inventory/deleteItemPenyerahanBarang/${id}`,
+      }).then((result) => {
+        if (result.status === 200) {
+          setOpenSnackbar(true);
+          setSnackbarStatus(true);
+          setSnackbarMessage(
+            "Berhasil menghapus item bahan baku dari penyerahan/pengambilan barang"
+          );
+          setRefreshGetData(true);
+        } else {
+          setOpenSnackbar(true);
+          setSnackbarStatus(false);
+          setSnackbarMessage(
+            "Tidak berhasil menghapus item bahan baku dari penyerahan/pengambilan barang"
+          );
+        }
       });
     }
   };
@@ -256,176 +411,179 @@ const PenyerahanBarang = () => {
       if (
         field === "diambilOleh" ||
         field === "tanggalPengambilan" ||
-        field === "tanggalPenyerahan"
+        field === "tanggalPenyerahan" ||
+        field === "statusPenyerahan"
       ) {
         return {
           ...oldObject,
           [field]: value,
         };
       } else {
-        const updatedItems = oldObject.dataPengambilanPenyerahan.map(
-          (item, i) => {
-            if (i === index) {
-              let updatedItem = { ...item };
-              let hasError = false;
+        const updatedItems = oldObject.itemPenyerahanBarangs.map((item, i) => {
+          if (i === index) {
+            let updatedItem = { ...item };
+            let hasError = false;
 
-              if (unit) {
-                const newUnit = value;
-                const jumlahItem = getSelectedInventoryItem(
+            if (unit) {
+              const newUnit = value;
+              const jumlahItem = getSelectedInventoryItem(
+                updatedItem.namaItem,
+                "jumlahItem",
+                true
+              );
+
+              if (newUnit === jumlahItem.unit) {
+                updatedItem = {
+                  ...updatedItem,
+                  [field]: {
+                    value: updatedItem.jumlahYangDiambil.value,
+                    unit: newUnit,
+                  },
+                  selisihBarang: `${
+                    jumlahItem.value - updatedItem.jumlahYangDiambil.value
+                  } ${jumlahItem.unit}`,
+                };
+              } else if (newUnit === "Kg" && jumlahItem.unit === "Ton") {
+                updatedItem = {
+                  ...updatedItem,
+                  [field]: {
+                    value: updatedItem.jumlahYangDiambil.value,
+                    unit: newUnit,
+                  },
+                  selisihBarang: `${
+                    (jumlahItem.value * 1000 -
+                      updatedItem.jumlahYangDiambil.value) /
+                    1000
+                  } ${jumlahItem.unit}`,
+                };
+              } else {
+                hasError = true;
+                setOpenSnackbar(true);
+                setSnackbarStatus(false);
+                setSnackbarMessage(
+                  "Satuan pada barang yang diambil tidak sesuai dengan satuan pada jumlah barang"
+                );
+                // return item;
+              }
+            } else {
+              if (field === "namaItem") {
+                updatedItem = { ...updatedItem, [field]: value };
+                const kodeBarang = getSelectedInventoryItem(
+                  updatedItem.namaItem,
+                  "kodeBarang"
+                );
+                const lokasiPenyimpanan = getSelectedInventoryItem(
+                  updatedItem.namaItem,
+                  "lokasi"
+                );
+                const rincianBarang = getSelectedInventoryItem(
+                  updatedItem.namaItem,
+                  "rincianItem"
+                );
+                const jumlahDigudang = getSelectedInventoryItem(
                   updatedItem.namaItem,
                   "jumlahItem",
                   true
                 );
+                console.log(jumlahDigudang);
+                const idBarang = getSelectedInventoryItem(
+                  updatedItem.namaItem,
+                  "id"
+                );
+                updatedItem.kodeBarang = kodeBarang;
+                updatedItem.lokasiPeyimpanan = lokasiPenyimpanan;
+                updatedItem.rincianItem = rincianBarang;
+                updatedItem.jumlahDigudang = {
+                  value: jumlahDigudang.value,
+                  unit: jumlahDigudang.unit,
+                };
+                updatedItem.idBarang = idBarang;
+              }
 
-                if (newUnit === jumlahItem.unit) {
+              if (field === "jumlahYangDiambil") {
+                const jumlahDigudang = getSelectedInventoryItem(
+                  updatedItem.namaItem,
+                  "jumlahItem",
+                  true
+                );
+                const jumlahDigudangValue = jumlahDigudang.value;
+                const jumlahDigudangUnit = jumlahDigudang.unit;
+
+                if (updatedItem.jumlahYangDiambil.unit === jumlahDigudangUnit) {
+                  const changeToNumber = parseFloat(value);
+                  if (changeToNumber > jumlahDigudangValue) {
+                    setOpenSnackbar(true);
+                    setSnackbarStatus(false);
+                    setSnackbarMessage(
+                      "Jumlah barang yang diambil tidak boleh lebih besar daripada jumlah barang yang ada di gudang."
+                    );
+                    hasError = true;
+                  } else {
+                    hasError = false;
+                  }
                   updatedItem = {
                     ...updatedItem,
-                    [field]: {
-                      value: updatedItem.jumlahYangDiambil.value,
-                      unit: newUnit,
+                    jumlahYangDiambil: {
+                      value: value,
+                      unit: updatedItem.jumlahYangDiambil.unit,
                     },
-                    selisihJumlahItem: `${
-                      jumlahItem.value - updatedItem.jumlahYangDiambil.value
-                    } ${jumlahItem.unit}`,
+                    selisihBarang: `${
+                      jumlahDigudangValue - changeToNumber
+                    } ${jumlahDigudangUnit}`,
                   };
-                } else if (newUnit === "Kg" && jumlahItem.unit === "Ton") {
+                } else if (
+                  updatedItem.jumlahYangDiambil.unit === "Kg" &&
+                  jumlahDigudangUnit === "Ton"
+                ) {
+                  const tempValue = jumlahDigudangValue * 1000;
+                  const changeToNumber = parseFloat(value);
+                  if (changeToNumber > tempValue) {
+                    setOpenSnackbar(true);
+                    setSnackbarStatus(false);
+                    setSnackbarMessage(
+                      "Jumlah barang yang diambil tidak boleh lebih besar daripada jumlah barang yang ada di gudang dalam satuan Kg."
+                    );
+                    hasError = true;
+                  } else {
+                    hasError = false;
+                  }
+                  let selisihBarang = tempValue - changeToNumber;
                   updatedItem = {
                     ...updatedItem,
-                    [field]: {
-                      value: updatedItem.jumlahYangDiambil.value,
-                      unit: newUnit,
+                    jumlahYangDiambil: {
+                      value: value,
+                      unit: updatedItem.jumlahYangDiambil.unit,
                     },
-                    selisihJumlahItem: `${
-                      (jumlahItem.value * 1000 -
-                        updatedItem.jumlahYangDiambil.value) /
-                      1000
-                    } ${jumlahItem.unit}`,
+                    selisihBarang: `${
+                      selisihBarang < 1000
+                        ? selisihBarang
+                        : selisihBarang / 1000
+                    } ${
+                      selisihBarang < 1000
+                        ? updatedItem.jumlahYangDiambil.unit
+                        : jumlahDigudangUnit
+                    }`,
                   };
                 } else {
-                  hasError = true;
                   setOpenSnackbar(true);
                   setSnackbarStatus(false);
                   setSnackbarMessage(
                     "Satuan pada barang yang diambil tidak sesuai dengan satuan pada jumlah barang"
                   );
-                  // return item;
-                }
-              } else {
-                if (field === "namaItem") {
-                  updatedItem = { ...updatedItem, [field]: value };
-                  const kodeBarang = getSelectedInventoryItem(
-                    updatedItem.namaItem,
-                    "kodeBarang"
-                  );
-                  const lokasiPenyimpanan = getSelectedInventoryItem(
-                    updatedItem.namaItem,
-                    "lokasi"
-                  );
-                  const rincianBarang = getSelectedInventoryItem(
-                    updatedItem.namaItem,
-                    "rincianItem"
-                  );
-                  const jumlahDigudang = getSelectedInventoryItem(
-                    updatedItem.namaItem,
-                    "jumlahItem",
-                    true
-                  );
-                  updatedItem.kodeBarang = kodeBarang;
-                  updatedItem.lokasiPeyimpanan = lokasiPenyimpanan;
-                  updatedItem.rincianItem = rincianBarang;
-                  updatedItem.jumlahDigudang = {
-                    value: jumlahDigudang.value,
-                    unit: jumlahDigudang.unit,
-                  };
-                }
-
-                if (field === "jumlahYangDiambil") {
-                  const jumlahDigudang = getSelectedInventoryItem(
-                    updatedItem.namaItem,
-                    "jumlahItem",
-                    true
-                  );
-                  const jumlahDigudangValue = jumlahDigudang.value;
-                  const jumlahDigudangUnit = jumlahDigudang.unit;
-
-                  if (
-                    updatedItem.jumlahYangDiambil.unit === jumlahDigudangUnit
-                  ) {
-                    const changeToNumber = parseFloat(value);
-                    if (changeToNumber > jumlahDigudangValue) {
-                      setOpenSnackbar(true);
-                      setSnackbarStatus(false);
-                      setSnackbarMessage(
-                        "Jumlah barang yang diambil tidak boleh lebih besar daripada jumlah barang yang ada di gudang."
-                      );
-                      hasError = true;
-                    } else {
-                      hasError = false;
-                    }
-                    updatedItem = {
-                      ...updatedItem,
-                      jumlahYangDiambil: {
-                        value: value,
-                        unit: updatedItem.jumlahYangDiambil.unit,
-                      },
-                      selisihJumlahItem: `${
-                        jumlahDigudangValue - changeToNumber
-                      } ${jumlahDigudangUnit}`,
-                    };
-                  } else if (
-                    updatedItem.jumlahYangDiambil.unit === "Kg" &&
-                    jumlahDigudangUnit === "Ton"
-                  ) {
-                    const tempValue = jumlahDigudangValue * 1000;
-                    const changeToNumber = parseFloat(value);
-                    if (changeToNumber > tempValue) {
-                      setOpenSnackbar(true);
-                      setSnackbarStatus(false);
-                      setSnackbarMessage(
-                        "Jumlah barang yang diambil tidak boleh lebih besar daripada jumlah barang yang ada di gudang dalam satuan Kg."
-                      );
-                      hasError = true;
-                    } else {
-                      hasError = false;
-                    }
-                    let selisihJumlahItem = tempValue - changeToNumber;
-                    updatedItem = {
-                      ...updatedItem,
-                      jumlahYangDiambil: {
-                        value: value,
-                        unit: updatedItem.jumlahYangDiambil.unit,
-                      },
-                      selisihJumlahItem: `${
-                        selisihJumlahItem < 1000
-                          ? selisihJumlahItem
-                          : selisihJumlahItem / 1000
-                      } ${
-                        selisihJumlahItem < 1000
-                          ? updatedItem.jumlahYangDiambil.unit
-                          : jumlahDigudangUnit
-                      }`,
-                    };
-                  } else {
-                    setOpenSnackbar(true);
-                    setSnackbarStatus(false);
-                    setSnackbarMessage(
-                      "Satuan pada barang yang diambil tidak sesuai dengan satuan pada jumlah barang"
-                    );
-                    hasError = true;
-                  }
+                  hasError = true;
                 }
               }
-
-              const updatedErrorStates = [...showError];
-              updatedErrorStates[index] = hasError;
-              setShowError(updatedErrorStates);
-
-              return updatedItem;
             }
-            return item;
+
+            const updatedErrorStates = [...showError];
+            updatedErrorStates[index] = hasError;
+            setShowError(updatedErrorStates);
+
+            return updatedItem;
           }
-        );
-        return { ...oldObject, dataPengambilanPenyerahan: updatedItems };
+          return item;
+        });
+        return { ...oldObject, itemPenyerahanBarangs: updatedItems };
       }
     });
   };
@@ -451,21 +609,25 @@ const PenyerahanBarang = () => {
         </div>
         <div style={{ margin: "32px" }}>
           <div>
-            <div style={{ display: "flex", alignItems: "center" }}>
-              <Typography style={{ color: "#0F607D", fontSize: "2vw" }}>
-                Laporan Perancanaan yang berlangsung
-              </Typography>
-              <div style={{ marginLeft: "8px" }}>
-                <MySelectTextField
-                  data={estimatedOrders}
-                  width={"100px"}
-                  value={selectedEstimatedOrdersId}
-                  onChange={(event) => {
-                    setSelectedEstimatedOrdersId(event.target.value);
-                  }}
-                />
+            {penyerahanBarangId === undefined ? (
+              <div style={{ display: "flex", alignItems: "center" }}>
+                <Typography style={{ color: "#0F607D", fontSize: "2vw" }}>
+                  Laporan Perancanaan yang berlangsung
+                </Typography>
+                <div style={{ marginLeft: "8px" }}>
+                  <MySelectTextField
+                    data={estimatedOrders}
+                    width={"100px"}
+                    value={selectedEstimatedOrdersId}
+                    onChange={(event) => {
+                      setSelectedEstimatedOrdersId(event.target.value);
+                    }}
+                  />
+                </div>
               </div>
-            </div>
+            ) : (
+              ""
+            )}
             <div>
               {estimatedOrders
                 ?.filter((plan) => plan.id === selectedEstimatedOrdersId)
@@ -643,6 +805,25 @@ const PenyerahanBarang = () => {
                       </DemoContainer>
                     </LocalizationProvider>
                   </div>
+                  <div
+                    style={{
+                      display: "flex",
+                      alignItems: "center",
+                      margin: "16px 0px",
+                    }}
+                  >
+                    <div style={{ width: "200px" }}>
+                      <Typography>Tanggal Penyerahan: </Typography>
+                    </div>
+                    <MySelectTextField
+                      width={"200px"}
+                      data={statusPenyerahan}
+                      value={dataBarangYangDiambil.statusPenyerahan}
+                      onChange={(event) => {
+                        handleChangeInput("statusPenyerahan", event);
+                      }}
+                    />
+                  </div>
                 </div>
                 <div
                   style={{
@@ -691,7 +872,7 @@ const PenyerahanBarang = () => {
                       </TableRow>
                     </TableHead>
                     <TableBody>
-                      {dataBarangYangDiambil?.dataPengambilanPenyerahan?.map(
+                      {dataBarangYangDiambil?.itemPenyerahanBarangs?.map(
                         (result, index) => {
                           const jumlahItemValueAndUnit =
                             getSelectedInventoryItem(
@@ -824,7 +1005,7 @@ const PenyerahanBarang = () => {
                                 <TableCell>
                                   <IconButton
                                     onClick={() => {
-                                      handleRemoveItem(result?.id, index);
+                                      handleRemoveItem(result.id, index);
                                     }}
                                   >
                                     <DeleteIcon sx={{ color: "red" }} />
@@ -849,15 +1030,22 @@ const PenyerahanBarang = () => {
               >
                 <DefaultButton
                   onClickFunction={() => {
-                    handleAddPengambilanBarang();
+                    penyerahanBarangId === undefined
+                      ? handleAddPengambilanBarang()
+                      : handleEditPenyerahanBarang();
                   }}
                 >
-                  Tambah Form
+                  {penyerahanBarangId === undefined
+                    ? "Tambah Form"
+                    : "Edit Form"}
                 </DefaultButton>
                 <Button
                   style={{ marginLeft: "8px" }}
                   color="error"
                   variant="outlined"
+                  onClick={() => {
+                    navigate(-1);
+                  }}
                 >
                   Cancel
                 </Button>

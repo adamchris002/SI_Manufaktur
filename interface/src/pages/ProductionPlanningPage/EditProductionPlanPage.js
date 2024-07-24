@@ -49,7 +49,6 @@ const EditProductionPlanPage = (props) => {
   const [productionPlanWithData, setProductionPlanWithData] = useState([]);
   const [selectedOrder, setSelectedOrder] = useState([]);
   const [estimasiJadwal, setEstimasiJadwal] = useState([]);
-  console.log(estimasiJadwal)
   const [estimasiBahanBaku, setEstimasiBahanBaku] = useState([]);
 
   const [openModal, setOpenModal] = useState(false);
