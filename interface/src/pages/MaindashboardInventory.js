@@ -1172,8 +1172,8 @@ const MaindashboardInventory = (props) => {
                     return (
                       <React.Fragment key={index}>
                         <TableRow>
-                          <TableCell>{result.tanggalPengambilan}</TableCell>
-                          <TableCell>{result.tanggalPenyerahan}</TableCell>
+                          <TableCell>{dayjs(result.tanggalPengambilan).format("MM/DD/YYYY hh:mm A")}</TableCell>
+                          <TableCell>{dayjs(result.tanggalPenyerahan).format("MM/DD/YYYY hh:mm A")}</TableCell>
                           <TableCell>{result.statusPenyerahan}</TableCell>
                           <TableCell>
                             <div

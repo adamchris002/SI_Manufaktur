@@ -264,17 +264,42 @@ const PenyerahanBarang = (props) => {
     return { value, unit };
   };
 
+  const convertToTonIfNecessary = (value, unit) => {
+    if (unit === "Kg" && value >= 1000) {
+      return { value: value / 1000, unit: "Ton" };
+    }
+    return { value, unit };
+  };
+
   const modifyDataForEdit = (data) => {
     const modifiedData = {
       ...data,
       tanggalPengambilan: dayjs(data.tanggalPengambilan),
       tanggalPenyerahan: dayjs(data.tanggalPenyerahan),
-      itemPenyerahanBarangs: data.itemPenyerahanBarangs.map((result) => ({
-        ...result,
-        jumlahYangDiambil: separateValueAndUnit(result.jumlahYangDiambil),
-        namaItem: result.namaBarang,
-      })),
+      itemPenyerahanBarangs: data.itemPenyerahanBarangs.map((result) => {
+        let prevBarangDiGudang = separateValueAndUnit(result.selisihBarang);
+        let jumlahItem = separateValueAndUnit(result.jumlahYangDiambil);
+        let totalValue, totalUnit;
+
+        if (prevBarangDiGudang.unit === "Ton") {
+          totalValue = prevBarangDiGudang.value + jumlahItem.value / 1000;
+          totalUnit = "Ton";
+        } else {
+          totalValue = prevBarangDiGudang.value + jumlahItem.value;
+          totalUnit = prevBarangDiGudang.unit;
+        }
+
+        const total = convertToTonIfNecessary(totalValue, totalUnit);
+
+        return {
+          ...result,
+          jumlahYangDiambil: separateValueAndUnit(result.jumlahYangDiambil),
+          namaItem: result.namaBarang,
+          totalBarang: `${total.value} ${total.unit}`,
+        };
+      }),
     };
+
     return modifiedData;
   };
 
@@ -327,6 +352,7 @@ const PenyerahanBarang = (props) => {
           if (result.status === 200) {
             const modifiedPenyerahanBarang = modifyDataForEdit(result.data);
             setDatabarangYangDiambil(modifiedPenyerahanBarang);
+            console.log(modifiedPenyerahanBarang);
             setRefreshGetData(false);
           } else {
             setOpenSnackbar(true);

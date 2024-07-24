@@ -690,7 +690,7 @@ class InventoryController {
     try {
       const { id } = req.params;
       const { dataPenyerahanBarang } = req.body;
-      console.log(dataPenyerahanBarang)
+      console.log(dataPenyerahanBarang);
       let result = await penyerahanBarangs.create({
         diambilOleh: dataPenyerahanBarang.diambilOleh,
         tanggalPenyerahan: dataPenyerahanBarang.tanggalPenyerahan,
@@ -713,15 +713,16 @@ class InventoryController {
               kodeBarang: data.kodeBarang,
               rincianItem: data.rincianItem,
               jumlahYangDiambil: data.jumlahYangDiambil,
-              selisihBarang: data.selisihJumlahItem,
+              selisihBarang: data.selisihBarang,
               lokasiPenyimpanan: data.lokasiPeyimpanan,
+              idBarang: data.idBarang
             });
-            // await inventorys.update(
-            //   {
-            //     jumlahItem: data.selisihJumlahItem,
-            //   },
-            //   { where: { id: data.idBarang } }
-            // );
+            await inventorys.update(
+              {
+                jumlahItem: data.selisihBarang,
+              },
+              { where: { id: data.idBarang } }
+            );
           })
         );
       }
@@ -778,25 +779,42 @@ class InventoryController {
     try {
       const { id } = req.params;
       const { dataPenyerahanBarang } = req.body;
-      let result = await penyerahanBarangs.update(
+  
+      const separateValueAndUnit = (str) => {
+        const parts = str.split(" ");
+        const value = parseFloat(parts[0]);
+        const unit = parts.slice(1).join(" ");
+        return { value, unit };
+      };
+  
+      const convertToKgIfLessThanTon = (value, unit) => {
+        if (unit === "Ton" && value < 1) {
+          return { value: value * 1000, unit: "Kg" };
+        }
+        return { value, unit };
+      };
+  
+      // Update penyerahanBarangs record
+      await penyerahanBarangs.update(
         {
           diambilOleh: dataPenyerahanBarang.diambilOleh,
-          tanggalPenyarahan: dataPenyerahanBarang.tanggalPenyerahan,
+          tanggalPenyerahan: dataPenyerahanBarang.tanggalPenyerahan,
           tanggalPengambilan: dataPenyerahanBarang.tanggalPengambilan,
           statusPenyerahan: dataPenyerahanBarang.statusPenyerahan,
         },
         { where: { id: dataPenyerahanBarang.id } }
       );
-
+  
       if (
         dataPenyerahanBarang.itemPenyerahanBarangs &&
         Array.isArray(dataPenyerahanBarang.itemPenyerahanBarangs)
       ) {
-        Promise.all(
+        await Promise.all(
           dataPenyerahanBarang.itemPenyerahanBarangs.map(async (data) => {
             if (!data.id) {
+              // Create new itemPenyerahanBarangs record
               await itemPenyerahanBarangs.create({
-                penyerahanBarangId: result.id,
+                penyerahanBarangId: dataPenyerahanBarang.id,
                 namaBarang: data.namaItem,
                 kodeBarang: data.kodeBarang,
                 rincianItem: data.rincianItem,
@@ -805,28 +823,89 @@ class InventoryController {
                 lokasiPenyimpanan: data.lokasiPeyimpanan,
               });
             } else {
+              // Find previous itemPenyerahanBarangs record
+              const previousItemPenyerahanBarang = await itemPenyerahanBarangs.findOne({
+                where: { id: data.id },
+              });
+  
+              const previousSelisih = separateValueAndUnit(
+                previousItemPenyerahanBarang.selisihBarang
+              );
+              const previousJumlahItem = separateValueAndUnit(
+                previousItemPenyerahanBarang.jumlahYangDiambil
+              );
+  
+              let previousTotal;
+              if (previousJumlahItem.unit === "Ton") {
+                previousTotal = previousJumlahItem.value * 1000;
+              } else {
+                previousTotal = previousJumlahItem.value;
+              }
+              if (previousSelisih.unit === "Ton") {
+                previousTotal += previousSelisih.value * 1000;
+              } else {
+                previousTotal += previousSelisih.value;
+              }
+  
+              const updatedPreviousTotal = convertToKgIfLessThanTon(
+                previousTotal / 1000,
+                "Ton"
+              );
+  
+              // Update inventorys record with previous total
+              await inventorys.update(
+                {
+                  jumlahItem: `${updatedPreviousTotal.value} ${updatedPreviousTotal.unit}`,
+                },
+                { where: { id: data.idBarang } }
+              );
+  
+              // Update itemPenyerahanBarangs record
               await itemPenyerahanBarangs.update(
                 {
-                  penyerahanBarangId: result.id,
+                  penyerahanBarangId: dataPenyerahanBarang.id,
                   namaBarang: data.namaItem,
                   kodeBarang: data.kodeBarang,
                   rincianItem: data.rincianItem,
                   jumlahYangDiambil: data.jumlahYangDiambil,
-                  selisihBarang: data.selisihJumlahItem,
+                  selisihBarang: data.selisihBarang,
                   lokasiPenyimpanan: data.lokasiPeyimpanan,
                 },
                 { where: { id: data.id } }
+              );
+  
+              // Separate value and unit for the new selisihBarang
+              const newSelisih = separateValueAndUnit(data.selisihBarang);
+  
+              let newTotal;
+              if (newSelisih.unit === "Ton") {
+                newTotal = newSelisih.value * 1000;
+              } else {
+                newTotal = newSelisih.value;
+              }
+  
+              const updatedNewTotal = convertToKgIfLessThanTon(
+                newTotal / 1000,
+                "Ton"
+              );
+  
+              // Update inventorys record with new selisih
+              await inventorys.update(
+                {
+                  jumlahItem: `${updatedNewTotal.value} ${updatedNewTotal.unit}`,
+                },
+                { where: { id: data.idBarang } }
               );
             }
           })
         );
       }
-
-      res.json(result);
+      res.json({ success: true });
     } catch (error) {
-      res.json(error);
+      res.json({ success: false, error });
     }
   }
+  
 }
 
 module.exports = InventoryController;
