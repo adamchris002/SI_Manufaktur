@@ -1151,7 +1151,7 @@ const MaindashboardInventory = (props) => {
             </DefaultButton>
           </div>
         </div>
-        {allPenyerahanBarang.length === 0 ? (
+        {allPenyerahanBarang?.length === 0 ? (
           <div style={{ margin: "32px" }}>
             <Typography>Tidak ada data penyerahan/pengambilan barang</Typography>
           </div>

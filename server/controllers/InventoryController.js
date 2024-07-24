@@ -715,7 +715,7 @@ class InventoryController {
               jumlahYangDiambil: data.jumlahYangDiambil,
               selisihBarang: data.selisihBarang,
               lokasiPenyimpanan: data.lokasiPeyimpanan,
-              idBarang: data.idBarang
+              idBarang: data.idBarang,
             });
             await inventorys.update(
               {
@@ -767,18 +767,6 @@ class InventoryController {
   static async deleteItemPenyerahanBarang(req, res) {
     try {
       const { id } = req.params;
-      let result = await itemPenyerahanBarangs.destroy({
-        where: { id: id },
-      });
-      res.json(result);
-    } catch (error) {
-      res.json(error);
-    }
-  }
-  static async editPenyerahanBarang(req, res) {
-    try {
-      const { id } = req.params;
-      const { dataPenyerahanBarang } = req.body;
   
       const separateValueAndUnit = (str) => {
         const parts = str.split(" ");
@@ -787,14 +775,59 @@ class InventoryController {
         return { value, unit };
       };
   
-      const convertToKgIfLessThanTon = (value, unit) => {
-        if (unit === "Ton" && value < 1) {
-          return { value: value * 1000, unit: "Kg" };
-        }
+      let findPenyerahanBarangs = await itemPenyerahanBarangs.findOne({
+        where: { id: id },
+      });
+  
+      let jumlahYangDiambil = separateValueAndUnit(
+        findPenyerahanBarangs.jumlahYangDiambil
+      );
+      let jumlahSelisih = separateValueAndUnit(
+        findPenyerahanBarangs.selisihBarang
+      );
+  
+      let totalAwal;
+      if (jumlahYangDiambil.unit === "Kg" && jumlahSelisih.unit === "Ton") {
+        totalAwal = `${
+          (jumlahSelisih.value * 1000 + jumlahYangDiambil.value) / 1000
+        } Ton`;
+      } else {
+        totalAwal = `${jumlahYangDiambil.value + jumlahSelisih.value} ${jumlahSelisih.unit}`;
+      }
+  
+      await inventorys.update(
+        {
+          jumlahItem: totalAwal,
+        },
+        { where: { id: findPenyerahanBarangs.idBarang } }
+      );
+  
+      let result = await findPenyerahanBarangs.destroy({});
+      res.json(result);
+    } catch (error) {
+      res.json(error);
+    }
+  }
+  
+  static async editPenyerahanBarang(req, res) {
+    try {
+      const { id } = req.params;
+      const { dataPenyerahanBarang } = req.body;
+
+      const separateValueAndUnit = (str) => {
+        const parts = str.split(" ");
+        const value = parseFloat(parts[0]);
+        const unit = parts.slice(1).join(" ");
         return { value, unit };
       };
-  
-      // Update penyerahanBarangs record
+
+      const convertToKg = (value, unit) => {
+        if (unit === "Ton") {
+          return value * 1000;
+        }
+        return value;
+      };
+
       await penyerahanBarangs.update(
         {
           diambilOleh: dataPenyerahanBarang.diambilOleh,
@@ -804,7 +837,7 @@ class InventoryController {
         },
         { where: { id: dataPenyerahanBarang.id } }
       );
-  
+
       if (
         dataPenyerahanBarang.itemPenyerahanBarangs &&
         Array.isArray(dataPenyerahanBarang.itemPenyerahanBarangs)
@@ -812,7 +845,6 @@ class InventoryController {
         await Promise.all(
           dataPenyerahanBarang.itemPenyerahanBarangs.map(async (data) => {
             if (!data.id) {
-              // Create new itemPenyerahanBarangs record
               await itemPenyerahanBarangs.create({
                 penyerahanBarangId: dataPenyerahanBarang.id,
                 namaBarang: data.namaItem,
@@ -822,45 +854,31 @@ class InventoryController {
                 selisihBarang: data.selisihBarang,
                 lokasiPenyimpanan: data.lokasiPeyimpanan,
               });
-            } else {
-              // Find previous itemPenyerahanBarangs record
-              const previousItemPenyerahanBarang = await itemPenyerahanBarangs.findOne({
-                where: { id: data.id },
-              });
-  
-              const previousSelisih = separateValueAndUnit(
-                previousItemPenyerahanBarang.selisihBarang
-              );
-              const previousJumlahItem = separateValueAndUnit(
-                previousItemPenyerahanBarang.jumlahYangDiambil
-              );
-  
-              let previousTotal;
-              if (previousJumlahItem.unit === "Ton") {
-                previousTotal = previousJumlahItem.value * 1000;
-              } else {
-                previousTotal = previousJumlahItem.value;
-              }
-              if (previousSelisih.unit === "Ton") {
-                previousTotal += previousSelisih.value * 1000;
-              } else {
-                previousTotal += previousSelisih.value;
-              }
-  
-              const updatedPreviousTotal = convertToKgIfLessThanTon(
-                previousTotal / 1000,
-                "Ton"
-              );
-  
-              // Update inventorys record with previous total
+
               await inventorys.update(
                 {
-                  jumlahItem: `${updatedPreviousTotal.value} ${updatedPreviousTotal.unit}`,
+                  jumlahItem: data.selisihBarang,
                 },
                 { where: { id: data.idBarang } }
               );
-  
-              // Update itemPenyerahanBarangs record
+            } else {
+              const originalData = await itemPenyerahanBarangs.findOne({
+                where: { id: data.id },
+              });
+
+              const originalJumlah = separateValueAndUnit(
+                originalData.jumlahYangDiambil
+              );
+              const newJumlah = separateValueAndUnit(data.jumlahYangDiambil);
+
+              let originalValueInKg = convertToKg(
+                originalJumlah.value,
+                originalJumlah.unit
+              );
+              let newValueInKg = convertToKg(newJumlah.value, newJumlah.unit);
+
+              let differenceInKg = newValueInKg - originalValueInKg;
+
               await itemPenyerahanBarangs.update(
                 {
                   penyerahanBarangId: dataPenyerahanBarang.id,
@@ -873,26 +891,33 @@ class InventoryController {
                 },
                 { where: { id: data.id } }
               );
-  
-              // Separate value and unit for the new selisihBarang
-              const newSelisih = separateValueAndUnit(data.selisihBarang);
-  
-              let newTotal;
-              if (newSelisih.unit === "Ton") {
-                newTotal = newSelisih.value * 1000;
-              } else {
-                newTotal = newSelisih.value;
-              }
-  
-              const updatedNewTotal = convertToKgIfLessThanTon(
-                newTotal / 1000,
-                "Ton"
+
+              const inventoryItem = await inventorys.findOne({
+                where: { id: data.idBarang },
+              });
+              const inventoryJumlah = separateValueAndUnit(
+                inventoryItem.jumlahItem
               );
-  
-              // Update inventorys record with new selisih
+
+              let inventoryValueInKg = convertToKg(
+                inventoryJumlah.value,
+                inventoryJumlah.unit
+              );
+
+              inventoryValueInKg -= differenceInKg;
+
+              let updatedJumlah, updatedUnit;
+              if (inventoryValueInKg >= 1000) {
+                updatedJumlah = inventoryValueInKg / 1000;
+                updatedUnit = "Ton";
+              } else {
+                updatedJumlah = inventoryValueInKg;
+                updatedUnit = "Kg";
+              }
+
               await inventorys.update(
                 {
-                  jumlahItem: `${updatedNewTotal.value} ${updatedNewTotal.unit}`,
+                  jumlahItem: `${updatedJumlah} ${updatedUnit}`,
                 },
                 { where: { id: data.idBarang } }
               );
@@ -900,12 +925,12 @@ class InventoryController {
           })
         );
       }
+
       res.json({ success: true });
     } catch (error) {
       res.json({ success: false, error });
     }
   }
-  
 }
 
 module.exports = InventoryController;
