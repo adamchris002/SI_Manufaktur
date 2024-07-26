@@ -80,6 +80,7 @@ inventoryRoutes.put(
 );
 inventoryRoutes.put("/editStokOpnam/:id", InventoryController.editStokOpnam);
 inventoryRoutes.put("/editPenyerahanBarang/:id", InventoryController.editPenyerahanBarang)
+inventoryRoutes.put("/statusStokOpnamComplete/:id", InventoryController.statusStokOpnamComplete)
 
 //delete
 inventoryRoutes.delete(

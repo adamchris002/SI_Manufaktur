@@ -14,7 +14,7 @@ module.exports = {
         references: {
           model: 'orders',
           key: 'id',
-        },
+      },
         onDelete: 'CASCADE',
       },
       filename: {

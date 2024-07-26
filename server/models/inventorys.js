@@ -11,6 +11,10 @@ module.exports = (sequelize, DataTypes) => {
       inventorys.belongsToMany(models.users, {
         through: "UserInventorys",
       });
+      inventorys.hasMany(models.inventoryHistorys, {
+        foreignKey: "inventoryId",
+        onDelete: "CASCADE",
+      });
     }
   }
   inventorys.init(

@@ -15,6 +15,7 @@ const {
   penyerahanBarangs,
   itemPenyerahanBarangs,
   UserPenyerahanBarangs,
+  inventoryHistorys,
 } = require("../models");
 
 class InventoryController {
@@ -386,7 +387,9 @@ class InventoryController {
   }
   static async getAllInventoryItem(req, res) {
     try {
-      let result = await inventorys.findAll({});
+      let result = await inventorys.findAll({
+        include: [{model: inventoryHistorys}]
+      });
 
       res.json(result);
     } catch (error) {
@@ -526,6 +529,13 @@ class InventoryController {
       let result = await stokOpnams.create({
         judulStokOpnam: dataStokOpnam.judulStokOpnam,
         tanggalStokOpnam: dataStokOpnam.tanggalStokOpnam,
+        tanggalAkhirStokOpnam: dataStokOpnam.tanggalAkhirStokOpnam,
+        statusStokOpnam: "Ongoing",
+      });
+
+      await UserStokOpnams.create({
+        userId: id,
+        stokOpnamId: result.id,
       });
 
       if (
@@ -536,6 +546,7 @@ class InventoryController {
           dataStokOpnam.itemStokOpnams.map(async (item) => {
             await itemStokOpnams.create({
               stokOpnamId: result.id,
+              idBarang: item.idBarang,
               suratPesanan: item.suratPesanan,
               tanggalMasuk: item.tanggalMasuk,
               tanggalPengembalian: item.tanggalPengembalian,
@@ -612,6 +623,7 @@ class InventoryController {
         {
           judulStokOpnam: dataStokOpnam.judulStokOpnam,
           tanggalStokOpnam: dataStokOpnam.tanggalStokOpnam,
+          tanggalAkhirStokOpnam: dataStokOpnam.tanggalAkhirStokOpnam,
         },
         {
           where: { id: dataStokOpnam.id },
@@ -678,9 +690,11 @@ class InventoryController {
   static async deleteStokOpnam(req, res) {
     try {
       const { id } = req.params;
-      let result = await stokOpnams.destroy({
+      let findOneStokOpnam = await stokOpnams.findOne({
         where: { id: id },
       });
+
+      let result = await findOneStokOpnam.destroy({});
       res.json(result);
     } catch (error) {
       res.json(error);
@@ -767,48 +781,50 @@ class InventoryController {
   static async deleteItemPenyerahanBarang(req, res) {
     try {
       const { id } = req.params;
-  
+
       const separateValueAndUnit = (str) => {
         const parts = str.split(" ");
         const value = parseFloat(parts[0]);
         const unit = parts.slice(1).join(" ");
         return { value, unit };
       };
-  
+
       let findPenyerahanBarangs = await itemPenyerahanBarangs.findOne({
         where: { id: id },
       });
-  
+
       let jumlahYangDiambil = separateValueAndUnit(
         findPenyerahanBarangs.jumlahYangDiambil
       );
       let jumlahSelisih = separateValueAndUnit(
         findPenyerahanBarangs.selisihBarang
       );
-  
+
       let totalAwal;
       if (jumlahYangDiambil.unit === "Kg" && jumlahSelisih.unit === "Ton") {
         totalAwal = `${
           (jumlahSelisih.value * 1000 + jumlahYangDiambil.value) / 1000
         } Ton`;
       } else {
-        totalAwal = `${jumlahYangDiambil.value + jumlahSelisih.value} ${jumlahSelisih.unit}`;
+        totalAwal = `${jumlahYangDiambil.value + jumlahSelisih.value} ${
+          jumlahSelisih.unit
+        }`;
       }
-  
+
       await inventorys.update(
         {
           jumlahItem: totalAwal,
         },
         { where: { id: findPenyerahanBarangs.idBarang } }
       );
-  
+
       let result = await findPenyerahanBarangs.destroy({});
       res.json(result);
     } catch (error) {
       res.json(error);
     }
   }
-  
+
   static async editPenyerahanBarang(req, res) {
     try {
       const { id } = req.params;
@@ -929,6 +945,45 @@ class InventoryController {
       res.json({ success: true });
     } catch (error) {
       res.json({ success: false, error });
+    }
+  }
+  static async statusStokOpnamComplete(req, res) {
+    try {
+      const { id } = req.params;
+
+      let stokOpnamUpdate = await stokOpnams.findOne({
+        where: { id: id },
+        include: [{ model: itemStokOpnams }],
+      });
+
+      if (
+        stokOpnamUpdate.itemStokOpnams &&
+        Array.isArray(stokOpnamUpdate.itemStokOpnams)
+      ) {
+        Promise.all(
+          stokOpnamUpdate.itemStokOpnams.map(async (result) => {
+            await inventoryHistorys.create({
+              inventoryId: result.idBarang,
+              suratPesanan: result.suratPesanan,
+              tanggalMasuk: result.tanggalMasuk,
+              tanggalPengembalian: result.tanggalPengembalian,
+              stokOpnamAwal: result.stokOpnamAwal,
+              stokOpnamAkhir: result.stokOpnamAkhir,
+              stokFisik: result.stokFisik,
+              stokSelisih: result.stokSelisih,
+              keterangan: result.keterangan,
+            });
+          })
+        );
+      }
+
+      let result = await stokOpnamUpdate.update({
+        statusStokOpnam: "Done",
+      });
+
+      res.json(result);
+    } catch (error) {
+      res.json(error);
     }
   }
 }

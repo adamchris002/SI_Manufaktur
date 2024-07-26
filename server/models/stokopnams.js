@@ -19,6 +19,8 @@ module.exports = (sequelize, DataTypes) => {
     {
       judulStokOpnam: DataTypes.STRING,
       tanggalStokOpnam: DataTypes.STRING,
+      tanggalAkhirStokOpnam: DataTypes.STRING,
+      statusStokOpnam: DataTypes.STRING
     },
     {
       sequelize,
