@@ -2,7 +2,9 @@ import React, { useContext, useEffect, useState } from "react";
 import factoryBackground from "../../assets/factorybackground.png";
 import "./PembelianBahan.css";
 import {
+  Box,
   Button,
+  Collapse,
   IconButton,
   Paper,
   Table,
@@ -25,6 +27,9 @@ import MyModal from "../../components/Modal";
 import MySelectTextField from "../../components/SelectTextField";
 import axios from "axios";
 import MySnackbar from "../../components/Snackbar";
+import dayjs from "dayjs";
+import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
+import KeyboardArrowUpIcon from "@mui/icons-material/KeyboardArrowUp";
 
 const StockPage = (props) => {
   const { userInformation } = props;
@@ -33,6 +38,7 @@ const StockPage = (props) => {
   const [openModal, setOpenModal] = useState(false);
 
   const [allInventoryItems, setAllInventoryItems] = useState([]);
+  console.log(allInventoryItems);
   const [inventoryItem, setInventoryItem] = useState(false);
   const [searchItem, setSearchItem] = useState("");
 
@@ -49,6 +55,7 @@ const StockPage = (props) => {
   const [openSnackbar, setOpenSnackbar] = useState(false);
   const [snackbarStatus, setSnackbarStatus] = useState(false);
   const [snackbarMessage, setSnackbarMessage] = useState("");
+  const [open, setOpen] = useState(false);
 
   const units = [
     {
@@ -139,7 +146,7 @@ const StockPage = (props) => {
         rincianItem: rincianItem,
         jumlahItem: `${jumlahItem} ${jumlahItemUnit}`,
         lokasiPenyimpanan: lokasiPenyimpanan,
-        kodeBarang: kodeBarang
+        kodeBarang: kodeBarang,
       };
       axios({
         method: "PUT",
@@ -206,7 +213,7 @@ const StockPage = (props) => {
         rincianItem: rincianItem,
         jumlahItem: `${jumlahItem} ${jumlahItemUnit}`,
         kodeBarang: kodeBarang,
-        lokasiPenyimpanan: lokasiPenyimpanan
+        lokasiPenyimpanan: lokasiPenyimpanan,
       };
       axios({
         method: "POST",
@@ -249,8 +256,8 @@ const StockPage = (props) => {
     setRincianItem(data.rincianItem);
     setJumlahItem(jumlahItem.value);
     setJumlahItemUnit(jumlahItem.unit);
-    setKodeBarang(data.kodeBarang)
-    setLokasiPenyimpanan(data.lokasi)
+    setKodeBarang(data.kodeBarang);
+    setLokasiPenyimpanan(data.lokasi);
   };
 
   const handleCloseEditInventoryItems = () => {
@@ -363,9 +370,23 @@ const StockPage = (props) => {
               <Table sx={{ minWidth: 650 }} aria-label="simple table">
                 <TableHead>
                   <TableRow>
-                    <TableCell>No.</TableCell>
+                    <TableCell>
+                      <IconButton
+                        aria-label="expand row"
+                        size="small"
+                        onClick={() => setOpen(!open)}
+                      >
+                        {open ? (
+                          <KeyboardArrowUpIcon />
+                        ) : (
+                          <KeyboardArrowDownIcon />
+                        )}
+                      </IconButton>
+                    </TableCell>
+                    <TableCell component="th" scope="row">
+                      No.
+                    </TableCell>
                     <TableCell align="left">
-                      {" "}
                       <div style={{ display: "flex", alignItems: "center" }}>
                         <Typography style={{ width: "100px" }}>
                           Nama Barang
@@ -408,7 +429,8 @@ const StockPage = (props) => {
                     .map((result, index) => {
                       return (
                         <React.Fragment key={index}>
-                          <TableRow>
+                          <TableRow sx={{ "& > *": { borderBottom: "unset" } }}>
+                            <TableCell></TableCell>
                             <TableCell>{index + 1}</TableCell>
                             <TableCell>{result.namaItem}</TableCell>
                             <TableCell>{result.kodeBarang}</TableCell>
@@ -437,6 +459,93 @@ const StockPage = (props) => {
                                   <DeleteIcon style={{ color: "red" }} />
                                 </IconButton>
                               </div>
+                            </TableCell>
+                          </TableRow>
+                          <TableRow>
+                            <TableCell
+                              style={{ paddingBottom: 0, paddingTop: 0 }}
+                              colSpan={8}
+                            >
+                              <Collapse in={open} timeout="auto" unmountOnExit>
+                                <Box sx={{ margin: 1 }}>
+                                  <Box>
+                                    <Typography
+                                      variant="h6"
+                                      gutterBottom
+                                      component="div"
+                                    >
+                                      History
+                                    </Typography>
+                                    <Table size="small" aria-label="penggunaan">
+                                      <TableHead>
+                                        <TableRow>
+                                          <TableCell>Inventory Id</TableCell>
+                                          <TableCell>
+                                            Nomor Surat Pesanan
+                                          </TableCell>
+                                          <TableCell align="left">
+                                            Tanggal Masuk
+                                          </TableCell>
+                                          <TableCell align="left">
+                                            Tanggal Pengembalian
+                                          </TableCell>
+                                          <TableCell align="left">
+                                            Stok Opnam Awal
+                                          </TableCell>
+                                          <TableCell align="left">
+                                            Stok Opnam Akhir
+                                          </TableCell>
+                                          <TableCell align="left">
+                                            Stok Fisik
+                                          </TableCell>
+                                          <TableCell align="left">
+                                            Stok Selisih
+                                          </TableCell>
+                                        </TableRow>
+                                      </TableHead>
+                                      <TableBody>
+                                        {result?.inventoryHistorys?.map(
+                                          (historyRow, historyIndex) => (
+                                            <TableRow key={historyIndex}>
+                                              <TableCell
+                                                component="th"
+                                                scope="row"
+                                              >
+                                                {historyRow.inventoryId}
+                                              </TableCell>
+                                              <TableCell align="left">
+                                                {historyRow.suratPesanan}
+                                              </TableCell>
+                                              <TableCell align="left">
+                                                {dayjs(
+                                                  historyRow.tanggalMasuk
+                                                ).format("MM/DD/YYYY hh:mm A")}
+                                              </TableCell>
+                                              <TableCell align="left">
+                                                {dayjs(
+                                                  historyRow.tanggalPengembalian
+                                                ).format("MM/DD/YYYY hh:mm A")}
+                                              </TableCell>
+                                              <TableCell align="left">
+                                                {historyRow.stokOpnamAwal}
+                                              </TableCell>
+                                              <TableCell align="left">
+                                                {historyRow.stokOpnamAkhir}
+                                              </TableCell>
+                                              <TableCell align="left">
+                                                {historyRow.stokFisik}
+                                              </TableCell>
+                                              <TableCell align="left">
+                                                {historyRow.stokSelisih}
+                                              </TableCell>
+                                            </TableRow>
+                                          )
+                                        )}
+                                      </TableBody>
+                                    </Table>
+                                  </Box>
+                                </Box>
+                              </Collapse>
                             </TableCell>
                           </TableRow>
                         </React.Fragment>

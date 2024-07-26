@@ -40,6 +40,7 @@ const MaindashboardInventory = (props) => {
   const [snackbarMessage, setSnackbarMessage] = useState("");
   const [allPermohonanPembelian, setAllPermohonanPembelian] = useState([]);
   const [allStokOpnam, setAllStokOpnam] = useState([]);
+
   const [allPenyerahanBarang, setAllPenyerahanBarang] = useState([]);
 
   const [permohonanPembelian, setPermohonanPembelian] = useState([]);
@@ -53,6 +54,7 @@ const MaindashboardInventory = (props) => {
     useState(true);
   const [refresDataStokOpnam, setRefereshDataStokOpnam] = useState(true);
   const [refreshPenyerahanBarang, setRefreshPenyerahanBarang] = useState(true);
+  const [triggerStatusPermohonan, setTriggerStatusPermohonan] = useState(false);
 
   const [openModalPermohonanPembelian, setOpenModalPermohonanPembelian] =
     useState(false);
@@ -90,6 +92,7 @@ const MaindashboardInventory = (props) => {
         if (result.status === 200) {
           setAllStokOpnam(result.data);
           setRefereshDataStokOpnam(false);
+          setTriggerStatusPermohonan(true);
         } else {
           setOpenSnackbar(true);
           setSnackbarStatus(false);
@@ -99,6 +102,50 @@ const MaindashboardInventory = (props) => {
       });
     }
   }, [refresDataStokOpnam]);
+
+  useEffect(() => {
+    if (triggerStatusPermohonan) {
+      if (
+        Array.isArray(allStokOpnam) &&
+        allStokOpnam.some(
+          (stokOpnam) =>
+            stokOpnam.tanggalAkhirStokOpnam &&
+            dayjs().isAfter(dayjs(stokOpnam.tanggalAkhirStokOpnam))
+        )
+      ) {
+        allStokOpnam.forEach((result) => {
+          if (result.statusStokOpnam !== "Done") {
+            if (dayjs().isAfter(dayjs(result.tanggalAkhirStokOpnam))) {
+              axios({
+                method: "PUT",
+                url: `http://localhost:3000/inventory/statusStokOpnamComplete/${result.id}`,
+              })
+                .then((response) => {
+                  if (response.status === 200) {
+                    setTriggerStatusPermohonan(false);
+                    setRefereshDataStokOpnam(true);
+                  } else {
+                    setOpenSnackbar(true);
+                    setSnackbarStatus(false);
+                    setSnackbarMessage(
+                      "Tidak dapat mengupdate data stok opnam"
+                    );
+                  }
+                })
+                .catch((error) => {
+                  console.error("Error updating data stok opnam: ", error);
+                  setOpenSnackbar(true);
+                  setSnackbarStatus(false);
+                  setSnackbarMessage(
+                    "Terjadi kesalahan saat mengupdate data stok opnam"
+                  );
+                });
+            }
+          }
+        });
+      }
+    }
+  }, [triggerStatusPermohonan]);
 
   useEffect(() => {
     if (message) {
@@ -1077,6 +1124,7 @@ const MaindashboardInventory = (props) => {
                     <TableCell>No.</TableCell>
                     <TableCell>Judul Stok Opnam</TableCell>
                     <TableCell>Tanggal Pembuatan Stok Opnam</TableCell>
+                    <TableCell>Tanggal Akhir Stok Opnam</TableCell>
                     <TableCell>Actions</TableCell>
                   </TableRow>
                 </TableHead>
@@ -1093,16 +1141,29 @@ const MaindashboardInventory = (props) => {
                             )}
                           </TableCell>
                           <TableCell>
+                            {dayjs(result.tanggalAkhirStokOpnam).format(
+                              "MM/DD/YYYY hh:mm A"
+                            )}
+                          </TableCell>
+                          <TableCell>
                             <div
                               style={{ display: "flex", alignItems: "center" }}
                             >
-                              <IconButton
-                                onClick={() => {
-                                  handleMoveToEditStokOpnam(result.id);
-                                }}
-                              >
-                                <EditIcon style={{ color: "#0F607D" }} />
-                              </IconButton>
+                              {result.tanggalAkhirStokOpnam &&
+                              dayjs().isAfter(
+                                dayjs(result.tanggalAkhirStokOpnam)
+                              ) ? (
+                                ""
+                              ) : (
+                                <IconButton
+                                  onClick={() => {
+                                    handleMoveToEditStokOpnam(result.id);
+                                  }}
+                                >
+                                  <EditIcon style={{ color: "#0F607D" }} />
+                                </IconButton>
+                              )}
+
                               <IconButton
                                 onClick={() => {
                                   handleDeleteStokOpnam(result.id);
@@ -1153,7 +1214,9 @@ const MaindashboardInventory = (props) => {
         </div>
         {allPenyerahanBarang?.length === 0 ? (
           <div style={{ margin: "32px" }}>
-            <Typography>Tidak ada data penyerahan/pengambilan barang</Typography>
+            <Typography>
+              Tidak ada data penyerahan/pengambilan barang
+            </Typography>
           </div>
         ) : (
           <div style={{ width: "70%", margin: "1.667vw" }}>
@@ -1172,8 +1235,16 @@ const MaindashboardInventory = (props) => {
                     return (
                       <React.Fragment key={index}>
                         <TableRow>
-                          <TableCell>{dayjs(result.tanggalPengambilan).format("MM/DD/YYYY hh:mm A")}</TableCell>
-                          <TableCell>{dayjs(result.tanggalPenyerahan).format("MM/DD/YYYY hh:mm A")}</TableCell>
+                          <TableCell>
+                            {dayjs(result.tanggalPengambilan).format(
+                              "MM/DD/YYYY hh:mm A"
+                            )}
+                          </TableCell>
+                          <TableCell>
+                            {dayjs(result.tanggalPenyerahan).format(
+                              "MM/DD/YYYY hh:mm A"
+                            )}
+                          </TableCell>
                           <TableCell>{result.statusPenyerahan}</TableCell>
                           <TableCell>
                             <div

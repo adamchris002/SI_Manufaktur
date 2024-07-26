@@ -192,6 +192,7 @@ const LoginPage = (props) => {
           }}
         >
           <TextField
+            type="text"
             sx={{
               "& label.Mui-focused": {
                 color: "#0F607D",

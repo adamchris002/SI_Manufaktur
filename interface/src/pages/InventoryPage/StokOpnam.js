@@ -40,8 +40,10 @@ const StokOpnam = (props) => {
   const [dataStokOpnam, setDataStokOpnam] = useState({
     judulStokOpnam: "",
     tanggalStokOpnam: dayjs(""),
+    tanggalAkhirStokOpnam: dayjs(""),
     itemStokOpnams: [
       {
+        idBarang: "",
         suratPesanan: "",
         tanggalMasuk: dayjs(""),
         tanggalPengembalian: dayjs(""),
@@ -56,6 +58,8 @@ const StokOpnam = (props) => {
       },
     ],
   });
+
+  // console.log(dataStokOpnam);
 
   const [allInventoryName, setAllInventoryName] = useState([]);
   const [allPermohonanPembelianId, setAllPermohonanPembelianId] = useState([]);
@@ -128,9 +132,11 @@ const StokOpnam = (props) => {
         id: item.id,
         judulStokOpnam: item.judulStokOpnam,
         tanggalStokOpnam: dayjs(item.tanggalStokOpnam),
+        tanggalAkhirStokOpnam: dayjs(item.tanggalAkhirStokOpnam),
         createdAt: item.createdAt,
         updatedAt: item.updatedAt,
         itemStokOpnams: daftarStokOpnam,
+        statusStokOpnam: item.statusStokOpnam,
       };
     });
   };
@@ -200,6 +206,13 @@ const StokOpnam = (props) => {
 
     setDataStokOpnam((oldObject) => {
       if (field === "judulStokOpnam" || field === "tanggalStokOpnam") {
+        if (field === "tanggalStokOpnam") {
+          return {
+            ...oldObject,
+            tanggalStokOpnam: value,
+            tanggalAkhirStokOpnam: dayjs(value).add(1, "year"),
+          };
+        }
         return { ...oldObject, [field]: value };
       } else {
         const updatedItems = oldObject.itemStokOpnams.map((item, i) => {
@@ -225,8 +238,40 @@ const StokOpnam = (props) => {
                   updatedItem.jenisBarang,
                   "lokasi"
                 );
+                const idBarang = getSelectedInventoryItem(
+                  updatedItem.jenisBarang,
+                  "id"
+                );
+                const inventoryHistory = getSelectedInventoryItem(
+                  updatedItem.jenisBarang,
+                  "inventoryHistorys"
+                );
+                console.log(inventoryHistory)
+                if (inventoryHistory.length !== 0) {
+                  const mostRecentItem = inventoryHistory.reduce(
+                    (latest, item) => {
+                      return new Date(item.createdAt) >
+                        new Date(latest.createdAt)
+                        ? item
+                        : latest;
+                    }
+                  );
+
+                  const tempvalue = separateValueAndUnit(
+                    mostRecentItem.stokOpnamAkhir
+                  );
+                  updatedItem.stokOpnamAwal = {
+                    id: mostRecentItem.id,
+                    value: tempvalue.value,
+                    unit: tempvalue.unit,
+                  };
+                }
+                else {
+                  updatedItem.stokOpnamAwal = { value: "", unit: ""}
+                }
                 updatedItem.kodeBarang = kodeBarang;
                 updatedItem.lokasiPenyimpanan = lokasiPenyimpanan;
+                updatedItem.idBarang = idBarang;
               }
             }
             return updatedItem;
@@ -245,6 +290,12 @@ const StokOpnam = (props) => {
       dataStokOpnam.tanggalStokOpnam === "" ||
       !dayjs(
         dataStokOpnam.tanggalStokOpnam,
+        "MM/DD/YYYY hh:mm A",
+        true
+      ).isValid() ||
+      dataStokOpnam.tanggalAkhirStokOpnam === "" ||
+      !dayjs(
+        dataStokOpnam.tanggalAkhirStokOpnam,
         "MM/DD/YYYY hh:mm A",
         true
       ).isValid()
@@ -387,14 +438,14 @@ const StokOpnam = (props) => {
           ...oldArray.itemStokOpnams,
           {
             suratPesanan: "",
-            tanggalMasuk: "",
-            tanggalPengembalian: "",
+            tanggalMasuk: dayjs(""),
+            tanggalPengembalian: dayjs(""),
             jenisBarang: "",
             kodeBarang: "",
             lokasiPenyimpanan: "",
             stokOpnamAwal: "",
             stokOpnamAkhir: "",
-            tanggalKeluar: "",
+            tanggalKeluar: dayjs(""),
             jumlahPengambilan: "",
             diambilOleh: "",
             untukPekerjaan: "",
@@ -442,470 +493,553 @@ const StokOpnam = (props) => {
         </Backdrop>
       ) : (
         <div style={{ height: "100%", width: "100%" }}>
-          <div
-            style={{
-              display: isMobile ? "" : "flex",
-              justifyContent: "space-between",
-              alignItems: "center",
-              margin: "32px",
-            }}
-          >
-            <Typography
-              style={{ fontSize: isMobile ? "" : "3vw", color: "#0F607D" }}
-            >
-              {stokOpnamId !== undefined
-                ? "Edit Stok Opnam"
-                : "Tambah Stok Opnam"}
-            </Typography>
-            <DefaultButton
-              onClickFunction={() => {
-                handleAddRow();
-              }}
-            >
-              Tambah Item
-            </DefaultButton>
-          </div>
-          <div style={{ width: "100%" }}>
+          {dataStokOpnam?.statusStokOpnam === "Done" ? (
             <div
               style={{
-                display: "flex",
-                alignItems: "center",
-                margin: "16px 32px",
-              }}
-            >
-              <Typography>Judul Stok Opnam: </Typography>
-              <div style={{ marginLeft: "8px" }}>
-                <TextField
-                  value={dataStokOpnam.judulStokOpnam}
-                  onChange={(event) => {
-                    handleChangeInputStokOpnam("judulStokOpnam", event);
-                  }}
-                />
-              </div>
-            </div>
-            <div
-              style={{
-                display: "flex",
-                alignItems: "center",
-                margin: "16px 32px",
-              }}
-            >
-              <Typography>Tanggal Stok Opnam: </Typography>
-              <div style={{ marginLeft: "8px" }}>
-                <LocalizationProvider dateAdapter={AdapterDayjs}>
-                  <DemoContainer components={["DateTimePicker"]}>
-                    <DemoItem>
-                      <DateTimePicker
-                        disablePast
-                        value={
-                          dataStokOpnam.tanggalStokOpnam.isValid()
-                            ? dataStokOpnam.tanggalStokOpnam
-                            : null
-                        }
-                        onChange={(event) => {
-                          handleChangeInputStokOpnam("tanggalStokOpnam", event);
-                        }}
-                        renderInput={(params) => (
-                          <TextField
-                            {...params}
-                            error={params.error || !params.value}
-                            helperText={
-                              params.error ? "Invalid date format" : ""
-                            }
-                          />
-                        )}
-                      />
-                    </DemoItem>
-                  </DemoContainer>
-                </LocalizationProvider>
-              </div>
-            </div>
-          </div>
-          <div style={{ width: "100%" }}>
-            <div style={{ margin: "32px" }}>
-              <TableContainer component={Paper} style={{ overflowX: "auto" }}>
-                <Table
-                  sx={{ minWidth: 650 }}
-                  aria-label="simple table"
-                  style={{ tableLayout: "fixed", overflowX: "auto" }}
-                >
-                  <TableHead>
-                    <TableRow>
-                      <TableCell style={{ width: 50 }}>No.</TableCell>
-                      <TableCell align="left" style={{ width: "200px" }}>
-                        Surat Pesanan
-                      </TableCell>
-                      <TableCell align="left" style={{ width: "200px" }}>
-                        Tanggal Masuk
-                      </TableCell>
-                      <TableCell align="left" style={{ width: "200px" }}>
-                        Tanggal Pengembalian
-                      </TableCell>
-                      <TableCell align="left" style={{ width: "200px" }}>
-                        Jenis Barang
-                      </TableCell>
-                      <TableCell align="left" style={{ width: "200px" }}>
-                        Kode Barang
-                      </TableCell>
-                      <TableCell align="left" style={{ width: "200px" }}>
-                        Lokasi Penyimpanan
-                      </TableCell>
-                      <TableCell align="left" style={{ width: "200px" }}>
-                        Stok Opnam Awal
-                      </TableCell>
-                      <TableCell align="left" style={{ width: "200px" }}>
-                        Stok Opnam Akhir
-                      </TableCell>
-                      <TableCell align="left" style={{ width: "200px" }}>
-                        Stok Fisik
-                      </TableCell>
-                      <TableCell align="left" style={{ width: "200px" }}>
-                        Stok Selisih
-                      </TableCell>
-                      <TableCell align="left" style={{ width: "200px" }}>
-                        Keterangan
-                      </TableCell>
-                      <TableCell style={{ width: 50 }} align="left">
-                        Actions
-                      </TableCell>
-                    </TableRow>
-                  </TableHead>
-                  <TableBody>
-                    {dataStokOpnam.itemStokOpnams.map((result, index) => {
-                      return (
-                        <React.Fragment key={index}>
-                          <TableRow>
-                            <TableCell>{index + 1 + "."}</TableCell>
-                            <TableCell>
-                              <MySelectTextField
-                                width={"200px"}
-                                data={allPermohonanPembelianId}
-                                value={result.suratPesanan}
-                                onChange={(event) => {
-                                  handleChangeInputStokOpnam(
-                                    "suratPesanan",
-                                    event,
-                                    index
-                                  );
-                                }}
-                              />
-                            </TableCell>
-                            <TableCell>
-                              <LocalizationProvider dateAdapter={AdapterDayjs}>
-                                <DemoItem>
-                                  <DateTimePicker
-                                    disablePast
-                                    value={
-                                      result?.tanggalMasuk?.isValid()
-                                        ? result.tanggalMasuk
-                                        : null
-                                    }
-                                    onChange={(event) => {
-                                      handleChangeInputStokOpnam(
-                                        "tanggalMasuk",
-                                        event,
-                                        index
-                                      );
-                                    }}
-                                    renderInput={(params) => (
-                                      <TextField
-                                        {...params}
-                                        error={params.error || !params.value}
-                                        helperText={
-                                          params.error
-                                            ? "Invalid date format"
-                                            : ""
-                                        }
-                                      />
-                                    )}
-                                  />
-                                </DemoItem>
-                              </LocalizationProvider>
-                            </TableCell>
-                            <TableCell>
-                              <LocalizationProvider dateAdapter={AdapterDayjs}>
-                                <DemoItem>
-                                  <DateTimePicker
-                                    disablePast
-                                    value={
-                                      result.tanggalPengembalian.isValid()
-                                        ? result?.tanggalPengembalian
-                                        : null
-                                    }
-                                    onChange={(event) => {
-                                      handleChangeInputStokOpnam(
-                                        "tanggalPengembalian",
-                                        event,
-                                        index
-                                      );
-                                    }}
-                                    renderInput={(params) => (
-                                      <TextField
-                                        {...params}
-                                        error={params.error || !params.value}
-                                        helperText={
-                                          params.error
-                                            ? "Invalid date format"
-                                            : ""
-                                        }
-                                      />
-                                    )}
-                                  />
-                                </DemoItem>
-                              </LocalizationProvider>
-                            </TableCell>
-                            <TableCell>
-                              <MySelectTextField
-                                value={result.jenisBarang}
-                                data={allInventoryName}
-                                width={200}
-                                onChange={(event) => {
-                                  handleChangeInputStokOpnam(
-                                    "jenisBarang",
-                                    event,
-                                    index
-                                  );
-                                }}
-                              />
-                            </TableCell>
-                            <TableCell>
-                              <TextField
-                                disabled
-                                value={getSelectedInventoryItem(
-                                  result.jenisBarang,
-                                  "kodeBarang"
-                                )}
-                                onChange={(event) => {
-                                  handleChangeInputStokOpnam(
-                                    "kodeBarang",
-                                    event,
-                                    index
-                                  );
-                                }}
-                              />
-                            </TableCell>
-                            <TableCell>
-                              <MySelectTextField
-                                disabled
-                                width="200px"
-                                data={lokasi}
-                                value={getSelectedInventoryItem(
-                                  result.jenisBarang,
-                                  "lokasi"
-                                )}
-                                onChange={(event) => {
-                                  handleChangeInputStokOpnam(
-                                    "lokasiPenyimpanan",
-                                    event,
-                                    index
-                                  );
-                                }}
-                              />
-                            </TableCell>
-                            <TableCell>
-                              <div
-                                style={{
-                                  display: "flex",
-                                  alignItems: "center",
-                                  justifyContent: "space-between",
-                                }}
-                              >
-                                <TextField
-                                  sx={{ width: "130px" }}
-                                  type="number"
-                                  value={result.stokOpnamAwal.value}
-                                  onChange={(event) => {
-                                    handleChangeInputStokOpnam(
-                                      "stokOpnamAwal",
-                                      event,
-                                      index
-                                    );
-                                  }}
-                                />
-                                <MySelectTextField
-                                  width={isMobile ? "50px" : "60px"}
-                                  height={isMobile ? "15px" : "55px"}
-                                  data={units}
-                                  value={result.stokOpnamAwal.unit}
-                                  onChange={(event) => {
-                                    handleChangeInputStokOpnam(
-                                      "stokOpnamAwal",
-                                      event,
-                                      index,
-                                      true
-                                    );
-                                  }}
-                                />
-                              </div>
-                            </TableCell>
-                            <TableCell>
-                              <div
-                                style={{
-                                  display: "flex",
-                                  justifyContent: "space-between",
-                                  alignItems: "center",
-                                }}
-                              >
-                                <TextField
-                                  sx={{ width: "130px" }}
-                                  type="number"
-                                  value={result.stokOpnamAkhir?.value}
-                                  onChange={(event) => {
-                                    handleChangeInputStokOpnam(
-                                      "stokOpnamAkhir",
-                                      event,
-                                      index
-                                    );
-                                  }}
-                                />
-                                <MySelectTextField
-                                  type="text"
-                                  width={"60px"}
-                                  data={units}
-                                  value={result.stokOpnamAkhir?.unit}
-                                  onChange={(event) => {
-                                    handleChangeInputStokOpnam(
-                                      "stokOpnamAkhir",
-                                      event,
-                                      index,
-                                      true
-                                    );
-                                  }}
-                                />
-                              </div>
-                            </TableCell>
-                            <TableCell>
-                              <div
-                                style={{
-                                  display: "flex",
-                                  justifyContent: "space-between",
-                                  alignItems: "center",
-                                }}
-                              >
-                                <TextField
-                                  sx={{ width: "130px" }}
-                                  type="number"
-                                  value={result.stokFisik?.value}
-                                  onChange={(event) => {
-                                    handleChangeInputStokOpnam(
-                                      "stokFisik",
-                                      event,
-                                      index
-                                    );
-                                  }}
-                                />
-                                <MySelectTextField
-                                  type="text"
-                                  width={"60px"}
-                                  data={units}
-                                  value={result.stokFisik?.unit}
-                                  onChange={(event) => {
-                                    handleChangeInputStokOpnam(
-                                      "stokFisik",
-                                      event,
-                                      index,
-                                      true
-                                    );
-                                  }}
-                                />
-                              </div>
-                            </TableCell>
-                            <TableCell>
-                              <div
-                                style={{
-                                  display: "flex",
-                                  justifyContent: "space-between",
-                                  alignItems: "center",
-                                }}
-                              >
-                                <TextField
-                                  sx={{ width: "130px" }}
-                                  type="number"
-                                  value={result.stokSelisih?.value}
-                                  onChange={(event) => {
-                                    handleChangeInputStokOpnam(
-                                      "stokSelisih",
-                                      event,
-                                      index
-                                    );
-                                  }}
-                                />
-                                <MySelectTextField
-                                  type="text"
-                                  width={"60px"}
-                                  data={units}
-                                  value={result.stokSelisih?.unit}
-                                  onChange={(event) => {
-                                    handleChangeInputStokOpnam(
-                                      "stokSelisih",
-                                      event,
-                                      index,
-                                      true
-                                    );
-                                  }}
-                                />
-                              </div>
-                            </TableCell>
-                            <TableCell>
-                              <TextField
-                                value={result.keterangan}
-                                onChange={(event) => {
-                                  handleChangeInputStokOpnam(
-                                    "keterangan",
-                                    event,
-                                    index
-                                  );
-                                }}
-                                multiline
-                              />
-                            </TableCell>
-                            <TableCell>
-                              <IconButton
-                                onClick={() => {
-                                  handleDeleteItemStokOpnam(index, result.id);
-                                }}
-                              >
-                                <DeleteIcon style={{ color: "red" }} />
-                              </IconButton>
-                            </TableCell>
-                          </TableRow>
-                        </React.Fragment>
-                      );
-                    })}
-                  </TableBody>
-                </Table>
-              </TableContainer>
-            </div>
-            <div
-              style={{
-                display: "flex",
-                margin: "32px",
+                display: isMobile ? "" : "flex",
                 justifyContent: "center",
+                alignItems: "center",
+                margin: "32px",
               }}
             >
-              <DefaultButton
-                onClickFunction={() => {
-                  stokOpnamId !== undefined
-                    ? handleEditStokOpnam()
-                    : handleAddStokOpnam();
-                }}
+              <Typography>Data tidak dapat diedit lagi</Typography>
+            </div>
+          ) : (
+            <div
+              style={{
+                display: isMobile ? "" : "flex",
+                justifyContent: "space-between",
+                alignItems: "center",
+                margin: "32px",
+              }}
+            >
+              <Typography
+                style={{ fontSize: isMobile ? "" : "3vw", color: "#0F607D" }}
               >
                 {stokOpnamId !== undefined
                   ? "Edit Stok Opnam"
                   : "Tambah Stok Opnam"}
-              </DefaultButton>
-              <Button
-                onClick={() => {
-                  navigate(-1);
+              </Typography>
+              <DefaultButton
+                onClickFunction={() => {
+                  handleAddRow();
                 }}
-                color="error"
-                variant="outlined"
-                style={{ textTransform: "none", marginLeft: "8px" }}
               >
-                Cancel
-              </Button>
+                Tambah Item
+              </DefaultButton>
             </div>
-          </div>
+          )}
+          {dataStokOpnam?.statusStokOpnam === "Done" ? (
+            ""
+          ) : (
+            <div style={{ width: "100%" }}>
+              <div
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  margin: "16px 32px",
+                }}
+              >
+                <Typography>Judul Stok Opnam: </Typography>
+                <div style={{ marginLeft: "8px" }}>
+                  <TextField
+                    value={dataStokOpnam.judulStokOpnam}
+                    onChange={(event) => {
+                      handleChangeInputStokOpnam("judulStokOpnam", event);
+                    }}
+                  />
+                </div>
+              </div>
+              <div
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  margin: "16px 32px",
+                }}
+              >
+                <Typography>Tanggal Stok Opnam: </Typography>
+                <div style={{ marginLeft: "8px" }}>
+                  <LocalizationProvider dateAdapter={AdapterDayjs}>
+                    <DemoContainer components={["DateTimePicker"]}>
+                      <DemoItem>
+                        <DateTimePicker
+                          disablePast
+                          value={
+                            dataStokOpnam.tanggalStokOpnam.isValid()
+                              ? dataStokOpnam.tanggalStokOpnam
+                              : null
+                          }
+                          onChange={(event) => {
+                            handleChangeInputStokOpnam(
+                              "tanggalStokOpnam",
+                              event
+                            );
+                          }}
+                          renderInput={(params) => (
+                            <TextField
+                              {...params}
+                              error={params.error || !params.value}
+                              helperText={
+                                params.error ? "Invalid date format" : ""
+                              }
+                            />
+                          )}
+                        />
+                      </DemoItem>
+                    </DemoContainer>
+                  </LocalizationProvider>
+                </div>
+              </div>
+              <div
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  margin: "16px 32px",
+                }}
+              >
+                <Typography>Tanggal Akhir Stok Opnam: </Typography>
+                <div style={{ marginLeft: "8px" }}>
+                  <LocalizationProvider dateAdapter={AdapterDayjs}>
+                    <DemoContainer components={["DateTimePicker"]}>
+                      <DemoItem>
+                        <DateTimePicker
+                          disablePast
+                          value={
+                            dataStokOpnam.tanggalAkhirStokOpnam.isValid()
+                              ? dataStokOpnam.tanggalAkhirStokOpnam
+                              : null
+                          }
+                          onChange={(event) => {
+                            handleChangeInputStokOpnam(
+                              "tanggalAkhirStokOpnam",
+                              event
+                            );
+                          }}
+                          renderInput={(params) => (
+                            <TextField
+                              {...params}
+                              error={params.error || !params.value}
+                              helperText={
+                                params.error ? "Invalid date format" : ""
+                              }
+                            />
+                          )}
+                        />
+                      </DemoItem>
+                    </DemoContainer>
+                  </LocalizationProvider>
+                </div>
+              </div>
+            </div>
+          )}
+          {dataStokOpnam?.statusStokOpnam === "Done" ? (
+            ""
+          ) : (
+            <div style={{ width: "100%" }}>
+              <div style={{ margin: "32px" }}>
+                <TableContainer component={Paper} style={{ overflowX: "auto" }}>
+                  <Table
+                    sx={{ minWidth: 650 }}
+                    aria-label="simple table"
+                    style={{ tableLayout: "fixed", overflowX: "auto" }}
+                  >
+                    <TableHead>
+                      <TableRow>
+                        <TableCell style={{ width: 50 }}>No.</TableCell>
+                        <TableCell align="left" style={{ width: "200px" }}>
+                          Surat Pesanan
+                        </TableCell>
+                        <TableCell align="left" style={{ width: "200px" }}>
+                          Tanggal Masuk
+                        </TableCell>
+                        <TableCell align="left" style={{ width: "200px" }}>
+                          Tanggal Pengembalian
+                        </TableCell>
+                        <TableCell align="left" style={{ width: "200px" }}>
+                          Jenis Barang
+                        </TableCell>
+                        <TableCell align="left" style={{ width: "200px" }}>
+                          Kode Barang
+                        </TableCell>
+                        <TableCell align="left" style={{ width: "200px" }}>
+                          Lokasi Penyimpanan
+                        </TableCell>
+                        <TableCell align="left" style={{ width: "200px" }}>
+                          Stok Opnam Awal
+                        </TableCell>
+                        <TableCell align="left" style={{ width: "200px" }}>
+                          Stok Opnam Akhir
+                        </TableCell>
+                        <TableCell align="left" style={{ width: "200px" }}>
+                          Stok Fisik
+                        </TableCell>
+                        <TableCell align="left" style={{ width: "200px" }}>
+                          Stok Selisih
+                        </TableCell>
+                        <TableCell align="left" style={{ width: "200px" }}>
+                          Keterangan
+                        </TableCell>
+                        <TableCell style={{ width: 50 }} align="left">
+                          Actions
+                        </TableCell>
+                      </TableRow>
+                    </TableHead>
+                    <TableBody>
+                      {dataStokOpnam.itemStokOpnams.map((result, index) => {
+                        return (
+                          <React.Fragment key={index}>
+                            <TableRow>
+                              <TableCell>{index + 1 + "."}</TableCell>
+                              <TableCell>
+                                <MySelectTextField
+                                  width={"200px"}
+                                  data={allPermohonanPembelianId}
+                                  value={result.suratPesanan}
+                                  onChange={(event) => {
+                                    handleChangeInputStokOpnam(
+                                      "suratPesanan",
+                                      event,
+                                      index
+                                    );
+                                  }}
+                                />
+                              </TableCell>
+                              <TableCell>
+                                <LocalizationProvider
+                                  dateAdapter={AdapterDayjs}
+                                >
+                                  <DemoItem>
+                                    <DateTimePicker
+                                      disablePast
+                                      value={
+                                        result?.tanggalMasuk?.isValid()
+                                          ? result.tanggalMasuk
+                                          : null
+                                      }
+                                      onChange={(event) => {
+                                        handleChangeInputStokOpnam(
+                                          "tanggalMasuk",
+                                          event,
+                                          index
+                                        );
+                                      }}
+                                      renderInput={(params) => (
+                                        <TextField
+                                          {...params}
+                                          error={params.error || !params.value}
+                                          helperText={
+                                            params.error
+                                              ? "Invalid date format"
+                                              : ""
+                                          }
+                                        />
+                                      )}
+                                    />
+                                  </DemoItem>
+                                </LocalizationProvider>
+                              </TableCell>
+                              <TableCell>
+                                <LocalizationProvider
+                                  dateAdapter={AdapterDayjs}
+                                >
+                                  <DemoItem>
+                                    <DateTimePicker
+                                      disablePast
+                                      value={
+                                        result.tanggalPengembalian.isValid()
+                                          ? result?.tanggalPengembalian
+                                          : null
+                                      }
+                                      onChange={(event) => {
+                                        handleChangeInputStokOpnam(
+                                          "tanggalPengembalian",
+                                          event,
+                                          index
+                                        );
+                                      }}
+                                      renderInput={(params) => (
+                                        <TextField
+                                          {...params}
+                                          error={params.error || !params.value}
+                                          helperText={
+                                            params.error
+                                              ? "Invalid date format"
+                                              : ""
+                                          }
+                                        />
+                                      )}
+                                    />
+                                  </DemoItem>
+                                </LocalizationProvider>
+                              </TableCell>
+                              <TableCell>
+                                <MySelectTextField
+                                  value={result.jenisBarang}
+                                  data={allInventoryName}
+                                  width={200}
+                                  onChange={(event) => {
+                                    handleChangeInputStokOpnam(
+                                      "jenisBarang",
+                                      event,
+                                      index
+                                    );
+                                  }}
+                                />
+                              </TableCell>
+                              <TableCell>
+                                <TextField
+                                  disabled
+                                  value={getSelectedInventoryItem(
+                                    result.jenisBarang,
+                                    "kodeBarang"
+                                  )}
+                                  onChange={(event) => {
+                                    handleChangeInputStokOpnam(
+                                      "kodeBarang",
+                                      event,
+                                      index
+                                    );
+                                  }}
+                                />
+                              </TableCell>
+                              <TableCell>
+                                <MySelectTextField
+                                  disabled
+                                  width="200px"
+                                  data={lokasi}
+                                  value={getSelectedInventoryItem(
+                                    result.jenisBarang,
+                                    "lokasi"
+                                  )}
+                                  onChange={(event) => {
+                                    handleChangeInputStokOpnam(
+                                      "lokasiPenyimpanan",
+                                      event,
+                                      index
+                                    );
+                                  }}
+                                />
+                              </TableCell>
+                              <TableCell>
+                                <div
+                                  style={{
+                                    display: "flex",
+                                    alignItems: "center",
+                                    justifyContent: "space-between",
+                                  }}
+                                >
+                                  <TextField
+                                    disabled={
+                                      stokOpnamId === undefined
+                                        ? result.stokOpnamAwal.id
+                                          ? true
+                                          : false
+                                        : true
+                                    }
+                                    sx={{ width: "130px" }}
+                                    type="number"
+                                    value={result.stokOpnamAwal.value}
+                                    onChange={(event) => {
+                                      handleChangeInputStokOpnam(
+                                        "stokOpnamAwal",
+                                        event,
+                                        index
+                                      );
+                                    }}
+                                  />
+                                  <MySelectTextField
+                                    key={"unit"}
+                                    disabled={
+                                      stokOpnamId === undefined
+                                        ? result.stokOpnamAwal.id
+                                          ? true
+                                          : false
+                                        : true
+                                    }
+                                    width={isMobile ? "50px" : "60px"}
+                                    height={isMobile ? "15px" : "55px"}
+                                    data={units}
+                                    value={result.stokOpnamAwal.unit}
+                                    onChange={(event) => {
+                                      handleChangeInputStokOpnam(
+                                        "stokOpnamAwal",
+                                        event,
+                                        index,
+                                        true
+                                      );
+                                    }}
+                                  />
+                                </div>
+                              </TableCell>
+                              <TableCell>
+                                <div
+                                  style={{
+                                    display: "flex",
+                                    justifyContent: "space-between",
+                                    alignItems: "center",
+                                  }}
+                                >
+                                  <TextField
+                                    sx={{ width: "130px" }}
+                                    type="number"
+                                    value={result.stokOpnamAkhir?.value}
+                                    onChange={(event) => {
+                                      handleChangeInputStokOpnam(
+                                        "stokOpnamAkhir",
+                                        event,
+                                        index
+                                      );
+                                    }}
+                                  />
+                                  <MySelectTextField
+                                    type="text"
+                                    width={"60px"}
+                                    data={units}
+                                    value={result.stokOpnamAkhir?.unit}
+                                    onChange={(event) => {
+                                      handleChangeInputStokOpnam(
+                                        "stokOpnamAkhir",
+                                        event,
+                                        index,
+                                        true
+                                      );
+                                    }}
+                                  />
+                                </div>
+                              </TableCell>
+                              <TableCell>
+                                <div
+                                  style={{
+                                    display: "flex",
+                                    justifyContent: "space-between",
+                                    alignItems: "center",
+                                  }}
+                                >
+                                  <TextField
+                                    sx={{ width: "130px" }}
+                                    type="number"
+                                    value={result.stokFisik?.value}
+                                    onChange={(event) => {
+                                      handleChangeInputStokOpnam(
+                                        "stokFisik",
+                                        event,
+                                        index
+                                      );
+                                    }}
+                                  />
+                                  <MySelectTextField
+                                    type="text"
+                                    width={"60px"}
+                                    data={units}
+                                    value={result.stokFisik?.unit}
+                                    onChange={(event) => {
+                                      handleChangeInputStokOpnam(
+                                        "stokFisik",
+                                        event,
+                                        index,
+                                        true
+                                      );
+                                    }}
+                                  />
+                                </div>
+                              </TableCell>
+                              <TableCell>
+                                <div
+                                  style={{
+                                    display: "flex",
+                                    justifyContent: "space-between",
+                                    alignItems: "center",
+                                  }}
+                                >
+                                  <TextField
+                                    sx={{ width: "130px" }}
+                                    type="number"
+                                    value={result.stokSelisih?.value}
+                                    onChange={(event) => {
+                                      handleChangeInputStokOpnam(
+                                        "stokSelisih",
+                                        event,
+                                        index
+                                      );
+                                    }}
+                                  />
+                                  <MySelectTextField
+                                    type="text"
+                                    width={"60px"}
+                                    data={units}
+                                    value={result.stokSelisih?.unit}
+                                    onChange={(event) => {
+                                      handleChangeInputStokOpnam(
+                                        "stokSelisih",
+                                        event,
+                                        index,
+                                        true
+                                      );
+                                    }}
+                                  />
+                                </div>
+                              </TableCell>
+                              <TableCell>
+                                <TextField
+                                  value={result.keterangan}
+                                  onChange={(event) => {
+                                    handleChangeInputStokOpnam(
+                                      "keterangan",
+                                      event,
+                                      index
+                                    );
+                                  }}
+                                  multiline
+                                />
+                              </TableCell>
+                              <TableCell>
+                                <IconButton
+                                  onClick={() => {
+                                    handleDeleteItemStokOpnam(index, result.id);
+                                  }}
+                                >
+                                  <DeleteIcon style={{ color: "red" }} />
+                                </IconButton>
+                              </TableCell>
+                            </TableRow>
+                          </React.Fragment>
+                        );
+                      })}
+                    </TableBody>
+                  </Table>
+                </TableContainer>
+              </div>
+              <div
+                style={{
+                  display: "flex",
+                  margin: "32px",
+                  justifyContent: "center",
+                }}
+              >
+                <DefaultButton
+                  onClickFunction={() => {
+                    stokOpnamId !== undefined
+                      ? handleEditStokOpnam()
+                      : handleAddStokOpnam();
+                  }}
+                >
+                  {stokOpnamId !== undefined
+                    ? "Edit Stok Opnam"
+                    : "Tambah Stok Opnam"}
+                </DefaultButton>
+                <Button
+                  onClick={() => {
+                    navigate(-1);
+                  }}
+                  color="error"
+                  variant="outlined"
+                  style={{ textTransform: "none", marginLeft: "8px" }}
+                >
+                  Cancel
+                </Button>
+              </div>
+            </div>
+          )}
         </div>
       )}
       {snackbarMessage !== ("" || null) && (

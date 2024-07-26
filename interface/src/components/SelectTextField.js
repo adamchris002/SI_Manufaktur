@@ -17,7 +17,7 @@ const MySelectTextField = (props) => {
     <TextField
       disabled={disabled}
       type={type}
-      value={value}
+      value={value || ''}
       sx={{
         "& .MuiOutlinedInput-root": {
           height: height,
