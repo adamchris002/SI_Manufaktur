@@ -25,6 +25,7 @@ import StockPage from "./pages/InventoryPage/StockPage";
 import InventoryActivityLog from "./pages/InventoryPage/InventoryActivityLog";
 import StokOpnam from "./pages/InventoryPage/StokOpnam";
 import PenyerahanBarang from "./pages/InventoryPage/PenyerahanBarang";
+import KegiatanProduksi from "./pages/ProductionPage/KegiatanProduksi";
 
 export const AppContext = createContext({});
 
@@ -220,7 +221,18 @@ function App() {
                 userCredentials.data.department !== "Production" ? (
                   <Navigate to="/unauthorized" replace />
                 ) : (
-                  <MaindashboardProduction />
+                  <MaindashboardProduction userInformation={userCredentials} />
+                )
+              }
+            />
+            <Route
+              path="/productionDashboard/kegiatanProduksi"
+              element={
+                !userCredentials.data ||
+                userCredentials.data.department !== "Production" ? (
+                  <Navigate to="/unauthorized" replace />
+              ) : (
+                  <KegiatanProduksi userInformation={userCredentials} />
                 )
               }
             />

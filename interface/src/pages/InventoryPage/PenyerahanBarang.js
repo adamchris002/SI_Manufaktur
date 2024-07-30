@@ -33,8 +33,7 @@ const PenyerahanBarang = (props) => {
   const navigate = useNavigate();
   const { setSuccessMessage } = useAuth();
   const [estimatedOrders, setEstimatedOrders] = useState([]);
-  const [selectedEstimatedOrdersId, setSelectedEstimatedOrdersId] =
-    useState("");
+  const [selectedEstimatedOrder, setSelectedEstimatedOrder] = useState([]);
   const [inventoryItems, setInventoryItems] = useState([]);
   const [dataBarangYangDiambil, setDatabarangYangDiambil] = useState({
     diambilOleh: "",
@@ -53,8 +52,6 @@ const PenyerahanBarang = (props) => {
       },
     ],
   });
-
-  console.log(dataBarangYangDiambil);
 
   const [showError, setShowError] = useState([]);
   const [openSnackbar, setOpenSnackbar] = useState(false);
@@ -101,6 +98,11 @@ const PenyerahanBarang = (props) => {
       value: "Barang sudah diambil",
     },
   ];
+
+  const handleChangeIdLaporanPerencanaan = (id) => {
+    const selectedItem = estimatedOrders?.find((result) => id === result.id);
+    setSelectedEstimatedOrder(selectedItem);
+  };
 
   const checkForSubmission = () => {
     if (
@@ -179,6 +181,8 @@ const PenyerahanBarang = (props) => {
   const transformDataForSubmission = (data) => {
     return {
       ...data,
+      orderId: selectedEstimatedOrder.orderId,
+      productionPlanningId: selectedEstimatedOrder.id,
       itemPenyerahanBarangs: data.itemPenyerahanBarangs.map((item) => {
         if (penyerahanBarangId !== undefined) {
           return {
@@ -330,7 +334,6 @@ const PenyerahanBarang = (props) => {
           if (result.status === 200) {
             const modifiedPenyerahanBarang = modifyDataForEdit(result.data);
             setDatabarangYangDiambil(modifiedPenyerahanBarang);
-            console.log(modifiedPenyerahanBarang);
             setRefreshGetData(false);
           } else {
             setOpenSnackbar(true);
@@ -460,7 +463,7 @@ const PenyerahanBarang = (props) => {
                     1000
                   } Ton`,
                 };
-              }  else {
+              } else {
                 hasError = true;
                 setOpenSnackbar(true);
                 setSnackbarStatus(false);
@@ -488,7 +491,6 @@ const PenyerahanBarang = (props) => {
                   "jumlahItem",
                   true
                 );
-                console.log(jumlahDigudang);
                 const idBarang = getSelectedInventoryItem(
                   updatedItem.namaItem,
                   "id"
@@ -621,9 +623,9 @@ const PenyerahanBarang = (props) => {
                   <MySelectTextField
                     data={estimatedOrders}
                     width={"100px"}
-                    value={selectedEstimatedOrdersId}
+                    value={selectedEstimatedOrder.id}
                     onChange={(event) => {
-                      setSelectedEstimatedOrdersId(event.target.value);
+                      handleChangeIdLaporanPerencanaan(event.target.value);
                     }}
                   />
                 </div>
@@ -633,7 +635,7 @@ const PenyerahanBarang = (props) => {
             )}
             <div>
               {estimatedOrders
-                ?.filter((plan) => plan.id === selectedEstimatedOrdersId)
+                ?.filter((plan) => plan.id === selectedEstimatedOrder)
                 ?.map((result, index) => {
                   return (
                     <div key={index}>

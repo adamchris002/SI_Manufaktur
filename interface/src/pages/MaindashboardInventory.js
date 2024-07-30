@@ -758,7 +758,7 @@ const MaindashboardInventory = (props) => {
             <Typography
               style={{ fontSize: isMobile ? "4vw" : "2vw", color: "#0F607D" }}
             >
-              {userInformation.data.department}
+              {userInformation.data.department} Division
             </Typography>
           </div>
         </div>

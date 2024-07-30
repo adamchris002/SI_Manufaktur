@@ -36,7 +36,6 @@ const MaindashboardProductionPlanning = (props) => {
   const [unreviewedOrders, setUnreviewedOrders] = useState([]);
   const [estimatedOrders, setEstimatedOrders] = useState([]);
   const [allProductionPlan, setAllProductionPlan] = useState([]);
-  // console.log(allProductionPlan);
   const [refreshProductionPlanData, setRefreshProductionPlanData] =
     useState(true);
 
@@ -291,7 +290,7 @@ const MaindashboardProductionPlanning = (props) => {
             <Typography
               style={{ fontSize: isMobile ? "4vw" : "2vw", color: "#0F607D" }}
             >
-              {userInformation.data.department}
+              {userInformation.data.department} Division
             </Typography>
           </div>
         </div>

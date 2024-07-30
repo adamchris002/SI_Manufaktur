@@ -59,8 +59,6 @@ const StokOpnam = (props) => {
     ],
   });
 
-  // console.log(dataStokOpnam);
-
   const [allInventoryName, setAllInventoryName] = useState([]);
   const [allPermohonanPembelianId, setAllPermohonanPembelianId] = useState([]);
   const [refreshPermohonanPembelian, setRefreshPermohonanPembelian] =
@@ -246,7 +244,6 @@ const StokOpnam = (props) => {
                   updatedItem.jenisBarang,
                   "inventoryHistorys"
                 );
-                console.log(inventoryHistory)
                 if (inventoryHistory.length !== 0) {
                   const mostRecentItem = inventoryHistory.reduce(
                     (latest, item) => {

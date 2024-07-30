@@ -38,7 +38,6 @@ const StockPage = (props) => {
   const [openModal, setOpenModal] = useState(false);
 
   const [allInventoryItems, setAllInventoryItems] = useState([]);
-  console.log(allInventoryItems);
   const [inventoryItem, setInventoryItem] = useState(false);
   const [searchItem, setSearchItem] = useState("");
 

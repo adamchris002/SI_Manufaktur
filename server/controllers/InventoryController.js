@@ -704,8 +704,9 @@ class InventoryController {
     try {
       const { id } = req.params;
       const { dataPenyerahanBarang } = req.body;
-      console.log(dataPenyerahanBarang);
       let result = await penyerahanBarangs.create({
+        orderId: dataPenyerahanBarang.orderId,
+        productionPlanningId: dataPenyerahanBarang.productionPlanningId,
         diambilOleh: dataPenyerahanBarang.diambilOleh,
         tanggalPenyerahan: dataPenyerahanBarang.tanggalPenyerahan,
         tanggalPengambilan: dataPenyerahanBarang.tanggalPengambilan,
