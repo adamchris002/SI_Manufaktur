@@ -50,8 +50,17 @@ const KegiatanProduksi = (props) => {
         keterangan: "",
       },
     ],
+    jadwalProduksi: [
+      {
+        jamAwalProduksi: dayjs(""),
+        jamAkhirProduksi: dayjs(""),
+        noOrderProduksi: "",
+        jenisCetakan: "",
+        perolehanCetakan: { value: "", unit: "" },
+        waste: { value: "", unit: "" },
+      },
+    ],
   });
-  console.log(dataProduksi)
   const [showError, setShowError] = useState([]);
   const [openSnackbar, setOpenSnackbar] = useState(false);
   const [snackbarStatus, setSnackbarStatus] = useState(false);
@@ -128,7 +137,7 @@ const KegiatanProduksi = (props) => {
           if (i === index) {
             let updatedItem = { ...item };
             let hasError = false;
-  
+
             if (unit) {
               if (
                 value === updatedItem.beratAwal.unit ||
@@ -201,7 +210,7 @@ const KegiatanProduksi = (props) => {
                 }
               } else {
                 updatedItem = { ...updatedItem, [field]: value };
-  
+
                 if (field === "jenis") {
                   const kodeBarang = getSelectedInventoryItem(
                     updatedItem.jenis,
@@ -240,7 +249,7 @@ const KegiatanProduksi = (props) => {
                 }
               }
             }
-  
+
             const updatedErrorStates = [...showError];
             updatedErrorStates[index] = hasError;
             setShowError(updatedErrorStates);
@@ -248,13 +257,11 @@ const KegiatanProduksi = (props) => {
           }
           return item;
         });
-  
+
         return { ...oldObject, bahanProduksis: updatedItems };
       }
     });
   };
-  
-  
 
   const handleChangeInputPersonil = (event, index) => {
     setPersonil((oldArray) => {
@@ -738,6 +745,150 @@ const KegiatanProduksi = (props) => {
             </TableContainer>
           </div>
         </div>
+        {dataProduksi.tahapProduksi === "Produksi Pracetak" && (
+          <div style={{ padding: "0px 32px 64px 32px" }}>
+            <div
+              style={{
+                display: "flex",
+                justifyContent: "space-between",
+                alignItems: "center",
+              }}
+            >
+              <Typography style={{ color: "#0F607D", fontSize: "2vw" }}>
+                Jadwal Produksi
+              </Typography>
+              <DefaultButton
+                onClickFunction={() => {
+                  // handleAddBahan();
+                }}
+              >
+                Tambah Jadwal Produksi
+              </DefaultButton>
+            </div>
+            <div>
+              <TableContainer component={Paper}>
+                <Table>
+                  <TableHead>
+                    <TableRow>
+                      <TableCell>Jam Produksi Awal</TableCell>
+                      <TableCell>Jam Produksi Akhir</TableCell>
+                      <TableCell>No Order Produksi</TableCell>
+                      <TableCell>Jenis Cetakan</TableCell>
+                      <TableCell>Perolehan Cetakan</TableCell>
+                      <TableCell>Waste</TableCell>
+                      <TableCell>Keterangan</TableCell>
+                    </TableRow>
+                  </TableHead>
+                  <TableBody>
+                    {dataProduksi?.jadwalProduksi?.map((result, index) => {
+                      return (
+                        <React.Fragment key={index}>
+                          <TableRow>
+                            <TableCell>
+                              <LocalizationProvider dateAdapter={AdapterDayjs}>
+                                <DemoContainer components={["DateTimePicker"]}>
+                                  <DemoItem>
+                                    <DateTimePicker
+                                      disablePast
+                                      // value={
+                                      //   dataProduksi.tanggalProduksi.isValid()
+                                      //     ? dataProduksi.tanggalProduksi
+                                      //     : null
+                                      // }
+                                      // onChange={(event) => {
+                                      //   handleChangeDataProduksi(
+                                      //     event,
+                                      //     "tanggalProduksi"
+                                      //   );
+                                      // }}
+                                      renderInput={(params) => (
+                                        <TextField
+                                          {...params}
+                                          error={params.error || !params.value}
+                                          helperText={
+                                            params.error
+                                              ? "Invalid date format"
+                                              : ""
+                                          }
+                                        />
+                                      )}
+                                    />
+                                  </DemoItem>
+                                </DemoContainer>
+                              </LocalizationProvider>
+                            </TableCell>
+                            <TableCell>
+                              <LocalizationProvider dateAdapter={AdapterDayjs}>
+                                <DemoContainer components={["DateTimePicker"]}>
+                                  <DemoItem>
+                                    <DateTimePicker
+                                      disablePast
+                                      // value={
+                                      //   dataProduksi.tanggalProduksi.isValid()
+                                      //     ? dataProduksi.tanggalProduksi
+                                      //     : null
+                                      // }
+                                      // onChange={(event) => {
+                                      //   handleChangeDataProduksi(
+                                      //     event,
+                                      //     "tanggalProduksi"
+                                      //   );
+                                      // }}
+                                      renderInput={(params) => (
+                                        <TextField
+                                          {...params}
+                                          error={params.error || !params.value}
+                                          helperText={
+                                            params.error
+                                              ? "Invalid date format"
+                                              : ""
+                                          }
+                                        />
+                                      )}
+                                    />
+                                  </DemoItem>
+                                </DemoContainer>
+                              </LocalizationProvider>
+                            </TableCell>
+                            <TableCell>
+                              <MySelectTextField width="200px" />
+                            </TableCell>
+                            <TableCell>
+                              <TextField disabled />
+                            </TableCell>
+                            <TableCell>
+                              <div
+                                style={{
+                                  display: "flex",
+                                  alignItems: "center",
+                                }}
+                              >
+                                <TextField type="number" />
+                                <MySelectTextField />
+                              </div>
+                            </TableCell>
+                            <TableCell>
+                              <div
+                                style={{
+                                  display: "flex",
+                                  alignItems: "center",
+                                }}
+                              >
+                                <TextField type="number" />
+                                <MySelectTextField />
+                              </div>
+                            </TableCell>
+                            <TableCell><TextField /></TableCell>
+                          </TableRow>
+                        </React.Fragment>
+                      );
+                    })}
+                  </TableBody>
+                </Table>
+              </TableContainer>
+            </div>
+          </div>
+        )}
       </div>
       {snackbarMessage !== ("" || null) && (
         <MySnackbar
