@@ -33,6 +33,7 @@ const KegiatanProduksi = (props) => {
   ]);
 
   const [allProductionPlan, setAllProductionPlan] = useState([]);
+  const [allInventoryItem, setAllInventoryItem] = useState([]);
   const [dataProduksi, setDataProduksi] = useState({
     tanggalProduksi: dayjs(""),
     noOrderProduksi: "",
@@ -50,6 +51,11 @@ const KegiatanProduksi = (props) => {
       },
     ],
   });
+  console.log(dataProduksi)
+  const [showError, setShowError] = useState([]);
+  const [openSnackbar, setOpenSnackbar] = useState(false);
+  const [snackbarStatus, setSnackbarStatus] = useState(false);
+  const [snackbarMessage, setSnackbarMessage] = useState("");
 
   const units = [
     {
@@ -78,10 +84,6 @@ const KegiatanProduksi = (props) => {
     { value: "Produksi Fitur" },
   ];
 
-  const [openSnackbar, setOpenSnackbar] = useState(false);
-  const [snackbarStatus, setSnackbarStatus] = useState(false);
-  const [snackbarMessage, setSnackbarMessage] = useState("");
-
   const getSelectedOrder = (value, field) => {
     const selectedOrder = allProductionPlan?.find(
       (result) => value === result.value
@@ -89,7 +91,20 @@ const KegiatanProduksi = (props) => {
     return selectedOrder ? selectedOrder[field] : null;
   };
 
-  const handleChangeDataProduksi = (event, field) => {
+  const getSelectedInventoryItem = (value, field) => {
+    const selectedItem = allInventoryItem?.find(
+      (result) => value === result.value
+    );
+    return selectedItem ? selectedItem[field] : null;
+  };
+  const separateValueAndUnit = (str) => {
+    const parts = str.split(" ");
+    const value = parts[0];
+    const unit = parts.slice(1).join(" ");
+    return { value, unit };
+  };
+
+  const handleChangeDataProduksi = (event, field, index, unit) => {
     const value = event && event.target ? event.target.value : event;
     setDataProduksi((oldObject) => {
       if (
@@ -108,9 +123,138 @@ const KegiatanProduksi = (props) => {
           };
         }
         return { ...oldObject, [field]: value };
+      } else {
+        const updatedItems = oldObject.bahanProduksis.map((item, i) => {
+          if (i === index) {
+            let updatedItem = { ...item };
+            let hasError = false;
+  
+            if (unit) {
+              if (
+                value === updatedItem.beratAwal.unit ||
+                (value === "Kg" && updatedItem.beratAwal.unit === "Ton")
+              ) {
+                updatedItem = {
+                  ...updatedItem,
+                  [field]: {
+                    value: item[field].value || "", // Preserve existing value or set empty string
+                    unit: value,
+                  },
+                };
+              } else {
+                hasError = true;
+                setOpenSnackbar(true);
+                setSnackbarStatus(false);
+                setSnackbarMessage(
+                  "Satuan barang yang diinput tidak sesuai dengan satuan barang pada berat awal"
+                );
+              }
+            } else {
+              if (field === "beratAkhir") {
+                if (
+                  updatedItem.beratAkhir.unit === updatedItem.beratAwal.unit
+                ) {
+                  if (value <= updatedItem.beratAwal.value && value >= 0) {
+                    updatedItem = {
+                      ...updatedItem,
+                      [field]: {
+                        ...updatedItem[field],
+                        value: value,
+                      },
+                    };
+                  } else {
+                    hasError = true;
+                    setOpenSnackbar(true);
+                    setSnackbarStatus(false);
+                    setSnackbarMessage(
+                      "Jumlah yang anda masukkan tidak melebihi berat awal atau kurang dari nol"
+                    );
+                  }
+                } else if (
+                  updatedItem.beratAkhir.unit === "Kg" &&
+                  updatedItem.beratAwal.unit === "Ton"
+                ) {
+                  const beratAwalDalamKg = updatedItem.beratAwal.value * 1000;
+                  if (value <= beratAwalDalamKg && value >= 0) {
+                    updatedItem = {
+                      ...updatedItem,
+                      [field]: {
+                        ...updatedItem[field],
+                        value: value,
+                      },
+                    };
+                  } else {
+                    hasError = true;
+                    setOpenSnackbar(true);
+                    setSnackbarStatus(false);
+                    setSnackbarMessage(
+                      "Jumlah yang anda masukkan tidak melebihi berat awal dalam Kg atau kurang dari nol"
+                    );
+                  }
+                } else {
+                  hasError = true;
+                  setOpenSnackbar(true);
+                  setSnackbarStatus(false);
+                  setSnackbarMessage(
+                    "Jumlah yang anda masukkan tidak melebihi atau kurang dari nol"
+                  );
+                }
+              } else {
+                updatedItem = { ...updatedItem, [field]: value };
+  
+                if (field === "jenis") {
+                  const kodeBarang = getSelectedInventoryItem(
+                    updatedItem.jenis,
+                    "kodeBarang"
+                  );
+                  const inventoryHistorys = getSelectedInventoryItem(
+                    updatedItem.jenis,
+                    "inventoryHistorys"
+                  );
+                  const beratAwal = separateValueAndUnit(
+                    getSelectedInventoryItem(updatedItem.jenis, "jumlahItem")
+                  );
+                  if (inventoryHistorys.length === 0) {
+                    updatedItem.beratAwal = {
+                      value: beratAwal.value,
+                      unit: beratAwal.unit,
+                    };
+                  } else {
+                    const mostRecentItem = inventoryHistorys.reduce(
+                      (latest, item) => {
+                        return new Date(item.createdAt) >
+                          new Date(latest.createdAt)
+                          ? item
+                          : latest;
+                      }
+                    );
+                    const tempvalue = separateValueAndUnit(
+                      mostRecentItem.stokOpnamAkhir
+                    );
+                    updatedItem.beratAwal = {
+                      value: tempvalue.value,
+                      unit: tempvalue.unit,
+                    };
+                  }
+                  updatedItem.kode = kodeBarang;
+                }
+              }
+            }
+  
+            const updatedErrorStates = [...showError];
+            updatedErrorStates[index] = hasError;
+            setShowError(updatedErrorStates);
+            return updatedItem;
+          }
+          return item;
+        });
+  
+        return { ...oldObject, bahanProduksis: updatedItems };
       }
     });
   };
+  
+  
 
   const handleChangeInputPersonil = (event, index) => {
     setPersonil((oldArray) => {
@@ -147,6 +291,25 @@ const KegiatanProduksi = (props) => {
         setOpenSnackbar(true);
         setSnackbarStatus(false);
         setSnackbarMessage("Tidak berhasil memanggil data pesanan");
+      }
+    });
+  }, []);
+
+  useEffect(() => {
+    axios({
+      method: "GET",
+      url: "http://localhost:3000/inventory/getAllInventoryItem",
+    }).then((result) => {
+      if (result.status === 200) {
+        const tempValue = result.data.map((data) => ({
+          value: data.namaItem,
+          ...data,
+        }));
+        setAllInventoryItem(tempValue);
+      } else {
+        setOpenSnackbar(true);
+        setSnackbarStatus(false);
+        setSnackbarMessage("Tidak berhasil memanggil item bahan baku");
       }
     });
   }, []);
@@ -476,20 +639,37 @@ const KegiatanProduksi = (props) => {
                         <TableRow>
                           <TableCell>{index + 1 + "."}</TableCell>
                           <TableCell>
-                            <MySelectTextField width={"200px"} />
+                            <MySelectTextField
+                              data={allInventoryItem}
+                              value={result.jenis}
+                              onChange={(event) => {
+                                handleChangeDataProduksi(event, "jenis", index);
+                              }}
+                              width={"200px"}
+                            />
                           </TableCell>
                           <TableCell>
-                            <TextField disabled />
+                            <TextField value={result.kode} disabled />
                           </TableCell>
                           <TableCell>
                             <div
                               style={{
                                 display: "flex",
                                 alignItems: "center",
-                                justifyContent: "space-between",
                               }}
                             >
-                              <TextField /> <MySelectTextField data={units} />
+                              <TextField
+                                value={result.beratAwal.value}
+                                disabled
+                                type="number"
+                              />
+                              <div style={{ marginLeft: "8px" }}>
+                                <MySelectTextField
+                                  disabled
+                                  value={result.beratAwal.unit}
+                                  data={units}
+                                />
+                              </div>
                             </div>
                           </TableCell>
                           <TableCell>
@@ -497,14 +677,48 @@ const KegiatanProduksi = (props) => {
                               style={{
                                 display: "flex",
                                 alignItems: "center",
-                                justifyContent: "space-between",
                               }}
                             >
-                              <TextField /> <MySelectTextField data={units} />
+                              <TextField
+                                type="number"
+                                error={showError[index] || false}
+                                value={result.beratAkhir.value}
+                                onChange={(event) => {
+                                  handleChangeDataProduksi(
+                                    event,
+                                    "beratAkhir",
+                                    index
+                                  );
+                                }}
+                              />
+                              <div style={{ marginLeft: "8px" }}>
+                                <MySelectTextField
+                                  value={result.beratAkhir.unit}
+                                  data={units}
+                                  error={showError[index] || false}
+                                  onChange={(event) => {
+                                    handleChangeDataProduksi(
+                                      event,
+                                      "beratAkhir",
+                                      index,
+                                      true
+                                    );
+                                  }}
+                                />
+                              </div>
                             </div>
                           </TableCell>
                           <TableCell>
-                            <TextField />
+                            <TextField
+                              value={result.keterangan}
+                              onChange={(event) => {
+                                handleChangeDataProduksi(
+                                  event,
+                                  "keterangan",
+                                  index
+                                );
+                              }}
+                            />
                           </TableCell>
                           <TableCell>
                             <IconButton
