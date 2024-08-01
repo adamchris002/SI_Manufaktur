@@ -59,6 +59,8 @@ const StokOpnam = (props) => {
     ],
   });
 
+  console.log(dataStokOpnam)
+
   const [allInventoryName, setAllInventoryName] = useState([]);
   const [allPermohonanPembelianId, setAllPermohonanPembelianId] = useState([]);
   const [refreshPermohonanPembelian, setRefreshPermohonanPembelian] =
@@ -203,7 +205,7 @@ const StokOpnam = (props) => {
     const value = event && event.target ? event.target.value : event;
 
     setDataStokOpnam((oldObject) => {
-      if (field === "judulStokOpnam" || field === "tanggalStokOpnam") {
+      if (field === "judulStokOpnam" || field === "tanggalStokOpnam" || field === "tanggalAkhirStokOpnam") {
         if (field === "tanggalStokOpnam") {
           return {
             ...oldObject,

@@ -164,6 +164,7 @@ const StockPage = (props) => {
           setKodeBarang("");
           setJumlahItemUnit("");
           setRefreshInventoryItem(true);
+          setInventoryItem(false);
         } else {
           setOpenSnackbar(true);
           setSnackbarStatus(false);
@@ -314,6 +315,7 @@ const StockPage = (props) => {
           <DefaultButton
             onClickFunction={() => {
               setOpenModal(true);
+
             }}
           >
             Tambah Stok Bahan Baku

@@ -52,21 +52,56 @@ const KegiatanProduksi = (props) => {
         keterangan: "",
       },
     ],
-    jadwalProduksi: [
-      {
-        jamAwalProduksi: dayjs(""),
-        jamAkhirProduksi: dayjs(""),
-        noOrderProduksi: "",
-        jenisCetakan: "",
-        perolehanCetakan: { value: "", unit: "" },
-        waste: { value: "", unit: "" },
-      },
-    ],
   });
+  const [jadwalProduksiPracetak, setJadwalProduksiPracetak] = useState([
+    {
+      jamAwalProduksi: dayjs(""),
+      jamAkhirProduksi: dayjs(""),
+      noOrderProduksi: "",
+      jenisCetakan: "",
+      perolehanCetakan: { value: "", unit: "" },
+      waste: { value: "", unit: "" },
+      ketarangan: "",
+    },
+  ]);
+  const [jadwalProduksiFitur, setJadwalProduksiFitur] = useState([
+    {
+      jamAwalProduksi: dayjs(""),
+      jamAkhirProduksi: dayjs(""),
+      noOrderProduksi: "",
+      jenisCetakan: "",
+      perolehanCetakan: { value: "", unit: "" },
+      waste: { value: "", unit: "" },
+      ketarangan: "",
+    },
+  ]);
+  const [jadwalProduksiCetak, setJadwalProduksiCetak] = useState([
+    {
+      jamAwalProduksi: dayjs(""),
+      jamAkhirProduksi: dayjs(""),
+      noOrderProduksi: "",
+      jenisCetakan: "",
+      jenisBahanKertas: "",
+      jenisKodeRollBahanKertas: "",
+      beratBahankertas: { value: "", unit: "'" },
+      perolehanCetakan: { value: "", unit: "" },
+      sobek: { value: "", unit: "" },
+      kulit: { value: "", unit: "" },
+      gelondong: { value: "", unit: "" },
+      sampah: { value: "", unit: "" },
+      rollHabis: "",
+      rollSisa: "",
+      ketarangan: "",
+    },
+  ]);
+
   const [showError, setShowError] = useState([]);
   const [openSnackbar, setOpenSnackbar] = useState(false);
   const [snackbarStatus, setSnackbarStatus] = useState(false);
   const [snackbarMessage, setSnackbarMessage] = useState("");
+
+  console.log(dataProduksi);
+  console.log(personil);
 
   const units = [
     {
@@ -165,7 +200,10 @@ const KegiatanProduksi = (props) => {
                 if (
                   updatedItem.beratAkhir.unit === updatedItem.beratAwal.unit
                 ) {
-                  if (value <= updatedItem.beratAwal.value && value >= 0) {
+                  const parsedBeratAwal = parseFloat(
+                    updatedItem.beratAwal.value
+                  );
+                  if (value <= parsedBeratAwal && value >= 0) {
                     updatedItem = {
                       ...updatedItem,
                       [field]: {
@@ -263,6 +301,96 @@ const KegiatanProduksi = (props) => {
         return { ...oldObject, bahanProduksis: updatedItems };
       }
     });
+  };
+
+  const handleChangeDataJadwalProduksiPracetak = (
+    event,
+    field,
+    index,
+    unit
+  ) => {};
+  const handleChangeDataJadwalProduksiCetak = (event, field, index, unit) => {};
+  const handleChangeDataJadwalProduksiFitur = (event, field, index, unit) => {};
+
+  const handleAddJawalProduksiPracetak = () => {
+    setJadwalProduksiPracetak((oldArray) => {
+      return [
+        ...oldArray,
+        {
+          jamAwalProduksi: dayjs(""),
+          jamAkhirProduksi: dayjs(""),
+          noOrderProduksi: "",
+          jenisCetakan: "",
+          perolehanCetakan: { value: "", unit: "" },
+          waste: { value: "", unit: "" },
+          ketarangan: "",
+        },
+      ];
+    });
+  };
+  const handleAddJadwalProduksiCetak = () => {
+    setJadwalProduksiCetak((oldArray) => {
+      return [
+        ...oldArray,
+        {
+          jamAwalProduksi: dayjs(""),
+          jamAkhirProduksi: dayjs(""),
+          noOrderProduksi: "",
+          jenisCetakan: "",
+          jenisBahanKertas: "",
+          jenisKodeRollBahanKertas: "",
+          beratBahankertas: { value: "", unit: "'" },
+          perolehanCetakan: { value: "", unit: "" },
+          sobek: { value: "", unit: "" },
+          kulit: { value: "", unit: "" },
+          gelondong: { value: "", unit: "" },
+          sampah: { value: "", unit: "" },
+          rollHabis: "",
+          rollSisa: "",
+          ketarangan: "",
+        },
+      ];
+    });
+  };
+  const handleAddJadwalProduksiFitur = () => {
+    setJadwalProduksiFitur((oldArray) => {
+      return [
+        ...oldArray,
+        {
+          jamAwalProduksi: dayjs(""),
+          jamAkhirProduksi: dayjs(""),
+          noOrderProduksi: "",
+          jenisCetakan: "",
+          nomoratorAwal: "",
+          nomoratorAkhir: "",
+          perolehanCetakan: { value: "", unit: "" },
+          waste: { value: "", unit: "" },
+          ketarangan: "",
+        },
+      ];
+    });
+  };
+
+  const handleDeleteDataJadwalProduksiPracetak = (id, index) => {
+    if (!id || id === undefined) {
+      setJadwalProduksiPracetak((oldArray) =>
+        oldArray.filter((_, j) => j !== index)
+      );
+    }
+  };
+  const handleDeleteDataJadwalProduksiCetak = (id, index) => {
+    if (!id || id === undefined) {
+      setJadwalProduksiCetak((oldArray) =>
+        oldArray.filter((_, j) => j !== index)
+      );
+    }
+  };
+  const handleDeleteDataJadwalProduksiFitur = (id, index) => {
+    if (!id || id === undefined) {
+      setJadwalProduksiFitur((oldArray) =>
+        oldArray.filter((_, j) => j !== index)
+      );
+    }
   };
 
   const handleChangeInputPersonil = (event, index) => {
@@ -404,9 +532,9 @@ const KegiatanProduksi = (props) => {
             </Typography>
             <div style={{ display: "flex", alignItems: "center" }}>
               <Typography
-                style={{ width: "250px", color: "#0F607D", fontSize: "1.5vw" }}
+                style={{ width: "15vw", color: "#0F607D", fontSize: "1.5vw" }}
               >
-                Tanggal Produksi:{" "}
+                Tanggal Produksi:
               </Typography>
               <div>
                 <LocalizationProvider dateAdapter={AdapterDayjs}>
@@ -445,7 +573,7 @@ const KegiatanProduksi = (props) => {
               }}
             >
               <Typography
-                style={{ width: "250px", color: "#0F607D", fontSize: "1.5vw" }}
+                style={{ width: "15vw", color: "#0F607D", fontSize: "1.5vw" }}
               >
                 No Order Produksi:
               </Typography>
@@ -468,7 +596,7 @@ const KegiatanProduksi = (props) => {
               }}
             >
               <Typography
-                style={{ width: "250px", color: "#0F607D", fontSize: "1.5vw" }}
+                style={{ width: "15vw", color: "#0F607D", fontSize: "1.5vw" }}
               >
                 Jenis Cetakan:{" "}
               </Typography>
@@ -484,7 +612,7 @@ const KegiatanProduksi = (props) => {
               }}
             >
               <Typography
-                style={{ width: "250px", color: "#0F607D", fontSize: "1.5vw" }}
+                style={{ width: "15vw", color: "#0F607D", fontSize: "1.5vw" }}
               >
                 Mesin:{" "}
               </Typography>
@@ -505,7 +633,7 @@ const KegiatanProduksi = (props) => {
               }}
             >
               <Typography
-                style={{ width: "250px", color: "#0F607D", fontSize: "1.5vw" }}
+                style={{ width: "15vw", color: "#0F607D", fontSize: "1.5vw" }}
               >
                 Dibuat Oleh:{" "}
               </Typography>
@@ -526,7 +654,7 @@ const KegiatanProduksi = (props) => {
               }}
             >
               <Typography
-                style={{ width: "250px", color: "#0F607D", fontSize: "1.5vw" }}
+                style={{ width: "15vw", color: "#0F607D", fontSize: "1.5vw" }}
               >
                 Tahap Produksi:{" "}
               </Typography>
@@ -567,8 +695,11 @@ const KegiatanProduksi = (props) => {
                 Tambah Personil
               </DefaultButton>
             </div>
-            <TableContainer component={Paper}>
-              <Table>
+            <TableContainer component={Paper} sx={{ overflowX: "auto" }}>
+              <Table
+                sx={{ minWidth: 650, overflowX: "auto", tableLayout: "fixed" }}
+                aria-label="simple table"
+              >
                 <TableHead>
                   <TableRow>
                     <TableCell style={{ width: "25px" }}>No.</TableCell>
@@ -614,6 +745,7 @@ const KegiatanProduksi = (props) => {
               display: "flex",
               justifyContent: "space-between",
               alignItems: "center",
+              marginBottom: "16px",
             }}
           >
             <Typography style={{ color: "#0F607D", fontSize: "2vw" }}>
@@ -628,17 +760,26 @@ const KegiatanProduksi = (props) => {
             </DefaultButton>
           </div>
           <div>
-            <TableContainer component={Paper}>
-              <Table>
+            <TableContainer component={Paper} sx={{ overflowX: "auto" }}>
+              <Table
+                sx={{
+                  minWidth: 650,
+                  tableLayout: "fixed",
+                  overflowX: "auto",
+                }}
+                aria-label="simple table"
+              >
                 <TableHead>
                   <TableRow>
-                    <TableCell>No.</TableCell>
-                    <TableCell>Jenis</TableCell>
-                    <TableCell>Kode</TableCell>
-                    <TableCell>Berat Awal</TableCell>
-                    <TableCell>Berat Akhir</TableCell>
-                    <TableCell>Keterangan</TableCell>
-                    <TableCell>Actions</TableCell>
+                    <TableCell style={{ width: "25px" }}>No.</TableCell>
+                    <TableCell style={{ width: "200px" }}>Jenis</TableCell>
+                    <TableCell style={{ width: "200px" }}>Kode</TableCell>
+                    <TableCell style={{ width: "200px" }}>Berat Awal</TableCell>
+                    <TableCell style={{ width: "200px" }}>
+                      Berat Akhir
+                    </TableCell>
+                    <TableCell style={{ width: "200px" }}>Keterangan</TableCell>
+                    <TableCell style={{ width: "50px" }}>Actions</TableCell>
                   </TableRow>
                 </TableHead>
                 <TableBody>
@@ -754,6 +895,7 @@ const KegiatanProduksi = (props) => {
                 display: "flex",
                 justifyContent: "space-between",
                 alignItems: "center",
+                marginBottom: "16px",
               }}
             >
               <Typography style={{ color: "#0F607D", fontSize: "2vw" }}>
@@ -761,28 +903,48 @@ const KegiatanProduksi = (props) => {
               </Typography>
               <DefaultButton
                 onClickFunction={() => {
-                  // handleAddBahan();
+                  handleAddJawalProduksiPracetak();
                 }}
               >
                 Tambah Jadwal Produksi
               </DefaultButton>
             </div>
             <div>
-              <TableContainer component={Paper}>
-                <Table>
+              <TableContainer component={Paper} sx={{ overflowX: "auto" }}>
+                <Table
+                  sx={{
+                    minWidth: 650,
+                    tableLayout: "fixed",
+                    overflowX: "auto",
+                  }}
+                  aria-label="simple table"
+                >
                   <TableHead>
                     <TableRow>
-                      <TableCell>Jam Produksi Awal</TableCell>
-                      <TableCell>Jam Produksi Akhir</TableCell>
-                      <TableCell>No Order Produksi</TableCell>
-                      <TableCell>Jenis Cetakan</TableCell>
-                      <TableCell>Perolehan Cetakan</TableCell>
-                      <TableCell>Waste</TableCell>
-                      <TableCell>Keterangan</TableCell>
+                      <TableCell style={{ width: "300px" }}>
+                        Jam Produksi Awal
+                      </TableCell>
+                      <TableCell style={{ width: "300px" }}>
+                        Jam Produksi Akhir
+                      </TableCell>
+                      <TableCell style={{ width: "200px" }}>
+                        No Order Produksi
+                      </TableCell>
+                      <TableCell style={{ width: "200px" }}>
+                        Jenis Cetakan
+                      </TableCell>
+                      <TableCell style={{ width: "200px" }}>
+                        Perolehan Cetakan
+                      </TableCell>
+                      <TableCell style={{ width: "200px" }}>Waste</TableCell>
+                      <TableCell style={{ width: "200px" }}>
+                        Keterangan
+                      </TableCell>
+                      <TableCell style={{ width: "50px" }}>Actions</TableCell>
                     </TableRow>
                   </TableHead>
                   <TableBody>
-                    {dataProduksi?.jadwalProduksi?.map((result, index) => {
+                    {jadwalProduksiPracetak?.map((result, index) => {
                       return (
                         <React.Fragment key={index}>
                           <TableRow>
@@ -866,7 +1028,9 @@ const KegiatanProduksi = (props) => {
                                 }}
                               >
                                 <TextField type="number" />
-                                <MySelectTextField />
+                                <div style={{ marginLeft: "8px" }}>
+                                  <MySelectTextField />
+                                </div>
                               </div>
                             </TableCell>
                             <TableCell>
@@ -877,11 +1041,25 @@ const KegiatanProduksi = (props) => {
                                 }}
                               >
                                 <TextField type="number" />
-                                <MySelectTextField />
+                                <div style={{ marginLeft: "8px" }}>
+                                  <MySelectTextField />
+                                </div>
                               </div>
                             </TableCell>
                             <TableCell>
                               <TextField />
+                            </TableCell>
+                            <TableCell>
+                              <IconButton
+                                onClick={() => {
+                                  handleDeleteDataJadwalProduksiPracetak(
+                                    result?.id,
+                                    index
+                                  );
+                                }}
+                              >
+                                <DeleteIcon style={{ color: "red" }} />
+                              </IconButton>
                             </TableCell>
                           </TableRow>
                         </React.Fragment>
@@ -900,6 +1078,7 @@ const KegiatanProduksi = (props) => {
                 display: "flex",
                 justifyContent: "space-between",
                 alignItems: "center",
+                marginBottom: "16px",
               }}
             >
               <Typography style={{ color: "#0F607D", fontSize: "2vw" }}>
@@ -907,7 +1086,7 @@ const KegiatanProduksi = (props) => {
               </Typography>
               <DefaultButton
                 onClickFunction={() => {
-                  // handleAddBahan();
+                  handleAddJadwalProduksiCetak();
                 }}
               >
                 Tambah Jadwal Produksi
@@ -968,10 +1147,11 @@ const KegiatanProduksi = (props) => {
                       <TableCell style={{ width: "200px" }}>
                         Keterangan
                       </TableCell>
+                      <TableCell style={{ width: "50px" }}>Actions</TableCell>
                     </TableRow>
                   </TableHead>
                   <TableBody>
-                    {dataProduksi?.jadwalProduksi?.map((result, index) => {
+                    {jadwalProduksiCetak?.map((result, index) => {
                       return (
                         <React.Fragment key={index}>
                           <TableRow>
@@ -1150,6 +1330,18 @@ const KegiatanProduksi = (props) => {
                             <TableCell>
                               <TextField />
                             </TableCell>
+                            <TableCell>
+                              <IconButton
+                                onClick={() => {
+                                  handleDeleteDataJadwalProduksiCetak(
+                                    result?.id,
+                                    index
+                                  );
+                                }}
+                              >
+                                <DeleteIcon sx={{ color: "red" }} />
+                              </IconButton>
+                            </TableCell>
                           </TableRow>
                         </React.Fragment>
                       );
@@ -1167,6 +1359,7 @@ const KegiatanProduksi = (props) => {
                 display: "flex",
                 justifyContent: "space-between",
                 alignItems: "center",
+                marginBottom: "16px",
               }}
             >
               <Typography style={{ color: "#0F607D", fontSize: "2vw" }}>
@@ -1174,7 +1367,7 @@ const KegiatanProduksi = (props) => {
               </Typography>
               <DefaultButton
                 onClickFunction={() => {
-                  // handleAddBahan();
+                  handleAddJadwalProduksiFitur();
                 }}
               >
                 Tambah Jadwal Produksi
@@ -1217,10 +1410,11 @@ const KegiatanProduksi = (props) => {
                       <TableCell style={{ width: "200px" }}>
                         Keterangan
                       </TableCell>
+                      <TableCell style={{ width: "50px" }}>Actions</TableCell>
                     </TableRow>
                   </TableHead>
                   <TableBody>
-                    {dataProduksi?.jadwalProduksi?.map((result, index) => {
+                    {jadwalProduksiFitur?.map((result, index) => {
                       return (
                         <React.Fragment key={index}>
                           <TableRow>
@@ -1328,9 +1522,20 @@ const KegiatanProduksi = (props) => {
                                 </div>
                               </div>
                             </TableCell>
-
                             <TableCell>
                               <TextField />
+                            </TableCell>
+                            <TableCell>
+                              <IconButton
+                                onClick={() => {
+                                  handleDeleteDataJadwalProduksiFitur(
+                                    result?.id,
+                                    index
+                                  );
+                                }}
+                              >
+                                <DeleteIcon sx={{ color: "red" }} />
+                              </IconButton>
                             </TableCell>
                           </TableRow>
                         </React.Fragment>
