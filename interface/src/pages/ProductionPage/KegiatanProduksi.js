@@ -1,8 +1,10 @@
 import React, { useEffect, useState } from "react";
 import factoryBackground from "../../assets/factorybackground.png";
 import {
+  FormControlLabel,
   IconButton,
   Paper,
+  Switch,
   Table,
   TableBody,
   TableCell,
@@ -755,7 +757,7 @@ const KegiatanProduksi = (props) => {
               }}
             >
               <Typography style={{ color: "#0F607D", fontSize: "2vw" }}>
-                Jadwal Produksi
+                Jadwal Produksi Pracetak
               </Typography>
               <DefaultButton
                 onClickFunction={() => {
@@ -878,7 +880,458 @@ const KegiatanProduksi = (props) => {
                                 <MySelectTextField />
                               </div>
                             </TableCell>
-                            <TableCell><TextField /></TableCell>
+                            <TableCell>
+                              <TextField />
+                            </TableCell>
+                          </TableRow>
+                        </React.Fragment>
+                      );
+                    })}
+                  </TableBody>
+                </Table>
+              </TableContainer>
+            </div>
+          </div>
+        )}
+        {dataProduksi.tahapProduksi === "Produksi Cetak" && (
+          <div style={{ padding: "0px 32px 64px 32px" }}>
+            <div
+              style={{
+                display: "flex",
+                justifyContent: "space-between",
+                alignItems: "center",
+              }}
+            >
+              <Typography style={{ color: "#0F607D", fontSize: "2vw" }}>
+                Jadwal Produksi Cetak
+              </Typography>
+              <DefaultButton
+                onClickFunction={() => {
+                  // handleAddBahan();
+                }}
+              >
+                Tambah Jadwal Produksi
+              </DefaultButton>
+            </div>
+            <div>
+              <TableContainer component={Paper} style={{ overflowX: "auto" }}>
+                <Table
+                  sx={{
+                    minWidth: 650,
+                    tableLayout: "fixed",
+                    overflowX: "auto",
+                  }}
+                  aria-label="simple table"
+                >
+                  <TableHead>
+                    <TableRow>
+                      <TableCell style={{ width: "300px" }}>
+                        Jam Produksi Awal
+                      </TableCell>
+                      <TableCell style={{ width: "300px" }}>
+                        Jam Produksi Akhir
+                      </TableCell>
+                      <TableCell style={{ width: "200px" }}>
+                        No Order Produksi
+                      </TableCell>
+                      <TableCell style={{ width: "200px" }}>
+                        Jenis Cetakan
+                      </TableCell>
+                      <TableCell style={{ width: "200px" }}>
+                        Jenis Bahan Kertas
+                      </TableCell>
+                      <TableCell style={{ width: "200px" }}>
+                        Kode Roll Bahan Kertas
+                      </TableCell>
+                      <TableCell style={{ width: "200px" }}>
+                        Berat Bahan Kertas
+                      </TableCell>
+                      <TableCell style={{ width: "200px" }}>
+                        Perolehan Cetakan
+                      </TableCell>
+                      <TableCell style={{ width: "200px" }}>
+                        {"Sobek (Kg)"}
+                      </TableCell>
+                      <TableCell style={{ width: "200px" }}>
+                        {"Kulit (Kg)"}
+                      </TableCell>
+                      <TableCell style={{ width: "200px" }}>
+                        {"Gelondong (Kg)"}
+                      </TableCell>
+                      <TableCell style={{ width: "200px" }}>
+                        {"Sampah (Kg)"}
+                      </TableCell>
+                      <TableCell style={{ width: "50px" }}>
+                        Roll Habis
+                      </TableCell>
+                      <TableCell style={{ width: "50px" }}>Roll Sisa</TableCell>
+                      <TableCell style={{ width: "200px" }}>
+                        Keterangan
+                      </TableCell>
+                    </TableRow>
+                  </TableHead>
+                  <TableBody>
+                    {dataProduksi?.jadwalProduksi?.map((result, index) => {
+                      return (
+                        <React.Fragment key={index}>
+                          <TableRow>
+                            <TableCell>
+                              <LocalizationProvider dateAdapter={AdapterDayjs}>
+                                <DemoContainer components={["DateTimePicker"]}>
+                                  <DemoItem>
+                                    <DateTimePicker
+                                      disablePast
+                                      // value={
+                                      //   dataProduksi.tanggalProduksi.isValid()
+                                      //     ? dataProduksi.tanggalProduksi
+                                      //     : null
+                                      // }
+                                      // onChange={(event) => {
+                                      //   handleChangeDataProduksi(
+                                      //     event,
+                                      //     "tanggalProduksi"
+                                      //   );
+                                      // }}
+                                      renderInput={(params) => (
+                                        <TextField
+                                          {...params}
+                                          error={params.error || !params.value}
+                                          helperText={
+                                            params.error
+                                              ? "Invalid date format"
+                                              : ""
+                                          }
+                                        />
+                                      )}
+                                    />
+                                  </DemoItem>
+                                </DemoContainer>
+                              </LocalizationProvider>
+                            </TableCell>
+                            <TableCell>
+                              <LocalizationProvider dateAdapter={AdapterDayjs}>
+                                <DemoContainer components={["DateTimePicker"]}>
+                                  <DemoItem>
+                                    <DateTimePicker
+                                      disablePast
+                                      // value={
+                                      //   dataProduksi.tanggalProduksi.isValid()
+                                      //     ? dataProduksi.tanggalProduksi
+                                      //     : null
+                                      // }
+                                      // onChange={(event) => {
+                                      //   handleChangeDataProduksi(
+                                      //     event,
+                                      //     "tanggalProduksi"
+                                      //   );
+                                      // }}
+                                      renderInput={(params) => (
+                                        <TextField
+                                          {...params}
+                                          error={params.error || !params.value}
+                                          helperText={
+                                            params.error
+                                              ? "Invalid date format"
+                                              : ""
+                                          }
+                                        />
+                                      )}
+                                    />
+                                  </DemoItem>
+                                </DemoContainer>
+                              </LocalizationProvider>
+                            </TableCell>
+                            <TableCell>
+                              <MySelectTextField width="200px" />
+                            </TableCell>
+                            <TableCell>
+                              <TextField disabled />
+                            </TableCell>
+                            <TableCell>
+                              <MySelectTextField width="200px" />
+                            </TableCell>
+                            <TableCell>
+                              <TextField disabled />
+                            </TableCell>
+                            <TableCell>
+                              <div
+                                style={{
+                                  display: "flex",
+                                  alignItems: "center",
+                                }}
+                              >
+                                <TextField type="number" />
+                                <div style={{ marginLeft: "8px" }}>
+                                  <MySelectTextField />
+                                </div>
+                              </div>
+                            </TableCell>
+                            <TableCell>
+                              <div
+                                style={{
+                                  display: "flex",
+                                  alignItems: "center",
+                                }}
+                              >
+                                <TextField type="number" />
+                                <div style={{ marginLeft: "8px" }}>
+                                  <MySelectTextField />
+                                </div>
+                              </div>
+                            </TableCell>
+                            <TableCell>
+                              <div
+                                style={{
+                                  display: "flex",
+                                  alignItems: "center",
+                                }}
+                              >
+                                <TextField type="number" />
+                                <div style={{ marginLeft: "8px" }}>
+                                  <MySelectTextField />
+                                </div>
+                              </div>
+                            </TableCell>
+                            <TableCell>
+                              <div
+                                style={{
+                                  display: "flex",
+                                  alignItems: "center",
+                                }}
+                              >
+                                <TextField type="number" />
+                                <div style={{ marginLeft: "8px" }}>
+                                  <MySelectTextField />
+                                </div>
+                              </div>
+                            </TableCell>
+                            <TableCell>
+                              <div
+                                style={{
+                                  display: "flex",
+                                  alignItems: "center",
+                                }}
+                              >
+                                <TextField type="number" />
+                                <div style={{ marginLeft: "8px" }}>
+                                  <MySelectTextField />
+                                </div>
+                              </div>
+                            </TableCell>
+                            <TableCell>
+                              <div
+                                style={{
+                                  display: "flex",
+                                  alignItems: "center",
+                                }}
+                              >
+                                <TextField type="number" />
+                                <div style={{ marginLeft: "8px" }}>
+                                  <MySelectTextField />
+                                </div>
+                              </div>
+                            </TableCell>
+                            <TableCell>
+                              <FormControlLabel
+                                sx={{ display: "block" }}
+                                control={<Switch />}
+                                name="loading"
+                                color="primary"
+                              />
+                            </TableCell>
+                            <TableCell>
+                              <FormControlLabel
+                                sx={{ display: "block" }}
+                                control={<Switch />}
+                                name="loading"
+                                color="primary"
+                              />
+                            </TableCell>
+                            <TableCell>
+                              <TextField />
+                            </TableCell>
+                          </TableRow>
+                        </React.Fragment>
+                      );
+                    })}
+                  </TableBody>
+                </Table>
+              </TableContainer>
+            </div>
+          </div>
+        )}
+        {dataProduksi.tahapProduksi === "Produksi Fitur" && (
+          <div style={{ padding: "0px 32px 64px 32px" }}>
+            <div
+              style={{
+                display: "flex",
+                justifyContent: "space-between",
+                alignItems: "center",
+              }}
+            >
+              <Typography style={{ color: "#0F607D", fontSize: "2vw" }}>
+                Jadwal Produksi Fitur
+              </Typography>
+              <DefaultButton
+                onClickFunction={() => {
+                  // handleAddBahan();
+                }}
+              >
+                Tambah Jadwal Produksi
+              </DefaultButton>
+            </div>
+            <div>
+              <TableContainer component={Paper} style={{ overflowX: "auto" }}>
+                <Table
+                  sx={{
+                    minWidth: 650,
+                    tableLayout: "fixed",
+                    overflowX: "auto",
+                  }}
+                  aria-label="simple table"
+                >
+                  <TableHead>
+                    <TableRow>
+                      <TableCell style={{ width: "300px" }}>
+                        Jam Produksi Awal
+                      </TableCell>
+                      <TableCell style={{ width: "300px" }}>
+                        Jam Produksi Akhir
+                      </TableCell>
+                      <TableCell style={{ width: "200px" }}>
+                        No Order Produksi
+                      </TableCell>
+                      <TableCell style={{ width: "200px" }}>
+                        Jenis Cetakan
+                      </TableCell>
+                      <TableCell style={{ width: "200px" }}>
+                        Nomorator Awal
+                      </TableCell>
+                      <TableCell style={{ width: "200px" }}>
+                        Nomorator Akhir
+                      </TableCell>
+                      <TableCell style={{ width: "200px" }}>
+                        Perolehan Cetakan
+                      </TableCell>
+                      <TableCell style={{ width: "200px" }}>Waste</TableCell>
+                      <TableCell style={{ width: "200px" }}>
+                        Keterangan
+                      </TableCell>
+                    </TableRow>
+                  </TableHead>
+                  <TableBody>
+                    {dataProduksi?.jadwalProduksi?.map((result, index) => {
+                      return (
+                        <React.Fragment key={index}>
+                          <TableRow>
+                            <TableCell>
+                              <LocalizationProvider dateAdapter={AdapterDayjs}>
+                                <DemoContainer components={["DateTimePicker"]}>
+                                  <DemoItem>
+                                    <DateTimePicker
+                                      disablePast
+                                      // value={
+                                      //   dataProduksi.tanggalProduksi.isValid()
+                                      //     ? dataProduksi.tanggalProduksi
+                                      //     : null
+                                      // }
+                                      // onChange={(event) => {
+                                      //   handleChangeDataProduksi(
+                                      //     event,
+                                      //     "tanggalProduksi"
+                                      //   );
+                                      // }}
+                                      renderInput={(params) => (
+                                        <TextField
+                                          {...params}
+                                          error={params.error || !params.value}
+                                          helperText={
+                                            params.error
+                                              ? "Invalid date format"
+                                              : ""
+                                          }
+                                        />
+                                      )}
+                                    />
+                                  </DemoItem>
+                                </DemoContainer>
+                              </LocalizationProvider>
+                            </TableCell>
+                            <TableCell>
+                              <LocalizationProvider dateAdapter={AdapterDayjs}>
+                                <DemoContainer components={["DateTimePicker"]}>
+                                  <DemoItem>
+                                    <DateTimePicker
+                                      disablePast
+                                      // value={
+                                      //   dataProduksi.tanggalProduksi.isValid()
+                                      //     ? dataProduksi.tanggalProduksi
+                                      //     : null
+                                      // }
+                                      // onChange={(event) => {
+                                      //   handleChangeDataProduksi(
+                                      //     event,
+                                      //     "tanggalProduksi"
+                                      //   );
+                                      // }}
+                                      renderInput={(params) => (
+                                        <TextField
+                                          {...params}
+                                          error={params.error || !params.value}
+                                          helperText={
+                                            params.error
+                                              ? "Invalid date format"
+                                              : ""
+                                          }
+                                        />
+                                      )}
+                                    />
+                                  </DemoItem>
+                                </DemoContainer>
+                              </LocalizationProvider>
+                            </TableCell>
+                            <TableCell>
+                              <MySelectTextField width="200px" />
+                            </TableCell>
+                            <TableCell>
+                              <TextField disabled />
+                            </TableCell>
+                            <TableCell>
+                              <TextField />
+                            </TableCell>
+                            <TableCell>
+                              <TextField />
+                            </TableCell>
+                            <TableCell>
+                              <div
+                                style={{
+                                  display: "flex",
+                                  alignItems: "center",
+                                }}
+                              >
+                                <TextField type="number" />
+                                <div style={{ marginLeft: "8px" }}>
+                                  <MySelectTextField />
+                                </div>
+                              </div>
+                            </TableCell>
+                            <TableCell>
+                              <div
+                                style={{
+                                  display: "flex",
+                                  alignItems: "center",
+                                }}
+                              >
+                                <TextField type="number" />
+                                <div style={{ marginLeft: "8px" }}>
+                                  <MySelectTextField />
+                                </div>
+                              </div>
+                            </TableCell>
+
+                            <TableCell>
+                              <TextField />
+                            </TableCell>
                           </TableRow>
                         </React.Fragment>
                       );
