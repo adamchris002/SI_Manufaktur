@@ -20,12 +20,12 @@ import { useNavigate } from "react-router-dom";
 
 const MaindashboardProduction = (props) => {
   const { userInformation } = props;
-  const navigate = useNavigate()
+  const navigate = useNavigate();
 
   const orderList = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
 
   const [allPenyerahanBarang, setAllPenyerahanBarang] = useState([]);
-  console.log(allPenyerahanBarang);
+  // console.log(allPenyerahanBarang);
 
   const [snackbarMessage, setSnackbarMessage] = useState("");
   const [snackbarStatus, setSnackbarStatus] = useState(false);
@@ -252,7 +252,11 @@ const MaindashboardProduction = (props) => {
                           <TableCell>{result.orderId}</TableCell>
                           <TableCell>{result.productionPlanningId}</TableCell>
                           <TableCell>{result.statusPenyerahan}</TableCell>
-                          <TableCell>{dayjs(result.tanggalPenyerahan).format("MM/DD/YYYY hh:mm A")}</TableCell>
+                          <TableCell>
+                            {dayjs(result.tanggalPenyerahan).format(
+                              "MM/DD/YYYY hh:mm A"
+                            )}
+                          </TableCell>
                         </TableRow>
                       </React.Fragment>
                     );
@@ -285,7 +289,7 @@ const MaindashboardProduction = (props) => {
               borderRadius="16px"
               fontSize="16px"
               onClickFunction={() => {
-                navigate("/productionDashboard/kegiatanProduksi")
+                navigate("/productionDashboard/kegiatanProduksi");
               }}
             >
               Tambah Kegiatan Produksi
@@ -303,6 +307,7 @@ const MaindashboardProduction = (props) => {
             {orderList.map((data, index) => {
               return (
                 <div
+                  key={index}
                   style={{
                     height: "256px",
                     width: "256px",
@@ -362,6 +367,7 @@ const MaindashboardProduction = (props) => {
             {orderList.map((data, index) => {
               return (
                 <div
+                key={index}
                   style={{
                     height: "256px",
                     width: "256px",
@@ -423,6 +429,7 @@ const MaindashboardProduction = (props) => {
             {orderList.map((data, index) => {
               return (
                 <div
+                key={index}
                   style={{
                     height: "256px",
                     width: "256px",

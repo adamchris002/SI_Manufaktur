@@ -61,7 +61,7 @@ const KegiatanProduksi = (props) => {
       jenisCetakan: "",
       perolehanCetakan: { value: "", unit: "" },
       waste: { value: "", unit: "" },
-      ketarangan: "",
+      keterangan: "",
     },
   ]);
   const [jadwalProduksiFitur, setJadwalProduksiFitur] = useState([
@@ -70,9 +70,11 @@ const KegiatanProduksi = (props) => {
       jamAkhirProduksi: dayjs(""),
       noOrderProduksi: "",
       jenisCetakan: "",
+      nomoratorAwal: "",
+      nomoratorAkhir: "",
       perolehanCetakan: { value: "", unit: "" },
       waste: { value: "", unit: "" },
-      ketarangan: "",
+      keterangan: "",
     },
   ]);
   const [jadwalProduksiCetak, setJadwalProduksiCetak] = useState([
@@ -83,15 +85,15 @@ const KegiatanProduksi = (props) => {
       jenisCetakan: "",
       jenisBahanKertas: "",
       jenisKodeRollBahanKertas: "",
-      beratBahankertas: { value: "", unit: "'" },
+      beratBahanKertas: { value: "", unit: "'" },
       perolehanCetakan: { value: "", unit: "" },
       sobek: { value: "", unit: "" },
       kulit: { value: "", unit: "" },
       gelondong: { value: "", unit: "" },
       sampah: { value: "", unit: "" },
-      rollHabis: "",
-      rollSisa: "",
-      ketarangan: "",
+      rollHabis: false,
+      rollSisa: false,
+      keterangan: "",
     },
   ]);
 
@@ -100,8 +102,123 @@ const KegiatanProduksi = (props) => {
   const [snackbarStatus, setSnackbarStatus] = useState(false);
   const [snackbarMessage, setSnackbarMessage] = useState("");
 
-  console.log(dataProduksi);
-  console.log(personil);
+  // console.log(dataProduksi);
+  // console.log(personil);
+  // console.log(jadwalProduksiPracetak);
+  // console.log(jadwalProduksiFitur);
+  // console.log(jadwalProduksiPracetak);
+  console.log(jadwalProduksiCetak);
+
+  const handleChangeJadwalProduksiCetak = (event, index, field, unit) => {
+    const value = event && event.target ? event.target.value : event;
+    setJadwalProduksiCetak((oldArray) => {
+      const updatedItems = oldArray.map((item, i) => {
+        let updatedItem = { ...item };
+        if (i === index) {
+          if (unit) {
+            updatedItem = {
+              ...updatedItem,
+              [field]: {
+                value: item[field]?.value || "",
+                unit: value,
+              },
+            };
+          } else {
+            if (
+              field === "beratBahanKertas" ||
+              field === "perolehanCetakan" ||
+              field === "sobek" ||
+              field === "kulit" ||
+              field === "gelondong" ||
+              field === "sampah"
+            ) {
+              updatedItem = {
+                ...updatedItem,
+                [field]: {
+                  ...updatedItem[field],
+                  value: value,
+                },
+              };
+            } else {
+              updatedItem = { ...updatedItem, [field]: value };
+            }
+          }
+          return updatedItem;
+        }
+        return item;
+      });
+      return updatedItems;
+    });
+  };
+  const handleChangeJadwalProduksiFitur = (event, index, field, unit) => {
+    const value = event && event.target ? event.target.value : event;
+    setJadwalProduksiFitur((oldArray) => {
+      const updatedItems = oldArray.map((item, i) => {
+        if (i === index) {
+          let updatedItem = { ...item };
+          if (unit) {
+            updatedItem = {
+              ...updatedItem,
+              [field]: {
+                value: item[field]?.value || "",
+                unit: value,
+              },
+            };
+          } else {
+            if (field === "perolehanCetakan" || field === "waste") {
+              updatedItem = {
+                ...updatedItem,
+                [field]: {
+                  ...updatedItem[field],
+                  value: value,
+                },
+              };
+            } else {
+              updatedItem = { ...updatedItem, [field]: value };
+            }
+          }
+          return updatedItem;
+        }
+        return item;
+      });
+      return updatedItems;
+    });
+  };
+
+  const handleChangeJadwalProduksiPracetak = (event, index, field, unit) => {
+    const value = event && event.target ? event.target.value : event;
+    setJadwalProduksiPracetak((oldArray) => {
+      const updatedItems = oldArray.map((item, i) => {
+        if (i === index) {
+          let updatedItem = { ...item };
+          if (unit) {
+            updatedItem = {
+              ...updatedItem,
+              [field]: {
+                value: item[field]?.value || "",
+                unit: value,
+              },
+            };
+          } else {
+            if (field === "perolehanCetakan" || field === "waste") {
+              updatedItem = {
+                ...updatedItem,
+                [field]: {
+                  ...updatedItem[field],
+                  value: value,
+                },
+              };
+            } else {
+              updatedItem = { ...updatedItem, [field]: value };
+            }
+          }
+          return updatedItem;
+        }
+        return item;
+      });
+      return updatedItems;
+    });
+  };
 
   const units = [
     {
@@ -303,15 +420,6 @@ const KegiatanProduksi = (props) => {
     });
   };
 
-  const handleChangeDataJadwalProduksiPracetak = (
-    event,
-    field,
-    index,
-    unit
-  ) => {};
-  const handleChangeDataJadwalProduksiCetak = (event, field, index, unit) => {};
-  const handleChangeDataJadwalProduksiFitur = (event, field, index, unit) => {};
-
   const handleAddJawalProduksiPracetak = () => {
     setJadwalProduksiPracetak((oldArray) => {
       return [
@@ -319,8 +427,8 @@ const KegiatanProduksi = (props) => {
         {
           jamAwalProduksi: dayjs(""),
           jamAkhirProduksi: dayjs(""),
-          noOrderProduksi: "",
-          jenisCetakan: "",
+          noOrderProduksi: dataProduksi.noOrderProduksi,
+          jenisCetakan: dataProduksi.jenisCetakan,
           perolehanCetakan: { value: "", unit: "" },
           waste: { value: "", unit: "" },
           ketarangan: "",
@@ -335,11 +443,11 @@ const KegiatanProduksi = (props) => {
         {
           jamAwalProduksi: dayjs(""),
           jamAkhirProduksi: dayjs(""),
-          noOrderProduksi: "",
-          jenisCetakan: "",
+          noOrderProduksi: dataProduksi.noOrderProduksi,
+          jenisCetakan: dataProduksi.jenisCetakan,
           jenisBahanKertas: "",
           jenisKodeRollBahanKertas: "",
-          beratBahankertas: { value: "", unit: "'" },
+          beratBahanKertas: { value: "", unit: "'" },
           perolehanCetakan: { value: "", unit: "" },
           sobek: { value: "", unit: "" },
           kulit: { value: "", unit: "" },
@@ -359,8 +467,8 @@ const KegiatanProduksi = (props) => {
         {
           jamAwalProduksi: dayjs(""),
           jamAkhirProduksi: dayjs(""),
-          noOrderProduksi: "",
-          jenisCetakan: "",
+          noOrderProduksi: dataProduksi.noOrderProduksi,
+          jenisCetakan: dataProduksi.jenisCetakan,
           nomoratorAwal: "",
           nomoratorAkhir: "",
           perolehanCetakan: { value: "", unit: "" },
@@ -450,6 +558,58 @@ const KegiatanProduksi = (props) => {
       }
     });
   }, []);
+
+  useEffect(() => {
+    if (
+      dataProduksi.noOrderProduksi !== "" ||
+      dataProduksi.jenisCetakan !== ""
+    ) {
+      setJadwalProduksiPracetak((oldArray) => {
+        let updatedItems = oldArray.map((result) => {
+          return {
+            ...result,
+            jenisCetakan: dataProduksi.jenisCetakan,
+            noOrderProduksi: dataProduksi.noOrderProduksi,
+          };
+        });
+        return updatedItems;
+      });
+    }
+  }, [dataProduksi.jenisCetakan, dataProduksi.noOrderProduksi]);
+  useEffect(() => {
+    if (
+      dataProduksi.noOrderProduksi !== "" ||
+      dataProduksi.jenisCetakan !== ""
+    ) {
+      setJadwalProduksiCetak((oldArray) => {
+        let updatedItems = oldArray.map((result) => {
+          return {
+            ...result,
+            jenisCetakan: dataProduksi.jenisCetakan,
+            noOrderProduksi: dataProduksi.noOrderProduksi,
+          };
+        });
+        return updatedItems;
+      });
+    }
+  }, [dataProduksi.jenisCetakan, dataProduksi.noOrderProduksi]);
+  useEffect(() => {
+    if (
+      dataProduksi.noOrderProduksi !== "" ||
+      dataProduksi.jenisCetakan !== ""
+    ) {
+      setJadwalProduksiFitur((oldArray) => {
+        let updatedItems = oldArray.map((result) => {
+          return {
+            ...result,
+            jenisCetakan: dataProduksi.jenisCetakan,
+            noOrderProduksi: dataProduksi.noOrderProduksi,
+          };
+        });
+        return updatedItems;
+      });
+    }
+  }, [dataProduksi.jenisCetakan, dataProduksi.noOrderProduksi]);
 
   const handleAddPersonil = () => {
     setPersonil((oldArray) => {
@@ -954,17 +1114,18 @@ const KegiatanProduksi = (props) => {
                                   <DemoItem>
                                     <DateTimePicker
                                       disablePast
-                                      // value={
-                                      //   dataProduksi.tanggalProduksi.isValid()
-                                      //     ? dataProduksi.tanggalProduksi
-                                      //     : null
-                                      // }
-                                      // onChange={(event) => {
-                                      //   handleChangeDataProduksi(
-                                      //     event,
-                                      //     "tanggalProduksi"
-                                      //   );
-                                      // }}
+                                      value={
+                                        result?.jamAwalProduksi?.isValid()
+                                          ? result.jamAwalProduksi
+                                          : null
+                                      }
+                                      onChange={(event) => {
+                                        handleChangeJadwalProduksiPracetak(
+                                          event,
+                                          index,
+                                          "jamAwalProduksi"
+                                        );
+                                      }}
                                       renderInput={(params) => (
                                         <TextField
                                           {...params}
@@ -987,17 +1148,23 @@ const KegiatanProduksi = (props) => {
                                   <DemoItem>
                                     <DateTimePicker
                                       disablePast
-                                      // value={
-                                      //   dataProduksi.tanggalProduksi.isValid()
-                                      //     ? dataProduksi.tanggalProduksi
-                                      //     : null
-                                      // }
-                                      // onChange={(event) => {
-                                      //   handleChangeDataProduksi(
-                                      //     event,
-                                      //     "tanggalProduksi"
-                                      //   );
-                                      // }}
+                                      value={
+                                        result.jamAkhirProduksi.isValid()
+                                          ? result.jamAkhirProduksi
+                                          : null
+                                      }
+                                      onChange={(event) => {
+                                        handleChangeJadwalProduksiPracetak(
+                                          event,
+                                          index,
+                                          "jamAkhirProduksi"
+                                        );
+                                      }}
+                                      minDate={
+                                        !result.jamAwalProduksi.isValid()
+                                          ? undefined
+                                          : result.jamAwalProduksi
+                                      }
                                       renderInput={(params) => (
                                         <TextField
                                           {...params}
@@ -1015,10 +1182,15 @@ const KegiatanProduksi = (props) => {
                               </LocalizationProvider>
                             </TableCell>
                             <TableCell>
-                              <MySelectTextField width="200px" />
+                              <MySelectTextField
+                                disabled
+                                data={allProductionPlan}
+                                value={result.noOrderProduksi}
+                                width="200px"
+                              />
                             </TableCell>
                             <TableCell>
-                              <TextField disabled />
+                              <TextField value={result.jenisCetakan} disabled />
                             </TableCell>
                             <TableCell>
                               <div
@@ -1027,9 +1199,30 @@ const KegiatanProduksi = (props) => {
                                   alignItems: "center",
                                 }}
                               >
-                                <TextField type="number" />
+                                <TextField
+                                  type="number"
+                                  value={result.perolehanCetakan.value}
+                                  onChange={(event) => {
+                                    handleChangeJadwalProduksiPracetak(
+                                      event,
+                                      index,
+                                      "perolehanCetakan"
+                                    );
+                                  }}
+                                />
                                 <div style={{ marginLeft: "8px" }}>
-                                  <MySelectTextField />
+                                  <MySelectTextField
+                                    value={result.perolehanCetakan.unit}
+                                    data={units}
+                                    onChange={(event) => {
+                                      handleChangeJadwalProduksiPracetak(
+                                        event,
+                                        index,
+                                        "perolehanCetakan",
+                                        true
+                                      );
+                                    }}
+                                  />
                                 </div>
                               </div>
                             </TableCell>
@@ -1040,14 +1233,44 @@ const KegiatanProduksi = (props) => {
                                   alignItems: "center",
                                 }}
                               >
-                                <TextField type="number" />
+                                <TextField
+                                  type="number"
+                                  value={result.waste.value}
+                                  onChange={(event) => {
+                                    handleChangeJadwalProduksiPracetak(
+                                      event,
+                                      index,
+                                      "waste"
+                                    );
+                                  }}
+                                />
                                 <div style={{ marginLeft: "8px" }}>
-                                  <MySelectTextField />
+                                  <MySelectTextField
+                                    value={result.waste.unit}
+                                    data={units}
+                                    onChange={(event) => {
+                                      handleChangeJadwalProduksiPracetak(
+                                        event,
+                                        index,
+                                        "waste",
+                                        true
+                                      );
+                                    }}
+                                  />
                                 </div>
                               </div>
                             </TableCell>
                             <TableCell>
-                              <TextField />
+                              <TextField
+                                onChange={(event) => {
+                                  handleChangeJadwalProduksiPracetak(
+                                    event,
+                                    index,
+                                    "keterangan"
+                                  );
+                                }}
+                                value={result.keterangan}
+                              />
                             </TableCell>
                             <TableCell>
                               <IconButton
@@ -1161,17 +1384,18 @@ const KegiatanProduksi = (props) => {
                                   <DemoItem>
                                     <DateTimePicker
                                       disablePast
-                                      // value={
-                                      //   dataProduksi.tanggalProduksi.isValid()
-                                      //     ? dataProduksi.tanggalProduksi
-                                      //     : null
-                                      // }
-                                      // onChange={(event) => {
-                                      //   handleChangeDataProduksi(
-                                      //     event,
-                                      //     "tanggalProduksi"
-                                      //   );
-                                      // }}
+                                      value={
+                                        result.jamAwalProduksi.isValid()
+                                          ? result.jamAwalProduksi
+                                          : null
+                                      }
+                                      onChange={(event) => {
+                                        handleChangeJadwalProduksiCetak(
+                                          event,
+                                          index,
+                                          "jamAwalProduksi"
+                                        );
+                                      }}
                                       renderInput={(params) => (
                                         <TextField
                                           {...params}
@@ -1194,17 +1418,23 @@ const KegiatanProduksi = (props) => {
                                   <DemoItem>
                                     <DateTimePicker
                                       disablePast
-                                      // value={
-                                      //   dataProduksi.tanggalProduksi.isValid()
-                                      //     ? dataProduksi.tanggalProduksi
-                                      //     : null
-                                      // }
-                                      // onChange={(event) => {
-                                      //   handleChangeDataProduksi(
-                                      //     event,
-                                      //     "tanggalProduksi"
-                                      //   );
-                                      // }}
+                                      value={
+                                        result.jamAkhirProduksi.isValid()
+                                          ? result.jamAkhirProduksi
+                                          : null
+                                      }
+                                      minDate={
+                                        !result.jamAkhirProduksi.isValid()
+                                          ? result.jamAwalProduksi
+                                          : undefined
+                                      }
+                                      onChange={(event) => {
+                                        handleChangeJadwalProduksiCetak(
+                                          event,
+                                          index,
+                                          "jamAkhirProduksi"
+                                        );
+                                      }}
                                       renderInput={(params) => (
                                         <TextField
                                           {...params}
@@ -1222,16 +1452,24 @@ const KegiatanProduksi = (props) => {
                               </LocalizationProvider>
                             </TableCell>
                             <TableCell>
+                              <MySelectTextField
+                                disabled
+                                data={allProductionPlan}
+                                value={result.noOrderProduksi}
+                                width="200px"
+                              />
+                            </TableCell>
+                            <TableCell>
+                              <TextField value={result.jenisCetakan} disabled />
+                            </TableCell>
+                            <TableCell>
                               <MySelectTextField width="200px" />
                             </TableCell>
                             <TableCell>
-                              <TextField disabled />
-                            </TableCell>
-                            <TableCell>
-                              <MySelectTextField width="200px" />
-                            </TableCell>
-                            <TableCell>
-                              <TextField disabled />
+                              <TextField
+                                value={result.jenisKodeRollBahanKertas}
+                                disabled
+                              />
                             </TableCell>
                             <TableCell>
                               <div
@@ -1240,9 +1478,30 @@ const KegiatanProduksi = (props) => {
                                   alignItems: "center",
                                 }}
                               >
-                                <TextField type="number" />
+                                <TextField
+                                  type="number"
+                                  value={result.beratBahanKertas.value}
+                                  onChange={(event) => {
+                                    handleChangeJadwalProduksiCetak(
+                                      event,
+                                      index,
+                                      "beratBahanKertas"
+                                    );
+                                  }}
+                                />
                                 <div style={{ marginLeft: "8px" }}>
-                                  <MySelectTextField />
+                                  <MySelectTextField
+                                    data={units}
+                                    value={result.beratBahanKertas.unit}
+                                    onChange={(event) => {
+                                      handleChangeJadwalProduksiCetak(
+                                        event,
+                                        index,
+                                        "beratBahanKertas",
+                                        true
+                                      );
+                                    }}
+                                  />
                                 </div>
                               </div>
                             </TableCell>
@@ -1253,9 +1512,30 @@ const KegiatanProduksi = (props) => {
                                   alignItems: "center",
                                 }}
                               >
-                                <TextField type="number" />
+                                <TextField
+                                  type="number"
+                                  value={result.perolehanCetakan.value}
+                                  onChange={(event) => {
+                                    handleChangeJadwalProduksiCetak(
+                                      event,
+                                      index,
+                                      "perolehanCetakan"
+                                    );
+                                  }}
+                                />
                                 <div style={{ marginLeft: "8px" }}>
-                                  <MySelectTextField />
+                                  <MySelectTextField
+                                    data={units}
+                                    value={result.perolehanCetakan.unit}
+                                    onChange={(event) => {
+                                      handleChangeJadwalProduksiCetak(
+                                        event,
+                                        index,
+                                        "perolehanCetakan",
+                                        true
+                                      );
+                                    }}
+                                  />
                                 </div>
                               </div>
                             </TableCell>
@@ -1266,9 +1546,30 @@ const KegiatanProduksi = (props) => {
                                   alignItems: "center",
                                 }}
                               >
-                                <TextField type="number" />
+                                <TextField
+                                  type="number"
+                                  value={result.sobek.value}
+                                  onChange={(event) => {
+                                    handleChangeJadwalProduksiCetak(
+                                      event,
+                                      index,
+                                      "sobek"
+                                    );
+                                  }}
+                                />
                                 <div style={{ marginLeft: "8px" }}>
-                                  <MySelectTextField />
+                                  <MySelectTextField
+                                    data={units}
+                                    value={result.sobek.unit}
+                                    onChange={(event) => {
+                                      handleChangeJadwalProduksiCetak(
+                                        event,
+                                        index,
+                                        "sobek",
+                                        true
+                                      );
+                                    }}
+                                  />
                                 </div>
                               </div>
                             </TableCell>
@@ -1279,9 +1580,30 @@ const KegiatanProduksi = (props) => {
                                   alignItems: "center",
                                 }}
                               >
-                                <TextField type="number" />
+                                <TextField
+                                  type="number"
+                                  value={result.kulit.value}
+                                  onChange={(event) => {
+                                    handleChangeJadwalProduksiCetak(
+                                      event,
+                                      index,
+                                      "kulit"
+                                    );
+                                  }}
+                                />
                                 <div style={{ marginLeft: "8px" }}>
-                                  <MySelectTextField />
+                                  <MySelectTextField
+                                    data={units}
+                                    value={result.kulit.unit}
+                                    onChange={(event) => {
+                                      handleChangeJadwalProduksiCetak(
+                                        event,
+                                        index,
+                                        "kulit",
+                                        true
+                                      );
+                                    }}
+                                  />
                                 </div>
                               </div>
                             </TableCell>
@@ -1292,9 +1614,30 @@ const KegiatanProduksi = (props) => {
                                   alignItems: "center",
                                 }}
                               >
-                                <TextField type="number" />
+                                <TextField
+                                  type="number"
+                                  value={result.gelondong.value}
+                                  onChange={(event) => {
+                                    handleChangeJadwalProduksiCetak(
+                                      event,
+                                      index,
+                                      "gelondong"
+                                    );
+                                  }}
+                                />
                                 <div style={{ marginLeft: "8px" }}>
-                                  <MySelectTextField />
+                                  <MySelectTextField
+                                    data={units}
+                                    value={result.gelondong.unit}
+                                    onChange={(event) => {
+                                      handleChangeJadwalProduksiCetak(
+                                        event,
+                                        index,
+                                        "gelondong",
+                                        true
+                                      );
+                                    }}
+                                  />
                                 </div>
                               </div>
                             </TableCell>
@@ -1305,16 +1648,48 @@ const KegiatanProduksi = (props) => {
                                   alignItems: "center",
                                 }}
                               >
-                                <TextField type="number" />
+                                <TextField
+                                  type="number"
+                                  value={result.sampah.value}
+                                  onChange={(event) => {
+                                    handleChangeJadwalProduksiCetak(
+                                      event,
+                                      index,
+                                      "sampah"
+                                    );
+                                  }}
+                                />
                                 <div style={{ marginLeft: "8px" }}>
-                                  <MySelectTextField />
+                                  <MySelectTextField
+                                    data={units}
+                                    value={result.sampah.unit}
+                                    onChange={(event) => {
+                                      handleChangeJadwalProduksiCetak(
+                                        event,
+                                        index,
+                                        "sampah",
+                                        true
+                                      );
+                                    }}
+                                  />
                                 </div>
                               </div>
                             </TableCell>
                             <TableCell>
                               <FormControlLabel
                                 sx={{ display: "block" }}
-                                control={<Switch />}
+                                control={
+                                  <Switch
+                                    checked={result.rollHabis}
+                                    onChange={(event) => {
+                                      handleChangeJadwalProduksiCetak(
+                                        event.target.checked,
+                                        index,
+                                        "rollHabis"
+                                      );
+                                    }}
+                                  />
+                                }
                                 name="loading"
                                 color="primary"
                               />
@@ -1322,13 +1697,33 @@ const KegiatanProduksi = (props) => {
                             <TableCell>
                               <FormControlLabel
                                 sx={{ display: "block" }}
-                                control={<Switch />}
+                                control={
+                                  <Switch
+                                    checked={result.rollSisa}
+                                    onChange={(event) => {
+                                      handleChangeJadwalProduksiCetak(
+                                        event.target.checked,
+                                        index,
+                                        "rollSisa"
+                                      );
+                                    }}
+                                  />
+                                }
                                 name="loading"
                                 color="primary"
                               />
                             </TableCell>
                             <TableCell>
-                              <TextField />
+                              <TextField
+                                value={result.keterangan}
+                                onChange={(event) => {
+                                  handleChangeJadwalProduksiCetak(
+                                    event,
+                                    index,
+                                    "keterangan"
+                                  );
+                                }}
+                              />
                             </TableCell>
                             <TableCell>
                               <IconButton
@@ -1424,17 +1819,18 @@ const KegiatanProduksi = (props) => {
                                   <DemoItem>
                                     <DateTimePicker
                                       disablePast
-                                      // value={
-                                      //   dataProduksi.tanggalProduksi.isValid()
-                                      //     ? dataProduksi.tanggalProduksi
-                                      //     : null
-                                      // }
-                                      // onChange={(event) => {
-                                      //   handleChangeDataProduksi(
-                                      //     event,
-                                      //     "tanggalProduksi"
-                                      //   );
-                                      // }}
+                                      value={
+                                        result.jamAwalProduksi.isValid()
+                                          ? result.jamAwalProduksi
+                                          : null
+                                      }
+                                      onChange={(event) => {
+                                        handleChangeJadwalProduksiFitur(
+                                          event,
+                                          index,
+                                          "jamAwalProduksi"
+                                        );
+                                      }}
                                       renderInput={(params) => (
                                         <TextField
                                           {...params}
@@ -1457,17 +1853,23 @@ const KegiatanProduksi = (props) => {
                                   <DemoItem>
                                     <DateTimePicker
                                       disablePast
-                                      // value={
-                                      //   dataProduksi.tanggalProduksi.isValid()
-                                      //     ? dataProduksi.tanggalProduksi
-                                      //     : null
-                                      // }
-                                      // onChange={(event) => {
-                                      //   handleChangeDataProduksi(
-                                      //     event,
-                                      //     "tanggalProduksi"
-                                      //   );
-                                      // }}
+                                      value={
+                                        result.jamAkhirProduksi.isValid()
+                                          ? result.jamAkhirProduksi
+                                          : null
+                                      }
+                                      minDate={
+                                        !result.jamAwalProduksi.isValid()
+                                          ? undefined
+                                          : result.jamAwalProduksi
+                                      }
+                                      onChange={(event) => {
+                                        handleChangeJadwalProduksiFitur(
+                                          event,
+                                          index,
+                                          "jamAkhirProduksi"
+                                        );
+                                      }}
                                       renderInput={(params) => (
                                         <TextField
                                           {...params}
@@ -1485,16 +1887,39 @@ const KegiatanProduksi = (props) => {
                               </LocalizationProvider>
                             </TableCell>
                             <TableCell>
-                              <MySelectTextField width="200px" />
+                              <MySelectTextField
+                                data={allProductionPlan}
+                                value={result.noOrderProduksi}
+                                disabled
+                                width="200px"
+                              />
                             </TableCell>
                             <TableCell>
-                              <TextField disabled />
+                              <TextField value={result.jenisCetakan} disabled />
                             </TableCell>
                             <TableCell>
-                              <TextField />
+                              <TextField
+                                value={result.nomoratorAwal}
+                                onChange={(event) => {
+                                  handleChangeJadwalProduksiFitur(
+                                    event,
+                                    index,
+                                    "nomoratorAwal"
+                                  );
+                                }}
+                              />
                             </TableCell>
                             <TableCell>
-                              <TextField />
+                              <TextField
+                                value={result.nomoratorAkhir}
+                                onChange={(event) => {
+                                  handleChangeJadwalProduksiFitur(
+                                    event,
+                                    index,
+                                    "nomoratorAkhir"
+                                  );
+                                }}
+                              />
                             </TableCell>
                             <TableCell>
                               <div
@@ -1503,9 +1928,30 @@ const KegiatanProduksi = (props) => {
                                   alignItems: "center",
                                 }}
                               >
-                                <TextField type="number" />
+                                <TextField
+                                  type="number"
+                                  value={result.perolehanCetakan.value}
+                                  onChange={(event) => {
+                                    handleChangeJadwalProduksiFitur(
+                                      event,
+                                      index,
+                                      "perolehanCetakan"
+                                    );
+                                  }}
+                                />
                                 <div style={{ marginLeft: "8px" }}>
-                                  <MySelectTextField />
+                                  <MySelectTextField
+                                    data={units}
+                                    value={result.perolehanCetakan.unit}
+                                    onChange={(event) => {
+                                      handleChangeJadwalProduksiFitur(
+                                        event,
+                                        index,
+                                        "perolehanCetakan",
+                                        true
+                                      );
+                                    }}
+                                  />
                                 </div>
                               </div>
                             </TableCell>
@@ -1516,14 +1962,44 @@ const KegiatanProduksi = (props) => {
                                   alignItems: "center",
                                 }}
                               >
-                                <TextField type="number" />
+                                <TextField
+                                  type="number"
+                                  value={result.waste.value}
+                                  onChange={(event) => {
+                                    handleChangeJadwalProduksiFitur(
+                                      event,
+                                      index,
+                                      "waste"
+                                    );
+                                  }}
+                                />
                                 <div style={{ marginLeft: "8px" }}>
-                                  <MySelectTextField />
+                                  <MySelectTextField
+                                    data={units}
+                                    value={result.waste.value}
+                                    onChange={(event) => {
+                                      handleChangeJadwalProduksiFitur(
+                                        event,
+                                        index,
+                                        "waste",
+                                        true
+                                      );
+                                    }}
+                                  />
                                 </div>
                               </div>
                             </TableCell>
                             <TableCell>
-                              <TextField />
+                              <TextField
+                                value={result.keterangan}
+                                onChange={(event) => {
+                                  handleChangeJadwalProduksiFitur(
+                                    event,
+                                    index,
+                                    "keterangan"
+                                  );
+                                }}
+                              />
                             </TableCell>
                             <TableCell>
                               <IconButton
