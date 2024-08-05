@@ -18,6 +18,8 @@ module.exports = (sequelize, DataTypes) => {
     {
       laporanProduksiId: DataTypes.INTEGER,
       tahapProduksi: DataTypes.STRING,
+      jamAwalProduksi: DataTypes.STRING,
+      jamAkhirProduksi: DataTypes.STRING,
       noOrderProduksi: DataTypes.STRING,
       jenisCetakan: DataTypes.STRING,
       perolehanCetak: DataTypes.STRING,
@@ -38,6 +40,7 @@ module.exports = (sequelize, DataTypes) => {
     {
       sequelize,
       modelName: "jadwalProduksis",
+      tableName: "jadwalProduksis"
     }
   );
   return jadwalProduksis;

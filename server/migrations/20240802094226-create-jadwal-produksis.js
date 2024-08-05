@@ -20,6 +20,12 @@ module.exports = {
       tahapProduksi: {
         type: Sequelize.STRING,
       },
+      jamAwalProduksi: {
+        type: Sequelize.STRING
+      },
+      jamAkhirProduksi: {
+        type: Sequelize.STRING
+      },
       noOrderProduksi: {
         type: Sequelize.STRING,
       },

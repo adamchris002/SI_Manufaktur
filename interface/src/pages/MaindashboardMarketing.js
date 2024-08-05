@@ -570,7 +570,7 @@ const MaindashboardMarketing = (props) => {
                             ?.slice(0, 3)
                             .map((document, index) => {
                               return (
-                                <div>
+                                <div key={index}>
                                   <img
                                     style={{
                                       height: isMobile ? "30px" : "3.125vw",
@@ -599,7 +599,7 @@ const MaindashboardMarketing = (props) => {
                         <div style={{ display: "flex" }}>
                           {data.documents?.map((document, index) => {
                             return (
-                              <div>
+                              <div key={index}>
                                 <img
                                   style={{
                                     height: isMobile ? "30px" : "3.125vw",
@@ -853,7 +853,7 @@ const MaindashboardMarketing = (props) => {
                               ?.slice(0, 3)
                               .map((document, index) => {
                                 return (
-                                  <div>
+                                  <div key={index}>
                                     <img
                                       style={{
                                         height: isMobile ? "30px" : "3.125vw",
@@ -882,7 +882,7 @@ const MaindashboardMarketing = (props) => {
                           <div style={{ display: "flex" }}>
                             {data.documents?.map((document, index) => {
                               return (
-                                <div>
+                                <div key={index}>
                                   <img
                                     style={{
                                       height: isMobile ? "30px" : "3.125vw",
@@ -1113,7 +1113,7 @@ const MaindashboardMarketing = (props) => {
                               ?.slice(0, 3)
                               .map((document, index) => {
                                 return (
-                                  <div>
+                                  <div key={index}>
                                     <img
                                       style={{
                                         height: isMobile ? "30px" : "3.125vw",
@@ -1142,7 +1142,7 @@ const MaindashboardMarketing = (props) => {
                           <div style={{ display: "flex" }}>
                             {data.documents?.map((document, index) => {
                               return (
-                                <div>
+                                <div key={index}>
                                   <img
                                     style={{
                                       height: isMobile ? "30px" : "3.125vw",
@@ -1373,7 +1373,7 @@ const MaindashboardMarketing = (props) => {
                               ?.slice(0, 3)
                               .map((document, index) => {
                                 return (
-                                  <div>
+                                  <div key ={index}>
                                     <img
                                       style={{
                                         height: isMobile ? "30px" : "3.125vw",
@@ -1402,7 +1402,7 @@ const MaindashboardMarketing = (props) => {
                           <div style={{ display: "flex" }}>
                             {data?.documents?.map((document, index) => {
                               return (
-                                <div>
+                                <div key={index}>
                                   <img
                                     style={{
                                       height: isMobile ? "30px" : "3.125vw",
@@ -1808,6 +1808,7 @@ const MaindashboardMarketing = (props) => {
                       {Array.from(orderDocuments).map((result, index) => {
                         return (
                           <div
+                          key={index}
                             style={{
                               width: "2.96vw",
                               height: "2.96vw",
@@ -2134,6 +2135,7 @@ const MaindashboardMarketing = (props) => {
                 </div>
                 <MySelectTextField
                   type="text"
+                  value={orderCustomerChannel}
                   width={isMobile ? "80px" : "8vw"}
                   height={isMobile ? "15px" : "3vw"}
                   borderRadius="10px"

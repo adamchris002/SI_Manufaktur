@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import factoryBackground from "../../assets/factorybackground.png";
 import {
+  Button,
   FormControlLabel,
   IconButton,
   Paper,
@@ -14,6 +15,7 @@ import {
   TextField,
   Typography,
 } from "@mui/material";
+import { useLocation, useNavigate } from "react-router-dom";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { DemoContainer, DemoItem } from "@mui/x-date-pickers/internals/demo";
@@ -24,9 +26,14 @@ import DeleteIcon from "@mui/icons-material/Delete";
 import axios from "axios";
 import MySnackbar from "../../components/Snackbar";
 import dayjs from "dayjs";
+import { useAuth } from "../../components/AuthContext";
 
 const KegiatanProduksi = (props) => {
   const { userInformation } = props;
+  const navigate = useNavigate();
+  const location = useLocation();
+  const { setSuccessMessage } = useAuth();
+  const { laporanProduksiId } = location.state || "";
 
   const [personil, setPersonil] = useState([
     {
@@ -42,7 +49,7 @@ const KegiatanProduksi = (props) => {
     jenisCetakan: "",
     mesin: "",
     dibuatOleh: "",
-    tahapProduksi: "",
+    tahapProduksi: "Produksi Pracetak",
     bahanProduksis: [
       {
         jenis: "",
@@ -102,12 +109,143 @@ const KegiatanProduksi = (props) => {
   const [snackbarStatus, setSnackbarStatus] = useState(false);
   const [snackbarMessage, setSnackbarMessage] = useState("");
 
-  // console.log(dataProduksi);
-  // console.log(personil);
-  // console.log(jadwalProduksiPracetak);
-  // console.log(jadwalProduksiFitur);
-  // console.log(jadwalProduksiPracetak);
-  console.log(jadwalProduksiCetak);
+  useEffect(() => {
+    axios({
+      method: "GET",
+      url: "http://localhost:3000/productionPlanning/getAllProductionPlanning",
+    }).then((result) => {
+      if (result.status === 200) {
+        const tempData = result.data.map((data) => ({
+          value: data.orderId,
+          ...data,
+        }));
+        setAllProductionPlan(tempData);
+      } else {
+        setOpenSnackbar(true);
+        setSnackbarStatus(false);
+        setSnackbarMessage("Tidak berhasil memanggil data pesanan");
+      }
+    });
+  }, []);
+
+  useEffect(() => {
+    axios({
+      method: "GET",
+      url: "http://localhost:3000/inventory/getAllInventoryItem",
+    }).then((result) => {
+      if (result.status === 200) {
+        const tempValue = result.data.map((data) => ({
+          value: data.namaItem,
+          ...data,
+        }));
+        setAllInventoryItem(tempValue);
+      } else {
+        setOpenSnackbar(true);
+        setSnackbarStatus(false);
+        setSnackbarMessage("Tidak berhasil memanggil item bahan baku");
+      }
+    });
+  }, []);
+
+  useEffect(() => {
+    if (
+      dataProduksi.noOrderProduksi !== "" ||
+      dataProduksi.jenisCetakan !== ""
+    ) {
+      setJadwalProduksiPracetak((oldArray) => {
+        let updatedItems = oldArray.map((result) => {
+          return {
+            ...result,
+            jenisCetakan: dataProduksi.jenisCetakan,
+            noOrderProduksi: dataProduksi.noOrderProduksi,
+          };
+        });
+        return updatedItems;
+      });
+    }
+  }, [dataProduksi.jenisCetakan, dataProduksi.noOrderProduksi]);
+
+  useEffect(() => {
+    if (
+      dataProduksi.noOrderProduksi !== "" ||
+      dataProduksi.jenisCetakan !== ""
+    ) {
+      setJadwalProduksiCetak((oldArray) => {
+        let updatedItems = oldArray.map((result) => {
+          return {
+            ...result,
+            jenisCetakan: dataProduksi.jenisCetakan,
+            noOrderProduksi: dataProduksi.noOrderProduksi,
+          };
+        });
+        return updatedItems;
+      });
+    }
+  }, [dataProduksi.jenisCetakan, dataProduksi.noOrderProduksi]);
+
+  useEffect(() => {
+    if (
+      dataProduksi.noOrderProduksi !== "" ||
+      dataProduksi.jenisCetakan !== ""
+    ) {
+      setJadwalProduksiFitur((oldArray) => {
+        let updatedItems = oldArray.map((result) => {
+          return {
+            ...result,
+            jenisCetakan: dataProduksi.jenisCetakan,
+            noOrderProduksi: dataProduksi.noOrderProduksi,
+          };
+        });
+        return updatedItems;
+      });
+    }
+  }, [dataProduksi.jenisCetakan, dataProduksi.noOrderProduksi]);
+
+  useEffect(() => {
+    if (laporanProduksiId) {
+      axios({
+        method: "GET",
+        url: `http://localhost:3000/production/getOneProductionData/${laporanProduksiId}`,
+      }).then((result) => {
+        if (result.status === 200) {
+          setPersonil(result.data.personils);
+          setDataProduksi({
+            tanggalProduksi: dayjs(result.data.tanggalProduksi),
+            noOrderProduksi: result.data.noOrderProduksi,
+            jenisCetakan: result.data.jenisCetakan,
+            mesin: result.data.mesin,
+            dibuatOleh: result.data.dibuatOleh,
+            tahapProduksi: result.data.tahapProduksi || "Produksi Pracetak",
+            bahanProduksis: result.data.bahanLaporanProdukses.map((item) => ({
+              jenis: item.jenis,
+              kode: item.kode,
+              beratAwal: separateValueAndUnit(item.beratAwal),
+              beratAkhir: separateValueAndUnit(item.beratAkhir),
+              keterangan: item.keterangan,
+            })),
+          });
+          const data = result.data.jadwalProdukses.map((item) => {
+            return {
+              jamAwalProduksi: dayjs(item.jamAwalProduksi),
+              jamAkhirProduksi: dayjs(item.jamAkhirProduksi),
+              noOrderProduksi: item.noOrderProduksi,
+              jenisCetakan: item.jenisCetakan,
+              perolehanCetakan: separateValueAndUnit(item.perolehanCetak),
+              waste: separateValueAndUnit(item.waste),
+              keterangan: item.keterangan,
+            };
+          });
+          setJadwalProduksiPracetak(data);
+        } else {
+          setOpenSnackbar(true);
+          setSnackbarMessage(
+            `Tidak berhasil memanggil data kegiatan produksi dengan id ${laporanProduksiId}`
+          );
+          setSnackbarStatus(false);
+        }
+      });
+    }
+  }, []);
 
   const handleChangeJadwalProduksiCetak = (event, index, field, unit) => {
     const value = event && event.target ? event.target.value : event;
@@ -239,12 +377,6 @@ const KegiatanProduksi = (props) => {
     {
       value: "Box",
     },
-  ];
-
-  const tahapProduksi = [
-    { value: "Produksi Pracetak" },
-    { value: "Produksi Cetak" },
-    { value: "Produksi Fitur" },
   ];
 
   const getSelectedOrder = (value, field) => {
@@ -507,7 +639,7 @@ const KegiatanProduksi = (props) => {
         if (index === count) {
           return {
             ...result,
-            name: event.target.value,
+            nama: event.target.value,
           };
         }
         return result;
@@ -520,96 +652,6 @@ const KegiatanProduksi = (props) => {
     setSnackbarMessage("");
     setSnackbarStatus(true);
   };
-
-  useEffect(() => {
-    axios({
-      method: "GET",
-      url: "http://localhost:3000/productionPlanning/getAllProductionPlanning",
-    }).then((result) => {
-      if (result.status === 200) {
-        const tempData = result.data.map((data) => ({
-          value: data.orderId,
-          ...data,
-        }));
-        setAllProductionPlan(tempData);
-      } else {
-        setOpenSnackbar(true);
-        setSnackbarStatus(false);
-        setSnackbarMessage("Tidak berhasil memanggil data pesanan");
-      }
-    });
-  }, []);
-
-  useEffect(() => {
-    axios({
-      method: "GET",
-      url: "http://localhost:3000/inventory/getAllInventoryItem",
-    }).then((result) => {
-      if (result.status === 200) {
-        const tempValue = result.data.map((data) => ({
-          value: data.namaItem,
-          ...data,
-        }));
-        setAllInventoryItem(tempValue);
-      } else {
-        setOpenSnackbar(true);
-        setSnackbarStatus(false);
-        setSnackbarMessage("Tidak berhasil memanggil item bahan baku");
-      }
-    });
-  }, []);
-
-  useEffect(() => {
-    if (
-      dataProduksi.noOrderProduksi !== "" ||
-      dataProduksi.jenisCetakan !== ""
-    ) {
-      setJadwalProduksiPracetak((oldArray) => {
-        let updatedItems = oldArray.map((result) => {
-          return {
-            ...result,
-            jenisCetakan: dataProduksi.jenisCetakan,
-            noOrderProduksi: dataProduksi.noOrderProduksi,
-          };
-        });
-        return updatedItems;
-      });
-    }
-  }, [dataProduksi.jenisCetakan, dataProduksi.noOrderProduksi]);
-  useEffect(() => {
-    if (
-      dataProduksi.noOrderProduksi !== "" ||
-      dataProduksi.jenisCetakan !== ""
-    ) {
-      setJadwalProduksiCetak((oldArray) => {
-        let updatedItems = oldArray.map((result) => {
-          return {
-            ...result,
-            jenisCetakan: dataProduksi.jenisCetakan,
-            noOrderProduksi: dataProduksi.noOrderProduksi,
-          };
-        });
-        return updatedItems;
-      });
-    }
-  }, [dataProduksi.jenisCetakan, dataProduksi.noOrderProduksi]);
-  useEffect(() => {
-    if (
-      dataProduksi.noOrderProduksi !== "" ||
-      dataProduksi.jenisCetakan !== ""
-    ) {
-      setJadwalProduksiFitur((oldArray) => {
-        let updatedItems = oldArray.map((result) => {
-          return {
-            ...result,
-            jenisCetakan: dataProduksi.jenisCetakan,
-            noOrderProduksi: dataProduksi.noOrderProduksi,
-          };
-        });
-        return updatedItems;
-      });
-    }
-  }, [dataProduksi.jenisCetakan, dataProduksi.noOrderProduksi]);
 
   const handleAddPersonil = () => {
     setPersonil((oldArray) => {
@@ -650,6 +692,132 @@ const KegiatanProduksi = (props) => {
             (_, j) => j !== index
           ),
         };
+      });
+    }
+  };
+
+  const checkPersonilIsEmpty = () => {
+    for (const item of personil) {
+      if (!item.nama) {
+        return false;
+      }
+    }
+    return true;
+  };
+
+  const checkJadwalPracetakIsEmpty = () => {
+    for (const item of jadwalProduksiPracetak) {
+      if (
+        !item.jamAwalProduksi ||
+        !dayjs(item.jamAwalProduksi, "MM/DD/YYYY hh:mm A", true).isValid() ||
+        !item.jamAkhirProduksi ||
+        !dayjs(item.jamAkhirProduksi, "MM/DD/YYYY hh:mm A", true).isValid() ||
+        !item.noOrderProduksi ||
+        !item.jenisCetakan ||
+        !item.perolehanCetakan.value ||
+        !item.perolehanCetakan.unit ||
+        !item.waste.value ||
+        !item.waste.unit ||
+        !item.keterangan
+      ) {
+        return false;
+      }
+    }
+    return true;
+  };
+
+  const checkDataProduksiIsEmpty = () => {
+    if (
+      !dataProduksi.tanggalProduksi ||
+      !dayjs(
+        dataProduksi.tanggalProduksi,
+        "MM/DD/YYYY hh:mm A",
+        true
+      ).isValid() ||
+      !dataProduksi.jenisCetakan ||
+      !dataProduksi.noOrderProduksi ||
+      !dataProduksi.mesin ||
+      !dataProduksi.dibuatOleh ||
+      !dataProduksi.tahapProduksi
+    ) {
+      return false;
+    }
+    for (const item of dataProduksi.bahanProduksis) {
+      if (
+        !item.jenis ||
+        !item.kode ||
+        !item.beratAwal.value ||
+        !item.beratAwal.unit ||
+        !item.beratAkhir.value ||
+        !item.beratAkhir.unit ||
+        !item.keterangan
+      ) {
+        return false;
+      }
+    }
+    return true;
+  };
+
+  const handleModifyDataProduksi = () => {
+    const changedDataProduksi = {
+      ...dataProduksi,
+      bahanProduksis: dataProduksi.bahanProduksis.map((result) => {
+        return {
+          ...result,
+          beratAwal: `${result.beratAwal.value} ${result.beratAwal.unit}`,
+          beratAkhir: `${result.beratAkhir.value} ${result.beratAkhir.unit}`,
+        };
+      }),
+    };
+    return changedDataProduksi;
+  };
+
+  const handleModifyJadwalPracetak = () => {
+    const changedJadwalPracetak = jadwalProduksiPracetak.map((result) => {
+      return {
+        ...result,
+        perolehanCetakan: `${result.perolehanCetakan.value} ${result.perolehanCetakan.unit}`,
+        waste: `${result.waste.value} ${result.waste.unit}`,
+      };
+    });
+    return changedJadwalPracetak;
+  };
+
+  const handleAddKegiatanProduksi = () => {
+    const checkPersonil = checkPersonilIsEmpty();
+    const checkDataProduksi = checkDataProduksiIsEmpty();
+    const checkJadwalPracetak = checkJadwalPracetakIsEmpty();
+    if (
+      checkPersonil === false ||
+      checkDataProduksi === false ||
+      checkJadwalPracetak === false
+    ) {
+      setOpenSnackbar(true);
+      setSnackbarMessage("Tolong lengkapi semua input");
+      setSnackbarStatus(false);
+    } else {
+      const modifiedDataProduksis = handleModifyDataProduksi();
+      const modifiedJadwalPracetak = handleModifyJadwalPracetak();
+      axios({
+        method: "POST",
+        url: `http://localhost:3000/production/addKegiatanProduksi/${userInformation?.data?.id}`,
+        data: {
+          dataProduksi: modifiedDataProduksis,
+          jadwalPracetak: modifiedJadwalPracetak,
+          personil: personil,
+        },
+      }).then((result) => {
+        if (result.status === 200) {
+          setSuccessMessage("Berhasil menambahkan kegiatan produksi Pracetak");
+          setSnackbarStatus(true);
+          navigate(-1);
+        } else {
+          setOpenSnackbar(true);
+          setSnackbarStatus(false);
+          setSnackbarMessage(
+            "Tidak berhasil menambahkan kegiatan produksi pracetak"
+          );
+        }
       });
     }
   };
@@ -806,29 +974,6 @@ const KegiatanProduksi = (props) => {
                 />
               </div>
             </div>
-            <div
-              style={{
-                display: "flex",
-                alignItems: "center",
-                margin: "16px 0px",
-              }}
-            >
-              <Typography
-                style={{ width: "15vw", color: "#0F607D", fontSize: "1.5vw" }}
-              >
-                Tahap Produksi:{" "}
-              </Typography>
-              <div>
-                <MySelectTextField
-                  data={tahapProduksi}
-                  value={dataProduksi.tahapProduksi}
-                  onChange={(event) => {
-                    handleChangeDataProduksi(event, "tahapProduksi");
-                  }}
-                  width={"200px"}
-                />
-              </div>
-            </div>
           </div>
           <div style={{ width: "50%" }}>
             <div
@@ -875,6 +1020,7 @@ const KegiatanProduksi = (props) => {
                           <TableCell>{index + 1 + "."}</TableCell>
                           <TableCell>
                             <TextField
+                              value={result.nama}
                               onChange={(event) => {
                                 handleChangeInputPersonil(event, index);
                               }}
@@ -1246,6 +1392,8 @@ const KegiatanProduksi = (props) => {
                                 />
                                 <div style={{ marginLeft: "8px" }}>
                                   <MySelectTextField
+                                    key={"unit"}
+                                    width={"60px"}
                                     value={result.waste.unit}
                                     data={units}
                                     onChange={(event) => {
@@ -1291,6 +1439,31 @@ const KegiatanProduksi = (props) => {
                   </TableBody>
                 </Table>
               </TableContainer>
+              <div
+                style={{
+                  marginTop: "16px",
+                  justifyContent: "center",
+                  display: "flex",
+                }}
+              >
+                <DefaultButton
+                  onClickFunction={() => {
+                    handleAddKegiatanProduksi();
+                  }}
+                >
+                  Tambah Kegiatan Produksi Pracetak
+                </DefaultButton>
+                <Button
+                  color="error"
+                  variant="outlined"
+                  style={{ textTransform: "none", marginLeft: "8px" }}
+                  onClick={() => {
+                    navigate(-1);
+                  }}
+                >
+                  Cancel
+                </Button>
+              </div>
             </div>
           </div>
         )}

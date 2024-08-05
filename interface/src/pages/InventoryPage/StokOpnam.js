@@ -59,8 +59,6 @@ const StokOpnam = (props) => {
     ],
   });
 
-  console.log(dataStokOpnam)
-
   const [allInventoryName, setAllInventoryName] = useState([]);
   const [allPermohonanPembelianId, setAllPermohonanPembelianId] = useState([]);
   const [refreshPermohonanPembelian, setRefreshPermohonanPembelian] =

@@ -361,7 +361,7 @@ const MaindashboardProductionPlanning = (props) => {
                 </TableHead>
                 <TableBody>
                   {allProductionPlan?.data?.map((result, index) => (
-                    <TableRow>
+                    <TableRow key={index}>
                       <TableCell>{result.id}</TableCell>
                       <TableCell>{result.pemesan}</TableCell>
                       <TableCell>{result.alamatKirimBarang}</TableCell>
@@ -500,7 +500,7 @@ const MaindashboardProductionPlanning = (props) => {
                             ?.slice(0, 3)
                             .map((document, index) => {
                               return (
-                                <div>
+                                <div key={index}>
                                   <img
                                     style={{
                                       height: isMobile ? "30px" : "3.125vw",
@@ -529,7 +529,7 @@ const MaindashboardProductionPlanning = (props) => {
                         <div style={{ display: "flex" }}>
                           {data.documents?.map((document, index) => {
                             return (
-                              <div>
+                              <div key={index}>
                                 <img
                                   style={{
                                     height: isMobile ? "30px" : "3.125vw",
@@ -755,7 +755,7 @@ const MaindashboardProductionPlanning = (props) => {
                             ?.slice(0, 3)
                             .map((document, index) => {
                               return (
-                                <div>
+                                <div key={index}>
                                   <img
                                     style={{
                                       height: isMobile ? "30px" : "3.125vw",
@@ -784,7 +784,7 @@ const MaindashboardProductionPlanning = (props) => {
                         <div style={{ display: "flex" }}>
                           {data.documents?.map((document, index) => {
                             return (
-                              <div>
+                              <div key={index}>
                                 <img
                                   style={{
                                     height: isMobile ? "30px" : "3.125vw",

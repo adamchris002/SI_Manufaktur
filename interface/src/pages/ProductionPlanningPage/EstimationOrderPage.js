@@ -657,7 +657,7 @@ const EstimationOrderPage = (props) => {
                       <div style={{ display: "flex", overflowX: "auto" }}>
                         {selectedOrder?.data?.documents.map((result, index) => {
                           return (
-                            <div>
+                            <div key={index}>
                               {index ===
                               selectedOrder.data.documents.length - 1 ? (
                                 <img
@@ -1354,7 +1354,7 @@ const EstimationOrderPage = (props) => {
                 <div>
                   {estimasiBahanBaku.map((result, index) => {
                     return (
-                      <div style={{ marginTop: "32px" }}>
+                      <div key={index} style={{ marginTop: "32px" }}>
                         <TableContainer component={Paper}>
                           <Table
                             sx={{ minWidth: 650 }}

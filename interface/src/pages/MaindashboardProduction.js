@@ -1,9 +1,14 @@
 import React, { useEffect, useState } from "react";
+import axios from "axios";
+import { useNavigate } from "react-router-dom";
+import dayjs from "dayjs";
+import MySnackbar from "../components/Snackbar";
 import factoryBackground from "../assets/factorybackground.png";
 import companyLogo from "../assets/PT_Aridas_Karya_Satria_Logo.png";
 import DefaultButton from "../components/Button";
 import AccountCircleIcon from "@mui/icons-material/AccountCircle";
 import {
+  IconButton,
   Paper,
   Table,
   TableBody,
@@ -13,10 +18,9 @@ import {
   TableRow,
   Typography,
 } from "@mui/material";
-import axios from "axios";
-import MySnackbar from "../components/Snackbar";
-import dayjs from "dayjs";
-import { useNavigate } from "react-router-dom";
+import EditIcon from "@mui/icons-material/Edit";
+import ArrowForwardIcon from "@mui/icons-material/ArrowForward";
+import DeleteIcon from "@mui/icons-material/Delete";
 
 const MaindashboardProduction = (props) => {
   const { userInformation } = props;
@@ -25,11 +29,14 @@ const MaindashboardProduction = (props) => {
   const orderList = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
 
   const [allPenyerahanBarang, setAllPenyerahanBarang] = useState([]);
-  // console.log(allPenyerahanBarang);
+  const [dataKegiatanProduksi, setDataKegiatanProduksi] = useState([]);
 
   const [snackbarMessage, setSnackbarMessage] = useState("");
   const [snackbarStatus, setSnackbarStatus] = useState(false);
   const [openSnackbar, setOpenSnackbar] = useState(false);
+
+  const [refreshDataKegiatanProduksi, setRefreshDataKegiatanProduksi] =
+    useState(true);
 
   useEffect(() => {
     axios({
@@ -46,10 +53,32 @@ const MaindashboardProduction = (props) => {
     });
   }, []);
 
+  useEffect(() => {
+    if (refreshDataKegiatanProduksi) {
+      axios({
+        method: "GET",
+        url: "http://localhost:3000/production/getProductionData",
+      }).then((result) => {
+        if (result.status === 200) {
+          setDataKegiatanProduksi(result.data);
+          setRefreshDataKegiatanProduksi(false);
+        } else {
+          setRefreshDataKegiatanProduksi(false);
+        }
+      });
+    }
+  }, [refreshDataKegiatanProduksi]);
+
   const handleCloseSnackbar = () => {
     setOpenSnackbar(false);
     setSnackbarMessage("");
     setSnackbarStatus(true);
+  };
+
+  const handleGoToEditKegiatanProduksi = (id) => {
+    navigate("/productionDashboard/kegiatanProduksi", {
+      state: { laporanProduksiId: id },
+    });
   };
 
   return (
@@ -232,38 +261,46 @@ const MaindashboardProduction = (props) => {
               whiteSpace: "nowrap",
             }}
           >
-            <TableContainer component={Paper}>
-              <Table sx={{ minWidth: 650 }} aria-label="simple table">
-                <TableHead>
-                  <TableRow>
-                    <TableCell>No.</TableCell>
-                    <TableCell>Id Pesanan</TableCell>
-                    <TableCell>Id Perencanaan Produksi</TableCell>
-                    <TableCell>Status Pengambilan</TableCell>
-                    <TableCell>Tanggal Pengambilan</TableCell>
-                  </TableRow>
-                </TableHead>
-                <TableBody>
-                  {allPenyerahanBarang?.map((result, index) => {
-                    return (
-                      <React.Fragment key={index}>
-                        <TableRow>
-                          <TableCell>{index + 1 + "."}</TableCell>
-                          <TableCell>{result.orderId}</TableCell>
-                          <TableCell>{result.productionPlanningId}</TableCell>
-                          <TableCell>{result.statusPenyerahan}</TableCell>
-                          <TableCell>
-                            {dayjs(result.tanggalPenyerahan).format(
-                              "MM/DD/YYYY hh:mm A"
-                            )}
-                          </TableCell>
-                        </TableRow>
-                      </React.Fragment>
-                    );
-                  })}
-                </TableBody>
-              </Table>
-            </TableContainer>
+            {allPenyerahanBarang.length === 0 ? (
+              <div style={{ display: "flex", justifyContent: "center" }}>
+                <Typography style={{ fontSize: "1.5vw", color: "#0F607D" }}>
+                  Belum ada bahan baku yang dapat diambil
+                </Typography>
+              </div>
+            ) : (
+              <TableContainer component={Paper}>
+                <Table sx={{ minWidth: 650 }} aria-label="simple table">
+                  <TableHead>
+                    <TableRow>
+                      <TableCell>No.</TableCell>
+                      <TableCell>Id Pesanan</TableCell>
+                      <TableCell>Id Perencanaan Produksi</TableCell>
+                      <TableCell>Status Pengambilan</TableCell>
+                      <TableCell>Tanggal Pengambilan</TableCell>
+                    </TableRow>
+                  </TableHead>
+                  <TableBody>
+                    {allPenyerahanBarang?.map((result, index) => {
+                      return (
+                        <React.Fragment key={index}>
+                          <TableRow>
+                            <TableCell>{index + 1 + "."}</TableCell>
+                            <TableCell>{result.orderId}</TableCell>
+                            <TableCell>{result.productionPlanningId}</TableCell>
+                            <TableCell>{result.statusPenyerahan}</TableCell>
+                            <TableCell>
+                              {dayjs(result.tanggalPenyerahan).format(
+                                "MM/DD/YYYY hh:mm A"
+                              )}
+                            </TableCell>
+                          </TableRow>
+                        </React.Fragment>
+                      );
+                    })}
+                  </TableBody>
+                </Table>
+              </TableContainer>
+            )}
           </div>
         </div>
         <div
@@ -304,31 +341,78 @@ const MaindashboardProduction = (props) => {
               whiteSpace: "nowrap",
             }}
           >
-            {orderList.map((data, index) => {
-              return (
-                <div
-                  key={index}
-                  style={{
-                    height: "256px",
-                    width: "256px",
-                    backgroundColor: "#d9d9d9",
-                    borderRadius: "20px",
-                    display: "inline-block",
-                    marginRight: index === orderList.length - 1 ? "" : "32px",
-                    cursor: "pointer",
-                    transition: "background-color 0.3s ease",
+            {dataKegiatanProduksi.length === 0 ? (
+              <div style={{ display: "flex", justifyContent: "center" }}>
+                <Typography style={{ color: "#0F607D", fontSize: "1.5vw" }}>
+                  Tidak ada data Kegiatan Produksi
+                </Typography>
+              </div>
+            ) : (
+              <TableContainer component={Paper} sx={{ overflowX: "auto" }}>
+                <Table
+                  sx={{
+                    minWidth: 650,
+                    overflowX: "auto",
+                    tableLayout: "fixed",
                   }}
-                  onMouseEnter={(e) =>
-                    (e.target.style.backgroundColor = "#a0a0a0")
-                  }
-                  onMouseLeave={(e) =>
-                    (e.target.style.backgroundColor = "#d9d9d9")
-                  }
+                  aria-label="simple table"
                 >
-                  {/* <img src="" alt=""/> */}
-                </div>
-              );
-            })}
+                  <TableHead>
+                    <TableRow>
+                      <TableCell>Tanggal Produksi</TableCell>
+                      <TableCell>Tahap Produksi</TableCell>
+                      <TableCell>No Order Produksi</TableCell>
+                      <TableCell>Jenis Cetakan</TableCell>
+                      <TableCell>Dibuat Oleh</TableCell>
+                      <TableCell>Actions</TableCell>
+                    </TableRow>
+                  </TableHead>
+                  <TableBody>
+                    {dataKegiatanProduksi.map((result, index) => {
+                      return (
+                        <React.Fragment key={index}>
+                          <TableRow>
+                            <TableCell>
+                              {dayjs(result.tanggalProduksi).format(
+                                "MM/DD/YYYY hh:mm A"
+                              )}
+                            </TableCell>
+                            <TableCell>{result.tahapProduksi}</TableCell>
+                            <TableCell>{result.noOrderProduksi}</TableCell>
+                            <TableCell>{result.jenisCetakan}</TableCell>
+                            <TableCell>{result.dibuatOleh}</TableCell>
+                            <TableCell>
+                              <div
+                                style={{
+                                  display: "flex",
+                                  alignItems: "center",
+                                }}
+                              >
+                                <IconButton
+                                  onClick={() => {
+                                    handleGoToEditKegiatanProduksi(result.id);
+                                  }}
+                                >
+                                  <EditIcon style={{ color: "#0F607D" }} />
+                                </IconButton>
+                                <IconButton>
+                                  <ArrowForwardIcon
+                                    style={{ color: "#0F607D" }}
+                                  />
+                                </IconButton>
+                                <IconButton>
+                                  <DeleteIcon style={{ color: "red" }} />
+                                </IconButton>
+                              </div>
+                            </TableCell>
+                          </TableRow>
+                        </React.Fragment>
+                      );
+                    })}
+                  </TableBody>
+                </Table>
+              </TableContainer>
+            )}
           </div>
         </div>
         <div
@@ -367,7 +451,7 @@ const MaindashboardProduction = (props) => {
             {orderList.map((data, index) => {
               return (
                 <div
-                key={index}
+                  key={index}
                   style={{
                     height: "256px",
                     width: "256px",
@@ -429,7 +513,7 @@ const MaindashboardProduction = (props) => {
             {orderList.map((data, index) => {
               return (
                 <div
-                key={index}
+                  key={index}
                   style={{
                     height: "256px",
                     width: "256px",
