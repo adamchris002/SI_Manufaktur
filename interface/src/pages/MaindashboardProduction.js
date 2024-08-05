@@ -21,6 +21,7 @@ import {
 import EditIcon from "@mui/icons-material/Edit";
 import ArrowForwardIcon from "@mui/icons-material/ArrowForward";
 import DeleteIcon from "@mui/icons-material/Delete";
+import { useAuth } from "../components/AuthContext";
 
 const MaindashboardProduction = (props) => {
   const { userInformation } = props;
@@ -37,6 +38,17 @@ const MaindashboardProduction = (props) => {
 
   const [refreshDataKegiatanProduksi, setRefreshDataKegiatanProduksi] =
     useState(true);
+
+  const { message, clearMessage, setSuccessMessage } = useAuth();
+
+  useEffect(() => {
+    if (message) {
+      setSnackbarMessage(message);
+      setSnackbarStatus(true);
+      setOpenSnackbar(true);
+      clearMessage();
+    }
+  }, [message, clearMessage]);
 
   useEffect(() => {
     axios({
@@ -78,6 +90,24 @@ const MaindashboardProduction = (props) => {
   const handleGoToEditKegiatanProduksi = (id) => {
     navigate("/productionDashboard/kegiatanProduksi", {
       state: { laporanProduksiId: id },
+    });
+  };
+
+  const handleDeleteKegiatanProduksi = (id) => {
+    axios({
+      method: "DELETE",
+      url: `http://localhost:3000/production/deleteKegiatanProduksi/${id}`,
+    }).then((result) => {
+      if (result.status === 200) {
+        setRefreshDataKegiatanProduksi(true);
+        setOpenSnackbar(true);
+        setSnackbarStatus(true);
+        setSnackbarMessage("Berhasil menghapus data kegiatan produksi");
+      } else {
+        setOpenSnackbar(true);
+        setSnackbarStatus(false);
+        setSnackbarMessage("Tidak berhasil menghapus data kegiatan produksi");
+      }
     });
   };
 
@@ -368,7 +398,7 @@ const MaindashboardProduction = (props) => {
                     </TableRow>
                   </TableHead>
                   <TableBody>
-                    {dataKegiatanProduksi.map((result, index) => {
+                    {dataKegiatanProduksi?.map((result, index) => {
                       return (
                         <React.Fragment key={index}>
                           <TableRow>
@@ -400,7 +430,9 @@ const MaindashboardProduction = (props) => {
                                     style={{ color: "#0F607D" }}
                                   />
                                 </IconButton>
-                                <IconButton>
+                                <IconButton onClick={() => {
+                                  handleDeleteKegiatanProduksi(result.id)
+                                }}>
                                   <DeleteIcon style={{ color: "red" }} />
                                 </IconButton>
                               </div>

@@ -30,7 +30,7 @@ module.exports = (sequelize, DataTypes) => {
       });
       users.hasMany(models.penyerahanBarangs, { foreignKey: "id" });
       users.belongsToMany(models.laporanProduksis, {
-        through: "UserLaporanProduksis",
+        through: "UserLaporanProductions",
       });
       users.hasMany(models.laporanProduksis, { foreignKey: "id" });
     }

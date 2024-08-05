@@ -24,5 +24,21 @@ productionRoutes.post(
 //put
 
 //delete
+productionRoutes.delete(
+  "/deletePersonils/:id",
+  ProductionController.deletePersonil
+);
+productionRoutes.delete(
+  "/deleteBahanProduksiPracetak/:id",
+  ProductionController.deleteBahanProduksiPracetak
+);
+productionRoutes.delete(
+  "/deleteJadwalProduksiPracetak/:id",
+  ProductionController.deleteJadwalProduksiPracetak
+);
+productionRoutes.delete(
+  "/deleteKegiatanProduksi/:id",
+  ProductionController.deleteKegiatanProduksi
+);
 
 module.exports = productionRoutes;

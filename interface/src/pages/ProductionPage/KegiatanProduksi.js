@@ -104,10 +104,15 @@ const KegiatanProduksi = (props) => {
     },
   ]);
 
+  console.log(jadwalProduksiPracetak);
+  console.log(dataProduksi);
+
   const [showError, setShowError] = useState([]);
   const [openSnackbar, setOpenSnackbar] = useState(false);
   const [snackbarStatus, setSnackbarStatus] = useState(false);
   const [snackbarMessage, setSnackbarMessage] = useState("");
+  const [refreshDataKegiatanProduksi, setRefreshDataKegiatanProduksi] =
+    useState(true);
 
   useEffect(() => {
     axios({
@@ -203,49 +208,48 @@ const KegiatanProduksi = (props) => {
 
   useEffect(() => {
     if (laporanProduksiId) {
-      axios({
-        method: "GET",
-        url: `http://localhost:3000/production/getOneProductionData/${laporanProduksiId}`,
-      }).then((result) => {
-        if (result.status === 200) {
-          setPersonil(result.data.personils);
-          setDataProduksi({
-            tanggalProduksi: dayjs(result.data.tanggalProduksi),
-            noOrderProduksi: result.data.noOrderProduksi,
-            jenisCetakan: result.data.jenisCetakan,
-            mesin: result.data.mesin,
-            dibuatOleh: result.data.dibuatOleh,
-            tahapProduksi: result.data.tahapProduksi || "Produksi Pracetak",
-            bahanProduksis: result.data.bahanLaporanProdukses.map((item) => ({
-              jenis: item.jenis,
-              kode: item.kode,
-              beratAwal: separateValueAndUnit(item.beratAwal),
-              beratAkhir: separateValueAndUnit(item.beratAkhir),
-              keterangan: item.keterangan,
-            })),
-          });
-          const data = result.data.jadwalProdukses.map((item) => {
-            return {
-              jamAwalProduksi: dayjs(item.jamAwalProduksi),
-              jamAkhirProduksi: dayjs(item.jamAkhirProduksi),
-              noOrderProduksi: item.noOrderProduksi,
-              jenisCetakan: item.jenisCetakan,
-              perolehanCetakan: separateValueAndUnit(item.perolehanCetak),
-              waste: separateValueAndUnit(item.waste),
-              keterangan: item.keterangan,
-            };
-          });
-          setJadwalProduksiPracetak(data);
-        } else {
-          setOpenSnackbar(true);
-          setSnackbarMessage(
-            `Tidak berhasil memanggil data kegiatan produksi dengan id ${laporanProduksiId}`
-          );
-          setSnackbarStatus(false);
-        }
-      });
+      if (refreshDataKegiatanProduksi) {
+        axios({
+          method: "GET",
+          url: `http://localhost:3000/production/getOneProductionData/${laporanProduksiId}`,
+        }).then((result) => {
+          if (result.status === 200) {
+            setPersonil(result.data.personils);
+            setDataProduksi({
+              tanggalProduksi: dayjs(result.data.tanggalProduksi),
+              noOrderProduksi: result.data.noOrderProduksi,
+              jenisCetakan: result.data.jenisCetakan,
+              mesin: result.data.mesin,
+              dibuatOleh: result.data.dibuatOleh,
+              tahapProduksi: result.data.tahapProduksi || "Produksi Pracetak",
+              bahanProduksis: result.data.bahanLaporanProdukses.map((item) => ({
+                ...item,
+                beratAwal: separateValueAndUnit(item.beratAwal),
+                beratAkhir: separateValueAndUnit(item.beratAkhir),
+              })),
+            });
+            const data = result.data.jadwalProdukses.map((item) => {
+              return {
+                ...item,
+                jamAwalProduksi: dayjs(item.jamAwalProduksi),
+                jamAkhirProduksi: dayjs(item.jamAkhirProduksi),
+                perolehanCetakan: separateValueAndUnit(item.perolehanCetak),
+                waste: separateValueAndUnit(item.waste),
+              };
+            });
+            setJadwalProduksiPracetak(data);
+            setRefreshDataKegiatanProduksi(false);
+          } else {
+            setOpenSnackbar(true);
+            setSnackbarMessage(
+              `Tidak berhasil memanggil data kegiatan produksi dengan id ${laporanProduksiId}`
+            );
+            setSnackbarStatus(false);
+          }
+        });
+      }
     }
-  }, []);
+  }, [refreshDataKegiatanProduksi]);
 
   const handleChangeJadwalProduksiCetak = (event, index, field, unit) => {
     const value = event && event.target ? event.target.value : event;
@@ -616,6 +620,26 @@ const KegiatanProduksi = (props) => {
       setJadwalProduksiPracetak((oldArray) =>
         oldArray.filter((_, j) => j !== index)
       );
+    } else {
+      axios({
+        method: "DELETE",
+        url: `http://localhost:3000/production/deleteJadwalProduksiPracetak/${id}`,
+      }).then((result) => {
+        if (result.status === 200) {
+          setRefreshDataKegiatanProduksi(true);
+          setOpenSnackbar(true);
+          setSnackbarStatus(true);
+          setSnackbarMessage(
+            "Berhasil Menghapus data jadwal produksi pracetak"
+          );
+        } else {
+          setOpenSnackbar(true);
+          setSnackbarStatus(false);
+          setSnackbarMessage(
+            "Tidak berhasil menghapus data jadwal produksi pracetak"
+          );
+        }
+      });
     }
   };
   const handleDeleteDataJadwalProduksiCetak = (id, index) => {
@@ -680,10 +704,28 @@ const KegiatanProduksi = (props) => {
   const handleDeletePersonil = (id, index) => {
     if (!id || id === undefined) {
       setPersonil((oldArray) => oldArray.filter((_, j) => j !== index));
+    } else {
+      axios({
+        method: "DELETE",
+        url: `http://localhost:3000/production/deletePersonils/${id}`,
+      }).then((result) => {
+        if (result.status === 200) {
+          setRefreshDataKegiatanProduksi(true);
+          setOpenSnackbar(true);
+          setSnackbarStatus(true);
+          setSnackbarMessage("Berhasil Menghapus data personil");
+        } else {
+          setOpenSnackbar(true);
+          setSnackbarStatus(false);
+          setSnackbarMessage("Tidak berhasil menghapus data personil");
+        }
+      });
     }
   };
 
   const handleDeleteBahan = (id, index) => {
+    console.log(id);
+    console.log(index);
     if (!id || id === undefined) {
       setDataProduksi((oldObject) => {
         return {
@@ -692,6 +734,24 @@ const KegiatanProduksi = (props) => {
             (_, j) => j !== index
           ),
         };
+      });
+    } else {
+      axios({
+        method: "DELETE",
+        url: `http://localhost:3000/production/deleteBahanProduksiPracetak/${id}`,
+      }).then((result) => {
+        if (result.status === 200) {
+          setRefreshDataKegiatanProduksi(true);
+          setOpenSnackbar(true);
+          setSnackbarStatus(true);
+          setSnackbarMessage("Berhasil Menghapus data bahan produksi pracetak");
+        } else {
+          setOpenSnackbar(true);
+          setSnackbarStatus(false);
+          setSnackbarMessage(
+            "Tidak berhasil menghapus data bahan produksi pracetak"
+          );
+        }
       });
     }
   };
@@ -783,6 +843,44 @@ const KegiatanProduksi = (props) => {
     return changedJadwalPracetak;
   };
 
+  const handleEditKegiatanProduksi = () => {
+    const checkPersonil = checkPersonilIsEmpty();
+    const checkDataProduksi = checkDataProduksiIsEmpty();
+    const checkJadwalPracetak = checkJadwalPracetakIsEmpty();
+    if (
+      checkPersonil === false ||
+      checkDataProduksi === false ||
+      checkJadwalPracetak === false
+    ) {
+      setOpenSnackbar(true);
+      setSnackbarMessage("Tolong lengkapi semua input");
+      setSnackbarStatus(false);
+    } else {
+      const modifiedDataProduksis = handleModifyDataProduksi();
+      const modifiedJadwalPracetak = handleModifyJadwalPracetak();
+      axios({
+        method: "POST",
+        // url: `http://localhost:3000/production/addKegiatanProduksi/${userInformation?.data?.id}`,
+        data: {
+          dataProduksi: modifiedDataProduksis,
+          jadwalPracetak: modifiedJadwalPracetak,
+          personil: personil,
+        },
+      }).then((result) => {
+        if (result.status === 200) {
+          setSuccessMessage("Berhasil menambahkan kegiatan produksi Pracetak");
+          setSnackbarStatus(true);
+          navigate(-1);
+        } else {
+          setOpenSnackbar(true);
+          setSnackbarStatus(false);
+          setSnackbarMessage(
+            "Tidak berhasil menambahkan kegiatan produksi pracetak"
+          );
+        }
+      });
+    }
+  };
   const handleAddKegiatanProduksi = () => {
     const checkPersonil = checkPersonilIsEmpty();
     const checkDataProduksi = checkDataProduksiIsEmpty();
@@ -1448,10 +1546,14 @@ const KegiatanProduksi = (props) => {
               >
                 <DefaultButton
                   onClickFunction={() => {
-                    handleAddKegiatanProduksi();
+                    laporanProduksiId !== undefined
+                      ? handleEditKegiatanProduksi()
+                      : handleAddKegiatanProduksi();
                   }}
                 >
-                  Tambah Kegiatan Produksi Pracetak
+                  {laporanProduksiId !== undefined
+                    ? "Edit Kegiatan Produksi Pracetak"
+                    : "Tambah Kegiatan Produksi Pracetak"}
                 </DefaultButton>
                 <Button
                   color="error"

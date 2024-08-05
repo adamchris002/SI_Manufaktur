@@ -2,10 +2,10 @@ const {
   penyerahanBarangs,
   itemPenyerahanBarangs,
   laporanProduksis,
-  UserLaporanProduksis,
   personils,
   bahanLaporanProduksis,
   jadwalProduksis,
+  UserLaporanProductions,
 } = require("../models");
 
 class ProductionController {
@@ -82,10 +82,10 @@ class ProductionController {
           })
         );
       }
-      await UserLaporanProduksis.create({
+
+      await UserLaporanProductions.create({
         userId: parseInt(id),
-        laporanProduksiId: result.id,
-        laporanProduksisId: result.id,
+        laporanProductionId: parseInt(result.id),
       });
 
       res.json(result);
@@ -121,6 +121,54 @@ class ProductionController {
       res.json(result);
     } catch (error) {
       res.json(error);
+    }
+  }
+  static async editKegiatanProduksiPracetak(req, res) {
+    try {
+    } catch (error) {
+      res.json(error);
+    }
+  }
+  static async deletePersonil(req, res) {
+    try {
+      const { id } = req.params;
+      let result = await personils.destroy({
+        where: { id: id },
+      });
+      res.json(result);
+    } catch (error) {}
+  }
+  static async deleteBahanProduksiPracetak(req, res) {
+    try {
+      const { id } = req.params;
+      let result = await bahanLaporanProduksis.destroy({
+        where: { id: id },
+      });
+      res.json(result);
+    } catch (error) {
+      res.json(error);
+    }
+  }
+  static async deleteJadwalProduksiPracetak(req, res) {
+    try {
+      const { id } = req.params;
+      let result = await jadwalProduksis.destroy({
+        where: { id: id },
+      });
+      res.json(result);
+    } catch (error) {
+      res.json(error);
+    }
+  }
+  static async deleteKegiatanProduksi(req, res) {
+    try {
+      const { id } = req.params;
+      let result = await laporanProduksis.destroy({
+        where: { id: id },
+      });
+      res.json(result);
+    } catch (error) {
+      res.json(result);
     }
   }
 }
