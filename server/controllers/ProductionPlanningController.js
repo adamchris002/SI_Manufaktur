@@ -211,6 +211,21 @@ class ProductionPlanningController {
       res.json(error);
     }
   }
+
+  static async getAllProductionPlanStatusEstimated(req, res) {
+    try {
+      let allEstimatedOrder = await orders.findAll({
+        where: { orderStatus: "Estimated" },
+      });
+      let estimatedOrderIds = allEstimatedOrder.map((order) => order.id);
+      let result = await productionPlannings.findAll({
+        where: {orderId: {[Op.in]: estimatedOrderIds}},
+      });
+      res.json(result);
+    } catch (error) {
+      res.json(error);
+    }
+  }
   static async getAllProductionPlan(req, res) {
     try {
       let result = await productionPlannings.findAll({

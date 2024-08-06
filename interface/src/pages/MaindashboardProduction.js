@@ -72,7 +72,21 @@ const MaindashboardProduction = (props) => {
         url: "http://localhost:3000/production/getProductionData",
       }).then((result) => {
         if (result.status === 200) {
-          setDataKegiatanProduksi(result.data);
+          const data = result.data;
+          data.sort((a, b) => {
+            if (a.noOrderProduksi === b.noOrderProduksi) {
+              return new Date(b.updatedAt) - new Date(a.updatedAt);
+            }
+            return a.noOrderProduksi - b.noOrderProduksi;
+          });
+          const latestDataMap = new Map();
+          data.forEach((item) => {
+            if (!latestDataMap.has(item.noOrderProduksi)) {
+              latestDataMap.set(item.noOrderProduksi, item);
+            }
+          });
+          const latestData = Array.from(latestDataMap.values());
+          setDataKegiatanProduksi(latestData);
           setRefreshDataKegiatanProduksi(false);
         } else {
           setRefreshDataKegiatanProduksi(false);
@@ -85,6 +99,12 @@ const MaindashboardProduction = (props) => {
     setOpenSnackbar(false);
     setSnackbarMessage("");
     setSnackbarStatus(true);
+  };
+
+  const handleChangeTahapProduksi = (id) => {
+    navigate("/productionDashboard/kegiatanProduksi", {
+      state: { isNewTahapProduksi: { id: id, status: true } },
+    });
   };
 
   const handleGoToEditKegiatanProduksi = (id) => {
@@ -425,14 +445,20 @@ const MaindashboardProduction = (props) => {
                                 >
                                   <EditIcon style={{ color: "#0F607D" }} />
                                 </IconButton>
-                                <IconButton>
+                                <IconButton
+                                  onClick={() => {
+                                    handleChangeTahapProduksi(result.id);
+                                  }}
+                                >
                                   <ArrowForwardIcon
                                     style={{ color: "#0F607D" }}
                                   />
                                 </IconButton>
-                                <IconButton onClick={() => {
-                                  handleDeleteKegiatanProduksi(result.id)
-                                }}>
+                                <IconButton
+                                  onClick={() => {
+                                    handleDeleteKegiatanProduksi(result.id);
+                                  }}
+                                >
                                   <DeleteIcon style={{ color: "red" }} />
                                 </IconButton>
                               </div>

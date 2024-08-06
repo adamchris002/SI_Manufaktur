@@ -26,6 +26,10 @@ productionPlanningRoutes.get(
   "/getAllProductionPlanning",
   ProductionPlanningController.getAllProductionPlan
 );
+productionPlanningRoutes.get(
+  "/getAllProductionPlanStatusEstimated",
+  ProductionPlanningController.getAllProductionPlanStatusEstimated
+);
 productionPlanningRoutes.delete(
   "/deleteProductionPlan/:id",
   ProductionPlanningController.deleteProductionPlan

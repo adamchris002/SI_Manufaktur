@@ -33,7 +33,7 @@ const KegiatanProduksi = (props) => {
   const navigate = useNavigate();
   const location = useLocation();
   const { setSuccessMessage } = useAuth();
-  const { laporanProduksiId } = location.state || "";
+  const { laporanProduksiId, isNewTahapProduksi } = location.state || "";
 
   const [personil, setPersonil] = useState([
     {
@@ -42,6 +42,7 @@ const KegiatanProduksi = (props) => {
   ]);
 
   const [allProductionPlan, setAllProductionPlan] = useState([]);
+  // console.log(allProductionPlan)
   const [allInventoryItem, setAllInventoryItem] = useState([]);
   const [dataProduksi, setDataProduksi] = useState({
     tanggalProduksi: dayjs(""),
@@ -60,6 +61,7 @@ const KegiatanProduksi = (props) => {
       },
     ],
   });
+  // console.log(allProductionPlan)
   const [jadwalProduksiPracetak, setJadwalProduksiPracetak] = useState([
     {
       jamAwalProduksi: dayjs(""),
@@ -104,8 +106,8 @@ const KegiatanProduksi = (props) => {
     },
   ]);
 
-  console.log(jadwalProduksiPracetak);
-  console.log(dataProduksi);
+  const [tanggalPengiriman, setTanggalPengiriman] = useState(dayjs(""));
+  // console.log(tanggalPengiriman);
 
   const [showError, setShowError] = useState([]);
   const [openSnackbar, setOpenSnackbar] = useState(false);
@@ -115,22 +117,69 @@ const KegiatanProduksi = (props) => {
     useState(true);
 
   useEffect(() => {
-    axios({
-      method: "GET",
-      url: "http://localhost:3000/productionPlanning/getAllProductionPlanning",
-    }).then((result) => {
-      if (result.status === 200) {
-        const tempData = result.data.map((data) => ({
-          value: data.orderId,
-          ...data,
-        }));
-        setAllProductionPlan(tempData);
-      } else {
-        setOpenSnackbar(true);
-        setSnackbarStatus(false);
-        setSnackbarMessage("Tidak berhasil memanggil data pesanan");
-      }
-    });
+    if (isNewTahapProduksi) {
+      axios({
+        method: "GET",
+        url: `http://localhost:3000/production/getOneProductionData/${isNewTahapProduksi.id}`,
+      }).then((result) => {
+        if (result.status === 200) {
+          // console.log(result.data);
+          setDataProduksi((oldObject) => {
+            return {
+              ...oldObject,
+              noOrderProduksi: result.data.noOrderProduksi,
+              jenisCetakan: result.data.jenisCetakan,
+
+              tahapProduksi: "Produksi Cetak",
+            };
+          });
+        } else {
+          setOpenSnackbar(true);
+          setSnackbarStatus(false);
+          setSnackbarMessage("Tidak berhasil memanggil data kegiatan produksi");
+        }
+      });
+    }
+  }, []);
+
+  useEffect(() => {
+    if (laporanProduksiId === undefined && isNewTahapProduksi === undefined) {
+      axios({
+        method: "GET",
+        url: "http://localhost:3000/productionPlanning/getAllProductionPlanStatusEstimated",
+      }).then((result) => {
+        if (result.status === 200) {
+          console.log(result.data);
+          const tempData = result.data.map((data) => ({
+            value: data.orderId,
+            ...data,
+          }));
+          setAllProductionPlan(tempData);
+        } else {
+          setOpenSnackbar(true);
+          setSnackbarStatus(false);
+          setSnackbarMessage("Tidak berhasil memanggil data pesanan");
+        }
+      });
+    } else {
+      axios({
+        method: "GET",
+        url: "http://localhost:3000/productionPlanning/getAllProductionPlanning",
+      }).then((result) => {
+        console.log(result.data);
+        if (result.status === 200) {
+          const tempData = result.data.map((data) => ({
+            value: data.orderId,
+            ...data,
+          }));
+          setAllProductionPlan(tempData);
+        } else {
+          setOpenSnackbar(true);
+          setSnackbarStatus(false);
+          setSnackbarMessage("Tidak berhasil memanggil data pesanan");
+        }
+      });
+    }
   }, []);
 
   useEffect(() => {
@@ -216,6 +265,7 @@ const KegiatanProduksi = (props) => {
           if (result.status === 200) {
             setPersonil(result.data.personils);
             setDataProduksi({
+              id: result.data.id,
               tanggalProduksi: dayjs(result.data.tanggalProduksi),
               noOrderProduksi: result.data.noOrderProduksi,
               jenisCetakan: result.data.jenisCetakan,
@@ -415,6 +465,9 @@ const KegiatanProduksi = (props) => {
         field === "tahapProduksi"
       ) {
         if (field === "noOrderProduksi") {
+          setTanggalPengiriman(
+            dayjs(getSelectedOrder(value, "tanggalPengirimanBarang"))
+          );
           return {
             ...oldObject,
             noOrderProduksi: value,
@@ -724,8 +777,8 @@ const KegiatanProduksi = (props) => {
   };
 
   const handleDeleteBahan = (id, index) => {
-    console.log(id);
-    console.log(index);
+    // console.log(id);
+    // console.log(index);
     if (!id || id === undefined) {
       setDataProduksi((oldObject) => {
         return {
@@ -759,6 +812,33 @@ const KegiatanProduksi = (props) => {
   const checkPersonilIsEmpty = () => {
     for (const item of personil) {
       if (!item.nama) {
+        return false;
+      }
+    }
+    return true;
+  };
+
+  const checkjadwalCetakIsEmpty = () => {
+    for (const item of jadwalProduksiCetak) {
+      if (
+        !item.jamAwalProduksi ||
+        !dayjs(item.jamAwalProduksi, "MM/DD/YYYY hh:mm A", true).isValid() ||
+        !item.jamAkhirProduksi ||
+        !dayjs(item.jamAkhirProduksi, "MM/DD/YYYY hh:mm A", true).isValid() ||
+        !item.noOrderProduksi ||
+        !item.jenisCetakan ||
+        // !item.jenisBahanKertas ||
+        // !item.jenisKodeRollBahanKertas ||
+        !item.beratBahanKertas.value ||
+        !item.beratBahanKertas.unit ||
+        !item.perolehanCetakan.value ||
+        !item.perolehanCetakan.unit ||
+        !item.gelondong.value ||
+        !item.gelondong.unit ||
+        !item.sampah.value ||
+        !item.sampah.unit ||
+        !item.keterangan
+      ) {
         return false;
       }
     }
@@ -843,6 +923,21 @@ const KegiatanProduksi = (props) => {
     return changedJadwalPracetak;
   };
 
+  const handleModifyJadwalCetak = () => {
+    const changedJadwalCetak = jadwalProduksiCetak.map((result) => {
+      return {
+        ...result,
+        beratBahanKertas: `${result.beratBahanKertas.value} ${result.beratBahanKertas.unit}`,
+        perolehanCetakan: `${result.perolehanCetakan.value} ${result.perolehanCetakan.unit}`,
+        sobek: `${result.sobek.value} ${result.sobek.unit}`,
+        kulit: `${result.kulit.value} ${result.kulit.unit}`,
+        gelondong: `${result.gelondong.value} ${result.gelondong.unit}`,
+        sampah: `${result.sampah.value} ${result.sampah.unit}`,
+      };
+    });
+    return changedJadwalCetak;
+  };
+
   const handleEditKegiatanProduksi = () => {
     const checkPersonil = checkPersonilIsEmpty();
     const checkDataProduksi = checkDataProduksiIsEmpty();
@@ -859,8 +954,8 @@ const KegiatanProduksi = (props) => {
       const modifiedDataProduksis = handleModifyDataProduksi();
       const modifiedJadwalPracetak = handleModifyJadwalPracetak();
       axios({
-        method: "POST",
-        // url: `http://localhost:3000/production/addKegiatanProduksi/${userInformation?.data?.id}`,
+        method: "PUT",
+        url: `http://localhost:3000/production/updateKegiatanProduksiPracetak/${userInformation?.data?.id}`,
         data: {
           dataProduksi: modifiedDataProduksis,
           jadwalPracetak: modifiedJadwalPracetak,
@@ -868,19 +963,57 @@ const KegiatanProduksi = (props) => {
         },
       }).then((result) => {
         if (result.status === 200) {
-          setSuccessMessage("Berhasil menambahkan kegiatan produksi Pracetak");
+          setSuccessMessage("Berhasil mengedit kegiatan produksi Pracetak");
           setSnackbarStatus(true);
           navigate(-1);
         } else {
           setOpenSnackbar(true);
           setSnackbarStatus(false);
           setSnackbarMessage(
-            "Tidak berhasil menambahkan kegiatan produksi pracetak"
+            "Tidak berhasil mengedit kegiatan produksi pracetak"
           );
         }
       });
     }
   };
+
+  const handleAddKegiatanProduksiCetak = () => {
+    const checkPersonil = checkPersonilIsEmpty();
+    const checkDataProduksi = checkDataProduksiIsEmpty();
+    const checkjadwalCetak = checkjadwalCetakIsEmpty();
+    if (
+      checkPersonil === false ||
+      checkDataProduksi === false ||
+      checkjadwalCetak === false
+    ) {
+      setOpenSnackbar(true);
+      setSnackbarMessage("Tolong lengkapi semua input");
+      setSnackbarStatus(false);
+    } else {
+      const modifiedDataProduksis = handleModifyDataProduksi();
+      const modifiedJadwalCetak = handleModifyJadwalCetak();
+      axios({
+        method: "POST",
+        url: `http://localhost:3000/production/addKegiatanProduksiCetak/${userInformation?.data?.id}`,
+        data: {
+          personil: personil,
+          dataProduksi: modifiedDataProduksis,
+          jadwalCetak: modifiedJadwalCetak,
+        },
+      }).then((result) => {
+        if (result.status === 200) {
+          console.log("mantap");
+        } else {
+          setOpenSnackbar(true);
+          setSnackbarStatus(false);
+          setSnackbarMessage(
+            "Tidak berhasil menambahkan kegiatan produksi cetak"
+          );
+        }
+      });
+    }
+  };
+
   const handleAddKegiatanProduksi = () => {
     const checkPersonil = checkPersonilIsEmpty();
     const checkDataProduksi = checkDataProduksiIsEmpty();
@@ -973,6 +1106,11 @@ const KegiatanProduksi = (props) => {
                             ? dataProduksi.tanggalProduksi
                             : null
                         }
+                        maxDateTime={
+                          tanggalPengiriman.isValid()
+                            ? dayjs(tanggalPengiriman)
+                            : undefined
+                        }
                         onChange={(event) => {
                           handleChangeDataProduksi(event, "tanggalProduksi");
                         }}
@@ -989,6 +1127,12 @@ const KegiatanProduksi = (props) => {
                     </DemoItem>
                   </DemoContainer>
                 </LocalizationProvider>
+                {tanggalPengiriman.isValid() && (
+                  <Typography style={{ marginTop: "8px" }}>
+                    Tanggal pengiriman:
+                    {dayjs(tanggalPengiriman).format("MM/DD/YYYY hh:mm A")}
+                  </Typography>
+                )}
               </div>
             </div>
             <div
@@ -1011,6 +1155,7 @@ const KegiatanProduksi = (props) => {
                   }}
                   data={allProductionPlan}
                   width={"200px"}
+                  disabled={isNewTahapProduksi?.status}
                 />
               </div>
             </div>
@@ -1358,6 +1503,11 @@ const KegiatanProduksi = (props) => {
                                   <DemoItem>
                                     <DateTimePicker
                                       disablePast
+                                      maxDateTime={
+                                        tanggalPengiriman.isValid()
+                                          ? dayjs(tanggalPengiriman)
+                                          : undefined
+                                      }
                                       value={
                                         result?.jamAwalProduksi?.isValid()
                                           ? result.jamAwalProduksi
@@ -1392,6 +1542,11 @@ const KegiatanProduksi = (props) => {
                                   <DemoItem>
                                     <DateTimePicker
                                       disablePast
+                                      maxDateTime={
+                                        tanggalPengiriman.isValid()
+                                          ? dayjs(tanggalPengiriman)
+                                          : undefined
+                                      }
                                       value={
                                         result.jamAkhirProduksi.isValid()
                                           ? result.jamAkhirProduksi
@@ -2019,6 +2174,35 @@ const KegiatanProduksi = (props) => {
                   </TableBody>
                 </Table>
               </TableContainer>
+              <div
+                style={{
+                  marginTop: "16px",
+                  justifyContent: "center",
+                  display: "flex",
+                }}
+              >
+                <DefaultButton
+                  onClickFunction={() => {
+                    laporanProduksiId !== undefined
+                      ? console.log()
+                      : handleAddKegiatanProduksiCetak();
+                  }}
+                >
+                  {laporanProduksiId !== undefined
+                    ? "Edit Kegiatan Produksi Cetak"
+                    : "Tambah Kegiatan Produksi Cetak"}
+                </DefaultButton>
+                <Button
+                  color="error"
+                  variant="outlined"
+                  style={{ textTransform: "none", marginLeft: "8px" }}
+                  onClick={() => {
+                    navigate(-1);
+                  }}
+                >
+                  Cancel
+                </Button>
+              </div>
             </div>
           </div>
         )}

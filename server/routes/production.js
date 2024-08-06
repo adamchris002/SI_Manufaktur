@@ -20,8 +20,16 @@ productionRoutes.post(
   "/addKegiatanProduksi/:id",
   ProductionController.addKegiatanProduksi
 );
+productionRoutes.post(
+  "/addKegiatanProduksiCetak/:id",
+  ProductionController.addKegiatanProduksiCetak
+);
 
 //put
+productionRoutes.put(
+  "/updateKegiatanProduksiPracetak/:id",
+  ProductionController.editKegiatanProduksiPracetak
+);
 
 //delete
 productionRoutes.delete(
