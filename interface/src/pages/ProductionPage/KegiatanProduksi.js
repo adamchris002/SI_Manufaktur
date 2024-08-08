@@ -42,7 +42,6 @@ const KegiatanProduksi = (props) => {
   ]);
 
   const [allProductionPlan, setAllProductionPlan] = useState([]);
-  // console.log(allProductionPlan)
   const [allInventoryItem, setAllInventoryItem] = useState([]);
   const [dataProduksi, setDataProduksi] = useState({
     tanggalProduksi: dayjs(""),
@@ -61,7 +60,8 @@ const KegiatanProduksi = (props) => {
       },
     ],
   });
-  // console.log(allProductionPlan)
+
+  // console.log(dataProduksi.tahapProduksi);
   const [jadwalProduksiPracetak, setJadwalProduksiPracetak] = useState([
     {
       jamAwalProduksi: dayjs(""),
@@ -92,9 +92,6 @@ const KegiatanProduksi = (props) => {
       jamAkhirProduksi: dayjs(""),
       noOrderProduksi: "",
       jenisCetakan: "",
-      jenisBahanKertas: "",
-      jenisKodeRollBahanKertas: "",
-      beratBahanKertas: { value: "", unit: "'" },
       perolehanCetakan: { value: "", unit: "" },
       sobek: { value: "", unit: "" },
       kulit: { value: "", unit: "" },
@@ -107,7 +104,6 @@ const KegiatanProduksi = (props) => {
   ]);
 
   const [tanggalPengiriman, setTanggalPengiriman] = useState(dayjs(""));
-  // console.log(tanggalPengiriman);
 
   const [showError, setShowError] = useState([]);
   const [openSnackbar, setOpenSnackbar] = useState(false);
@@ -123,16 +119,28 @@ const KegiatanProduksi = (props) => {
         url: `http://localhost:3000/production/getOneProductionData/${isNewTahapProduksi.id}`,
       }).then((result) => {
         if (result.status === 200) {
-          // console.log(result.data);
-          setDataProduksi((oldObject) => {
-            return {
-              ...oldObject,
-              noOrderProduksi: result.data.noOrderProduksi,
-              jenisCetakan: result.data.jenisCetakan,
+          if (result.data.tahapProduksi === "Produksi Pracetak") {
+            setDataProduksi((oldObject) => {
+              return {
+                ...oldObject,
+                noOrderProduksi: result.data.noOrderProduksi,
+                jenisCetakan: result.data.jenisCetakan,
 
-              tahapProduksi: "Produksi Cetak",
-            };
-          });
+                tahapProduksi: "Produksi Cetak",
+              };
+            });
+          }
+          if (result.data.tahapProduksi === "Produksi Cetak") {
+            setDataProduksi((oldObject) => {
+              return {
+                ...oldObject,
+                noOrderProduksi: result.data.noOrderProduksi,
+                jenisCetakan: result.data.jenisCetakan,
+
+                tahapProduksi: "Produksi Fitur",
+              };
+            });
+          }
         } else {
           setOpenSnackbar(true);
           setSnackbarStatus(false);
@@ -149,7 +157,6 @@ const KegiatanProduksi = (props) => {
         url: "http://localhost:3000/productionPlanning/getAllProductionPlanStatusEstimated",
       }).then((result) => {
         if (result.status === 200) {
-          console.log(result.data);
           const tempData = result.data.map((data) => ({
             value: data.orderId,
             ...data,
@@ -166,7 +173,6 @@ const KegiatanProduksi = (props) => {
         method: "GET",
         url: "http://localhost:3000/productionPlanning/getAllProductionPlanning",
       }).then((result) => {
-        console.log(result.data);
         if (result.status === 200) {
           const tempData = result.data.map((data) => ({
             value: data.orderId,
@@ -278,16 +284,45 @@ const KegiatanProduksi = (props) => {
                 beratAkhir: separateValueAndUnit(item.beratAkhir),
               })),
             });
-            const data = result.data.jadwalProdukses.map((item) => {
-              return {
-                ...item,
-                jamAwalProduksi: dayjs(item.jamAwalProduksi),
-                jamAkhirProduksi: dayjs(item.jamAkhirProduksi),
-                perolehanCetakan: separateValueAndUnit(item.perolehanCetak),
-                waste: separateValueAndUnit(item.waste),
-              };
-            });
-            setJadwalProduksiPracetak(data);
+            if (result.data.tahapProduksi === "Produksi Pracetak") {
+              const data = result.data.jadwalProdukses.map((item) => {
+                return {
+                  ...item,
+                  jamAwalProduksi: dayjs(item.jamAwalProduksi),
+                  jamAkhirProduksi: dayjs(item.jamAkhirProduksi),
+                  perolehanCetakan: separateValueAndUnit(item.perolehanCetak),
+                  waste: separateValueAndUnit(item.waste),
+                };
+              });
+              setJadwalProduksiPracetak(data);
+            }
+            if (result.data.tahapProduksi === "Produksi Cetak") {
+              const data = result.data.jadwalProdukses.map((item) => {
+                return {
+                  ...item,
+                  jamAwalProduksi: dayjs(item.jamAwalProduksi),
+                  jamAkhirProduksi: dayjs(item.jamAkhirProduksi),
+                  perolehanCetakan: separateValueAndUnit(item.perolehanCetak),
+                  sobek: separateValueAndUnit(item.perolehanCetak),
+                  kulit: separateValueAndUnit(item.kulit),
+                  gelondong: separateValueAndUnit(item.gelondong),
+                  sampah: separateValueAndUnit(item.sampah),
+                };
+              });
+              setJadwalProduksiCetak(data);
+            }
+            if (result.data.tahapProduksi === "Produksi Fitur") {
+              const data = result.data.jadwalProdukses.map((item) => {
+                return {
+                  ...item,
+                  jamAwalProduksi: dayjs(item.jamAwalProduksi),
+                  jamAkhirProduksi: dayjs(item.jamAkhirProduksi),
+                  perolehanCetakan: separateValueAndUnit(item.perolehanCetak),
+                  waste: separateValueAndUnit(item.waste),
+                };
+              });
+              setJadwalProduksiFitur(data);
+            }
             setRefreshDataKegiatanProduksi(false);
           } else {
             setOpenSnackbar(true);
@@ -777,8 +812,6 @@ const KegiatanProduksi = (props) => {
   };
 
   const handleDeleteBahan = (id, index) => {
-    // console.log(id);
-    // console.log(index);
     if (!id || id === undefined) {
       setDataProduksi((oldObject) => {
         return {
@@ -818,6 +851,29 @@ const KegiatanProduksi = (props) => {
     return true;
   };
 
+  const checkJadwalFiturIsEmpty = () => {
+    for (const item of jadwalProduksiFitur) {
+      if (
+        !item.jamAwalProduksi ||
+        !dayjs(item.jamAwalProduksi, "MM/DD/YYYY hh:mm A", true).isValid() ||
+        !item.jamAkhirProduksi ||
+        !dayjs(item.jamAkhirProduksi, "MM/DD/YYYY hh:mm A", true).isValid() ||
+        !item.noOrderProduksi ||
+        !item.jenisCetakan ||
+        !item.nomoratorAwal ||
+        !item.nomoratorAkhir ||
+        !item.perolehanCetakan.value ||
+        !item.perolehanCetakan.unit ||
+        !item.waste.value ||
+        !item.waste.unit ||
+        !item.keterangan
+      ) {
+        return false;
+      }
+    }
+    return true;
+  };
+
   const checkjadwalCetakIsEmpty = () => {
     for (const item of jadwalProduksiCetak) {
       if (
@@ -827,10 +883,6 @@ const KegiatanProduksi = (props) => {
         !dayjs(item.jamAkhirProduksi, "MM/DD/YYYY hh:mm A", true).isValid() ||
         !item.noOrderProduksi ||
         !item.jenisCetakan ||
-        // !item.jenisBahanKertas ||
-        // !item.jenisKodeRollBahanKertas ||
-        !item.beratBahanKertas.value ||
-        !item.beratBahanKertas.unit ||
         !item.perolehanCetakan.value ||
         !item.perolehanCetakan.unit ||
         !item.gelondong.value ||
@@ -923,11 +975,21 @@ const KegiatanProduksi = (props) => {
     return changedJadwalPracetak;
   };
 
+  const handleModifyJadwalFitur = () => {
+    const changedJadwalFitur = jadwalProduksiFitur.map((result) => {
+      return {
+        ...result,
+        perolehanCetakan: `${result.perolehanCetakan.value} ${result.perolehanCetakan.unit}`,
+        waste: `${result.waste.value} ${result.waste.unit}`,
+      };
+    });
+    return changedJadwalFitur;
+  };
+
   const handleModifyJadwalCetak = () => {
     const changedJadwalCetak = jadwalProduksiCetak.map((result) => {
       return {
         ...result,
-        beratBahanKertas: `${result.beratBahanKertas.value} ${result.beratBahanKertas.unit}`,
         perolehanCetakan: `${result.perolehanCetakan.value} ${result.perolehanCetakan.unit}`,
         sobek: `${result.sobek.value} ${result.sobek.unit}`,
         kulit: `${result.kulit.value} ${result.kulit.unit}`,
@@ -936,6 +998,41 @@ const KegiatanProduksi = (props) => {
       };
     });
     return changedJadwalCetak;
+  };
+
+  const handleEditKegiatanProduksiFitur = () => {
+    const checkPersonil = checkPersonilIsEmpty();
+    const checkDataProduksi = checkDataProduksiIsEmpty();
+    const checkJadwalFitur = checkJadwalFiturIsEmpty();
+    if (
+      checkPersonil === false ||
+      checkDataProduksi === false ||
+      checkJadwalFitur === false
+    ) {
+      setOpenSnackbar(true);
+      setSnackbarMessage("Tolong lengkapi semua input");
+      setSnackbarStatus(false);
+    } else {
+      const modifiedDataProduksis = handleModifyDataProduksi();
+      const modifiedJadwalFitur = handleModifyJadwalFitur();
+      axios({
+        method: "PUT",
+        url: `http://localhost:3000/production/updateKegiatanProduksiFitur/${userInformation?.data?.id}`,
+        data: {
+          personil: personil,
+          dataProduksi: modifiedDataProduksis,
+          jadwalFitur: modifiedJadwalFitur,
+        },
+      }).then((result) => {
+        if (result.status === 200) {
+          console.log("mantap")
+        } else {
+          setOpenSnackbar(true);
+          setSnackbarStatus(false);
+          setSnackbarMessage("Tidak berhasil mengedit kegiatan produksi fitur");
+        }
+      });
+    }
   };
 
   const handleEditKegiatanProduksi = () => {
@@ -977,6 +1074,85 @@ const KegiatanProduksi = (props) => {
     }
   };
 
+  const handleEditKegiatanProduksiCetak = () => {
+    if (dataProduksi.tahapProduksi === "Produksi Cetak") {
+      const checkPersonil = checkPersonilIsEmpty();
+      const checkDataProduksi = checkDataProduksiIsEmpty();
+      const checkJadwalCetak = checkjadwalCetakIsEmpty();
+      if (
+        checkPersonil === false ||
+        (checkDataProduksi === false) | (checkJadwalCetak === false)
+      ) {
+        setOpenSnackbar(true);
+        setSnackbarStatus(false);
+        setSnackbarMessage("Tolong lengkapi semua input");
+      } else {
+        const modifiedDataProduksis = handleModifyDataProduksi();
+        const modifiedJadwalCetak = handleModifyJadwalCetak();
+        axios({
+          method: "PUT",
+          url: `http://localhost:3000/production/updateKegiatanProduksiCetak/${userInformation?.data?.id}`,
+          data: {
+            personil: personil,
+            dataProduksi: modifiedDataProduksis,
+            jadwalCetak: modifiedJadwalCetak,
+          },
+        }).then((result) => {
+          if (result.status === 200) {
+            setSuccessMessage("Berhasil mengedit kegiatan produksi cetak");
+            setSnackbarStatus(true);
+            navigate(-1);
+          } else {
+            setOpenSnackbar(true);
+            setSnackbarStatus(false);
+            setSnackbarMessage(
+              "Tidak berhasil mengedit kegiatan produksi cetak"
+            );
+          }
+        });
+      }
+    } else {
+      return false;
+    }
+  };
+
+  const handleAddKegiatanProduksiFitur = () => {
+    const checkPersonil = checkPersonilIsEmpty();
+    const checkDataProduksi = checkDataProduksiIsEmpty();
+    const checkJadwalFitur = checkJadwalFiturIsEmpty();
+    if (
+      checkPersonil === false ||
+      checkDataProduksi === false ||
+      checkJadwalFitur === false
+    ) {
+      setOpenSnackbar(true);
+      setSnackbarMessage("Tolong lengkapi semua input");
+      setSnackbarStatus(false);
+    } else {
+      const modifiedDataProduksis = handleModifyDataProduksi();
+      const modifiedJadwalFitur = handleModifyJadwalFitur();
+      axios({
+        method: "POST",
+        url: `http://localhost:3000/production/addKegiatanProduksiFitur/${userInformation?.data?.id}`,
+        data: {
+          personil: personil,
+          dataProduksi: modifiedDataProduksis,
+          jadwalFitur: modifiedJadwalFitur,
+        },
+      }).then((result) => {
+        if (result.status === 200) {
+          setSuccessMessage("Berhasil menambahkan kegiatan produksi fitur");
+          setSnackbarStatus(true);
+          navigate(-1);
+        } else {
+          setOpenSnackbar(true);
+          setSnackbarMessage("Tidak berhasil membuat kegiatan produksi fitur");
+          setSnackbarStatus(false);
+        }
+      });
+    }
+  };
+
   const handleAddKegiatanProduksiCetak = () => {
     const checkPersonil = checkPersonilIsEmpty();
     const checkDataProduksi = checkDataProduksiIsEmpty();
@@ -1002,7 +1178,9 @@ const KegiatanProduksi = (props) => {
         },
       }).then((result) => {
         if (result.status === 200) {
-          console.log("mantap");
+          setSuccessMessage("Berhasil menambahkan kegiatan produksi cetak");
+          setSnackbarStatus(true);
+          navigate(-1);
         } else {
           setOpenSnackbar(true);
           setSnackbarStatus(false);
@@ -1697,6 +1875,7 @@ const KegiatanProduksi = (props) => {
                   marginTop: "16px",
                   justifyContent: "center",
                   display: "flex",
+                  alignItems: "center",
                 }}
               >
                 <DefaultButton
@@ -1768,15 +1947,6 @@ const KegiatanProduksi = (props) => {
                       </TableCell>
                       <TableCell style={{ width: "200px" }}>
                         Jenis Cetakan
-                      </TableCell>
-                      <TableCell style={{ width: "200px" }}>
-                        Jenis Bahan Kertas
-                      </TableCell>
-                      <TableCell style={{ width: "200px" }}>
-                        Kode Roll Bahan Kertas
-                      </TableCell>
-                      <TableCell style={{ width: "200px" }}>
-                        Berat Bahan Kertas
                       </TableCell>
                       <TableCell style={{ width: "200px" }}>
                         Perolehan Cetakan
@@ -1891,49 +2061,6 @@ const KegiatanProduksi = (props) => {
                             </TableCell>
                             <TableCell>
                               <TextField value={result.jenisCetakan} disabled />
-                            </TableCell>
-                            <TableCell>
-                              <MySelectTextField width="200px" />
-                            </TableCell>
-                            <TableCell>
-                              <TextField
-                                value={result.jenisKodeRollBahanKertas}
-                                disabled
-                              />
-                            </TableCell>
-                            <TableCell>
-                              <div
-                                style={{
-                                  display: "flex",
-                                  alignItems: "center",
-                                }}
-                              >
-                                <TextField
-                                  type="number"
-                                  value={result.beratBahanKertas.value}
-                                  onChange={(event) => {
-                                    handleChangeJadwalProduksiCetak(
-                                      event,
-                                      index,
-                                      "beratBahanKertas"
-                                    );
-                                  }}
-                                />
-                                <div style={{ marginLeft: "8px" }}>
-                                  <MySelectTextField
-                                    data={units}
-                                    value={result.beratBahanKertas.unit}
-                                    onChange={(event) => {
-                                      handleChangeJadwalProduksiCetak(
-                                        event,
-                                        index,
-                                        "beratBahanKertas",
-                                        true
-                                      );
-                                    }}
-                                  />
-                                </div>
-                              </div>
                             </TableCell>
                             <TableCell>
                               <div
@@ -2184,7 +2311,7 @@ const KegiatanProduksi = (props) => {
                 <DefaultButton
                   onClickFunction={() => {
                     laporanProduksiId !== undefined
-                      ? console.log()
+                      ? handleEditKegiatanProduksiCetak()
                       : handleAddKegiatanProduksiCetak();
                   }}
                 >
@@ -2435,7 +2562,7 @@ const KegiatanProduksi = (props) => {
                                 <div style={{ marginLeft: "8px" }}>
                                   <MySelectTextField
                                     data={units}
-                                    value={result.waste.value}
+                                    value={result.waste.unit}
                                     onChange={(event) => {
                                       handleChangeJadwalProduksiFitur(
                                         event,
@@ -2479,6 +2606,36 @@ const KegiatanProduksi = (props) => {
                   </TableBody>
                 </Table>
               </TableContainer>
+              <div
+                style={{
+                  display: "flex",
+                  justifyContent: "center",
+                  alignItems: "center",
+                  marginTop: "16px",
+                }}
+              >
+                <DefaultButton
+                  onClickFunction={() => {
+                    laporanProduksiId !== undefined
+                      ? handleEditKegiatanProduksiFitur()
+                      : handleAddKegiatanProduksiFitur();
+                  }}
+                >
+                  {laporanProduksiId !== undefined
+                    ? "Edit kegiatan produksi fitur"
+                    : "Tambah kegiatan produksi fitur"}
+                </DefaultButton>
+                <Button
+                  style={{ marginLeft: "8px", textTransform: "none" }}
+                  variant="outlined"
+                  color="error"
+                  onClick={() => {
+                    navigate(-1);
+                  }}
+                >
+                  Cancel
+                </Button>
+              </div>
             </div>
           </div>
         )}

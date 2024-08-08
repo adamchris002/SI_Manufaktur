@@ -445,15 +445,17 @@ const MaindashboardProduction = (props) => {
                                 >
                                   <EditIcon style={{ color: "#0F607D" }} />
                                 </IconButton>
-                                <IconButton
-                                  onClick={() => {
-                                    handleChangeTahapProduksi(result.id);
-                                  }}
-                                >
-                                  <ArrowForwardIcon
-                                    style={{ color: "#0F607D" }}
-                                  />
-                                </IconButton>
+                                {result.tahapProduksi !== "Produksi Fitur" && (
+                                  <IconButton
+                                    onClick={() => {
+                                      handleChangeTahapProduksi(result.id);
+                                    }}
+                                  >
+                                    <ArrowForwardIcon
+                                      style={{ color: "#0F607D" }}
+                                    />
+                                  </IconButton>
+                                )}
                                 <IconButton
                                   onClick={() => {
                                     handleDeleteKegiatanProduksi(result.id);

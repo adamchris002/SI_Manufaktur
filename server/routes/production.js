@@ -24,11 +24,23 @@ productionRoutes.post(
   "/addKegiatanProduksiCetak/:id",
   ProductionController.addKegiatanProduksiCetak
 );
+productionRoutes.post(
+  "/addKegiatanProduksiFitur/:id",
+  ProductionController.addKegiatanProduksiFitur
+);
 
 //put
 productionRoutes.put(
   "/updateKegiatanProduksiPracetak/:id",
   ProductionController.editKegiatanProduksiPracetak
+);
+productionRoutes.put(
+  "/updateKegiatanProduksiCetak/:id",
+  ProductionController.editKegiatanProduksiCetak
+);
+productionRoutes.put(
+  "/updateKegiatanProduksiFitur/:id",
+  ProductionController.editKegiatanProduksiFitur
 );
 
 //delete

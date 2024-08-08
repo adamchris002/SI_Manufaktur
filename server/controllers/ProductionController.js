@@ -284,15 +284,75 @@ class ProductionController {
       res.json(result);
     }
   }
+  static async addKegiatanProduksiFitur(req, res) {
+    try {
+      const { id } = req.params;
+      const { personil, dataProduksi, jadwalFitur } = req.body;
+      let result = await laporanProduksis.create({
+        tanggalProduksi: dataProduksi.tanggalProduksi,
+        noOrderProduksi: dataProduksi.noOrderProduksi,
+        jenisCetakan: dataProduksi.jenisCetakan,
+        mesin: dataProduksi.mesin,
+        dibuatOleh: dataProduksi.dibuatOleh,
+        tahapProduksi: dataProduksi.tahapProduksi,
+      });
+      if (
+        dataProduksi.bahanProduksis &&
+        Array.isArray(dataProduksi.bahanProduksis)
+      ) {
+        await Promise.all(
+          dataProduksi.bahanProduksis.map(async (data) => {
+            await bahanLaporanProduksis.create({
+              laporanProduksiId: result.id,
+              tahapProduksi: dataProduksi.tahapProduksi,
+              jenis: data.jenis,
+              kode: data.kode,
+              beratAwal: data.beratAwal,
+              beratAkhir: data.beratAkhir,
+              keterangan: data.keterangan,
+            });
+          })
+        );
+      }
+      if (personil && Array.isArray(personil)) {
+        await Promise.all(
+          personil.map(async (data) => {
+            await personils.create({
+              laporanProduksiId: result.id,
+              tahapProduksi: dataProduksi.tahapProduksi,
+              nama: data.nama,
+            });
+          })
+        );
+      }
+      if (jadwalFitur && Array.isArray(jadwalFitur)) {
+        await Promise.all(
+          jadwalFitur.map(async (data) => {
+            await jadwalProduksis.create({
+              laporanProduksiId: result.id,
+              tahapProduksi: dataProduksi.tahapProduksi,
+              jamAwalProduksi: data.jamAwalProduksi,
+              jamAkhirProduksi: data.jamAkhirProduksi,
+              noOrderProduksi: data.noOrderProduksi,
+              jenisCetakan: data.jenisCetakan,
+              nomoratorAwal: data.nomoratorAwal,
+              nomoratorAkhir: data.nomoratorAkhir,
+              perolehanCetak: data.perolehanCetakan,
+              waste: data.waste,
+              keterangan: data.keterangan,
+            });
+          })
+        );
+      }
+      res.json(result);
+    } catch (error) {
+      res.json(error);
+    }
+  }
   static async addKegiatanProduksiCetak(req, res) {
     try {
       const { id } = req.params;
       const { personil, jadwalCetak, dataProduksi } = req.body;
-
-      // console.log(id);
-      // console.log(personil);
-      // console.log(jadwalCetak);
-      // console.log(dataProduksi);
       let result = await laporanProduksis.create({
         tanggalProduksi: dataProduksi.tanggalProduksi,
         noOrderProduksi: dataProduksi.noOrderProduksi,
@@ -343,15 +403,12 @@ class ProductionController {
               jamAkhirProduksi: data.jamAkhirProduksi,
               noOrderProduksi: data.noOrderProduksi,
               jenisCetakan: data.jenisCetakan,
-              jenisBahanKertas: data.jenisBahanKertas,
-              beratBahanKertas: data.beratBahanKertas,
-              perolehanCetakan: data.jenisCetakan,
+              perolehanCetak: data.perolehanCetakan,
               sobek: data.sobek,
               kulit: data.kulit,
               gelondong: data.gelondong,
               sampah: data.sampah,
-              rollHabis: data,
-              rollHabis,
+              rollHabis: data.rollHabis,
               rollSisa: data.rollSisa,
               keterangan: data.keterangan,
             });
@@ -359,11 +416,234 @@ class ProductionController {
         );
       }
 
-      await UserLaporanProductions.create({
-        userId: parseInt(id),
-        laporanProductionId: parseInt(result.id),
-      });
+      // await UserLaporanProductions.create({
+      //   userId: parseInt(id),
+      //   laporanProductionId: parseInt(result.id),
+      // });
 
+      res.json(result);
+    } catch (error) {
+      res.json(error);
+    }
+  }
+  static async editKegiatanProduksiCetak(req, res) {
+    try {
+      const { id } = req.params;
+      const { personil, dataProduksi, jadwalCetak } = req.body;
+
+      let result = await laporanProduksis.update(
+        {
+          tanggalProduksi: dataProduksi.tanggalProduksi,
+          noOrderProduksi: dataProduksi.noOrderProduksi,
+          jenisCetakan: dataProduksi.jenisCetakan,
+          mesin: dataProduksi.mesin,
+          dibuatOleh: dataProduksi.dibuatOleh,
+        },
+        { where: { id: dataProduksi.id } }
+      );
+
+      if (
+        dataProduksi.bahanProduksis &&
+        Array.isArray(dataProduksi.bahanProduksis)
+      ) {
+        await Promise.all(
+          dataProduksi.bahanProduksis.map(async (data) => {
+            if (!data.id) {
+              await bahanLaporanProduksis.create({
+                laporanProduksiId: dataProduksi.id,
+                tahapProduksi: dataProduksi.tahapProduksi,
+                jenis: data.jenis,
+                kode: data.kode,
+                beratAwal: data.beratAwal,
+                beratAkhir: data.beratAkhir,
+                keterangan: data.keterangan,
+              });
+            } else {
+              await bahanLaporanProduksis.update(
+                {
+                  jenis: data.jenis,
+                  kode: data.kode,
+                  beratAwal: data.beratAwal,
+                  beratAkhir: data.beratAkhir,
+                  keterangan: data.keterangan,
+                },
+                { where: { id: data.id } }
+              );
+            }
+          })
+        );
+      }
+      if (personil && Array.isArray(personil)) {
+        await Promise.all(
+          personil.map(async (data) => {
+            if (!data.id) {
+              await personils.create({
+                laporanProduksiId: dataProduksi.id,
+                tahapProduksi: dataProduksi.tahapProduksi,
+                nama: data.nama,
+              });
+            } else {
+              await personils.update(
+                {
+                  nama: data.nama,
+                },
+                { where: { id: data.id } }
+              );
+            }
+          })
+        );
+      }
+      if (jadwalCetak && Array.isArray(jadwalCetak)) {
+        await Promise.all(
+          jadwalCetak.map(async (data) => {
+            if (!data.id) {
+              await jadwalProduksis.create({
+                laporanProduksiId: dataProduksi.id,
+                tahapProduksi: dataProduksi.tahapProduksi,
+                jamAwalProduksi: data.jamAwalProduksi,
+                jamAkhirProduksi: data.jamAkhirProduksi,
+                noOrderProduksi: data.noOrderProduksi,
+                jenisCetakan: data.jenisCetakan,
+                perolehanCetak: data.perolehanCetakan,
+                sobek: data.sobek,
+                kulit: data.kulit,
+                gelondong: data.gelondong,
+                sampah: data.sampah,
+                rollHabis: data.rollHabis,
+                rollSisa: data.rollSisa,
+                keterangan: data.keterangan,
+              });
+            } else {
+              await jadwalProduksis.update(
+                {
+                  jamAwalProduksi: data.jamAwalProduksi,
+                  jamAkhirProduksi: data.jamAkhirProduksi,
+                  noOrderProduksi: data.noOrderProduksi,
+                  jenisCetakan: data.jenisCetakan,
+                  perolehanCetak: data.perolehanCetakan,
+                  sobek: data.sobek,
+                  kulit: data.kulit,
+                  gelondong: data.gelondong,
+                  sampah: data.sampah,
+                  rollHabis: data.rollHabis,
+                  rollSisa: data.rollSisa,
+                  keterangan: data.keterangan,
+                },
+                { where: { id: data.id } }
+              );
+            }
+          })
+        );
+      }
+
+      res.json(result);
+    } catch (error) {
+      res.json(error);
+    }
+  }
+  static async editKegiatanProduksiFitur(req, res) {
+    try {
+      const { id } = req.params;
+      const { personil, dataProduksi, jadwalFitur } = req.body;
+
+      let result = await laporanProduksis.update(
+        {
+          tanggalProduksi: dataProduksi.tanggalProduksi,
+          noOrderProduksi: dataProduksi.noOrderProduksi,
+          jenisCetakan: dataProduksi.jenisCetakan,
+          mesin: dataProduksi.mesin,
+          dibuatOleh: dataProduksi.dibuatOleh,
+        },
+        { where: { id: dataProduksi.id } }
+      );
+
+      if (
+        dataProduksi.bahanProduksis &&
+        Array.isArray(dataProduksi.bahanProduksis)
+      ) {
+        await Promise.all(
+          dataProduksi.bahanProduksis.map(async (data) => {
+            if (!data.id) {
+              await bahanLaporanProduksis.create({
+                laporanProduksiId: dataProduksi.id,
+                tahapProduksi: dataProduksi.tahapProduksi,
+                jenis: data.jenis,
+                kode: data.kode,
+                beratAwal: data.beratAwal,
+                beratAkhir: data.beratAkhir,
+                keterangan: data.keterangan,
+              });
+            } else {
+              await bahanLaporanProduksis.update(
+                {
+                  jenis: data.jenis,
+                  kode: data.kode,
+                  beratAwal: data.beratAwal,
+                  beratAkhir: data.beratAkhir,
+                  keterangan: data.keterangan,
+                },
+                { where: { id: data.id } }
+              );
+            }
+          })
+        );
+      }
+      if (personil && Array.isArray(personil)) {
+        await Promise.all(
+          personil.map(async (data) => {
+            if (!data.id) {
+              await personils.create({
+                laporanProduksiId: dataProduksi.id,
+                tahapProduksi: dataProduksi.tahapProduksi,
+                nama: data.nama,
+              });
+            } else {
+              await personils.update(
+                {
+                  nama: data.nama,
+                },
+                { where: { id: data.id } }
+              );
+            }
+          })
+        );
+      }
+      if (jadwalFitur && Array.isArray(jadwalFitur)) {
+        await Promise.all(
+          jadwalFitur.map(async (data) => {
+            if (!data.id) {
+              await jadwalProduksis.create({
+                laporanProduksiId: dataProduksi.id,
+                tahapProduksi: dataProduksi.tahapProduksi,
+                jamAwalProduksi: data.jamAwalProduksi,
+                jamAkhirProduksi: data.jamAkhirProduksi,
+                noOrderProduksi: data.noOrderProduksi,
+                jenisCetakan: data.jenisCetakan,
+                nomoratorAwal: data.nomoratorAwal,
+                nomoratorAkhir: data.nomoratorAkhir,
+                perolehanCetak: data.perolehanCetakan,
+                waste: data.waste,
+                keterangan: data.keterangan,
+              });
+            } else {
+              await jadwalProduksis.update(
+                {
+                  jamAwalProduksi: data.jamAwalProduksi,
+                  jamAkhirProduksi: data.jamAkhirProduksi,
+                  noOrderProduksi: data.noOrderProduksi,
+                  jenisCetakan: data.jenisCetakan,
+                  nomoratorAwal: data.nomoratorAwal,
+                  nomoratorAkhir: data.nomoratorAkhir,
+                  perolehanCetak: data.perolehanCetakan,
+                  waste: data.waste,
+                  keterangan: data.keterangan,
+                },
+                { where: { id: data.id } }
+              );
+            }
+          })
+        );
+      }
       res.json(result);
     } catch (error) {
       res.json(error);
