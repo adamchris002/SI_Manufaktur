@@ -30,9 +30,12 @@ module.exports = (sequelize, DataTypes) => {
       });
       users.hasMany(models.penyerahanBarangs, { foreignKey: "id" });
       users.belongsToMany(models.laporanProduksis, {
-        through: "UserLaporanProductions",
+        through: "UserLaporanProduksis",
+        foreignKey: "userId",
+        otherKey: "laporanProduksiId",
       });
-      users.hasMany(models.laporanProduksis, { foreignKey: "id" });
+
+      users.hasMany(models.UserLaporanProduksis, { foreignKey: "userId" });
     }
   }
   users.init(

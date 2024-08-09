@@ -14,6 +14,10 @@ productionRoutes.get(
   "/getOneProductionData/:id",
   ProductionController.getOneProductionData
 );
+productionRoutes.get(
+  "/getKegiatanProduksiDone",
+  ProductionController.getKegiatanProduksiDone
+);
 
 //post
 productionRoutes.post(
@@ -41,6 +45,10 @@ productionRoutes.put(
 productionRoutes.put(
   "/updateKegiatanProduksiFitur/:id",
   ProductionController.editKegiatanProduksiFitur
+);
+productionRoutes.put(
+  "/kegiatanProduksiSelesai/:id",
+  ProductionController.kegiatanProduksiSelesai
 );
 
 //delete

@@ -5,7 +5,7 @@ const {
   personils,
   bahanLaporanProduksis,
   jadwalProduksis,
-  UserLaporanProductions,
+  UserLaporanProduksis,
   orders,
 } = require("../models");
 
@@ -91,9 +91,9 @@ class ProductionController {
         { where: { id: dataProduksi.noOrderProduksi } }
       );
 
-      await UserLaporanProductions.create({
+      await UserLaporanProduksis.create({
         userId: parseInt(id),
-        laporanProductionId: parseInt(result.id),
+        laporanProduksiId: parseInt(result.id),
       });
 
       res.json(result);
@@ -288,6 +288,16 @@ class ProductionController {
     try {
       const { id } = req.params;
       const { personil, dataProduksi, jadwalFitur } = req.body;
+      let getPrevKegiatanProduksi = await laporanProduksis.findOne({
+        where: {
+          noOrderProduksi: dataProduksi.noOrderProduksi,
+          tahapProduksi: "Produksi Cetak",
+        },
+      });
+
+      await getPrevKegiatanProduksi.update({
+        statusLaporan: "Done",
+      });
       let result = await laporanProduksis.create({
         tanggalProduksi: dataProduksi.tanggalProduksi,
         noOrderProduksi: dataProduksi.noOrderProduksi,
@@ -353,6 +363,17 @@ class ProductionController {
     try {
       const { id } = req.params;
       const { personil, jadwalCetak, dataProduksi } = req.body;
+      let getPrevKegiatanProduksi = await laporanProduksis.findOne({
+        where: {
+          noOrderProduksi: dataProduksi.noOrderProduksi,
+          tahapProduksi: "Produksi Pracetak",
+        },
+      });
+
+      await getPrevKegiatanProduksi.update({
+        statusLaporan: "Done",
+      });
+
       let result = await laporanProduksis.create({
         tanggalProduksi: dataProduksi.tanggalProduksi,
         noOrderProduksi: dataProduksi.noOrderProduksi,
@@ -416,10 +437,10 @@ class ProductionController {
         );
       }
 
-      // await UserLaporanProductions.create({
-      //   userId: parseInt(id),
-      //   laporanProductionId: parseInt(result.id),
-      // });
+      await UserLaporanProduksis.create({
+        userId: parseInt(id),
+        laporanProduksiId: parseInt(result.id),
+      });
 
       res.json(result);
     } catch (error) {
@@ -644,6 +665,33 @@ class ProductionController {
           })
         );
       }
+      res.json(result);
+    } catch (error) {
+      res.json(error);
+    }
+  }
+  static async kegiatanProduksiSelesai(req, res) {
+    try {
+      const { id } = req.params;
+      console.log(id);
+      let result = await laporanProduksis.update(
+        {
+          statusLaporan: "Done",
+        },
+        { where: { id: id } }
+      );
+      res.json(result);
+    } catch (error) {
+      res.json(error);
+    }
+  }
+  static async getKegiatanProduksiDone(req, res) {
+    try {
+      const {tanggalProduksiSelesai} = req.query
+      console.log(tanggalProduksiSelesai)
+      let result = await laporanProduksis.findAll({
+        where: { statusLaporan: "Done"  }, 
+      });
       res.json(result);
     } catch (error) {
       res.json(error);

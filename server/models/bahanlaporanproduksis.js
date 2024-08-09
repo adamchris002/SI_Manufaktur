@@ -23,6 +23,7 @@ module.exports = (sequelize, DataTypes) => {
       beratAwal: DataTypes.STRING,
       beratAkhir: DataTypes.STRING,
       keterangan: DataTypes.STRING,
+      statusLaporan: DataTypes.STRING
     },
     {
       sequelize,

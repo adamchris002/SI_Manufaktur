@@ -9,7 +9,9 @@ module.exports = (sequelize, DataTypes) => {
      */
     static associate(models) {
       laporanProduksis.belongsToMany(models.users, {
-        through: "UserLaporanProductions",
+        through: "UserLaporanProduksis",
+        foreignKey: "laporanProduksiId",
+        otherKey: "userId",
       });
       laporanProduksis.hasMany(models.bahanLaporanProduksis, {
         foreignKey: "laporanProduksiId",
@@ -33,6 +35,7 @@ module.exports = (sequelize, DataTypes) => {
       mesin: DataTypes.STRING,
       dibuatOleh: DataTypes.STRING,
       tahapProduksi: DataTypes.STRING,
+      statusLaporan: DataTypes.STRING,
     },
     {
       sequelize,

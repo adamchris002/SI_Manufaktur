@@ -27,6 +27,9 @@ module.exports = {
       tahapProduksi: {
         type: Sequelize.STRING
       },
+      statusLaporan: {
+        type: Sequelize.STRING
+      },
       createdAt: {
         allowNull: false,
         type: Sequelize.DATE

@@ -31,6 +31,7 @@ const MaindashboardProduction = (props) => {
 
   const [allPenyerahanBarang, setAllPenyerahanBarang] = useState([]);
   const [dataKegiatanProduksi, setDataKegiatanProduksi] = useState([]);
+  console.log(dataKegiatanProduksi)
 
   const [snackbarMessage, setSnackbarMessage] = useState("");
   const [snackbarStatus, setSnackbarStatus] = useState(false);
@@ -73,18 +74,25 @@ const MaindashboardProduction = (props) => {
       }).then((result) => {
         if (result.status === 200) {
           const data = result.data;
-          data.sort((a, b) => {
+          
+          // Filter out items where statusLaporan is "Done"
+          const filteredData = data.filter(item => item.statusLaporan !== "Done");
+  
+          // Sort and map the filtered data
+          filteredData.sort((a, b) => {
             if (a.noOrderProduksi === b.noOrderProduksi) {
               return new Date(b.updatedAt) - new Date(a.updatedAt);
             }
             return a.noOrderProduksi - b.noOrderProduksi;
           });
+  
           const latestDataMap = new Map();
-          data.forEach((item) => {
+          filteredData.forEach((item) => {
             if (!latestDataMap.has(item.noOrderProduksi)) {
               latestDataMap.set(item.noOrderProduksi, item);
             }
           });
+  
           const latestData = Array.from(latestDataMap.values());
           setDataKegiatanProduksi(latestData);
           setRefreshDataKegiatanProduksi(false);
@@ -94,6 +102,7 @@ const MaindashboardProduction = (props) => {
       });
     }
   }, [refreshDataKegiatanProduksi]);
+  
 
   const handleCloseSnackbar = () => {
     setOpenSnackbar(false);
@@ -418,57 +427,60 @@ const MaindashboardProduction = (props) => {
                     </TableRow>
                   </TableHead>
                   <TableBody>
-                    {dataKegiatanProduksi?.map((result, index) => {
-                      return (
-                        <React.Fragment key={index}>
-                          <TableRow>
-                            <TableCell>
-                              {dayjs(result.tanggalProduksi).format(
-                                "MM/DD/YYYY hh:mm A"
-                              )}
-                            </TableCell>
-                            <TableCell>{result.tahapProduksi}</TableCell>
-                            <TableCell>{result.noOrderProduksi}</TableCell>
-                            <TableCell>{result.jenisCetakan}</TableCell>
-                            <TableCell>{result.dibuatOleh}</TableCell>
-                            <TableCell>
-                              <div
-                                style={{
-                                  display: "flex",
-                                  alignItems: "center",
-                                }}
-                              >
-                                <IconButton
-                                  onClick={() => {
-                                    handleGoToEditKegiatanProduksi(result.id);
+                    {dataKegiatanProduksi
+                      ?.filter((result) => result.statusLaporan !== "Done")
+                      ?.map((result, index) => {
+                        return (
+                          <React.Fragment key={index}>
+                            <TableRow>
+                              <TableCell>
+                                {dayjs(result.tanggalProduksi).format(
+                                  "MM/DD/YYYY hh:mm A"
+                                )}
+                              </TableCell>
+                              <TableCell>{result.tahapProduksi}</TableCell>
+                              <TableCell>{result.noOrderProduksi}</TableCell>
+                              <TableCell>{result.jenisCetakan}</TableCell>
+                              <TableCell>{result.dibuatOleh}</TableCell>
+                              <TableCell>
+                                <div
+                                  style={{
+                                    display: "flex",
+                                    alignItems: "center",
                                   }}
                                 >
-                                  <EditIcon style={{ color: "#0F607D" }} />
-                                </IconButton>
-                                {result.tahapProduksi !== "Produksi Fitur" && (
                                   <IconButton
                                     onClick={() => {
-                                      handleChangeTahapProduksi(result.id);
+                                      handleGoToEditKegiatanProduksi(result.id);
                                     }}
                                   >
-                                    <ArrowForwardIcon
-                                      style={{ color: "#0F607D" }}
-                                    />
+                                    <EditIcon style={{ color: "#0F607D" }} />
                                   </IconButton>
-                                )}
-                                <IconButton
-                                  onClick={() => {
-                                    handleDeleteKegiatanProduksi(result.id);
-                                  }}
-                                >
-                                  <DeleteIcon style={{ color: "red" }} />
-                                </IconButton>
-                              </div>
-                            </TableCell>
-                          </TableRow>
-                        </React.Fragment>
-                      );
-                    })}
+                                  {result.tahapProduksi !==
+                                    "Produksi Fitur" && (
+                                    <IconButton
+                                      onClick={() => {
+                                        handleChangeTahapProduksi(result.id);
+                                      }}
+                                    >
+                                      <ArrowForwardIcon
+                                        style={{ color: "#0F607D" }}
+                                      />
+                                    </IconButton>
+                                  )}
+                                  <IconButton
+                                    onClick={() => {
+                                      handleDeleteKegiatanProduksi(result.id);
+                                    }}
+                                  >
+                                    <DeleteIcon style={{ color: "red" }} />
+                                  </IconButton>
+                                </div>
+                              </TableCell>
+                            </TableRow>
+                          </React.Fragment>
+                        );
+                      })}
                   </TableBody>
                 </Table>
               </TableContainer>
@@ -493,11 +505,14 @@ const MaindashboardProduction = (props) => {
           </Typography>
           <DefaultButton
             height="40px"
-            width="232px"
+            width="320px"
             borderRadius="16px"
             fontSize="16px"
+            onClickFunction={() => {
+              navigate("/productionDashboard/laporanProduksi");
+            }}
           >
-            Add Production Reports
+            Pergi ke halaman laporan produksi
           </DefaultButton>
         </div>
         <div style={{ marginLeft: "32px", marginTop: "32px" }}>

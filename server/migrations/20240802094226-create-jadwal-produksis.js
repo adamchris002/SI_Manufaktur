@@ -41,15 +41,6 @@ module.exports = {
       keterangan: {
         type: Sequelize.STRING,
       },
-      jenisBahanKertas: {
-        type: Sequelize.STRING,
-      },
-      kodeRoll: {
-        type: Sequelize.STRING,
-      },
-      beratBahanKertas: {
-        type: Sequelize.STRING,
-      },
       sobek: {
         type: Sequelize.STRING,
       },
@@ -73,6 +64,9 @@ module.exports = {
       },
       nomoratorAkhir: {
         type: Sequelize.STRING,
+      },
+      statusLaporan: {
+        type: Sequelize.STRING
       },
       createdAt: {
         allowNull: false,

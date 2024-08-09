@@ -644,6 +644,24 @@ const KegiatanProduksi = (props) => {
     });
   };
 
+  const handleSelesaiKegiatanProduksi = (id) => {
+    console.log(id)
+    axios({
+      method: "PUT",
+      url: `http://localhost:3000/production/kegiatanProduksiSelesai/${id}`,
+    }).then((result) => {
+      if (result.status === 200) {
+        setSuccessMessage("Kegiatan produksi selesai");
+        setSnackbarStatus(true);
+        navigate(-1);
+      } else {
+        setOpenSnackbar(true);
+        setSnackbarStatus(false);
+        setSnackbarMessage("Tidak berhasil mengupdate kegiatan produksi");
+      }
+    });
+  };
+
   const handleAddJawalProduksiPracetak = () => {
     setJadwalProduksiPracetak((oldArray) => {
       return [
@@ -1025,7 +1043,9 @@ const KegiatanProduksi = (props) => {
         },
       }).then((result) => {
         if (result.status === 200) {
-          console.log("mantap")
+          setSuccessMessage("Berhasil mengedit kegiatan produksi fitur");
+          setSnackbarStatus(true);
+          navigate(-1);
         } else {
           setOpenSnackbar(true);
           setSnackbarStatus(false);
@@ -2308,17 +2328,32 @@ const KegiatanProduksi = (props) => {
                   display: "flex",
                 }}
               >
-                <DefaultButton
-                  onClickFunction={() => {
-                    laporanProduksiId !== undefined
-                      ? handleEditKegiatanProduksiCetak()
-                      : handleAddKegiatanProduksiCetak();
+                {laporanProduksiId !== undefined && (
+                  <DefaultButton
+                    onClickFunction={() => {
+                      handleSelesaiKegiatanProduksi(dataProduksi?.id);
+                    }}
+                  >
+                    Kegiatan Produksi Selesai
+                  </DefaultButton>
+                )}
+                <div
+                  style={{
+                    marginLeft: laporanProduksiId !== undefined ? "8px" : "",
                   }}
                 >
-                  {laporanProduksiId !== undefined
-                    ? "Edit Kegiatan Produksi Cetak"
-                    : "Tambah Kegiatan Produksi Cetak"}
-                </DefaultButton>
+                  <DefaultButton
+                    onClickFunction={() => {
+                      laporanProduksiId !== undefined
+                        ? handleEditKegiatanProduksiCetak()
+                        : handleAddKegiatanProduksiCetak();
+                    }}
+                  >
+                    {laporanProduksiId !== undefined
+                      ? "Edit Kegiatan Produksi Cetak"
+                      : "Tambah Kegiatan Produksi Cetak"}
+                  </DefaultButton>
+                </div>
                 <Button
                   color="error"
                   variant="outlined"
@@ -2614,6 +2649,15 @@ const KegiatanProduksi = (props) => {
                   marginTop: "16px",
                 }}
               >
+                {laporanProduksiId !== undefined && (
+                  <DefaultButton
+                    onClickFunction={() => {
+                      handleSelesaiKegiatanProduksi(dataProduksi?.id);
+                    }}
+                  >
+                    Kegiatan Produksi Selesai
+                  </DefaultButton>
+                )}
                 <DefaultButton
                   onClickFunction={() => {
                     laporanProduksiId !== undefined
