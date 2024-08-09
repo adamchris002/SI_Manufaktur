@@ -4,7 +4,7 @@ import { TextField, Typography } from "@mui/material";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { DemoContainer, DemoItem } from "@mui/x-date-pickers/internals/demo";
-import { DatePicker } from '@mui/x-date-pickers/DatePicker';
+import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 import MySelectTextField from "../../components/SelectTextField";
 import dayjs from "dayjs";
 import axios from "axios";
@@ -16,20 +16,63 @@ const LaporanProduksi = (props) => {
   const [tanggalProduksiSelesai, setTanggalProduksiSelesai] = useState(
     dayjs("")
   );
-  console.log(tanggalProduksiSelesai);
+  const [allKegiatanProduksiDone, setAllKegiatanProduksiDone] = useState([]);
+  const [allTahapProduksi, setAllTahapProduksi] = useState([]);
+  const [noOrderProduksiAvailable, setNoOrderProduksiAvailable] = useState([]);
+  const [selectedNoOrderProduksi, setSelectedNoOrderProduksi] = useState("");
+  const [selectedTahapProduksiAvailable, setSelectedTahapProduksiAvailable] =
+    useState("");
 
   const handleGetKegiatanProduksi = () => {
-    axios({
-      method: "GET",
-      url: "http://localhost:3000/production/getKegiatanProduksiDone",
-      params: { tanggalProduksiSelesai: tanggalProduksiSelesai.format("MM/DD/YYYY") },
-    }).then((result) => {
-      if (result.status === 200) {
-        console.log(result);
-      } else {
-        console.log(result);
+    if (
+      !tanggalProduksiSelesai ||
+      !dayjs(tanggalProduksiSelesai, "MM/DD/YYYY", true).isValid()
+    ) {
+      return false;
+    } else {
+      axios({
+        method: "GET",
+        url: "http://localhost:3000/production/getKegiatanProduksiDone",
+        params: {
+          tanggalProduksiSelesai: tanggalProduksiSelesai.format("MM/DD/YYYY"),
+        },
+      }).then((result) => {
+        if (result.status === 200) {
+          const uniqueData = result.data.reduce((acc, item) => {
+            if (
+              !acc.some(
+                (existingItem) =>
+                  existingItem.noOrderProduksi === item.noOrderProduksi
+              )
+            ) {
+              acc.push(item);
+            }
+            return acc;
+          }, []);
+          const tempNoOrderProduksiValue = uniqueData.map((item) => ({
+            value: item.noOrderProduksi,
+          }));
+          setNoOrderProduksiAvailable(tempNoOrderProduksiValue);
+          setAllKegiatanProduksiDone(result.data);
+        } else {
+          console.log(result);
+        }
+      });
+    }
+  };
+
+  const handleChangeInputNoOrderProduksi = (event) => {
+    const selectedValue = event.target.value;
+    setSelectedNoOrderProduksi(selectedValue);
+
+    const tempData = allKegiatanProduksiDone.map((result) => {
+      if (result.noOrderProduksi === selectedValue) {
+        return {
+          value: result.tahapProduksi
+        }
       }
-    });
+    })
+    setAllTahapProduksi(tempData)
   };
 
   return (
@@ -62,7 +105,7 @@ const LaporanProduksi = (props) => {
               <DemoContainer components={["DatePicker"]}>
                 <DemoItem>
                   <DatePicker
-                  valueType="date"
+                    valueType="date"
                     value={
                       tanggalProduksiSelesai.isValid()
                         ? tanggalProduksiSelesai
@@ -91,7 +134,14 @@ const LaporanProduksi = (props) => {
             >
               No Order Produksi:
             </Typography>
-            <MySelectTextField width="200px" />
+            <MySelectTextField
+              value={selectedNoOrderProduksi}
+              data={noOrderProduksiAvailable}
+              onChange={(event) => {
+                handleChangeInputNoOrderProduksi(event);
+              }}
+              width="200px"
+            />
           </div>
           <div
             style={{ display: "flex", alignItems: "center", marginTop: "16px" }}
@@ -101,7 +151,7 @@ const LaporanProduksi = (props) => {
             >
               Tahap Produksi:
             </Typography>
-            <MySelectTextField width="200px" />
+            <MySelectTextField data={allTahapProduksi} width="200px" />
           </div>
           <div>
             <Typography

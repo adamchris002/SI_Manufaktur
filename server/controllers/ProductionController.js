@@ -8,6 +8,7 @@ const {
   UserLaporanProduksis,
   orders,
 } = require("../models");
+const dayjs = require("dayjs");
 
 class ProductionController {
   static async getPenyerahanBarang(req, res) {
@@ -687,11 +688,20 @@ class ProductionController {
   }
   static async getKegiatanProduksiDone(req, res) {
     try {
-      const {tanggalProduksiSelesai} = req.query
-      console.log(tanggalProduksiSelesai)
+      const { tanggalProduksiSelesai } = req.query;
+
       let result = await laporanProduksis.findAll({
-        where: { statusLaporan: "Done"  }, 
+        where: { statusLaporan: "Done" },
       });
+
+      if (tanggalProduksiSelesai) {
+        const targetDate = dayjs(tanggalProduksiSelesai).format("YYYY-MM-DD");
+        result = result.filter((item) => {
+          const itemDate = dayjs(item.updatedAt).format("YYYY-MM-DD");
+          return itemDate === targetDate;
+        });
+      }
+
       res.json(result);
     } catch (error) {
       res.json(error);
