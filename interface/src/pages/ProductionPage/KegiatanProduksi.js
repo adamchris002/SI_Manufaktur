@@ -61,7 +61,6 @@ const KegiatanProduksi = (props) => {
     ],
   });
 
-  // console.log(dataProduksi.tahapProduksi);
   const [jadwalProduksiPracetak, setJadwalProduksiPracetak] = useState([
     {
       jamAwalProduksi: dayjs(""),
@@ -645,7 +644,6 @@ const KegiatanProduksi = (props) => {
   };
 
   const handleSelesaiKegiatanProduksi = (id) => {
-    console.log(id)
     axios({
       method: "PUT",
       url: `http://localhost:3000/production/kegiatanProduksiSelesai/${id}`,

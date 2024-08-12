@@ -31,7 +31,6 @@ const MaindashboardProduction = (props) => {
 
   const [allPenyerahanBarang, setAllPenyerahanBarang] = useState([]);
   const [dataKegiatanProduksi, setDataKegiatanProduksi] = useState([]);
-  console.log(dataKegiatanProduksi)
 
   const [snackbarMessage, setSnackbarMessage] = useState("");
   const [snackbarStatus, setSnackbarStatus] = useState(false);

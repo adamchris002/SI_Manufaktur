@@ -674,7 +674,6 @@ class ProductionController {
   static async kegiatanProduksiSelesai(req, res) {
     try {
       const { id } = req.params;
-      console.log(id);
       let result = await laporanProduksis.update(
         {
           statusLaporan: "Done",
@@ -692,6 +691,11 @@ class ProductionController {
 
       let result = await laporanProduksis.findAll({
         where: { statusLaporan: "Done" },
+        include: [
+          { model: personils },
+          { model: jadwalProduksis },
+          { model: bahanLaporanProduksis },
+        ],
       });
 
       if (tanggalProduksiSelesai) {
