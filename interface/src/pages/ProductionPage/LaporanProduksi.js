@@ -44,6 +44,7 @@ const LaporanProduksi = (props) => {
   const [selectedTahapProduksiAvailable, setSelectedTahapProduksiAvailable] =
     useState("");
   const [selectedKegiatanProduksi, setSelectedKegiatanProduksi] = useState([]);
+  console.log(selectedKegiatanProduksi)
 
   const handleGetKegiatanProduksi = () => {
     if (
@@ -257,6 +258,7 @@ const LaporanProduksi = (props) => {
       switch (result.tahapProduksi) {
         case "Produksi Pracetak":
           result?.jadwalProdukses?.forEach((data, dataIndex) => {
+            console.log(data.waste)
             tableRowsDataJadwalProduksiPracetak.push({
               no: dataIndex + 1,
               jamAwalProduksi: dayjs(data.jamAwalProduksi).format(
@@ -266,11 +268,13 @@ const LaporanProduksi = (props) => {
                 "MM/DD/YYYY hh:mm A"
               ),
               noOrderProduksi: data.noOrderProduksi,
+              jenisCetakan: data.jenisCetakan,
               perolehanCetakan: data.perolehanCetak,
               waste: data.waste,
               keterangan: data.keterangan,
             });
           });
+          console.log(tableRowsDataJadwalProduksiPracetak)
           pdf.autoTable({
             startY: y,
             head: [tableColumnsDataJadwalProduksiPracetak],
