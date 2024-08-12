@@ -377,15 +377,25 @@ const MaindashboardInventory = (props) => {
                     return {
                       ...daftarPermohonan,
                       [field]: {
-                        value: daftarPermohonan[field],
+                        value: daftarPermohonan[field]?.value || "",
                         unit: value,
                       },
                     };
                   } else {
-                    return {
-                      ...daftarPermohonan,
-                      [field]: value,
-                    };
+                    if (field === "jumlah" || field === "stok") {
+                      return {
+                        ...daftarPermohonan,
+                        [field]: {
+                          ...daftarPermohonan[field],
+                          value: value,
+                        },
+                      };
+                    } else {
+                      return {
+                        ...daftarPermohonan,
+                        [field]: value,
+                      };
+                    }
                   }
                 }
                 return daftarPermohonan;

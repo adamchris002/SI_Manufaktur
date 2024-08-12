@@ -392,8 +392,8 @@ const EditProductionPlanPage = (props) => {
         return false;
       }
       for (const pekerjaanItem of item.rencanaJadwalProdukses) {
-        const tanggalMulai = dayjs(pekerjaanItem.tanggalMulai)
-        const tanggalSelesai = dayjs(pekerjaanItem.tanggalSelesai)
+        const tanggalMulai = dayjs(pekerjaanItem.tanggalMulai);
+        const tanggalSelesai = dayjs(pekerjaanItem.tanggalSelesai);
         if (
           pekerjaanItem.jenisPekerjaan === "" ||
           tanggalMulai === "" ||
@@ -605,15 +605,29 @@ const EditProductionPlanPage = (props) => {
                           return {
                             ...dataJenisItem,
                             [field]: {
-                              value: dataJenisItem[field],
+                              value: dataJenisItem[field]?.value || "",
                               unit: value,
                             },
                           };
                         } else {
-                          return {
-                            ...dataJenisItem,
-                            [field]: value,
-                          };
+                          if (
+                            field === "estimasiKebutuhan" ||
+                            field === "waste" ||
+                            field === "jumlahKebutuhan"
+                          ) {
+                            return {
+                              ...dataJenisItem,
+                              [field]: {
+                                ...dataJenisItem[field],
+                                value: value,
+                              },
+                            };
+                          } else {
+                            return {
+                              ...dataJenisItem,
+                              [field]: value,
+                            };
+                          }
                         }
                       }
                       return dataJenisItem;

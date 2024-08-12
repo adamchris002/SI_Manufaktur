@@ -465,7 +465,7 @@ const EstimationOrderPage = (props) => {
     field,
     unit
   ) => {
-    const value = event.target.value;
+    const value = event && event.target ? event.target.value : event;
 
     setEstimasiBahanBaku((oldArray) => {
       const newState = oldArray.map((item, i) => {
@@ -482,15 +482,25 @@ const EstimationOrderPage = (props) => {
                         return {
                           ...dataJenisItem,
                           [field]: {
-                            value: dataJenisItem[field],
+                            value: dataJenisItem[field]?.value || "",
                             unit: value,
                           },
                         };
                       } else {
-                        return {
-                          ...dataJenisItem,
-                          [field]: value,
-                        };
+                        if (field === "estimasiKebutuhan" || field === "waste" || field === "jumlahKebutuhan") {
+                          return {
+                            ...dataJenisItem,
+                            [field]: {
+                              ...dataJenisItem[field],
+                              value: value,
+                            },
+                          };
+                        } else {
+                          return {
+                            ...dataJenisItem,
+                            [field]: value,
+                          };
+                        }
                       }
                     }
                     return dataJenisItem;
@@ -571,7 +581,9 @@ const EstimationOrderPage = (props) => {
             alignItems: "center",
           }}
         >
-          <Typography style={{ fontSize: isMobile ? "18px" : "3.5vw", color: "#0F607D" }}>
+          <Typography
+            style={{ fontSize: isMobile ? "18px" : "3.5vw", color: "#0F607D" }}
+          >
             Add Production Plan
           </Typography>
           <div
@@ -580,7 +592,12 @@ const EstimationOrderPage = (props) => {
               alignItems: "center",
             }}
           >
-            <Typography style={{ fontSize: isMobile ? "12px" : "1.5vw", color: "#0F607D" }}>
+            <Typography
+              style={{
+                fontSize: isMobile ? "12px" : "1.5vw",
+                color: "#0F607D",
+              }}
+            >
               Select Order ID
             </Typography>
             <div style={{ marginLeft: "8px" }}>
@@ -1718,7 +1735,10 @@ const EstimationOrderPage = (props) => {
                     </IconButton>
                   </div>
                   <div style={{ marginTop: "16px" }}>
-                    <TableContainer component={Paper} sx={{overflowY: "auto"}}>
+                    <TableContainer
+                      component={Paper}
+                      sx={{ overflowY: "auto" }}
+                    >
                       <Table sx={{ minWidth: 650 }} aria-label="simple table">
                         <TableHead>
                           <TableRow>

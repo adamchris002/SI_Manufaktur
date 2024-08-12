@@ -2656,17 +2656,23 @@ const KegiatanProduksi = (props) => {
                     Kegiatan Produksi Selesai
                   </DefaultButton>
                 )}
-                <DefaultButton
-                  onClickFunction={() => {
-                    laporanProduksiId !== undefined
-                      ? handleEditKegiatanProduksiFitur()
-                      : handleAddKegiatanProduksiFitur();
+                <div
+                  style={{
+                    marginLeft: laporanProduksiId !== undefined ? "8px" : "",
                   }}
                 >
-                  {laporanProduksiId !== undefined
-                    ? "Edit kegiatan produksi fitur"
-                    : "Tambah kegiatan produksi fitur"}
-                </DefaultButton>
+                  <DefaultButton
+                    onClickFunction={() => {
+                      laporanProduksiId !== undefined
+                        ? handleEditKegiatanProduksiFitur()
+                        : handleAddKegiatanProduksiFitur();
+                    }}
+                  >
+                    {laporanProduksiId !== undefined
+                      ? "Edit kegiatan produksi fitur"
+                      : "Tambah kegiatan produksi fitur"}
+                  </DefaultButton>
+                </div>
                 <Button
                   style={{ marginLeft: "8px", textTransform: "none" }}
                   variant="outlined"

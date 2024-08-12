@@ -414,26 +414,46 @@ const PembelianBahanBaku = (props) => {
           if (i === index) {
             let updatedResult = { ...result };
             if (unit) {
-              updatedResult = {
+              return {
                 ...updatedResult,
                 [field]: {
-                  value: result[field],
+                  value: result[field]?.value || "",
                   unit: value,
                 },
               };
             } else {
-              updatedResult = { ...updatedResult, [field]: value };
-
+              if (
+                field === "jumlahTerimaPengiriman" ||
+                field === "sisaPengiriman"
+              ) {
+                return {
+                  ...updatedResult,
+                  [field]: {
+                    ...result[field],
+                    value: value,
+                  },
+                };
+              }
               if (field === "hargaSatuan") {
                 const hargaSatuan = parseFloat(value.replace(/,/g, ""));
-                const jumlahOrder = parseFloat(result.jumlahOrder?.value);
+                const jumlahOrder = parseFloat(result.jumlahOrder.value);
                 updatedResult.jumlahHarga = jumlahOrder * hargaSatuan;
+                updatedResult = { ...updatedResult, [field]: value };
               } else if (field === "jumlahOrder") {
                 const jumlahOrder = parseFloat(value.replace(/,/g, ""));
                 const hargaSatuan = parseFloat(
                   result.hargaSatuan.replace(/,/g, "")
                 );
                 updatedResult.jumlahHarga = jumlahOrder * hargaSatuan;
+                updatedResult = {
+                  ...updatedResult,
+                  [field]: {
+                    ...result[field],
+                    value: value,
+                  },
+                };
+              } else {
+                updatedResult = { ...updatedResult, [field]: value };
               }
             }
 
@@ -715,7 +735,11 @@ const PembelianBahanBaku = (props) => {
                                     >
                                       <DemoItem sx={{ padding: 0 }}>
                                         <DateTimePicker
-                                          value={result.tanggal}
+                                          value={
+                                            result.tanggal.isValid()
+                                              ? result.tanggal
+                                              : null
+                                          }
                                           disablePast
                                           onChange={(event) =>
                                             handleChangeInput(
@@ -724,6 +748,19 @@ const PembelianBahanBaku = (props) => {
                                               index
                                             )
                                           }
+                                          renderInput={(params) => (
+                                            <TextField
+                                              {...params}
+                                              error={
+                                                params.error || !params.value
+                                              }
+                                              helperText={
+                                                params.error
+                                                  ? "Invalid date format"
+                                                  : ""
+                                              }
+                                            />
+                                          )}
                                         />
                                       </DemoItem>
                                     </DemoContainer>
@@ -879,7 +916,11 @@ const PembelianBahanBaku = (props) => {
                                       <DemoItem sx={{ padding: 0 }}>
                                         <DateTimePicker
                                           disablePast
-                                          value={result.tanggalSuratJalan}
+                                          value={
+                                            result.tanggalSuratJalan.isValid()
+                                              ? result.tanggalSuratJalan
+                                              : null
+                                          }
                                           onChange={(event) => {
                                             handleChangeInput(
                                               "tanggalSuratJalan",
@@ -887,6 +928,19 @@ const PembelianBahanBaku = (props) => {
                                               index
                                             );
                                           }}
+                                          renderInput={(params) => (
+                                            <TextField
+                                              {...params}
+                                              error={
+                                                params.error || !params.value
+                                              }
+                                              helperText={
+                                                params.error
+                                                  ? "Invalid date format"
+                                                  : ""
+                                              }
+                                            />
+                                          )}
                                         />
                                       </DemoItem>
                                     </DemoContainer>
@@ -916,7 +970,11 @@ const PembelianBahanBaku = (props) => {
                                       <DemoItem sx={{ padding: 0 }}>
                                         <DateTimePicker
                                           disablePast
-                                          value={result.tanggalTerimaBarang}
+                                          value={
+                                            result.tanggalTerimaBarang.isValid()
+                                              ? result.tanggalTerimaBarang
+                                              : null
+                                          }
                                           onChange={(event) => {
                                             handleChangeInput(
                                               "tanggalTerimaBarang",
@@ -924,6 +982,19 @@ const PembelianBahanBaku = (props) => {
                                               index
                                             );
                                           }}
+                                          renderInput={(params) => (
+                                            <TextField
+                                              {...params}
+                                              error={
+                                                params.error || !params.value
+                                              }
+                                              helperText={
+                                                params.error
+                                                  ? "Invalid date format"
+                                                  : ""
+                                              }
+                                            />
+                                          )}
                                         />
                                       </DemoItem>
                                     </DemoContainer>
@@ -966,7 +1037,11 @@ const PembelianBahanBaku = (props) => {
                                       <DemoItem sx={{ padding: 0 }}>
                                         <DateTimePicker
                                           disablePast
-                                          value={result.tanggalJatuhTempo}
+                                          value={
+                                            result.tanggalJatuhTempo.isValid()
+                                              ? result.tanggalJatuhTempo
+                                              : null
+                                          }
                                           onChange={(event) => {
                                             handleChangeInput(
                                               "tanggalJatuhTempo",
@@ -974,6 +1049,19 @@ const PembelianBahanBaku = (props) => {
                                               index
                                             );
                                           }}
+                                          renderInput={(params) => (
+                                            <TextField
+                                              {...params}
+                                              error={
+                                                params.error || !params.value
+                                              }
+                                              helperText={
+                                                params.error
+                                                  ? "Invalid date format"
+                                                  : ""
+                                              }
+                                            />
+                                          )}
                                         />
                                       </DemoItem>
                                     </DemoContainer>
@@ -990,7 +1078,11 @@ const PembelianBahanBaku = (props) => {
                                       <DemoItem sx={{ padding: 0 }}>
                                         <DateTimePicker
                                           disablePast
-                                          value={result.tanggalPengiriman}
+                                          value={
+                                            result.tanggalPengiriman.isValid()
+                                              ? result.tanggalPengiriman
+                                              : null
+                                          }
                                           onChange={(event) => {
                                             handleChangeInput(
                                               "tanggalPengiriman",
@@ -998,6 +1090,19 @@ const PembelianBahanBaku = (props) => {
                                               index
                                             );
                                           }}
+                                          renderInput={(params) => (
+                                            <TextField
+                                              {...params}
+                                              error={
+                                                params.error || !params.value
+                                              }
+                                              helperText={
+                                                params.error
+                                                  ? "Invalid date format"
+                                                  : ""
+                                              }
+                                            />
+                                          )}
                                         />
                                       </DemoItem>
                                     </DemoContainer>

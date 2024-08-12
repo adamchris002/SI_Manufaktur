@@ -73,10 +73,13 @@ const MaindashboardProduction = (props) => {
       }).then((result) => {
         if (result.status === 200) {
           const data = result.data;
-          
+
           // Filter out items where statusLaporan is "Done"
-          const filteredData = data.filter(item => item.statusLaporan !== "Done");
-  
+          const filteredData = data?.filter(
+            (item) => item?.statusLaporan !== "Done"
+          );
+          console.log(filteredData)
+
           // Sort and map the filtered data
           filteredData.sort((a, b) => {
             if (a.noOrderProduksi === b.noOrderProduksi) {
@@ -84,14 +87,14 @@ const MaindashboardProduction = (props) => {
             }
             return a.noOrderProduksi - b.noOrderProduksi;
           });
-  
+
           const latestDataMap = new Map();
           filteredData.forEach((item) => {
             if (!latestDataMap.has(item.noOrderProduksi)) {
               latestDataMap.set(item.noOrderProduksi, item);
             }
           });
-  
+
           const latestData = Array.from(latestDataMap.values());
           setDataKegiatanProduksi(latestData);
           setRefreshDataKegiatanProduksi(false);
@@ -101,7 +104,6 @@ const MaindashboardProduction = (props) => {
       });
     }
   }, [refreshDataKegiatanProduksi]);
-  
 
   const handleCloseSnackbar = () => {
     setOpenSnackbar(false);

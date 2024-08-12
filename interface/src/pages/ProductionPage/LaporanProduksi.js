@@ -316,7 +316,7 @@ const LaporanProduksi = (props) => {
           break;
         case "Produksi Fitur":
           result?.jadwalProdukses?.forEach((data, dataIndex) => {
-            tableRowsDataJadwalProduksiFitur({
+            tableRowsDataJadwalProduksiFitur.push({
               no: dataIndex + 1,
               jamAwalProduksi: dayjs(data.jamAwalProduksi).format(
                 "MM/DD/YYYY hh:mm A"
@@ -615,9 +615,9 @@ const LaporanProduksi = (props) => {
                 </TableContainer>
               </div>
               <div style={{ marginTop: "32px" }}>
-                {selectedKegiatanProduksi?.map((result) => {
+                {selectedKegiatanProduksi?.map((result, index) => {
                   return (
-                    <div style={{ paddingBottom: "32px" }}>
+                    <div key={index} style={{ paddingBottom: "32px" }}>
                       {result.tahapProduksi === "Produksi Pracetak" && (
                         <>
                           <Typography

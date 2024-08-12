@@ -203,7 +203,11 @@ const StokOpnam = (props) => {
     const value = event && event.target ? event.target.value : event;
 
     setDataStokOpnam((oldObject) => {
-      if (field === "judulStokOpnam" || field === "tanggalStokOpnam" || field === "tanggalAkhirStokOpnam") {
+      if (
+        field === "judulStokOpnam" ||
+        field === "tanggalStokOpnam" ||
+        field === "tanggalAkhirStokOpnam"
+      ) {
         if (field === "tanggalStokOpnam") {
           return {
             ...oldObject,
@@ -217,17 +221,30 @@ const StokOpnam = (props) => {
           if (i === index) {
             let updatedItem = { ...item };
             if (unit) {
-              updatedItem = {
+              return {
                 ...updatedItem,
                 [field]: {
-                  value: item[field],
+                  value: item[field]?.value || "",
                   unit: value,
                 },
               };
             } else {
-              updatedItem = { ...updatedItem, [field]: value };
-
+              if (
+                field === "stokOpnamAwal" ||
+                field === "stokOpnamAkhir" ||
+                field === "stokFisik" ||
+                field === "stokSelisih"
+              ) {
+                return {
+                  ...updatedItem,
+                  [field]: {
+                    ...updatedItem[field],
+                    value: value,
+                  }
+                }
+              }
               if (field === "jenisBarang") {
+                updatedItem = { ...updatedItem, [field]: value };
                 const kodeBarang = getSelectedInventoryItem(
                   updatedItem.jenisBarang,
                   "kodeBarang"
@@ -244,8 +261,8 @@ const StokOpnam = (props) => {
                   updatedItem.jenisBarang,
                   "inventoryHistorys"
                 );
-                if (inventoryHistory.length !== 0) {
-                  const mostRecentItem = inventoryHistory.reduce(
+                if (inventoryHistory?.length !== 0) {
+                  const mostRecentItem = inventoryHistory?.reduce(
                     (latest, item) => {
                       return new Date(item.createdAt) >
                         new Date(latest.createdAt)
@@ -262,13 +279,14 @@ const StokOpnam = (props) => {
                     value: tempvalue.value,
                     unit: tempvalue.unit,
                   };
-                }
-                else {
-                  updatedItem.stokOpnamAwal = { value: "", unit: ""}
+                } else {
+                  updatedItem.stokOpnamAwal = { value: "", unit: "" };
                 }
                 updatedItem.kodeBarang = kodeBarang;
                 updatedItem.lokasiPenyimpanan = lokasiPenyimpanan;
                 updatedItem.idBarang = idBarang;
+              } else {
+                updatedItem = { ...updatedItem, [field]: value };
               }
             }
             return updatedItem;
