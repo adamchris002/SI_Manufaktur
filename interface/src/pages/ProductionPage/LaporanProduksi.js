@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from "react";
 import factoryBackground from "../../assets/factorybackground.png";
-import factoryBackgroundPotrait from "../../assets/factorybackgroundpotrait.png"
+import logoPerusahaan from "../../assets/PT_Aridas_Karya_Satria_Logo.png";
 import {
   Button,
   Checkbox,
@@ -16,9 +16,11 @@ import {
   Typography,
 } from "@mui/material";
 import { useNavigate } from "react-router-dom";
+import * as XLSX from "xlsx";
+import { saveAs } from "file-saver";
 import jsPDF from "jspdf";
 import "jspdf-autotable";
-import html2canvas from "html2canvas";
+import ExcelJS from "exceljs";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { DemoContainer, DemoItem } from "@mui/x-date-pickers/internals/demo";
@@ -44,7 +46,6 @@ const LaporanProduksi = (props) => {
   const [selectedTahapProduksiAvailable, setSelectedTahapProduksiAvailable] =
     useState("");
   const [selectedKegiatanProduksi, setSelectedKegiatanProduksi] = useState([]);
-  console.log(selectedKegiatanProduksi)
 
   const handleGetKegiatanProduksi = () => {
     if (
@@ -120,19 +121,59 @@ const LaporanProduksi = (props) => {
     const pdf = new jsPDF("landscape", "mm", "a4");
     const pageWidth = pdf.internal.pageSize.getWidth();
     const pageHeight = pdf.internal.pageSize.getHeight();
-
-    pdf.addImage(factoryBackground, 'png', 0, 0, pageWidth, pageHeight);
-
-    let y = 15;
     const margin = 10;
+    let y = margin;
 
+    const addNewPage = () => {
+      pdf.addPage();
+      pdf.addImage(factoryBackground, "png", 0, 0, pageWidth, pageHeight);
+      y = margin;
+    };
+
+    pdf.addImage(factoryBackground, "png", 0, 0, pageWidth, pageHeight);
+    pdf.addImage(logoPerusahaan, "png", 10, 5, 30, 30);
+    pdf.setTextColor(15, 96, 125);
     pdf.setFontSize(24);
-    pdf.text("Laporan Produksi", margin, y);
+    pdf.text("PT. ARIDAS KARYA SATRIA", 45, 25);
+    pdf.setFontSize(10);
+    pdf.text(
+      "Security Printing | Hologram Security | Smart Card | General Printing & Packaging | Continous Form Printing | Web Offset Printing",
+      45,
+      30
+    );
+    pdf.setFontSize(24);
 
-    pdf.setFontSize(12);
+    y = 40;
+    pdf.setLineWidth(0.5);
+    pdf.line(10, y, pageWidth - margin, y);
+
     y += 15;
 
     selectedKegiatanProduksi.forEach((result) => {
+      if (y + 20 > pageHeight) {
+        addNewPage();
+      }
+      switch (result.tahapProduksi) {
+        case "Produksi Pracetak":
+          pdf.text("Laporan Produksi Pracetak", margin, y);
+          break;
+        case "Produksi Cetak":
+          pdf.text("Laporan Produksi Cetak", margin, y);
+          break;
+        case "Produksi Fitur":
+          pdf.text("Laporan Produksi Fitur", margin, y);
+          break;
+        default:
+          return;
+      }
+
+      y += 15;
+
+      if (y + 20 > pageHeight) {
+        addNewPage();
+      }
+
+      pdf.setFontSize(12);
       pdf.text(`ID: ${result.id}`, margin, y);
       pdf.text(
         `Tanggal Produksi: ${dayjs(result.tanggalProduksi).format(
@@ -143,13 +184,25 @@ const LaporanProduksi = (props) => {
       );
       y += 10;
 
+      if (y + 20 > pageHeight) {
+        addNewPage();
+      }
+
       pdf.text(`No Order Produksi: ${result.noOrderProduksi}`, margin, y);
       pdf.text(`Mesin: ${result.mesin}`, 80, y);
       y += 10;
 
+      if (y + 20 > pageHeight) {
+        addNewPage();
+      }
+
       pdf.text(`Dibuat Oleh: ${result.dibuatOleh}`, margin, y);
       pdf.text(`Tahap Produksi: ${result.tahapProduksi}`, 80, y);
       y += 10;
+
+      if (y + 20 > pageHeight) {
+        addNewPage();
+      }
 
       pdf.text(`Jenis Cetakan: ${result.jenisCetakan}`, margin, y);
       pdf.text(
@@ -161,10 +214,18 @@ const LaporanProduksi = (props) => {
       );
       y += 15;
 
+      if (y + 20 > pageHeight) {
+        addNewPage();
+      }
+
       pdf.setFontSize(18);
       pdf.text(`Personil:`, margin, y);
       pdf.setFontSize(12);
       y += 10;
+
+      if (y + 20 > pageHeight) {
+        addNewPage();
+      }
 
       result.personils.forEach((data, dataIndex) => {
         pdf.text(`${dataIndex + 1}. ${data.nama}`, margin + 10, y);
@@ -173,10 +234,18 @@ const LaporanProduksi = (props) => {
 
       y += 10;
 
+      if (y + 20 > pageHeight) {
+        addNewPage();
+      }
+
       pdf.setFontSize(18);
       pdf.text(`Bahan Laporan Produksi:`, margin, y);
       pdf.setFontSize(12);
       y += 10;
+
+      if (y + 20 > pageHeight) {
+        addNewPage();
+      }
 
       const tableColumnsDataBahan = [
         "No.",
@@ -208,6 +277,10 @@ const LaporanProduksi = (props) => {
       });
 
       y = pdf.lastAutoTable.finalY + 15;
+
+      if (y + 20 > pageHeight) {
+        addNewPage();
+      }
 
       const tableColumnsDataJadwalProduksiPracetak = [
         "No.",
@@ -255,10 +328,13 @@ const LaporanProduksi = (props) => {
       pdf.setFontSize(12);
       y += 10;
 
+      if (y + 20 > pageHeight) {
+        addNewPage();
+      }
+
       switch (result.tahapProduksi) {
         case "Produksi Pracetak":
           result?.jadwalProdukses?.forEach((data, dataIndex) => {
-            console.log(data.waste)
             tableRowsDataJadwalProduksiPracetak.push({
               no: dataIndex + 1,
               jamAwalProduksi: dayjs(data.jamAwalProduksi).format(
@@ -274,7 +350,6 @@ const LaporanProduksi = (props) => {
               keterangan: data.keterangan,
             });
           });
-          console.log(tableRowsDataJadwalProduksiPracetak)
           pdf.autoTable({
             startY: y,
             head: [tableColumnsDataJadwalProduksiPracetak],
@@ -284,6 +359,7 @@ const LaporanProduksi = (props) => {
             theme: "striped",
             margin: { left: margin, right: margin },
           });
+          y = pdf.lastAutoTable.finalY + 15;
           break;
         case "Produksi Cetak":
           result?.jadwalProdukses?.forEach((data, dataIndex) => {
@@ -317,6 +393,7 @@ const LaporanProduksi = (props) => {
             theme: "striped",
             margin: { left: margin, right: margin },
           });
+          y = pdf.lastAutoTable.finalY + 15;
           break;
         case "Produksi Fitur":
           result?.jadwalProdukses?.forEach((data, dataIndex) => {
@@ -345,16 +422,327 @@ const LaporanProduksi = (props) => {
               theme: "striped",
               margin: { left: margin, right: margin },
             });
+            y = pdf.lastAutoTable.finalY + 15;
           });
           break;
         default:
-          return false;
+          return;
       }
 
-      y = pdf.lastAutoTable.finalY + 20;
+      if (y + 20 > pageHeight) {
+        addNewPage();
+      }
     });
 
-    pdf.save("kegiatan-produksi.pdf");
+    pdf.save("laporan-produksi.pdf");
+  };
+
+  const generateExcelFile = async () => {
+    const workbook = new ExcelJS.Workbook();
+    const worksheet = workbook.addWorksheet("Sheet1");
+
+    const startRow = 2;
+    const startCol = 2;
+
+    const data = [
+      [
+        "Tanggal Produksi: ",
+        dayjs(selectedKegiatanProduksi[0].tanggalProduksi).format(
+          "MM/DD/YYYY hh:mm A"
+        ),
+        "",
+        "",
+        "",
+      ],
+      [
+        "No Order Produksi: ",
+        selectedKegiatanProduksi[0].noOrderProduksi,
+        "",
+        "",
+        "",
+      ],
+      ["Jenis Cetakan: ", selectedKegiatanProduksi[0].jenisCetakan, "", "", ""],
+      ["Mesin: ", selectedKegiatanProduksi[0].mesin, "", "", ""],
+      ["Dibuat Oleh: ", selectedKegiatanProduksi[0].dibuatOleh, "", "", ""],
+      ["", "", "", "", ""],
+      ["Personil: ", "", "", "", ""],
+      ...selectedKegiatanProduksi[0].personils.map((personil) => [
+        `${personil.nama}`,
+        "",
+        "",
+        "",
+        "",
+      ]),
+      ["", "", "", "", ""],
+      ["Bahan: ", "", "", "", ""],
+      ["Jenis", "Kode", "Berat Awal", "Berat Akhir", "Keterangan"],
+      ...selectedKegiatanProduksi[0].bahanLaporanProdukses.map((data) => [
+        `${data.jenis}`,
+        `${data.kode}`,
+        `${data.beratAwal}`,
+        `${data.beratAkhir}`,
+        `${data.keterangan}`,
+      ]),
+    ];
+
+    const jadwalProduksiPracetak = [
+      ["Jadwal Produksi Pracetak", "", "", "", "", "", ""],
+      [
+        "Jam Awal Produksi",
+        "Jam Akhir Produksi",
+        "No Order Produksi",
+        "Jenis Cetakan",
+        "Perolehan Cetakan",
+        "Waste",
+        "Keterangan",
+      ],
+      ...selectedKegiatanProduksi[0].jadwalProdukses.map((result) => [
+        `${dayjs(result.jamAwalProduksi).format("MM/DD/YYYY hh:mm A")}`,
+        `${dayjs(result.jamAkhirProduksi).format("MM/DD/YYYY hh:mm A")}`,
+        `${result.noOrderProduksi}`,
+        `${result.jenisCetakan}`,
+        `${result.perolehanCetak}`,
+        `${result.waste}`,
+        `${result.keterangan}`,
+      ]),
+    ];
+    const jadwalProduksiCetak = [
+      ["Jadwal Produksi Fitur", "", "", "", "", "", "", "", "", "", "", ""],
+      [
+        "Jam Awal Produksi",
+        "Jam Akhir Produksi",
+        "No Order Produksi",
+        "Jenis Cetakan",
+        "Perolehan Cetakan",
+        "Waste Sobek (Kg)",
+        "Waste Kulit (Kg)",
+        "Waste Gelondong (Kg)",
+        "Waste Sampah",
+        "Roll Habis",
+        "Roll Sisa",
+        "Keterangan",
+      ],
+      ...selectedKegiatanProduksi[0].jadwalProdukses.map((result) => [
+        `${dayjs(result.jamAwalProduksi).format("MM/DD/YYYY hh:mm A")}`,
+        `${dayjs(result.jamAkhirProduksi).format("MM/DD/YYYY hh:mm A")}`,
+        `${result.noOrderProduksi}`,
+        `${result.jenisCetakan}`,
+        `${result.perolehanCetak}`,
+        `${result.sobek}`,
+        `${result.kulit}`,
+        `${result.gelondong}`,
+        `${result.sampah}`,
+        `${result.rollHabis ? "V" : "X"}`,
+        `${result.rollSisa ? "V" : "X"}`,
+        `${result.keterangan}`,
+      ]),
+    ];
+    const jadwalProduksiFitur = [
+      ["Jadwal Produksi Pracetak", "", "", "", "", "", "", "", ""],
+      [
+        "Jam Awal Produksi",
+        "Jam Akhir Produksi",
+        "No Order Produksi",
+        "Jenis Cetakan",
+        "Nomorator Awal",
+        "Nomorator Akhir",
+        "Perolehan Cetakan",
+        "Waste",
+        "Keterangan",
+      ],
+      ...selectedKegiatanProduksi[0].jadwalProdukses.map((result) => [
+        `${dayjs(result.jamAwalProduksi).format("MM/DD/YYYY hh:mm A")}`,
+        `${dayjs(result.jamAkhirProduksi).format("MM/DD/YYYY hh:mm A")}`,
+        `${result.noOrderProduksi}`,
+        `${result.jenisCetakan}`,
+        `${result.nomoratorAwal}`,
+        `${result.nomoratorAkhir}`,
+        `${result.perolehanCetak}`,
+        `${result.waste}`,
+        `${result.keterangan}`,
+      ]),
+    ];
+
+    data.forEach((row, rowIndex) => {
+      const excelRow = worksheet.getRow(startRow + rowIndex);
+      row.forEach((cellValue, colIndex) => {
+        excelRow.getCell(startCol + colIndex).value = cellValue;
+      });
+    });
+
+    const dataEndRow = startRow + data.length - 1;
+
+    const jadwalProduksisStartRow = dataEndRow + 3;
+
+    switch (selectedKegiatanProduksi[0].tahapProduksi) {
+      case "Produksi Pracetak":
+        jadwalProduksiPracetak.forEach((row, rowIndex) => {
+          const excelRow = worksheet.getRow(jadwalProduksisStartRow + rowIndex);
+          row.forEach((cellValue, colIndex) => {
+            excelRow.getCell(startCol + colIndex).value = cellValue;
+          });
+        });
+        break;
+      case "Produksi Cetak":
+        jadwalProduksiCetak.forEach((row, rowIndex) => {
+          const excelRow = worksheet.getRow(jadwalProduksisStartRow + rowIndex);
+          row.forEach((cellValue, colIndex) => {
+            excelRow.getCell(startCol + colIndex).value = cellValue;
+          });
+        });
+        break;
+      case "Produksi Fitur":
+        jadwalProduksiFitur.forEach((row, rowIndex) => {
+          const excelRow = worksheet.getRow(jadwalProduksisStartRow + rowIndex);
+          row.forEach((cellValue, colIndex) => {
+            excelRow.getCell(startCol + colIndex).value = cellValue;
+          });
+        });
+        break;
+      default:
+        return false;
+    }
+
+    worksheet.getCell(`B2`).font = { bold: true };
+    worksheet.getCell(`B3`).font = { bold: true };
+    worksheet.getCell(`B4`).font = { bold: true };
+    worksheet.getCell(`B5`).font = { bold: true };
+    worksheet.getCell(`B6`).font = { bold: true };
+    worksheet.getCell(`B8`).font = { bold: true };
+
+    const bahanStartRow =
+      startRow +
+      data.length -
+      (selectedKegiatanProduksi[0].bahanLaporanProdukses.length + 3) +
+      2;
+    worksheet.getCell(`B${bahanStartRow - 1}`).font = { bold: true };
+    worksheet.getCell(`B${bahanStartRow}`).font = { bold: true };
+    worksheet.getCell(`C${bahanStartRow}`).font = { bold: true };
+    worksheet.getCell(`D${bahanStartRow}`).font = { bold: true };
+    worksheet.getCell(`E${bahanStartRow}`).font = { bold: true };
+    worksheet.getCell(`F${bahanStartRow}`).font = { bold: true };
+
+    worksheet.getCell(`B${jadwalProduksisStartRow}`).font = { bold: true };
+    worksheet.getCell(`B${jadwalProduksisStartRow + 1}`).font = { bold: true };
+    worksheet.getCell(`C${jadwalProduksisStartRow + 1}`).font = { bold: true };
+    worksheet.getCell(`D${jadwalProduksisStartRow + 1}`).font = { bold: true };
+    worksheet.getCell(`E${jadwalProduksisStartRow + 1}`).font = { bold: true };
+    worksheet.getCell(`F${jadwalProduksisStartRow + 1}`).font = { bold: true };
+    worksheet.getCell(`G${jadwalProduksisStartRow + 1}`).font = { bold: true };
+    worksheet.getCell(`H${jadwalProduksisStartRow + 1}`).font = { bold: true };
+    worksheet.getCell(`I${jadwalProduksisStartRow + 1}`).font = { bold: true };
+    worksheet.getCell(`J${jadwalProduksisStartRow + 1}`).font = { bold: true };
+    worksheet.getCell(`K${jadwalProduksisStartRow + 1}`).font = { bold: true };
+    worksheet.getCell(`L${jadwalProduksisStartRow + 1}`).font = { bold: true };
+    worksheet.getCell(`M${jadwalProduksisStartRow + 1}`).font = { bold: true };
+
+    const totalRows = startRow + data.length - 1;
+    const totalCols = startCol + Math.max(...data.map((row) => row.length)) - 1;
+
+    worksheet.eachRow({ includeEmpty: true }, (row) => {
+      row.eachCell({ includeEmpty: true }, (cell, colNumber) => {
+        const rowNumber = row.number;
+
+        cell.border = {
+          top:
+            colNumber <= totalCols &&
+            colNumber >= startCol &&
+            rowNumber === startRow
+              ? { style: "thin" }
+              : { style: "none" },
+          left:
+            colNumber === startCol && rowNumber <= totalRows
+              ? { style: "thin" }
+              : { style: "none" },
+          bottom:
+            colNumber <= totalCols &&
+            colNumber >= startCol &&
+            rowNumber === totalRows
+              ? { style: "thin" }
+              : { style: "none" },
+          right:
+            colNumber === totalCols && rowNumber <= totalRows
+              ? { style: "thin" }
+              : { style: "none" },
+        };
+      });
+    });
+
+    const bahanEndRow =
+      bahanStartRow + selectedKegiatanProduksi[0].bahanLaporanProdukses.length;
+    for (let row = bahanStartRow; row <= bahanEndRow; row++) {
+      for (let col = startCol; col <= startCol + 4; col++) {
+        const cell = worksheet.getCell(row, col);
+        cell.border = {
+          top: { style: "thin" },
+          left: { style: "thin" },
+          bottom: { style: "thin" },
+          right: { style: "thin" },
+        };
+      }
+    }
+
+    const jadwalProduksisEndRow =
+      jadwalProduksisStartRow +
+      selectedKegiatanProduksi[0].jadwalProdukses.length;
+    switch (selectedKegiatanProduksi[0].tahapProduksi) {
+      case "Produksi Pracetak":
+        for (
+          let row = jadwalProduksisStartRow + 1;
+          row <= jadwalProduksisEndRow + 1;
+          row++
+        ) {
+          for (let col = startCol; col <= startCol + 6; col++) {
+            const cell = worksheet.getCell(row, col);
+            cell.border = {
+              top: { style: "thin" },
+              left: { style: "thin" },
+              bottom: { style: "thin" },
+              right: { style: "thin" },
+            };
+          }
+        }
+        break;
+      case "Produksi Cetak":
+        for (
+          let row = jadwalProduksisStartRow + 1;
+          row <= jadwalProduksisEndRow + 1;
+          row++
+        ) {
+          for (let col = startCol; col <= startCol + 11; col++) {
+            const cell = worksheet.getCell(row, col);
+            cell.border = {
+              top: { style: "thin" },
+              left: { style: "thin" },
+              bottom: { style: "thin" },
+              right: { style: "thin" },
+            };
+          }
+        }
+        break;
+      case "Produksi Fitur":
+        for (
+          let row = jadwalProduksisStartRow + 1;
+          row <= jadwalProduksisEndRow + 1;
+          row++
+        ) {
+          for (let col = startCol; col <= startCol + 8; col++) {
+            const cell = worksheet.getCell(row, col);
+            cell.border = {
+              top: { style: "thin" },
+              left: { style: "thin" },
+              bottom: { style: "thin" },
+              right: { style: "thin" },
+            };
+          }
+        }
+        break;
+      default:
+        return false;
+    }
+
+    const buffer = await workbook.xlsx.writeBuffer();
+    saveAs(new Blob([buffer]), "laporan-produksi.xlsx");
   };
 
   return (
@@ -952,7 +1340,11 @@ const LaporanProduksi = (props) => {
                   paddingBottom: "32px",
                 }}
               >
-                <DefaultButton onClickFunction={() => {}}>
+                <DefaultButton
+                  onClickFunction={() => {
+                    generateExcelFile();
+                  }}
+                >
                   Simpan Excel
                 </DefaultButton>
                 <div style={{ marginLeft: "8px" }}>
