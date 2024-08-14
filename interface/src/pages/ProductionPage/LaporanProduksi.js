@@ -441,8 +441,24 @@ const LaporanProduksi = (props) => {
     const workbook = new ExcelJS.Workbook();
     const worksheet = workbook.addWorksheet("Sheet1");
 
-    const startRow = 2;
+    const startRow = 4;
     const startCol = 2;
+
+    const title = [];
+
+    switch (selectedKegiatanProduksi[0].tahapProduksi) {
+      case "Produksi Pracetak":
+        title.push(["Produksi Pracetak"]);
+        break;
+      case "Produksi Cetak":
+        title.push(["Produksi Cetak"]);
+        break;
+      case "Produksi Fitur":
+        title.push(["Produksi Fitur"]);
+        break;
+      default:
+        return false;
+    }
 
     const data = [
       [
@@ -563,6 +579,13 @@ const LaporanProduksi = (props) => {
       ]),
     ];
 
+    title.forEach((row, rowIndex) => {
+      const excelRow = worksheet.getRow(startRow + rowIndex - 2);
+      row.forEach((cellValue, colIndex) => {
+        excelRow.getCell(startCol + colIndex).value = cellValue;
+      });
+    });
+
     data.forEach((row, rowIndex) => {
       const excelRow = worksheet.getRow(startRow + rowIndex);
       row.forEach((cellValue, colIndex) => {
@@ -604,11 +627,13 @@ const LaporanProduksi = (props) => {
     }
 
     worksheet.getCell(`B2`).font = { bold: true };
-    worksheet.getCell(`B3`).font = { bold: true };
+    worksheet.getCell(`B4`).font = { bold: true };
     worksheet.getCell(`B4`).font = { bold: true };
     worksheet.getCell(`B5`).font = { bold: true };
+    worksheet.getCell(`B7`).font = { bold: true };
     worksheet.getCell(`B6`).font = { bold: true };
     worksheet.getCell(`B8`).font = { bold: true };
+    worksheet.getCell(`B10`).font = { bold: true };
 
     const bahanStartRow =
       startRow +
@@ -651,7 +676,9 @@ const LaporanProduksi = (props) => {
               ? { style: "thin" }
               : { style: "none" },
           left:
-            colNumber === startCol && rowNumber <= totalRows
+            colNumber === startCol &&
+            rowNumber <= totalRows &&
+            rowNumber >= startRow
               ? { style: "thin" }
               : { style: "none" },
           bottom:

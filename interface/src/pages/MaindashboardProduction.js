@@ -78,7 +78,7 @@ const MaindashboardProduction = (props) => {
           const filteredData = data?.filter(
             (item) => item?.statusLaporan !== "Done"
           );
-          console.log(filteredData)
+          console.log(filteredData);
 
           // Sort and map the filtered data
           filteredData.sort((a, b) => {
@@ -515,41 +515,6 @@ const MaindashboardProduction = (props) => {
           >
             Pergi ke halaman laporan produksi
           </DefaultButton>
-        </div>
-        <div style={{ marginLeft: "32px", marginTop: "32px" }}>
-          <div
-            style={{
-              width: "72vw",
-              overflowX: "auto",
-              whiteSpace: "nowrap",
-            }}
-          >
-            {orderList.map((data, index) => {
-              return (
-                <div
-                  key={index}
-                  style={{
-                    height: "256px",
-                    width: "256px",
-                    backgroundColor: "#d9d9d9",
-                    borderRadius: "20px",
-                    display: "inline-block",
-                    marginRight: index === orderList.length - 1 ? "" : "32px",
-                    cursor: "pointer",
-                    transition: "background-color 0.3s ease",
-                  }}
-                  onMouseEnter={(e) =>
-                    (e.target.style.backgroundColor = "#a0a0a0")
-                  }
-                  onMouseLeave={(e) =>
-                    (e.target.style.backgroundColor = "#d9d9d9")
-                  }
-                >
-                  {/* <img src="" alt=""/> */}
-                </div>
-              );
-            })}
-          </div>
         </div>
         <div
           style={{
