@@ -2,35 +2,23 @@
 /** @type {import('sequelize-cli').Migration} */
 module.exports = {
   async up(queryInterface, Sequelize) {
-    await queryInterface.createTable('laporanProduksis', {
+    await queryInterface.createTable('laporanLimbahProduksis', {
       id: {
         allowNull: false,
         autoIncrement: true,
         primaryKey: true,
         type: Sequelize.INTEGER
       },
-      tanggalProduksi: {
+      noOrderProduksiId: {
+        type: Sequelize.INTEGER
+      },
+      namaBarang: {
         type: Sequelize.STRING
       },
-      noOrderProduksi: {
+      jumlahBarang: {
         type: Sequelize.STRING
       },
-      jenisCetakan: {
-        type: Sequelize.STRING
-      },
-      mesin: {
-        type: Sequelize.STRING
-      },
-      dibuatOleh: {
-        type: Sequelize.STRING
-      },
-      tahapProduksi: {
-        type: Sequelize.STRING
-      },
-      statusLaporan: {
-        type: Sequelize.STRING
-      },
-      statusLaporanLimbah: {
+      keterangan: {
         type: Sequelize.STRING
       },
       createdAt: {
@@ -44,6 +32,6 @@ module.exports = {
     });
   },
   async down(queryInterface, Sequelize) {
-    await queryInterface.dropTable('laporanProduksis');
+    await queryInterface.dropTable('laporanLimbahProduksis');
   }
 };

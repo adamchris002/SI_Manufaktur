@@ -27,6 +27,7 @@ import StokOpnam from "./pages/InventoryPage/StokOpnam";
 import PenyerahanBarang from "./pages/InventoryPage/PenyerahanBarang";
 import KegiatanProduksi from "./pages/ProductionPage/KegiatanProduksi";
 import LaporanProduksi from "./pages/ProductionPage/LaporanProduksi";
+import LaporanLimbahProduksi from "./pages/ProductionPage/LaporanLimbahProduksi";
 
 export const AppContext = createContext({});
 
@@ -232,15 +233,33 @@ function App() {
                 !userCredentials.data ||
                 userCredentials.data.department !== "Production" ? (
                   <Navigate to="/unauthorized" replace />
-              ) : (
+                ) : (
                   <KegiatanProduksi userInformation={userCredentials} />
                 )
               }
             />
-            <Route path="/productionDashboard/laporanProduksi"
-            element={!userCredentials.data || userCredentials.data.department !== "Production" ? (
-              <Navigate to="/unauthorized" replace /> 
-            ) : (<LaporanProduksi userInformation={userCredentials}/>)} />
+            <Route
+              path="/productionDashboard/laporanProduksi"
+              element={
+                !userCredentials.data ||
+                userCredentials.data.department !== "Production" ? (
+                  <Navigate to="/unauthorized" replace />
+                ) : (
+                  <LaporanProduksi userInformation={userCredentials} />
+                )
+              }
+            />
+            <Route
+              path="/productionDashboard/laporanLimbahProduksi"
+              element={
+                !userCredentials.data ||
+                userCredentials.data.department !== "Production" ? (
+                  <Navigate to="/unauthorized" replace />
+                ) : (
+                  <LaporanLimbahProduksi userInformation={userCredentials} />
+                )
+              }
+            />
             <Route
               path="/wasteDashboard"
               element={

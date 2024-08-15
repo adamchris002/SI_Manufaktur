@@ -712,6 +712,22 @@ const MaindashboardInventory = (props) => {
               fontSize="1vw"
               onClickFunction={() => {
                 document
+                  .getElementById("laporansampah")
+                  .scrollIntoView({ behavior: "smooth" });
+              }}
+            >
+              Laporan Sampah
+            </DefaultButton>
+          </div>
+          <div style={{ marginTop: "1.667vw", fontSize: "1.25vw" }}>
+            <DefaultButton
+              width="15vw"
+              height="2.08vw"
+              backgroundColor="#0F607D"
+              borderRadius="0.83vw"
+              fontSize="1vw"
+              onClickFunction={() => {
+                document
                   .getElementById("activitylog")
                   .scrollIntoView({ behavior: "smooth" });
               }}
@@ -1297,12 +1313,30 @@ const MaindashboardInventory = (props) => {
           }}
         >
           <Typography
+            id="laporansampah"
+            style={{ fontSize: isMobile ? "4.5vw" : "2vw", color: "#0F607D" }}
+          >
+            Laporan Sampah
+          </Typography>
+          <DefaultButton>Pergi ke halaman laporan sampah</DefaultButton>
+        </div>
+        <div
+          style={{
+            margin: isMobile
+              ? "32px 32px 12px 32px"
+              : "3.33vw 1.667vw 0vw 1.667vw",
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "center",
+            width: isMobile ? "" : "72vw",
+          }}
+        >
+          <Typography
             id="activitylog"
             style={{ fontSize: isMobile ? "4.5vw" : "2vw", color: "#0F607D" }}
           >
             Activity Log
           </Typography>
-          ''
           <div>
             <DefaultButton
               onClickFunction={() => {

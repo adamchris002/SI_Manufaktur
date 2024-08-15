@@ -7,6 +7,8 @@ const {
   jadwalProduksis,
   UserLaporanProduksis,
   orders,
+  laporanLimbahProduksis,
+  UserLaporanLimbahProduksis,
 } = require("../models");
 const dayjs = require("dayjs");
 
@@ -707,6 +709,76 @@ class ProductionController {
       }
 
       res.json(result);
+    } catch (error) {
+      res.json(error);
+    }
+  }
+  static async addLaporanLimbahProduksi(req, res) {
+    try {
+      const { id } = req.params;
+      const { dataLimbah } = req.body;
+
+      if (dataLimbah && Array.isArray(dataLimbah)) {
+        await Promise.all(
+          dataLimbah.map(async (result) => {
+            const laporanLimbahProduksi = await laporanLimbahProduksis.create({
+              noOrderProduksiId: parseInt(result.noOrderProduksi),
+              namaBarang: result.namaBarang,
+              jumlahBarang: result.jumlahBarang,
+              keterangan: result.keterangan,
+            });
+            await UserLaporanLimbahProduksis.create({
+              userId: id,
+              laporanLimbahProduksiId: laporanLimbahProduksi.id,
+            });
+            await laporanProduksis.update(
+              {
+                statusLaporanLimbah: "Done",
+              },
+              {
+                where: {
+                  noOrderProduksi: result.noOrderProduksi,
+                  tahapProduksi: result.tahapProduksi,
+                },
+              }
+            );
+          })
+        );
+      }
+
+      res
+        .status(200)
+        .json({ message: "Laporan limbah produksi added successfully" });
+    } catch (error) {
+      res.json(error);
+    }
+  }
+  static async getLaporanProduksiForLaporanLimbah(req, res) {
+    try {
+      let result = await laporanProduksis.findAll({
+        where: { statusLaporan: "Done", statusLaporanLimbah: null },
+        include: [
+          { model: personils },
+          { model: jadwalProduksis },
+          { model: bahanLaporanProduksis },
+        ],
+      });
+      res.json(result);
+    } catch (error) {
+      res.json(error);
+    }
+  }
+  static async editLaporanLimbahProduksi(req, res) {
+    try {
+      const { id } = req.params;
+      const { dataLimbah } = req.body;
+    } catch (error) {
+      res.json(error);
+    }
+  }
+  static async deleteItemLimbahProduksi(req, res) {
+    try {
+      const { id } = req.params;
     } catch (error) {
       res.json(error);
     }

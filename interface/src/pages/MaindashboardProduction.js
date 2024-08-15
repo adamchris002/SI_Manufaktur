@@ -27,8 +27,6 @@ const MaindashboardProduction = (props) => {
   const { userInformation } = props;
   const navigate = useNavigate();
 
-  const orderList = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
-
   const [allPenyerahanBarang, setAllPenyerahanBarang] = useState([]);
   const [dataKegiatanProduksi, setDataKegiatanProduksi] = useState([]);
 
@@ -74,13 +72,10 @@ const MaindashboardProduction = (props) => {
         if (result.status === 200) {
           const data = result.data;
 
-          // Filter out items where statusLaporan is "Done"
           const filteredData = data?.filter(
             (item) => item?.statusLaporan !== "Done"
           );
-          console.log(filteredData);
 
-          // Sort and map the filtered data
           filteredData.sort((a, b) => {
             if (a.noOrderProduksi === b.noOrderProduksi) {
               return new Date(b.updatedAt) - new Date(a.updatedAt);
@@ -175,7 +170,7 @@ const MaindashboardProduction = (props) => {
             height="40px"
             backgroundColor="#0F607D"
             borderRadius="16px"
-            fontSize="16px"
+            fontSize="12px"
             onClickFunction={() => {
               document
                 .getElementById("itemstopickup")
@@ -191,7 +186,7 @@ const MaindashboardProduction = (props) => {
             height="40px"
             backgroundColor="#0F607D"
             borderRadius="16px"
-            fontSize="16px"
+            fontSize="12px"
             onClickFunction={() => {
               document
                 .getElementById("productionactivity")
@@ -214,7 +209,7 @@ const MaindashboardProduction = (props) => {
                 .scrollIntoView({ behavior: "smooth" });
             }}
           >
-            Manage Production Reports
+            Kelola Laporan Produksi
           </DefaultButton>
         </div>
         <div style={{ marginTop: "32px", fontSize: "24px" }}>
@@ -223,14 +218,14 @@ const MaindashboardProduction = (props) => {
             height="40px"
             backgroundColor="#0F607D"
             borderRadius="16px"
-            fontSize="16px"
+            fontSize="12px"
             onClickFunction={() => {
               document
                 .getElementById("wastepickupactivity")
                 .scrollIntoView({ behavior: "smooth" });
             }}
           >
-            Waste Pickup Activity
+            Kelola Laporan Limbah Produksi
           </DefaultButton>
         </div>
         <div style={{ marginTop: "32px", fontSize: "24px" }}>
@@ -255,7 +250,7 @@ const MaindashboardProduction = (props) => {
             height="40px"
             backgroundColor="#0F607D"
             borderRadius="16px"
-            fontSize="16px"
+            fontSize="12px"
             onClickFunction={() => {
               document
                 .getElementById("actualreportshistory")
@@ -502,7 +497,7 @@ const MaindashboardProduction = (props) => {
             id="manageproductionreports"
             style={{ fontSize: "36px", color: "#0F607D" }}
           >
-            Manage Production Reports
+            Kelola Laporan Produksi
           </Typography>
           <DefaultButton
             height="40px"
@@ -530,53 +525,24 @@ const MaindashboardProduction = (props) => {
             id="wastepickupactivity"
             style={{ fontSize: "36px", color: "#0F607D" }}
           >
-            Waste Pickup Activity
+            Kelola Laporan Limbah Produksi
           </Typography>
           <div>
             <DefaultButton
               height="40px"
-              width="232px"
+              width="320px"
               borderRadius="16px"
               fontSize="16px"
+              onClickFunction={() => {
+                navigate("/productionDashboard/laporanLimbahProduksi")
+              }}
             >
-              Add Waste Pickup Activity
+              Kelola laporan limbah produksi
             </DefaultButton>
           </div>
         </div>
         <div style={{ marginLeft: "32px", marginTop: "32px" }}>
-          <div
-            style={{
-              width: "72vw",
-              overflowX: "auto",
-              whiteSpace: "nowrap",
-            }}
-          >
-            {orderList.map((data, index) => {
-              return (
-                <div
-                  key={index}
-                  style={{
-                    height: "256px",
-                    width: "256px",
-                    backgroundColor: "#d9d9d9",
-                    borderRadius: "20px",
-                    display: "inline-block",
-                    marginRight: index === orderList.length - 1 ? "" : "32px",
-                    cursor: "pointer",
-                    transition: "background-color 0.3s ease",
-                  }}
-                  onMouseEnter={(e) =>
-                    (e.target.style.backgroundColor = "#a0a0a0")
-                  }
-                  onMouseLeave={(e) =>
-                    (e.target.style.backgroundColor = "#d9d9d9")
-                  }
-                >
-                  {/* <img src="" alt=""/> */}
-                </div>
-              );
-            })}
-          </div>
+
         </div>
         <div
           style={{

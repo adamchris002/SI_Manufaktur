@@ -18,6 +18,10 @@ productionRoutes.get(
   "/getKegiatanProduksiDone",
   ProductionController.getKegiatanProduksiDone
 );
+productionRoutes.get(
+  "/getLaporanProduksiForLaporanLimbah",
+  ProductionController.getLaporanProduksiForLaporanLimbah
+);
 
 //post
 productionRoutes.post(
@@ -31,6 +35,10 @@ productionRoutes.post(
 productionRoutes.post(
   "/addKegiatanProduksiFitur/:id",
   ProductionController.addKegiatanProduksiFitur
+);
+productionRoutes.post(
+  "/addLaporanLimbahProduksi/:id",
+  ProductionController.addLaporanLimbahProduksi
 );
 
 //put
