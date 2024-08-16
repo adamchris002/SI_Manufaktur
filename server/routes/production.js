@@ -22,6 +22,10 @@ productionRoutes.get(
   "/getLaporanProduksiForLaporanLimbah",
   ProductionController.getLaporanProduksiForLaporanLimbah
 );
+productionRoutes.get(
+  "/getAllLaporanLimbahProduksi",
+  ProductionController.getAllLaporanLimbahProduksi
+);
 
 //post
 productionRoutes.post(
@@ -75,6 +79,10 @@ productionRoutes.delete(
 productionRoutes.delete(
   "/deleteKegiatanProduksi/:id",
   ProductionController.deleteKegiatanProduksi
+);
+productionRoutes.delete(
+  "/deleteItemLimbahProduksi/:id",
+  ProductionController.deleteItemLimbahProduksi
 );
 
 module.exports = productionRoutes;

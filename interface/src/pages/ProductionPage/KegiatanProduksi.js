@@ -1,7 +1,9 @@
 import React, { useEffect, useState } from "react";
 import factoryBackground from "../../assets/factorybackground.png";
 import {
+  Backdrop,
   Button,
+  CircularProgress,
   FormControlLabel,
   IconButton,
   Paper,
@@ -111,8 +113,11 @@ const KegiatanProduksi = (props) => {
   const [refreshDataKegiatanProduksi, setRefreshDataKegiatanProduksi] =
     useState(true);
 
+  const [isLoading, setIsLoading] = useState(true);
+
   useEffect(() => {
     if (isNewTahapProduksi) {
+      setIsLoading(false);
       axios({
         method: "GET",
         url: `http://localhost:3000/production/getOneProductionData/${isNewTahapProduksi.id}`,
@@ -128,6 +133,9 @@ const KegiatanProduksi = (props) => {
                 tahapProduksi: "Produksi Cetak",
               };
             });
+            if (dayjs(result.data.tanggalPengiriman).isValid()) {
+              setTanggalPengiriman(dayjs(result.data.tanggalPengiriman));
+            }
           }
           if (result.data.tahapProduksi === "Produksi Cetak") {
             setDataProduksi((oldObject) => {
@@ -135,10 +143,13 @@ const KegiatanProduksi = (props) => {
                 ...oldObject,
                 noOrderProduksi: result.data.noOrderProduksi,
                 jenisCetakan: result.data.jenisCetakan,
+                tanggalPengiriman: result.data.tanggalPengiriman,
 
                 tahapProduksi: "Produksi Fitur",
               };
             });
+            setTanggalPengiriman(dayjs(result.data.tanggalPengiriman));
+            setIsLoading(true);
           }
         } else {
           setOpenSnackbar(true);
@@ -1156,6 +1167,7 @@ const KegiatanProduksi = (props) => {
           personil: personil,
           dataProduksi: modifiedDataProduksis,
           jadwalFitur: modifiedJadwalFitur,
+          tanggalPengiriman: tanggalPengiriman,
         },
       }).then((result) => {
         if (result.status === 200) {
@@ -1193,6 +1205,7 @@ const KegiatanProduksi = (props) => {
           personil: personil,
           dataProduksi: modifiedDataProduksis,
           jadwalCetak: modifiedJadwalCetak,
+          tanggalPengiriman: tanggalPengiriman,
         },
       }).then((result) => {
         if (result.status === 200) {
@@ -1232,6 +1245,7 @@ const KegiatanProduksi = (props) => {
           dataProduksi: modifiedDataProduksis,
           jadwalPracetak: modifiedJadwalPracetak,
           personil: personil,
+          tanggalPengiriman: tanggalPengiriman,
         },
       }).then((result) => {
         if (result.status === 200) {
@@ -1262,378 +1276,243 @@ const KegiatanProduksi = (props) => {
         overflow: "auto",
       }}
     >
-      <div style={{ height: "100%", width: "100%" }}>
-        <div style={{ margin: "32px" }}>
-          <Typography style={{ color: "#0F607D", fontSize: "3vw" }}>
-            Kegiatan Produksi
-          </Typography>
-        </div>
-        <div
-          style={{
-            margin: "32px",
-            display: "flex",
-            justifyContent: "space-between",
-          }}
+      {isLoading !== false && isNewTahapProduksi ? (
+        <Backdrop
+          sx={{ color: "#fff", zIndex: (theme) => theme.zIndex.drawer + 1 }}
+          open={isLoading}
         >
-          <div style={{ width: "50%" }}>
-            <Typography
-              style={{
-                color: "#0F607D",
-                fontSize: "2vw",
-                marginBottom: "16px",
-              }}
-            >
-              Informasi Kegiatan Produksi
+          <CircularProgress color="inherit" />
+        </Backdrop>
+      ) : (
+        <div style={{ height: "100%", width: "100%" }}>
+          <div style={{ margin: "32px" }}>
+            <Typography style={{ color: "#0F607D", fontSize: "3vw" }}>
+              Kegiatan Produksi
             </Typography>
-            <div style={{ display: "flex", alignItems: "center" }}>
-              <Typography
-                style={{ width: "15vw", color: "#0F607D", fontSize: "1.5vw" }}
-              >
-                Tanggal Produksi:
-              </Typography>
-              <div>
-                <LocalizationProvider dateAdapter={AdapterDayjs}>
-                  <DemoContainer components={["DateTimePicker"]}>
-                    <DemoItem>
-                      <DateTimePicker
-                        disablePast
-                        value={
-                          dataProduksi.tanggalProduksi.isValid()
-                            ? dataProduksi.tanggalProduksi
-                            : null
-                        }
-                        maxDateTime={
-                          tanggalPengiriman.isValid()
-                            ? dayjs(tanggalPengiriman)
-                            : undefined
-                        }
-                        onChange={(event) => {
-                          handleChangeDataProduksi(event, "tanggalProduksi");
-                        }}
-                        renderInput={(params) => (
-                          <TextField
-                            {...params}
-                            error={params.error || !params.value}
-                            helperText={
-                              params.error ? "Invalid date format" : ""
-                            }
-                          />
-                        )}
-                      />
-                    </DemoItem>
-                  </DemoContainer>
-                </LocalizationProvider>
-                {tanggalPengiriman.isValid() && (
-                  <Typography style={{ marginTop: "8px" }}>
-                    Tanggal pengiriman:
-                    {dayjs(tanggalPengiriman).format("MM/DD/YYYY hh:mm A")}
-                  </Typography>
-                )}
-              </div>
-            </div>
-            <div
-              style={{
-                display: "flex",
-                alignItems: "center",
-                margin: "16px 0px",
-              }}
-            >
-              <Typography
-                style={{ width: "15vw", color: "#0F607D", fontSize: "1.5vw" }}
-              >
-                No Order Produksi:
-              </Typography>
-              <div>
-                <MySelectTextField
-                  value={dataProduksi.noOrderProduksi}
-                  onChange={(event) => {
-                    handleChangeDataProduksi(event, "noOrderProduksi");
-                  }}
-                  data={allProductionPlan}
-                  width={"200px"}
-                  disabled={isNewTahapProduksi?.status}
-                />
-              </div>
-            </div>
-            <div
-              style={{
-                display: "flex",
-                alignItems: "center",
-                margin: "16px 0px",
-              }}
-            >
-              <Typography
-                style={{ width: "15vw", color: "#0F607D", fontSize: "1.5vw" }}
-              >
-                Jenis Cetakan:{" "}
-              </Typography>
-              <div>
-                <TextField value={dataProduksi.jenisCetakan} disabled={true} />
-              </div>
-            </div>
-            <div
-              style={{
-                display: "flex",
-                alignItems: "center",
-                margin: "16px 0px",
-              }}
-            >
-              <Typography
-                style={{ width: "15vw", color: "#0F607D", fontSize: "1.5vw" }}
-              >
-                Mesin:{" "}
-              </Typography>
-              <div>
-                <TextField
-                  value={dataProduksi.mesin}
-                  onChange={(event) => {
-                    handleChangeDataProduksi(event, "mesin");
-                  }}
-                />
-              </div>
-            </div>
-            <div
-              style={{
-                display: "flex",
-                alignItems: "center",
-                margin: "16px 0px",
-              }}
-            >
-              <Typography
-                style={{ width: "15vw", color: "#0F607D", fontSize: "1.5vw" }}
-              >
-                Dibuat Oleh:{" "}
-              </Typography>
-              <div>
-                <TextField
-                  value={dataProduksi.dibuatOleh}
-                  onChange={(event) => {
-                    handleChangeDataProduksi(event, "dibuatOleh");
-                  }}
-                />
-              </div>
-            </div>
           </div>
-          <div style={{ width: "50%" }}>
-            <div
-              style={{
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "space-between",
-                marginBottom: "16px",
-              }}
-            >
+          <div
+            style={{
+              margin: "32px",
+              display: "flex",
+              justifyContent: "space-between",
+            }}
+          >
+            <div style={{ width: "50%" }}>
               <Typography
                 style={{
                   color: "#0F607D",
                   fontSize: "2vw",
+                  marginBottom: "16px",
                 }}
               >
-                Personil
+                Informasi Kegiatan Produksi
               </Typography>
-              <DefaultButton
-                onClickFunction={() => {
-                  handleAddPersonil();
+              <div style={{ display: "flex", alignItems: "center" }}>
+                <Typography
+                  style={{ width: "15vw", color: "#0F607D", fontSize: "1.5vw" }}
+                >
+                  Tanggal Produksi:
+                </Typography>
+                <div>
+                  <LocalizationProvider dateAdapter={AdapterDayjs}>
+                    <DemoContainer components={["DateTimePicker"]}>
+                      <DemoItem>
+                        <DateTimePicker
+                          disablePast
+                          value={
+                            dataProduksi.tanggalProduksi.isValid()
+                              ? dataProduksi.tanggalProduksi
+                              : null
+                          }
+                          maxDateTime={
+                            tanggalPengiriman.isValid()
+                              ? dayjs(tanggalPengiriman)
+                              : undefined
+                          }
+                          onChange={(event) => {
+                            handleChangeDataProduksi(event, "tanggalProduksi");
+                          }}
+                          renderInput={(params) => (
+                            <TextField
+                              {...params}
+                              error={params.error || !params.value}
+                              helperText={
+                                params.error ? "Invalid date format" : ""
+                              }
+                            />
+                          )}
+                        />
+                      </DemoItem>
+                    </DemoContainer>
+                  </LocalizationProvider>
+                  {tanggalPengiriman.isValid() && (
+                    <Typography style={{ marginTop: "8px" }}>
+                      Tanggal pengiriman:
+                      {dayjs(tanggalPengiriman).format("MM/DD/YYYY hh:mm A")}
+                    </Typography>
+                  )}
+                </div>
+              </div>
+              <div
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  margin: "16px 0px",
                 }}
               >
-                Tambah Personil
-              </DefaultButton>
+                <Typography
+                  style={{ width: "15vw", color: "#0F607D", fontSize: "1.5vw" }}
+                >
+                  No Order Produksi:
+                </Typography>
+                <div>
+                  <MySelectTextField
+                    value={dataProduksi.noOrderProduksi}
+                    onChange={(event) => {
+                      handleChangeDataProduksi(event, "noOrderProduksi");
+                    }}
+                    data={allProductionPlan}
+                    width={"200px"}
+                    disabled={isNewTahapProduksi?.status}
+                  />
+                </div>
+              </div>
+              <div
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  margin: "16px 0px",
+                }}
+              >
+                <Typography
+                  style={{ width: "15vw", color: "#0F607D", fontSize: "1.5vw" }}
+                >
+                  Jenis Cetakan:{" "}
+                </Typography>
+                <div>
+                  <TextField
+                    value={dataProduksi.jenisCetakan}
+                    disabled={true}
+                  />
+                </div>
+              </div>
+              <div
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  margin: "16px 0px",
+                }}
+              >
+                <Typography
+                  style={{ width: "15vw", color: "#0F607D", fontSize: "1.5vw" }}
+                >
+                  Mesin:{" "}
+                </Typography>
+                <div>
+                  <TextField
+                    value={dataProduksi.mesin}
+                    onChange={(event) => {
+                      handleChangeDataProduksi(event, "mesin");
+                    }}
+                  />
+                </div>
+              </div>
+              <div
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  margin: "16px 0px",
+                }}
+              >
+                <Typography
+                  style={{ width: "15vw", color: "#0F607D", fontSize: "1.5vw" }}
+                >
+                  Dibuat Oleh:{" "}
+                </Typography>
+                <div>
+                  <TextField
+                    value={dataProduksi.dibuatOleh}
+                    onChange={(event) => {
+                      handleChangeDataProduksi(event, "dibuatOleh");
+                    }}
+                  />
+                </div>
+              </div>
             </div>
-            <TableContainer component={Paper} sx={{ overflowX: "auto" }}>
-              <Table
-                sx={{ minWidth: 650, overflowX: "auto", tableLayout: "fixed" }}
-                aria-label="simple table"
-              >
-                <TableHead>
-                  <TableRow>
-                    <TableCell style={{ width: "25px" }}>No.</TableCell>
-                    <TableCell>Nama</TableCell>
-                    <TableCell style={{ width: "25px" }}>Actions</TableCell>
-                  </TableRow>
-                </TableHead>
-                <TableBody>
-                  {personil?.map((result, index) => {
-                    return (
-                      <React.Fragment key={index}>
-                        <TableRow>
-                          <TableCell>{index + 1 + "."}</TableCell>
-                          <TableCell>
-                            <TextField
-                              value={result.nama}
-                              onChange={(event) => {
-                                handleChangeInputPersonil(event, index);
-                              }}
-                              style={{ width: "100%" }}
-                            />
-                          </TableCell>
-                          <TableCell>
-                            <IconButton
-                              onClick={() => {
-                                handleDeletePersonil(result?.id, index);
-                              }}
-                            >
-                              <DeleteIcon style={{ color: "red" }} />
-                            </IconButton>
-                          </TableCell>
-                        </TableRow>
-                      </React.Fragment>
-                    );
-                  })}
-                </TableBody>
-              </Table>
-            </TableContainer>
-          </div>
-        </div>
-        <div style={{ padding: "0px 32px 64px 32px" }}>
-          <div
-            style={{
-              display: "flex",
-              justifyContent: "space-between",
-              alignItems: "center",
-              marginBottom: "16px",
-            }}
-          >
-            <Typography style={{ color: "#0F607D", fontSize: "2vw" }}>
-              Bahan
-            </Typography>
-            <DefaultButton
-              onClickFunction={() => {
-                handleAddBahan();
-              }}
-            >
-              Tambah Bahan
-            </DefaultButton>
-          </div>
-          <div>
-            <TableContainer component={Paper} sx={{ overflowX: "auto" }}>
-              <Table
-                sx={{
-                  minWidth: 650,
-                  tableLayout: "fixed",
-                  overflowX: "auto",
+            <div style={{ width: "50%" }}>
+              <div
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "space-between",
+                  marginBottom: "16px",
                 }}
-                aria-label="simple table"
               >
-                <TableHead>
-                  <TableRow>
-                    <TableCell style={{ width: "25px" }}>No.</TableCell>
-                    <TableCell style={{ width: "200px" }}>Jenis</TableCell>
-                    <TableCell style={{ width: "200px" }}>Kode</TableCell>
-                    <TableCell style={{ width: "200px" }}>Berat Awal</TableCell>
-                    <TableCell style={{ width: "200px" }}>
-                      Berat Akhir
-                    </TableCell>
-                    <TableCell style={{ width: "200px" }}>Keterangan</TableCell>
-                    <TableCell style={{ width: "50px" }}>Actions</TableCell>
-                  </TableRow>
-                </TableHead>
-                <TableBody>
-                  {dataProduksi?.bahanProduksis?.map((result, index) => {
-                    return (
-                      <React.Fragment key={index}>
-                        <TableRow>
-                          <TableCell>{index + 1 + "."}</TableCell>
-                          <TableCell>
-                            <MySelectTextField
-                              data={allInventoryItem}
-                              value={result.jenis}
-                              onChange={(event) => {
-                                handleChangeDataProduksi(event, "jenis", index);
-                              }}
-                              width={"200px"}
-                            />
-                          </TableCell>
-                          <TableCell>
-                            <TextField value={result.kode} disabled />
-                          </TableCell>
-                          <TableCell>
-                            <div
-                              style={{
-                                display: "flex",
-                                alignItems: "center",
-                              }}
-                            >
+                <Typography
+                  style={{
+                    color: "#0F607D",
+                    fontSize: "2vw",
+                  }}
+                >
+                  Personil
+                </Typography>
+                <DefaultButton
+                  onClickFunction={() => {
+                    handleAddPersonil();
+                  }}
+                >
+                  Tambah Personil
+                </DefaultButton>
+              </div>
+              <TableContainer component={Paper} sx={{ overflowX: "auto" }}>
+                <Table
+                  sx={{
+                    minWidth: 650,
+                    overflowX: "auto",
+                    tableLayout: "fixed",
+                  }}
+                  aria-label="simple table"
+                >
+                  <TableHead>
+                    <TableRow>
+                      <TableCell style={{ width: "25px" }}>No.</TableCell>
+                      <TableCell>Nama</TableCell>
+                      <TableCell style={{ width: "25px" }}>Actions</TableCell>
+                    </TableRow>
+                  </TableHead>
+                  <TableBody>
+                    {personil?.map((result, index) => {
+                      return (
+                        <React.Fragment key={index}>
+                          <TableRow>
+                            <TableCell>{index + 1 + "."}</TableCell>
+                            <TableCell>
                               <TextField
-                                value={result.beratAwal.value}
-                                disabled
-                                type="number"
-                              />
-                              <div style={{ marginLeft: "8px" }}>
-                                <MySelectTextField
-                                  disabled
-                                  value={result.beratAwal.unit}
-                                  data={units}
-                                />
-                              </div>
-                            </div>
-                          </TableCell>
-                          <TableCell>
-                            <div
-                              style={{
-                                display: "flex",
-                                alignItems: "center",
-                              }}
-                            >
-                              <TextField
-                                type="number"
-                                error={showError[index] || false}
-                                value={result.beratAkhir.value}
+                                value={result.nama}
                                 onChange={(event) => {
-                                  handleChangeDataProduksi(
-                                    event,
-                                    "beratAkhir",
-                                    index
-                                  );
+                                  handleChangeInputPersonil(event, index);
                                 }}
+                                style={{ width: "100%" }}
                               />
-                              <div style={{ marginLeft: "8px" }}>
-                                <MySelectTextField
-                                  value={result.beratAkhir.unit}
-                                  data={units}
-                                  error={showError[index] || false}
-                                  onChange={(event) => {
-                                    handleChangeDataProduksi(
-                                      event,
-                                      "beratAkhir",
-                                      index,
-                                      true
-                                    );
-                                  }}
-                                />
-                              </div>
-                            </div>
-                          </TableCell>
-                          <TableCell>
-                            <TextField
-                              value={result.keterangan}
-                              onChange={(event) => {
-                                handleChangeDataProduksi(
-                                  event,
-                                  "keterangan",
-                                  index
-                                );
-                              }}
-                            />
-                          </TableCell>
-                          <TableCell>
-                            <IconButton
-                              onClick={() => {
-                                handleDeleteBahan(result?.id, index);
-                              }}
-                            >
-                              <DeleteIcon style={{ color: "red" }} />
-                            </IconButton>
-                          </TableCell>
-                        </TableRow>
-                      </React.Fragment>
-                    );
-                  })}
-                </TableBody>
-              </Table>
-            </TableContainer>
+                            </TableCell>
+                            <TableCell>
+                              <IconButton
+                                onClick={() => {
+                                  handleDeletePersonil(result?.id, index);
+                                }}
+                              >
+                                <DeleteIcon style={{ color: "red" }} />
+                              </IconButton>
+                            </TableCell>
+                          </TableRow>
+                        </React.Fragment>
+                      );
+                    })}
+                  </TableBody>
+                </Table>
+              </TableContainer>
+            </div>
           </div>
-        </div>
-        {dataProduksi.tahapProduksi === "Produksi Pracetak" && (
           <div style={{ padding: "0px 32px 64px 32px" }}>
             <div
               style={{
@@ -1644,14 +1523,14 @@ const KegiatanProduksi = (props) => {
               }}
             >
               <Typography style={{ color: "#0F607D", fontSize: "2vw" }}>
-                Jadwal Produksi Pracetak
+                Bahan
               </Typography>
               <DefaultButton
                 onClickFunction={() => {
-                  handleAddJawalProduksiPracetak();
+                  handleAddBahan();
                 }}
               >
-                Tambah Jadwal Produksi
+                Tambah Bahan
               </DefaultButton>
             </div>
             <div>
@@ -1666,22 +1545,15 @@ const KegiatanProduksi = (props) => {
                 >
                   <TableHead>
                     <TableRow>
-                      <TableCell style={{ width: "300px" }}>
-                        Jam Produksi Awal
-                      </TableCell>
-                      <TableCell style={{ width: "300px" }}>
-                        Jam Produksi Akhir
+                      <TableCell style={{ width: "25px" }}>No.</TableCell>
+                      <TableCell style={{ width: "200px" }}>Jenis</TableCell>
+                      <TableCell style={{ width: "200px" }}>Kode</TableCell>
+                      <TableCell style={{ width: "200px" }}>
+                        Berat Awal
                       </TableCell>
                       <TableCell style={{ width: "200px" }}>
-                        No Order Produksi
+                        Berat Akhir
                       </TableCell>
-                      <TableCell style={{ width: "200px" }}>
-                        Jenis Cetakan
-                      </TableCell>
-                      <TableCell style={{ width: "200px" }}>
-                        Perolehan Cetakan
-                      </TableCell>
-                      <TableCell style={{ width: "200px" }}>Waste</TableCell>
                       <TableCell style={{ width: "200px" }}>
                         Keterangan
                       </TableCell>
@@ -1689,103 +1561,27 @@ const KegiatanProduksi = (props) => {
                     </TableRow>
                   </TableHead>
                   <TableBody>
-                    {jadwalProduksiPracetak?.map((result, index) => {
+                    {dataProduksi?.bahanProduksis?.map((result, index) => {
                       return (
                         <React.Fragment key={index}>
                           <TableRow>
-                            <TableCell>
-                              <LocalizationProvider dateAdapter={AdapterDayjs}>
-                                <DemoContainer components={["DateTimePicker"]}>
-                                  <DemoItem>
-                                    <DateTimePicker
-                                      disablePast
-                                      maxDateTime={
-                                        tanggalPengiriman.isValid()
-                                          ? dayjs(tanggalPengiriman)
-                                          : undefined
-                                      }
-                                      value={
-                                        result?.jamAwalProduksi?.isValid()
-                                          ? result.jamAwalProduksi
-                                          : null
-                                      }
-                                      onChange={(event) => {
-                                        handleChangeJadwalProduksiPracetak(
-                                          event,
-                                          index,
-                                          "jamAwalProduksi"
-                                        );
-                                      }}
-                                      renderInput={(params) => (
-                                        <TextField
-                                          {...params}
-                                          error={params.error || !params.value}
-                                          helperText={
-                                            params.error
-                                              ? "Invalid date format"
-                                              : ""
-                                          }
-                                        />
-                                      )}
-                                    />
-                                  </DemoItem>
-                                </DemoContainer>
-                              </LocalizationProvider>
-                            </TableCell>
-                            <TableCell>
-                              <LocalizationProvider dateAdapter={AdapterDayjs}>
-                                <DemoContainer components={["DateTimePicker"]}>
-                                  <DemoItem>
-                                    <DateTimePicker
-                                      disablePast
-                                      maxDateTime={
-                                        tanggalPengiriman.isValid()
-                                          ? dayjs(tanggalPengiriman)
-                                          : undefined
-                                      }
-                                      value={
-                                        result.jamAkhirProduksi.isValid()
-                                          ? result.jamAkhirProduksi
-                                          : null
-                                      }
-                                      onChange={(event) => {
-                                        handleChangeJadwalProduksiPracetak(
-                                          event,
-                                          index,
-                                          "jamAkhirProduksi"
-                                        );
-                                      }}
-                                      minDate={
-                                        !result.jamAwalProduksi.isValid()
-                                          ? undefined
-                                          : result.jamAwalProduksi
-                                      }
-                                      renderInput={(params) => (
-                                        <TextField
-                                          {...params}
-                                          error={params.error || !params.value}
-                                          helperText={
-                                            params.error
-                                              ? "Invalid date format"
-                                              : ""
-                                          }
-                                        />
-                                      )}
-                                    />
-                                  </DemoItem>
-                                </DemoContainer>
-                              </LocalizationProvider>
-                            </TableCell>
+                            <TableCell>{index + 1 + "."}</TableCell>
                             <TableCell>
                               <MySelectTextField
-                                disabled
-                                data={allProductionPlan}
-                                value={result.noOrderProduksi}
-                                width="200px"
+                                data={allInventoryItem}
+                                value={result.jenis}
+                                onChange={(event) => {
+                                  handleChangeDataProduksi(
+                                    event,
+                                    "jenis",
+                                    index
+                                  );
+                                }}
+                                width={"200px"}
                               />
                             </TableCell>
                             <TableCell>
-                              <TextField value={result.jenisCetakan} disabled />
+                              <TextField value={result.kode} disabled />
                             </TableCell>
                             <TableCell>
                               <div
@@ -1795,28 +1591,15 @@ const KegiatanProduksi = (props) => {
                                 }}
                               >
                                 <TextField
+                                  value={result.beratAwal.value}
+                                  disabled
                                   type="number"
-                                  value={result.perolehanCetakan.value}
-                                  onChange={(event) => {
-                                    handleChangeJadwalProduksiPracetak(
-                                      event,
-                                      index,
-                                      "perolehanCetakan"
-                                    );
-                                  }}
                                 />
                                 <div style={{ marginLeft: "8px" }}>
                                   <MySelectTextField
-                                    value={result.perolehanCetakan.unit}
+                                    disabled
+                                    value={result.beratAwal.unit}
                                     data={units}
-                                    onChange={(event) => {
-                                      handleChangeJadwalProduksiPracetak(
-                                        event,
-                                        index,
-                                        "perolehanCetakan",
-                                        true
-                                      );
-                                    }}
                                   />
                                 </div>
                               </div>
@@ -1830,26 +1613,26 @@ const KegiatanProduksi = (props) => {
                               >
                                 <TextField
                                   type="number"
-                                  value={result.waste.value}
+                                  error={showError[index] || false}
+                                  value={result.beratAkhir.value}
                                   onChange={(event) => {
-                                    handleChangeJadwalProduksiPracetak(
+                                    handleChangeDataProduksi(
                                       event,
-                                      index,
-                                      "waste"
+                                      "beratAkhir",
+                                      index
                                     );
                                   }}
                                 />
                                 <div style={{ marginLeft: "8px" }}>
                                   <MySelectTextField
-                                    key={"unit"}
-                                    width={"60px"}
-                                    value={result.waste.unit}
+                                    value={result.beratAkhir.unit}
                                     data={units}
+                                    error={showError[index] || false}
                                     onChange={(event) => {
-                                      handleChangeJadwalProduksiPracetak(
+                                      handleChangeDataProduksi(
                                         event,
+                                        "beratAkhir",
                                         index,
-                                        "waste",
                                         true
                                       );
                                     }}
@@ -1859,23 +1642,20 @@ const KegiatanProduksi = (props) => {
                             </TableCell>
                             <TableCell>
                               <TextField
+                                value={result.keterangan}
                                 onChange={(event) => {
-                                  handleChangeJadwalProduksiPracetak(
+                                  handleChangeDataProduksi(
                                     event,
-                                    index,
-                                    "keterangan"
+                                    "keterangan",
+                                    index
                                   );
                                 }}
-                                value={result.keterangan}
                               />
                             </TableCell>
                             <TableCell>
                               <IconButton
                                 onClick={() => {
-                                  handleDeleteDataJadwalProduksiPracetak(
-                                    result?.id,
-                                    index
-                                  );
+                                  handleDeleteBahan(result?.id, index);
                                 }}
                               >
                                 <DeleteIcon style={{ color: "red" }} />
@@ -1888,806 +1668,1131 @@ const KegiatanProduksi = (props) => {
                   </TableBody>
                 </Table>
               </TableContainer>
+            </div>
+          </div>
+          {dataProduksi.tahapProduksi === "Produksi Pracetak" && (
+            <div style={{ padding: "0px 32px 64px 32px" }}>
               <div
                 style={{
-                  marginTop: "16px",
-                  justifyContent: "center",
                   display: "flex",
+                  justifyContent: "space-between",
                   alignItems: "center",
+                  marginBottom: "16px",
                 }}
               >
+                <Typography style={{ color: "#0F607D", fontSize: "2vw" }}>
+                  Jadwal Produksi Pracetak
+                </Typography>
                 <DefaultButton
                   onClickFunction={() => {
-                    laporanProduksiId !== undefined
-                      ? handleEditKegiatanProduksi()
-                      : handleAddKegiatanProduksi();
+                    handleAddJawalProduksiPracetak();
                   }}
                 >
-                  {laporanProduksiId !== undefined
-                    ? "Edit Kegiatan Produksi Pracetak"
-                    : "Tambah Kegiatan Produksi Pracetak"}
+                  Tambah Jadwal Produksi
                 </DefaultButton>
-                <Button
-                  color="error"
-                  variant="outlined"
-                  style={{ textTransform: "none", marginLeft: "8px" }}
-                  onClick={() => {
-                    navigate(-1);
-                  }}
-                >
-                  Cancel
-                </Button>
               </div>
-            </div>
-          </div>
-        )}
-        {dataProduksi.tahapProduksi === "Produksi Cetak" && (
-          <div style={{ padding: "0px 32px 64px 32px" }}>
-            <div
-              style={{
-                display: "flex",
-                justifyContent: "space-between",
-                alignItems: "center",
-                marginBottom: "16px",
-              }}
-            >
-              <Typography style={{ color: "#0F607D", fontSize: "2vw" }}>
-                Jadwal Produksi Cetak
-              </Typography>
-              <DefaultButton
-                onClickFunction={() => {
-                  handleAddJadwalProduksiCetak();
-                }}
-              >
-                Tambah Jadwal Produksi
-              </DefaultButton>
-            </div>
-            <div>
-              <TableContainer component={Paper} style={{ overflowX: "auto" }}>
-                <Table
-                  sx={{
-                    minWidth: 650,
-                    tableLayout: "fixed",
-                    overflowX: "auto",
-                  }}
-                  aria-label="simple table"
-                >
-                  <TableHead>
-                    <TableRow>
-                      <TableCell style={{ width: "300px" }}>
-                        Jam Produksi Awal
-                      </TableCell>
-                      <TableCell style={{ width: "300px" }}>
-                        Jam Produksi Akhir
-                      </TableCell>
-                      <TableCell style={{ width: "200px" }}>
-                        No Order Produksi
-                      </TableCell>
-                      <TableCell style={{ width: "200px" }}>
-                        Jenis Cetakan
-                      </TableCell>
-                      <TableCell style={{ width: "200px" }}>
-                        Perolehan Cetakan
-                      </TableCell>
-                      <TableCell style={{ width: "200px" }}>
-                        {"Sobek (Kg)"}
-                      </TableCell>
-                      <TableCell style={{ width: "200px" }}>
-                        {"Kulit (Kg)"}
-                      </TableCell>
-                      <TableCell style={{ width: "200px" }}>
-                        {"Gelondong (Kg)"}
-                      </TableCell>
-                      <TableCell style={{ width: "200px" }}>
-                        {"Sampah (Kg)"}
-                      </TableCell>
-                      <TableCell style={{ width: "50px" }}>
-                        Roll Habis
-                      </TableCell>
-                      <TableCell style={{ width: "50px" }}>Roll Sisa</TableCell>
-                      <TableCell style={{ width: "200px" }}>
-                        Keterangan
-                      </TableCell>
-                      <TableCell style={{ width: "50px" }}>Actions</TableCell>
-                    </TableRow>
-                  </TableHead>
-                  <TableBody>
-                    {jadwalProduksiCetak?.map((result, index) => {
-                      return (
-                        <React.Fragment key={index}>
-                          <TableRow>
-                            <TableCell>
-                              <LocalizationProvider dateAdapter={AdapterDayjs}>
-                                <DemoContainer components={["DateTimePicker"]}>
-                                  <DemoItem>
-                                    <DateTimePicker
-                                      disablePast
-                                      value={
-                                        result.jamAwalProduksi.isValid()
-                                          ? result.jamAwalProduksi
-                                          : null
-                                      }
-                                      onChange={(event) => {
-                                        handleChangeJadwalProduksiCetak(
-                                          event,
-                                          index,
-                                          "jamAwalProduksi"
-                                        );
-                                      }}
-                                      renderInput={(params) => (
-                                        <TextField
-                                          {...params}
-                                          error={params.error || !params.value}
-                                          helperText={
-                                            params.error
-                                              ? "Invalid date format"
-                                              : ""
-                                          }
-                                        />
-                                      )}
-                                    />
-                                  </DemoItem>
-                                </DemoContainer>
-                              </LocalizationProvider>
-                            </TableCell>
-                            <TableCell>
-                              <LocalizationProvider dateAdapter={AdapterDayjs}>
-                                <DemoContainer components={["DateTimePicker"]}>
-                                  <DemoItem>
-                                    <DateTimePicker
-                                      disablePast
-                                      value={
-                                        result.jamAkhirProduksi.isValid()
-                                          ? result.jamAkhirProduksi
-                                          : null
-                                      }
-                                      minDate={
-                                        !result.jamAkhirProduksi.isValid()
-                                          ? result.jamAwalProduksi
-                                          : undefined
-                                      }
-                                      onChange={(event) => {
-                                        handleChangeJadwalProduksiCetak(
-                                          event,
-                                          index,
-                                          "jamAkhirProduksi"
-                                        );
-                                      }}
-                                      renderInput={(params) => (
-                                        <TextField
-                                          {...params}
-                                          error={params.error || !params.value}
-                                          helperText={
-                                            params.error
-                                              ? "Invalid date format"
-                                              : ""
-                                          }
-                                        />
-                                      )}
-                                    />
-                                  </DemoItem>
-                                </DemoContainer>
-                              </LocalizationProvider>
-                            </TableCell>
-                            <TableCell>
-                              <MySelectTextField
-                                disabled
-                                data={allProductionPlan}
-                                value={result.noOrderProduksi}
-                                width="200px"
-                              />
-                            </TableCell>
-                            <TableCell>
-                              <TextField value={result.jenisCetakan} disabled />
-                            </TableCell>
-                            <TableCell>
-                              <div
-                                style={{
-                                  display: "flex",
-                                  alignItems: "center",
-                                }}
-                              >
-                                <TextField
-                                  type="number"
-                                  value={result.perolehanCetakan.value}
-                                  onChange={(event) => {
-                                    handleChangeJadwalProduksiCetak(
-                                      event,
-                                      index,
-                                      "perolehanCetakan"
-                                    );
-                                  }}
-                                />
-                                <div style={{ marginLeft: "8px" }}>
-                                  <MySelectTextField
-                                    data={units}
-                                    value={result.perolehanCetakan.unit}
-                                    onChange={(event) => {
-                                      handleChangeJadwalProduksiCetak(
-                                        event,
-                                        index,
-                                        "perolehanCetakan",
-                                        true
-                                      );
-                                    }}
-                                  />
-                                </div>
-                              </div>
-                            </TableCell>
-                            <TableCell>
-                              <div
-                                style={{
-                                  display: "flex",
-                                  alignItems: "center",
-                                }}
-                              >
-                                <TextField
-                                  type="number"
-                                  value={result.sobek.value}
-                                  onChange={(event) => {
-                                    handleChangeJadwalProduksiCetak(
-                                      event,
-                                      index,
-                                      "sobek"
-                                    );
-                                  }}
-                                />
-                                <div style={{ marginLeft: "8px" }}>
-                                  <MySelectTextField
-                                    data={units}
-                                    value={result.sobek.unit}
-                                    onChange={(event) => {
-                                      handleChangeJadwalProduksiCetak(
-                                        event,
-                                        index,
-                                        "sobek",
-                                        true
-                                      );
-                                    }}
-                                  />
-                                </div>
-                              </div>
-                            </TableCell>
-                            <TableCell>
-                              <div
-                                style={{
-                                  display: "flex",
-                                  alignItems: "center",
-                                }}
-                              >
-                                <TextField
-                                  type="number"
-                                  value={result.kulit.value}
-                                  onChange={(event) => {
-                                    handleChangeJadwalProduksiCetak(
-                                      event,
-                                      index,
-                                      "kulit"
-                                    );
-                                  }}
-                                />
-                                <div style={{ marginLeft: "8px" }}>
-                                  <MySelectTextField
-                                    data={units}
-                                    value={result.kulit.unit}
-                                    onChange={(event) => {
-                                      handleChangeJadwalProduksiCetak(
-                                        event,
-                                        index,
-                                        "kulit",
-                                        true
-                                      );
-                                    }}
-                                  />
-                                </div>
-                              </div>
-                            </TableCell>
-                            <TableCell>
-                              <div
-                                style={{
-                                  display: "flex",
-                                  alignItems: "center",
-                                }}
-                              >
-                                <TextField
-                                  type="number"
-                                  value={result.gelondong.value}
-                                  onChange={(event) => {
-                                    handleChangeJadwalProduksiCetak(
-                                      event,
-                                      index,
-                                      "gelondong"
-                                    );
-                                  }}
-                                />
-                                <div style={{ marginLeft: "8px" }}>
-                                  <MySelectTextField
-                                    data={units}
-                                    value={result.gelondong.unit}
-                                    onChange={(event) => {
-                                      handleChangeJadwalProduksiCetak(
-                                        event,
-                                        index,
-                                        "gelondong",
-                                        true
-                                      );
-                                    }}
-                                  />
-                                </div>
-                              </div>
-                            </TableCell>
-                            <TableCell>
-                              <div
-                                style={{
-                                  display: "flex",
-                                  alignItems: "center",
-                                }}
-                              >
-                                <TextField
-                                  type="number"
-                                  value={result.sampah.value}
-                                  onChange={(event) => {
-                                    handleChangeJadwalProduksiCetak(
-                                      event,
-                                      index,
-                                      "sampah"
-                                    );
-                                  }}
-                                />
-                                <div style={{ marginLeft: "8px" }}>
-                                  <MySelectTextField
-                                    data={units}
-                                    value={result.sampah.unit}
-                                    onChange={(event) => {
-                                      handleChangeJadwalProduksiCetak(
-                                        event,
-                                        index,
-                                        "sampah",
-                                        true
-                                      );
-                                    }}
-                                  />
-                                </div>
-                              </div>
-                            </TableCell>
-                            <TableCell>
-                              <FormControlLabel
-                                sx={{ display: "block" }}
-                                control={
-                                  <Switch
-                                    checked={result.rollHabis}
-                                    onChange={(event) => {
-                                      handleChangeJadwalProduksiCetak(
-                                        event.target.checked,
-                                        index,
-                                        "rollHabis"
-                                      );
-                                    }}
-                                  />
-                                }
-                                name="loading"
-                                color="primary"
-                              />
-                            </TableCell>
-                            <TableCell>
-                              <FormControlLabel
-                                sx={{ display: "block" }}
-                                control={
-                                  <Switch
-                                    checked={result.rollSisa}
-                                    onChange={(event) => {
-                                      handleChangeJadwalProduksiCetak(
-                                        event.target.checked,
-                                        index,
-                                        "rollSisa"
-                                      );
-                                    }}
-                                  />
-                                }
-                                name="loading"
-                                color="primary"
-                              />
-                            </TableCell>
-                            <TableCell>
-                              <TextField
-                                value={result.keterangan}
-                                onChange={(event) => {
-                                  handleChangeJadwalProduksiCetak(
-                                    event,
-                                    index,
-                                    "keterangan"
-                                  );
-                                }}
-                              />
-                            </TableCell>
-                            <TableCell>
-                              <IconButton
-                                onClick={() => {
-                                  handleDeleteDataJadwalProduksiCetak(
-                                    result?.id,
-                                    index
-                                  );
-                                }}
-                              >
-                                <DeleteIcon sx={{ color: "red" }} />
-                              </IconButton>
-                            </TableCell>
-                          </TableRow>
-                        </React.Fragment>
-                      );
-                    })}
-                  </TableBody>
-                </Table>
-              </TableContainer>
-              <div
-                style={{
-                  marginTop: "16px",
-                  justifyContent: "center",
-                  display: "flex",
-                }}
-              >
-                {laporanProduksiId !== undefined && (
-                  <DefaultButton
-                    onClickFunction={() => {
-                      handleSelesaiKegiatanProduksi(dataProduksi?.id);
+              <div>
+                <TableContainer component={Paper} sx={{ overflowX: "auto" }}>
+                  <Table
+                    sx={{
+                      minWidth: 650,
+                      tableLayout: "fixed",
+                      overflowX: "auto",
                     }}
+                    aria-label="simple table"
                   >
-                    Kegiatan Produksi Selesai
-                  </DefaultButton>
-                )}
+                    <TableHead>
+                      <TableRow>
+                        <TableCell style={{ width: "300px" }}>
+                          Jam Produksi Awal
+                        </TableCell>
+                        <TableCell style={{ width: "300px" }}>
+                          Jam Produksi Akhir
+                        </TableCell>
+                        <TableCell style={{ width: "200px" }}>
+                          No Order Produksi
+                        </TableCell>
+                        <TableCell style={{ width: "200px" }}>
+                          Jenis Cetakan
+                        </TableCell>
+                        <TableCell style={{ width: "200px" }}>
+                          Perolehan Cetakan
+                        </TableCell>
+                        <TableCell style={{ width: "200px" }}>Waste</TableCell>
+                        <TableCell style={{ width: "200px" }}>
+                          Keterangan
+                        </TableCell>
+                        <TableCell style={{ width: "50px" }}>Actions</TableCell>
+                      </TableRow>
+                    </TableHead>
+                    <TableBody>
+                      {jadwalProduksiPracetak?.map((result, index) => {
+                        return (
+                          <React.Fragment key={index}>
+                            <TableRow>
+                              <TableCell>
+                                <LocalizationProvider
+                                  dateAdapter={AdapterDayjs}
+                                >
+                                  <DemoContainer
+                                    components={["DateTimePicker"]}
+                                  >
+                                    <DemoItem>
+                                      <DateTimePicker
+                                        disablePast
+                                        maxDateTime={
+                                          tanggalPengiriman.isValid()
+                                            ? dayjs(tanggalPengiriman)
+                                            : undefined
+                                        }
+                                        value={
+                                          result?.jamAwalProduksi?.isValid()
+                                            ? result.jamAwalProduksi
+                                            : null
+                                        }
+                                        onChange={(event) => {
+                                          handleChangeJadwalProduksiPracetak(
+                                            event,
+                                            index,
+                                            "jamAwalProduksi"
+                                          );
+                                        }}
+                                        renderInput={(params) => (
+                                          <TextField
+                                            {...params}
+                                            error={
+                                              params.error || !params.value
+                                            }
+                                            helperText={
+                                              params.error
+                                                ? "Invalid date format"
+                                                : ""
+                                            }
+                                          />
+                                        )}
+                                      />
+                                    </DemoItem>
+                                  </DemoContainer>
+                                </LocalizationProvider>
+                              </TableCell>
+                              <TableCell>
+                                <LocalizationProvider
+                                  dateAdapter={AdapterDayjs}
+                                >
+                                  <DemoContainer
+                                    components={["DateTimePicker"]}
+                                  >
+                                    <DemoItem>
+                                      <DateTimePicker
+                                        disablePast
+                                        maxDateTime={
+                                          tanggalPengiriman.isValid()
+                                            ? dayjs(tanggalPengiriman)
+                                            : undefined
+                                        }
+                                        value={
+                                          result.jamAkhirProduksi.isValid()
+                                            ? result.jamAkhirProduksi
+                                            : null
+                                        }
+                                        onChange={(event) => {
+                                          handleChangeJadwalProduksiPracetak(
+                                            event,
+                                            index,
+                                            "jamAkhirProduksi"
+                                          );
+                                        }}
+                                        minDate={
+                                          !result.jamAwalProduksi.isValid()
+                                            ? undefined
+                                            : result.jamAwalProduksi
+                                        }
+                                        renderInput={(params) => (
+                                          <TextField
+                                            {...params}
+                                            error={
+                                              params.error || !params.value
+                                            }
+                                            helperText={
+                                              params.error
+                                                ? "Invalid date format"
+                                                : ""
+                                            }
+                                          />
+                                        )}
+                                      />
+                                    </DemoItem>
+                                  </DemoContainer>
+                                </LocalizationProvider>
+                              </TableCell>
+                              <TableCell>
+                                <MySelectTextField
+                                  disabled
+                                  data={allProductionPlan}
+                                  value={result.noOrderProduksi}
+                                  width="200px"
+                                />
+                              </TableCell>
+                              <TableCell>
+                                <TextField
+                                  value={result.jenisCetakan}
+                                  disabled
+                                />
+                              </TableCell>
+                              <TableCell>
+                                <div
+                                  style={{
+                                    display: "flex",
+                                    alignItems: "center",
+                                  }}
+                                >
+                                  <TextField
+                                    type="number"
+                                    value={result.perolehanCetakan.value}
+                                    onChange={(event) => {
+                                      handleChangeJadwalProduksiPracetak(
+                                        event,
+                                        index,
+                                        "perolehanCetakan"
+                                      );
+                                    }}
+                                  />
+                                  <div style={{ marginLeft: "8px" }}>
+                                    <MySelectTextField
+                                      value={result.perolehanCetakan.unit}
+                                      data={units}
+                                      onChange={(event) => {
+                                        handleChangeJadwalProduksiPracetak(
+                                          event,
+                                          index,
+                                          "perolehanCetakan",
+                                          true
+                                        );
+                                      }}
+                                    />
+                                  </div>
+                                </div>
+                              </TableCell>
+                              <TableCell>
+                                <div
+                                  style={{
+                                    display: "flex",
+                                    alignItems: "center",
+                                  }}
+                                >
+                                  <TextField
+                                    type="number"
+                                    value={result.waste.value}
+                                    onChange={(event) => {
+                                      handleChangeJadwalProduksiPracetak(
+                                        event,
+                                        index,
+                                        "waste"
+                                      );
+                                    }}
+                                  />
+                                  <div style={{ marginLeft: "8px" }}>
+                                    <MySelectTextField
+                                      key={"unit"}
+                                      width={"60px"}
+                                      value={result.waste.unit}
+                                      data={units}
+                                      onChange={(event) => {
+                                        handleChangeJadwalProduksiPracetak(
+                                          event,
+                                          index,
+                                          "waste",
+                                          true
+                                        );
+                                      }}
+                                    />
+                                  </div>
+                                </div>
+                              </TableCell>
+                              <TableCell>
+                                <TextField
+                                  onChange={(event) => {
+                                    handleChangeJadwalProduksiPracetak(
+                                      event,
+                                      index,
+                                      "keterangan"
+                                    );
+                                  }}
+                                  value={result.keterangan}
+                                />
+                              </TableCell>
+                              <TableCell>
+                                <IconButton
+                                  onClick={() => {
+                                    handleDeleteDataJadwalProduksiPracetak(
+                                      result?.id,
+                                      index
+                                    );
+                                  }}
+                                >
+                                  <DeleteIcon style={{ color: "red" }} />
+                                </IconButton>
+                              </TableCell>
+                            </TableRow>
+                          </React.Fragment>
+                        );
+                      })}
+                    </TableBody>
+                  </Table>
+                </TableContainer>
                 <div
                   style={{
-                    marginLeft: laporanProduksiId !== undefined ? "8px" : "",
+                    marginTop: "16px",
+                    justifyContent: "center",
+                    display: "flex",
+                    alignItems: "center",
                   }}
                 >
                   <DefaultButton
                     onClickFunction={() => {
                       laporanProduksiId !== undefined
-                        ? handleEditKegiatanProduksiCetak()
-                        : handleAddKegiatanProduksiCetak();
+                        ? handleEditKegiatanProduksi()
+                        : handleAddKegiatanProduksi();
                     }}
                   >
                     {laporanProduksiId !== undefined
-                      ? "Edit Kegiatan Produksi Cetak"
-                      : "Tambah Kegiatan Produksi Cetak"}
+                      ? "Edit Kegiatan Produksi Pracetak"
+                      : "Tambah Kegiatan Produksi Pracetak"}
                   </DefaultButton>
+                  <Button
+                    color="error"
+                    variant="outlined"
+                    style={{ textTransform: "none", marginLeft: "8px" }}
+                    onClick={() => {
+                      navigate(-1);
+                    }}
+                  >
+                    Cancel
+                  </Button>
                 </div>
-                <Button
-                  color="error"
-                  variant="outlined"
-                  style={{ textTransform: "none", marginLeft: "8px" }}
-                  onClick={() => {
-                    navigate(-1);
-                  }}
-                >
-                  Cancel
-                </Button>
               </div>
             </div>
-          </div>
-        )}
-        {dataProduksi.tahapProduksi === "Produksi Fitur" && (
-          <div style={{ padding: "0px 32px 64px 32px" }}>
-            <div
-              style={{
-                display: "flex",
-                justifyContent: "space-between",
-                alignItems: "center",
-                marginBottom: "16px",
-              }}
-            >
-              <Typography style={{ color: "#0F607D", fontSize: "2vw" }}>
-                Jadwal Produksi Fitur
-              </Typography>
-              <DefaultButton
-                onClickFunction={() => {
-                  handleAddJadwalProduksiFitur();
-                }}
-              >
-                Tambah Jadwal Produksi
-              </DefaultButton>
-            </div>
-            <div>
-              <TableContainer component={Paper} style={{ overflowX: "auto" }}>
-                <Table
-                  sx={{
-                    minWidth: 650,
-                    tableLayout: "fixed",
-                    overflowX: "auto",
-                  }}
-                  aria-label="simple table"
-                >
-                  <TableHead>
-                    <TableRow>
-                      <TableCell style={{ width: "300px" }}>
-                        Jam Produksi Awal
-                      </TableCell>
-                      <TableCell style={{ width: "300px" }}>
-                        Jam Produksi Akhir
-                      </TableCell>
-                      <TableCell style={{ width: "200px" }}>
-                        No Order Produksi
-                      </TableCell>
-                      <TableCell style={{ width: "200px" }}>
-                        Jenis Cetakan
-                      </TableCell>
-                      <TableCell style={{ width: "200px" }}>
-                        Nomorator Awal
-                      </TableCell>
-                      <TableCell style={{ width: "200px" }}>
-                        Nomorator Akhir
-                      </TableCell>
-                      <TableCell style={{ width: "200px" }}>
-                        Perolehan Cetakan
-                      </TableCell>
-                      <TableCell style={{ width: "200px" }}>Waste</TableCell>
-                      <TableCell style={{ width: "200px" }}>
-                        Keterangan
-                      </TableCell>
-                      <TableCell style={{ width: "50px" }}>Actions</TableCell>
-                    </TableRow>
-                  </TableHead>
-                  <TableBody>
-                    {jadwalProduksiFitur?.map((result, index) => {
-                      return (
-                        <React.Fragment key={index}>
-                          <TableRow>
-                            <TableCell>
-                              <LocalizationProvider dateAdapter={AdapterDayjs}>
-                                <DemoContainer components={["DateTimePicker"]}>
-                                  <DemoItem>
-                                    <DateTimePicker
-                                      disablePast
-                                      value={
-                                        result.jamAwalProduksi.isValid()
-                                          ? result.jamAwalProduksi
-                                          : null
-                                      }
-                                      onChange={(event) => {
-                                        handleChangeJadwalProduksiFitur(
-                                          event,
-                                          index,
-                                          "jamAwalProduksi"
-                                        );
-                                      }}
-                                      renderInput={(params) => (
-                                        <TextField
-                                          {...params}
-                                          error={params.error || !params.value}
-                                          helperText={
-                                            params.error
-                                              ? "Invalid date format"
-                                              : ""
-                                          }
-                                        />
-                                      )}
-                                    />
-                                  </DemoItem>
-                                </DemoContainer>
-                              </LocalizationProvider>
-                            </TableCell>
-                            <TableCell>
-                              <LocalizationProvider dateAdapter={AdapterDayjs}>
-                                <DemoContainer components={["DateTimePicker"]}>
-                                  <DemoItem>
-                                    <DateTimePicker
-                                      disablePast
-                                      value={
-                                        result.jamAkhirProduksi.isValid()
-                                          ? result.jamAkhirProduksi
-                                          : null
-                                      }
-                                      minDate={
-                                        !result.jamAwalProduksi.isValid()
-                                          ? undefined
-                                          : result.jamAwalProduksi
-                                      }
-                                      onChange={(event) => {
-                                        handleChangeJadwalProduksiFitur(
-                                          event,
-                                          index,
-                                          "jamAkhirProduksi"
-                                        );
-                                      }}
-                                      renderInput={(params) => (
-                                        <TextField
-                                          {...params}
-                                          error={params.error || !params.value}
-                                          helperText={
-                                            params.error
-                                              ? "Invalid date format"
-                                              : ""
-                                          }
-                                        />
-                                      )}
-                                    />
-                                  </DemoItem>
-                                </DemoContainer>
-                              </LocalizationProvider>
-                            </TableCell>
-                            <TableCell>
-                              <MySelectTextField
-                                data={allProductionPlan}
-                                value={result.noOrderProduksi}
-                                disabled
-                                width="200px"
-                              />
-                            </TableCell>
-                            <TableCell>
-                              <TextField value={result.jenisCetakan} disabled />
-                            </TableCell>
-                            <TableCell>
-                              <TextField
-                                value={result.nomoratorAwal}
-                                onChange={(event) => {
-                                  handleChangeJadwalProduksiFitur(
-                                    event,
-                                    index,
-                                    "nomoratorAwal"
-                                  );
-                                }}
-                              />
-                            </TableCell>
-                            <TableCell>
-                              <TextField
-                                value={result.nomoratorAkhir}
-                                onChange={(event) => {
-                                  handleChangeJadwalProduksiFitur(
-                                    event,
-                                    index,
-                                    "nomoratorAkhir"
-                                  );
-                                }}
-                              />
-                            </TableCell>
-                            <TableCell>
-                              <div
-                                style={{
-                                  display: "flex",
-                                  alignItems: "center",
-                                }}
-                              >
-                                <TextField
-                                  type="number"
-                                  value={result.perolehanCetakan.value}
-                                  onChange={(event) => {
-                                    handleChangeJadwalProduksiFitur(
-                                      event,
-                                      index,
-                                      "perolehanCetakan"
-                                    );
-                                  }}
-                                />
-                                <div style={{ marginLeft: "8px" }}>
-                                  <MySelectTextField
-                                    data={units}
-                                    value={result.perolehanCetakan.unit}
-                                    onChange={(event) => {
-                                      handleChangeJadwalProduksiFitur(
-                                        event,
-                                        index,
-                                        "perolehanCetakan",
-                                        true
-                                      );
-                                    }}
-                                  />
-                                </div>
-                              </div>
-                            </TableCell>
-                            <TableCell>
-                              <div
-                                style={{
-                                  display: "flex",
-                                  alignItems: "center",
-                                }}
-                              >
-                                <TextField
-                                  type="number"
-                                  value={result.waste.value}
-                                  onChange={(event) => {
-                                    handleChangeJadwalProduksiFitur(
-                                      event,
-                                      index,
-                                      "waste"
-                                    );
-                                  }}
-                                />
-                                <div style={{ marginLeft: "8px" }}>
-                                  <MySelectTextField
-                                    data={units}
-                                    value={result.waste.unit}
-                                    onChange={(event) => {
-                                      handleChangeJadwalProduksiFitur(
-                                        event,
-                                        index,
-                                        "waste",
-                                        true
-                                      );
-                                    }}
-                                  />
-                                </div>
-                              </div>
-                            </TableCell>
-                            <TableCell>
-                              <TextField
-                                value={result.keterangan}
-                                onChange={(event) => {
-                                  handleChangeJadwalProduksiFitur(
-                                    event,
-                                    index,
-                                    "keterangan"
-                                  );
-                                }}
-                              />
-                            </TableCell>
-                            <TableCell>
-                              <IconButton
-                                onClick={() => {
-                                  handleDeleteDataJadwalProduksiFitur(
-                                    result?.id,
-                                    index
-                                  );
-                                }}
-                              >
-                                <DeleteIcon sx={{ color: "red" }} />
-                              </IconButton>
-                            </TableCell>
-                          </TableRow>
-                        </React.Fragment>
-                      );
-                    })}
-                  </TableBody>
-                </Table>
-              </TableContainer>
+          )}
+          {dataProduksi.tahapProduksi === "Produksi Cetak" && (
+            <div style={{ padding: "0px 32px 64px 32px" }}>
               <div
                 style={{
                   display: "flex",
-                  justifyContent: "center",
+                  justifyContent: "space-between",
                   alignItems: "center",
-                  marginTop: "16px",
+                  marginBottom: "16px",
                 }}
               >
-                {laporanProduksiId !== undefined && (
-                  <DefaultButton
-                    onClickFunction={() => {
-                      handleSelesaiKegiatanProduksi(dataProduksi?.id);
+                <Typography style={{ color: "#0F607D", fontSize: "2vw" }}>
+                  Jadwal Produksi Cetak
+                </Typography>
+                <DefaultButton
+                  onClickFunction={() => {
+                    handleAddJadwalProduksiCetak();
+                  }}
+                >
+                  Tambah Jadwal Produksi
+                </DefaultButton>
+              </div>
+              <div>
+                <TableContainer component={Paper} style={{ overflowX: "auto" }}>
+                  <Table
+                    sx={{
+                      minWidth: 650,
+                      tableLayout: "fixed",
+                      overflowX: "auto",
                     }}
+                    aria-label="simple table"
                   >
-                    Kegiatan Produksi Selesai
-                  </DefaultButton>
-                )}
+                    <TableHead>
+                      <TableRow>
+                        <TableCell style={{ width: "300px" }}>
+                          Jam Produksi Awal
+                        </TableCell>
+                        <TableCell style={{ width: "300px" }}>
+                          Jam Produksi Akhir
+                        </TableCell>
+                        <TableCell style={{ width: "200px" }}>
+                          No Order Produksi
+                        </TableCell>
+                        <TableCell style={{ width: "200px" }}>
+                          Jenis Cetakan
+                        </TableCell>
+                        <TableCell style={{ width: "200px" }}>
+                          Perolehan Cetakan
+                        </TableCell>
+                        <TableCell style={{ width: "200px" }}>
+                          {"Sobek (Kg)"}
+                        </TableCell>
+                        <TableCell style={{ width: "200px" }}>
+                          {"Kulit (Kg)"}
+                        </TableCell>
+                        <TableCell style={{ width: "200px" }}>
+                          {"Gelondong (Kg)"}
+                        </TableCell>
+                        <TableCell style={{ width: "200px" }}>
+                          {"Sampah (Kg)"}
+                        </TableCell>
+                        <TableCell style={{ width: "50px" }}>
+                          Roll Habis
+                        </TableCell>
+                        <TableCell style={{ width: "50px" }}>
+                          Roll Sisa
+                        </TableCell>
+                        <TableCell style={{ width: "200px" }}>
+                          Keterangan
+                        </TableCell>
+                        <TableCell style={{ width: "50px" }}>Actions</TableCell>
+                      </TableRow>
+                    </TableHead>
+                    <TableBody>
+                      {jadwalProduksiCetak?.map((result, index) => {
+                        return (
+                          <React.Fragment key={index}>
+                            <TableRow>
+                              <TableCell>
+                                <LocalizationProvider
+                                  dateAdapter={AdapterDayjs}
+                                >
+                                  <DemoContainer
+                                    components={["DateTimePicker"]}
+                                  >
+                                    <DemoItem>
+                                      <DateTimePicker
+                                        disablePast
+                                        value={
+                                          result.jamAwalProduksi.isValid()
+                                            ? result.jamAwalProduksi
+                                            : null
+                                        }
+                                        maxDateTime={
+                                          tanggalPengiriman.isValid()
+                                            ? dayjs(tanggalPengiriman)
+                                            : undefined
+                                        }
+                                        onChange={(event) => {
+                                          handleChangeJadwalProduksiCetak(
+                                            event,
+                                            index,
+                                            "jamAwalProduksi"
+                                          );
+                                        }}
+                                        renderInput={(params) => (
+                                          <TextField
+                                            {...params}
+                                            error={
+                                              params.error || !params.value
+                                            }
+                                            helperText={
+                                              params.error
+                                                ? "Invalid date format"
+                                                : ""
+                                            }
+                                          />
+                                        )}
+                                      />
+                                    </DemoItem>
+                                  </DemoContainer>
+                                </LocalizationProvider>
+                              </TableCell>
+                              <TableCell>
+                                <LocalizationProvider
+                                  dateAdapter={AdapterDayjs}
+                                >
+                                  <DemoContainer
+                                    components={["DateTimePicker"]}
+                                  >
+                                    <DemoItem>
+                                      <DateTimePicker
+                                        disablePast
+                                        value={
+                                          result.jamAkhirProduksi.isValid()
+                                            ? result.jamAkhirProduksi
+                                            : null
+                                        }
+                                        minDate={
+                                          !result.jamAkhirProduksi.isValid()
+                                            ? result.jamAwalProduksi
+                                            : undefined
+                                        }
+                                        maxDateTime={
+                                          tanggalPengiriman.isValid()
+                                            ? dayjs(tanggalPengiriman)
+                                            : undefined
+                                        }
+                                        onChange={(event) => {
+                                          handleChangeJadwalProduksiCetak(
+                                            event,
+                                            index,
+                                            "jamAkhirProduksi"
+                                          );
+                                        }}
+                                        renderInput={(params) => (
+                                          <TextField
+                                            {...params}
+                                            error={
+                                              params.error || !params.value
+                                            }
+                                            helperText={
+                                              params.error
+                                                ? "Invalid date format"
+                                                : ""
+                                            }
+                                          />
+                                        )}
+                                      />
+                                    </DemoItem>
+                                  </DemoContainer>
+                                </LocalizationProvider>
+                              </TableCell>
+                              <TableCell>
+                                <MySelectTextField
+                                  disabled
+                                  data={allProductionPlan}
+                                  value={result.noOrderProduksi}
+                                  width="200px"
+                                />
+                              </TableCell>
+                              <TableCell>
+                                <TextField
+                                  value={result.jenisCetakan}
+                                  disabled
+                                />
+                              </TableCell>
+                              <TableCell>
+                                <div
+                                  style={{
+                                    display: "flex",
+                                    alignItems: "center",
+                                  }}
+                                >
+                                  <TextField
+                                    type="number"
+                                    value={result.perolehanCetakan.value}
+                                    onChange={(event) => {
+                                      handleChangeJadwalProduksiCetak(
+                                        event,
+                                        index,
+                                        "perolehanCetakan"
+                                      );
+                                    }}
+                                  />
+                                  <div style={{ marginLeft: "8px" }}>
+                                    <MySelectTextField
+                                      data={units}
+                                      value={result.perolehanCetakan.unit}
+                                      onChange={(event) => {
+                                        handleChangeJadwalProduksiCetak(
+                                          event,
+                                          index,
+                                          "perolehanCetakan",
+                                          true
+                                        );
+                                      }}
+                                    />
+                                  </div>
+                                </div>
+                              </TableCell>
+                              <TableCell>
+                                <div
+                                  style={{
+                                    display: "flex",
+                                    alignItems: "center",
+                                  }}
+                                >
+                                  <TextField
+                                    type="number"
+                                    value={result.sobek.value}
+                                    onChange={(event) => {
+                                      handleChangeJadwalProduksiCetak(
+                                        event,
+                                        index,
+                                        "sobek"
+                                      );
+                                    }}
+                                  />
+                                  <div style={{ marginLeft: "8px" }}>
+                                    <MySelectTextField
+                                      data={units}
+                                      value={result.sobek.unit}
+                                      onChange={(event) => {
+                                        handleChangeJadwalProduksiCetak(
+                                          event,
+                                          index,
+                                          "sobek",
+                                          true
+                                        );
+                                      }}
+                                    />
+                                  </div>
+                                </div>
+                              </TableCell>
+                              <TableCell>
+                                <div
+                                  style={{
+                                    display: "flex",
+                                    alignItems: "center",
+                                  }}
+                                >
+                                  <TextField
+                                    type="number"
+                                    value={result.kulit.value}
+                                    onChange={(event) => {
+                                      handleChangeJadwalProduksiCetak(
+                                        event,
+                                        index,
+                                        "kulit"
+                                      );
+                                    }}
+                                  />
+                                  <div style={{ marginLeft: "8px" }}>
+                                    <MySelectTextField
+                                      data={units}
+                                      value={result.kulit.unit}
+                                      onChange={(event) => {
+                                        handleChangeJadwalProduksiCetak(
+                                          event,
+                                          index,
+                                          "kulit",
+                                          true
+                                        );
+                                      }}
+                                    />
+                                  </div>
+                                </div>
+                              </TableCell>
+                              <TableCell>
+                                <div
+                                  style={{
+                                    display: "flex",
+                                    alignItems: "center",
+                                  }}
+                                >
+                                  <TextField
+                                    type="number"
+                                    value={result.gelondong.value}
+                                    onChange={(event) => {
+                                      handleChangeJadwalProduksiCetak(
+                                        event,
+                                        index,
+                                        "gelondong"
+                                      );
+                                    }}
+                                  />
+                                  <div style={{ marginLeft: "8px" }}>
+                                    <MySelectTextField
+                                      data={units}
+                                      value={result.gelondong.unit}
+                                      onChange={(event) => {
+                                        handleChangeJadwalProduksiCetak(
+                                          event,
+                                          index,
+                                          "gelondong",
+                                          true
+                                        );
+                                      }}
+                                    />
+                                  </div>
+                                </div>
+                              </TableCell>
+                              <TableCell>
+                                <div
+                                  style={{
+                                    display: "flex",
+                                    alignItems: "center",
+                                  }}
+                                >
+                                  <TextField
+                                    type="number"
+                                    value={result.sampah.value}
+                                    onChange={(event) => {
+                                      handleChangeJadwalProduksiCetak(
+                                        event,
+                                        index,
+                                        "sampah"
+                                      );
+                                    }}
+                                  />
+                                  <div style={{ marginLeft: "8px" }}>
+                                    <MySelectTextField
+                                      data={units}
+                                      value={result.sampah.unit}
+                                      onChange={(event) => {
+                                        handleChangeJadwalProduksiCetak(
+                                          event,
+                                          index,
+                                          "sampah",
+                                          true
+                                        );
+                                      }}
+                                    />
+                                  </div>
+                                </div>
+                              </TableCell>
+                              <TableCell>
+                                <FormControlLabel
+                                  sx={{ display: "block" }}
+                                  control={
+                                    <Switch
+                                      checked={result.rollHabis}
+                                      onChange={(event) => {
+                                        handleChangeJadwalProduksiCetak(
+                                          event.target.checked,
+                                          index,
+                                          "rollHabis"
+                                        );
+                                      }}
+                                    />
+                                  }
+                                  name="loading"
+                                  color="primary"
+                                />
+                              </TableCell>
+                              <TableCell>
+                                <FormControlLabel
+                                  sx={{ display: "block" }}
+                                  control={
+                                    <Switch
+                                      checked={result.rollSisa}
+                                      onChange={(event) => {
+                                        handleChangeJadwalProduksiCetak(
+                                          event.target.checked,
+                                          index,
+                                          "rollSisa"
+                                        );
+                                      }}
+                                    />
+                                  }
+                                  name="loading"
+                                  color="primary"
+                                />
+                              </TableCell>
+                              <TableCell>
+                                <TextField
+                                  value={result.keterangan}
+                                  onChange={(event) => {
+                                    handleChangeJadwalProduksiCetak(
+                                      event,
+                                      index,
+                                      "keterangan"
+                                    );
+                                  }}
+                                />
+                              </TableCell>
+                              <TableCell>
+                                <IconButton
+                                  onClick={() => {
+                                    handleDeleteDataJadwalProduksiCetak(
+                                      result?.id,
+                                      index
+                                    );
+                                  }}
+                                >
+                                  <DeleteIcon sx={{ color: "red" }} />
+                                </IconButton>
+                              </TableCell>
+                            </TableRow>
+                          </React.Fragment>
+                        );
+                      })}
+                    </TableBody>
+                  </Table>
+                </TableContainer>
                 <div
                   style={{
-                    marginLeft: laporanProduksiId !== undefined ? "8px" : "",
+                    marginTop: "16px",
+                    justifyContent: "center",
+                    display: "flex",
                   }}
                 >
-                  <DefaultButton
-                    onClickFunction={() => {
-                      laporanProduksiId !== undefined
-                        ? handleEditKegiatanProduksiFitur()
-                        : handleAddKegiatanProduksiFitur();
+                  {laporanProduksiId !== undefined && (
+                    <DefaultButton
+                      onClickFunction={() => {
+                        handleSelesaiKegiatanProduksi(dataProduksi?.id);
+                      }}
+                    >
+                      Kegiatan Produksi Selesai
+                    </DefaultButton>
+                  )}
+                  <div
+                    style={{
+                      marginLeft: laporanProduksiId !== undefined ? "8px" : "",
                     }}
                   >
-                    {laporanProduksiId !== undefined
-                      ? "Edit kegiatan produksi fitur"
-                      : "Tambah kegiatan produksi fitur"}
-                  </DefaultButton>
+                    <DefaultButton
+                      onClickFunction={() => {
+                        laporanProduksiId !== undefined
+                          ? handleEditKegiatanProduksiCetak()
+                          : handleAddKegiatanProduksiCetak();
+                      }}
+                    >
+                      {laporanProduksiId !== undefined
+                        ? "Edit Kegiatan Produksi Cetak"
+                        : "Tambah Kegiatan Produksi Cetak"}
+                    </DefaultButton>
+                  </div>
+                  <Button
+                    color="error"
+                    variant="outlined"
+                    style={{ textTransform: "none", marginLeft: "8px" }}
+                    onClick={() => {
+                      navigate(-1);
+                    }}
+                  >
+                    Cancel
+                  </Button>
                 </div>
-                <Button
-                  style={{ marginLeft: "8px", textTransform: "none" }}
-                  variant="outlined"
-                  color="error"
-                  onClick={() => {
-                    navigate(-1);
-                  }}
-                >
-                  Cancel
-                </Button>
               </div>
             </div>
-          </div>
-        )}
-      </div>
+          )}
+          {dataProduksi.tahapProduksi === "Produksi Fitur" && (
+            <div style={{ padding: "0px 32px 64px 32px" }}>
+              <div
+                style={{
+                  display: "flex",
+                  justifyContent: "space-between",
+                  alignItems: "center",
+                  marginBottom: "16px",
+                }}
+              >
+                <Typography style={{ color: "#0F607D", fontSize: "2vw" }}>
+                  Jadwal Produksi Fitur
+                </Typography>
+                <DefaultButton
+                  onClickFunction={() => {
+                    handleAddJadwalProduksiFitur();
+                  }}
+                >
+                  Tambah Jadwal Produksi
+                </DefaultButton>
+              </div>
+              <div>
+                <TableContainer component={Paper} style={{ overflowX: "auto" }}>
+                  <Table
+                    sx={{
+                      minWidth: 650,
+                      tableLayout: "fixed",
+                      overflowX: "auto",
+                    }}
+                    aria-label="simple table"
+                  >
+                    <TableHead>
+                      <TableRow>
+                        <TableCell style={{ width: "300px" }}>
+                          Jam Produksi Awal
+                        </TableCell>
+                        <TableCell style={{ width: "300px" }}>
+                          Jam Produksi Akhir
+                        </TableCell>
+                        <TableCell style={{ width: "200px" }}>
+                          No Order Produksi
+                        </TableCell>
+                        <TableCell style={{ width: "200px" }}>
+                          Jenis Cetakan
+                        </TableCell>
+                        <TableCell style={{ width: "200px" }}>
+                          Nomorator Awal
+                        </TableCell>
+                        <TableCell style={{ width: "200px" }}>
+                          Nomorator Akhir
+                        </TableCell>
+                        <TableCell style={{ width: "200px" }}>
+                          Perolehan Cetakan
+                        </TableCell>
+                        <TableCell style={{ width: "200px" }}>Waste</TableCell>
+                        <TableCell style={{ width: "200px" }}>
+                          Keterangan
+                        </TableCell>
+                        <TableCell style={{ width: "50px" }}>Actions</TableCell>
+                      </TableRow>
+                    </TableHead>
+                    <TableBody>
+                      {jadwalProduksiFitur?.map((result, index) => {
+                        return (
+                          <React.Fragment key={index}>
+                            <TableRow>
+                              <TableCell>
+                                <LocalizationProvider
+                                  dateAdapter={AdapterDayjs}
+                                >
+                                  <DemoContainer
+                                    components={["DateTimePicker"]}
+                                  >
+                                    <DemoItem>
+                                      <DateTimePicker
+                                        disablePast
+                                        value={
+                                          result.jamAwalProduksi.isValid()
+                                            ? result.jamAwalProduksi
+                                            : null
+                                        }
+                                        maxDateTime={
+                                          tanggalPengiriman.isValid()
+                                            ? dayjs(tanggalPengiriman)
+                                            : undefined
+                                        }
+                                        onChange={(event) => {
+                                          handleChangeJadwalProduksiFitur(
+                                            event,
+                                            index,
+                                            "jamAwalProduksi"
+                                          );
+                                        }}
+                                        renderInput={(params) => (
+                                          <TextField
+                                            {...params}
+                                            error={
+                                              params.error || !params.value
+                                            }
+                                            helperText={
+                                              params.error
+                                                ? "Invalid date format"
+                                                : ""
+                                            }
+                                          />
+                                        )}
+                                      />
+                                    </DemoItem>
+                                  </DemoContainer>
+                                </LocalizationProvider>
+                              </TableCell>
+                              <TableCell>
+                                <LocalizationProvider
+                                  dateAdapter={AdapterDayjs}
+                                >
+                                  <DemoContainer
+                                    components={["DateTimePicker"]}
+                                  >
+                                    <DemoItem>
+                                      <DateTimePicker
+                                        disablePast
+                                        value={
+                                          result.jamAkhirProduksi.isValid()
+                                            ? result.jamAkhirProduksi
+                                            : null
+                                        }
+                                        minDate={
+                                          !result.jamAwalProduksi.isValid()
+                                            ? undefined
+                                            : result.jamAwalProduksi
+                                        }
+                                        maxDateTime={
+                                          tanggalPengiriman.isValid()
+                                            ? dayjs(tanggalPengiriman)
+                                            : undefined
+                                        }
+                                        onChange={(event) => {
+                                          handleChangeJadwalProduksiFitur(
+                                            event,
+                                            index,
+                                            "jamAkhirProduksi"
+                                          );
+                                        }}
+                                        renderInput={(params) => (
+                                          <TextField
+                                            {...params}
+                                            error={
+                                              params.error || !params.value
+                                            }
+                                            helperText={
+                                              params.error
+                                                ? "Invalid date format"
+                                                : ""
+                                            }
+                                          />
+                                        )}
+                                      />
+                                    </DemoItem>
+                                  </DemoContainer>
+                                </LocalizationProvider>
+                              </TableCell>
+                              <TableCell>
+                                <MySelectTextField
+                                  data={allProductionPlan}
+                                  value={result.noOrderProduksi}
+                                  disabled
+                                  width="200px"
+                                />
+                              </TableCell>
+                              <TableCell>
+                                <TextField
+                                  value={result.jenisCetakan}
+                                  disabled
+                                />
+                              </TableCell>
+                              <TableCell>
+                                <TextField
+                                  value={result.nomoratorAwal}
+                                  onChange={(event) => {
+                                    handleChangeJadwalProduksiFitur(
+                                      event,
+                                      index,
+                                      "nomoratorAwal"
+                                    );
+                                  }}
+                                />
+                              </TableCell>
+                              <TableCell>
+                                <TextField
+                                  value={result.nomoratorAkhir}
+                                  onChange={(event) => {
+                                    handleChangeJadwalProduksiFitur(
+                                      event,
+                                      index,
+                                      "nomoratorAkhir"
+                                    );
+                                  }}
+                                />
+                              </TableCell>
+                              <TableCell>
+                                <div
+                                  style={{
+                                    display: "flex",
+                                    alignItems: "center",
+                                  }}
+                                >
+                                  <TextField
+                                    type="number"
+                                    value={result.perolehanCetakan.value}
+                                    onChange={(event) => {
+                                      handleChangeJadwalProduksiFitur(
+                                        event,
+                                        index,
+                                        "perolehanCetakan"
+                                      );
+                                    }}
+                                  />
+                                  <div style={{ marginLeft: "8px" }}>
+                                    <MySelectTextField
+                                      data={units}
+                                      value={result.perolehanCetakan.unit}
+                                      onChange={(event) => {
+                                        handleChangeJadwalProduksiFitur(
+                                          event,
+                                          index,
+                                          "perolehanCetakan",
+                                          true
+                                        );
+                                      }}
+                                    />
+                                  </div>
+                                </div>
+                              </TableCell>
+                              <TableCell>
+                                <div
+                                  style={{
+                                    display: "flex",
+                                    alignItems: "center",
+                                  }}
+                                >
+                                  <TextField
+                                    type="number"
+                                    value={result.waste.value}
+                                    onChange={(event) => {
+                                      handleChangeJadwalProduksiFitur(
+                                        event,
+                                        index,
+                                        "waste"
+                                      );
+                                    }}
+                                  />
+                                  <div style={{ marginLeft: "8px" }}>
+                                    <MySelectTextField
+                                      data={units}
+                                      value={result.waste.unit}
+                                      onChange={(event) => {
+                                        handleChangeJadwalProduksiFitur(
+                                          event,
+                                          index,
+                                          "waste",
+                                          true
+                                        );
+                                      }}
+                                    />
+                                  </div>
+                                </div>
+                              </TableCell>
+                              <TableCell>
+                                <TextField
+                                  value={result.keterangan}
+                                  onChange={(event) => {
+                                    handleChangeJadwalProduksiFitur(
+                                      event,
+                                      index,
+                                      "keterangan"
+                                    );
+                                  }}
+                                />
+                              </TableCell>
+                              <TableCell>
+                                <IconButton
+                                  onClick={() => {
+                                    handleDeleteDataJadwalProduksiFitur(
+                                      result?.id,
+                                      index
+                                    );
+                                  }}
+                                >
+                                  <DeleteIcon sx={{ color: "red" }} />
+                                </IconButton>
+                              </TableCell>
+                            </TableRow>
+                          </React.Fragment>
+                        );
+                      })}
+                    </TableBody>
+                  </Table>
+                </TableContainer>
+                <div
+                  style={{
+                    display: "flex",
+                    justifyContent: "center",
+                    alignItems: "center",
+                    marginTop: "16px",
+                  }}
+                >
+                  {laporanProduksiId !== undefined && (
+                    <DefaultButton
+                      onClickFunction={() => {
+                        handleSelesaiKegiatanProduksi(dataProduksi?.id);
+                      }}
+                    >
+                      Kegiatan Produksi Selesai
+                    </DefaultButton>
+                  )}
+                  <div
+                    style={{
+                      marginLeft: laporanProduksiId !== undefined ? "8px" : "",
+                    }}
+                  >
+                    <DefaultButton
+                      onClickFunction={() => {
+                        laporanProduksiId !== undefined
+                          ? handleEditKegiatanProduksiFitur()
+                          : handleAddKegiatanProduksiFitur();
+                      }}
+                    >
+                      {laporanProduksiId !== undefined
+                        ? "Edit kegiatan produksi fitur"
+                        : "Tambah kegiatan produksi fitur"}
+                    </DefaultButton>
+                  </div>
+                  <Button
+                    style={{ marginLeft: "8px", textTransform: "none" }}
+                    variant="outlined"
+                    color="error"
+                    onClick={() => {
+                      navigate(-1);
+                    }}
+                  >
+                    Cancel
+                  </Button>
+                </div>
+              </div>
+            </div>
+          )}
+        </div>
+      )}
       {snackbarMessage !== ("" || null) && (
         <MySnackbar
           open={openSnackbar}

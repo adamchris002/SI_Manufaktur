@@ -162,7 +162,7 @@ const PembelianBahanBaku = (props) => {
   useEffect(() => {
     axios({
       method: "GET",
-      url: "http://localhost:3000/inventory/getAllAcceptedPermohonanPembelian",
+      url: "http://localhost:3000/order/getAllOrderInfo",
     }).then((result) => {
       if (result.status === 200) {
         const allIds = result.data.map((data) => ({

@@ -27,7 +27,8 @@ class ProductionController {
   static async addKegiatanProduksi(req, res) {
     try {
       const { id } = req.params;
-      const { dataProduksi, jadwalPracetak, personil } = req.body;
+      const { dataProduksi, jadwalPracetak, personil, tanggalPengiriman } =
+        req.body;
 
       let result = await laporanProduksis.create({
         tanggalProduksi: dataProduksi.tanggalProduksi,
@@ -36,6 +37,7 @@ class ProductionController {
         mesin: dataProduksi.mesin,
         dibuatOleh: dataProduksi.dibuatOleh,
         tahapProduksi: dataProduksi.tahapProduksi,
+        tanggalPengiriman: tanggalPengiriman,
       });
 
       if (
@@ -308,6 +310,7 @@ class ProductionController {
         mesin: dataProduksi.mesin,
         dibuatOleh: dataProduksi.dibuatOleh,
         tahapProduksi: dataProduksi.tahapProduksi,
+        tanggalPengiriman: tanggalPengiriman,
       });
       if (
         dataProduksi.bahanProduksis &&
@@ -365,7 +368,8 @@ class ProductionController {
   static async addKegiatanProduksiCetak(req, res) {
     try {
       const { id } = req.params;
-      const { personil, jadwalCetak, dataProduksi } = req.body;
+      const { personil, jadwalCetak, dataProduksi, tanggalPengiriman } =
+        req.body;
       let getPrevKegiatanProduksi = await laporanProduksis.findOne({
         where: {
           noOrderProduksi: dataProduksi.noOrderProduksi,
@@ -384,6 +388,7 @@ class ProductionController {
         mesin: dataProduksi.mesin,
         dibuatOleh: dataProduksi.dibuatOleh,
         tahapProduksi: dataProduksi.tahapProduksi,
+        tanggalPengiriman: tanggalPengiriman,
       });
 
       if (
@@ -726,6 +731,7 @@ class ProductionController {
               namaBarang: result.namaBarang,
               jumlahBarang: result.jumlahBarang,
               keterangan: result.keterangan,
+              tahapProduksi: result.tahapProduksi,
             });
             await UserLaporanLimbahProduksis.create({
               userId: id,
@@ -779,6 +785,38 @@ class ProductionController {
   static async deleteItemLimbahProduksi(req, res) {
     try {
       const { id } = req.params;
+      const { tahapProduksi, noOrderProduksi } = req.query;
+
+      const searchForItem = await laporanLimbahProduksis.findOne({
+        where: { id: id },
+      });
+
+      const searchForLaporanProduksi = await laporanProduksis.findOne({
+        where: {
+          noOrderProduksi: noOrderProduksi,
+          tahapProduksi: tahapProduksi,
+        },
+      });
+
+      if (searchForLaporanProduksi) {
+        await searchForLaporanProduksi.update({
+          statusLaporanLimbah: null,
+        });
+      }
+
+      await searchForItem.destroy();
+
+      res.json({ message: "Item successfully deleted", data: searchForItem });
+    } catch (error) {
+      res.status(500).json({ error: error.message });
+    }
+  }
+
+  static async getAllLaporanLimbahProduksi(req, res) {
+    try {
+      let result = await laporanLimbahProduksis.findAll({});
+
+      res.json(result);
     } catch (error) {
       res.json(error);
     }

@@ -21,6 +21,7 @@ module.exports = (sequelize, DataTypes) => {
       namaBarang: DataTypes.STRING,
       jumlahBarang: DataTypes.STRING,
       keterangan: DataTypes.STRING,
+      tahapProduksi: DataTypes.STRING
     },
     {
       sequelize,

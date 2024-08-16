@@ -29,6 +29,8 @@ const MaindashboardProduction = (props) => {
 
   const [allPenyerahanBarang, setAllPenyerahanBarang] = useState([]);
   const [dataKegiatanProduksi, setDataKegiatanProduksi] = useState([]);
+  const [allDataLaporanLimbahProduksi, setAllDataLaporanLimbahProduksi] =
+    useState([]);
 
   const [snackbarMessage, setSnackbarMessage] = useState("");
   const [snackbarStatus, setSnackbarStatus] = useState(false);
@@ -36,6 +38,10 @@ const MaindashboardProduction = (props) => {
 
   const [refreshDataKegiatanProduksi, setRefreshDataKegiatanProduksi] =
     useState(true);
+  const [
+    refreshDataLaporanLimbahProduksi,
+    setRefreshDataLaporanLimbahProduksi,
+  ] = useState(true);
 
   const { message, clearMessage, setSuccessMessage } = useAuth();
 
@@ -47,6 +53,24 @@ const MaindashboardProduction = (props) => {
       clearMessage();
     }
   }, [message, clearMessage]);
+
+  useEffect(() => {
+    if (refreshDataLaporanLimbahProduksi) {
+      axios({
+        method: "GET",
+        url: "http://localhost:3000/production/getAllLaporanLimbahProduksi",
+      }).then((result) => {
+        if (result.status === 200) {
+          setAllDataLaporanLimbahProduksi(result.data);
+          setRefreshDataLaporanLimbahProduksi(false);
+        } else {
+          setOpenSnackbar(true);
+          setSnackbarStatus(false);
+          setSnackbarMessage("Tidak berhasil memanggil data limbah produksi");
+        }
+      });
+    }
+  }, [refreshDataLaporanLimbahProduksi]);
 
   useEffect(() => {
     axios({
@@ -132,6 +156,31 @@ const MaindashboardProduction = (props) => {
         setOpenSnackbar(true);
         setSnackbarStatus(false);
         setSnackbarMessage("Tidak berhasil menghapus data kegiatan produksi");
+      }
+    });
+  };
+
+  const handleDeleteLaporanLimbahProduksi = (
+    id,
+    tahapProduksi,
+    noOrderProduksi
+  ) => {
+    axios({
+      method: "DELETE",
+      url: `http://localhost:3000/production/deleteItemLimbahProduksi/${id}`,
+      params: { tahapProduksi: tahapProduksi, noOrderProduksi },
+    }).then((result) => {
+      if (result.status === 200) {
+        setOpenSnackbar(true);
+        setSnackbarStatus(true);
+        setSnackbarMessage("Berhasil menghapus data laporan limbah produksi");
+        setRefreshDataLaporanLimbahProduksi(true);
+      } else {
+        setOpenSnackbar(true);
+        setSnackbarStatus(false);
+        setSnackbarMessage(
+          "Tidak berhasil menghapus data laporan limbah produksi"
+        );
       }
     });
   };
@@ -534,7 +583,7 @@ const MaindashboardProduction = (props) => {
               borderRadius="16px"
               fontSize="16px"
               onClickFunction={() => {
-                navigate("/productionDashboard/laporanLimbahProduksi")
+                navigate("/productionDashboard/laporanLimbahProduksi");
               }}
             >
               Kelola laporan limbah produksi
@@ -542,7 +591,66 @@ const MaindashboardProduction = (props) => {
           </div>
         </div>
         <div style={{ marginLeft: "32px", marginTop: "32px" }}>
-
+          {allDataLaporanLimbahProduksi.length === 0 ? (
+            <div style={{ display: "flex", justifyContent: "center" }}>
+              <Typography style={{ color: "#0F607D", fontSize: "1.5vw" }}>
+                Tidak ada data laporan limbah produksi
+              </Typography>
+            </div>
+          ) : (
+            <TableContainer component={Paper}>
+              <Table sx={{ minWidth: 650 }} aria-label="simple table">
+                <TableHead>
+                  <TableRow>
+                    <TableCell>No.</TableCell>
+                    <TableCell>No Order Produksi</TableCell>
+                    <TableCell>Tahap Produksi</TableCell>
+                    <TableCell>Nama Barang</TableCell>
+                    <TableCell>Jumlah Barang</TableCell>
+                    <TableCell>Keterangan</TableCell>
+                    <TableCell>Actions</TableCell>
+                  </TableRow>
+                </TableHead>
+                <TableBody>
+                  {allDataLaporanLimbahProduksi?.map((result, index) => {
+                    return (
+                      <React.Fragment key={index}>
+                        <TableRow>
+                          <TableCell>{index + 1 + "."}</TableCell>
+                          <TableCell>{result.noOrderProduksiId}</TableCell>
+                          <TableCell>{result.tahapProduksi}</TableCell>
+                          <TableCell>{result.namaBarang}</TableCell>
+                          <TableCell>{result.jumlahBarang}</TableCell>
+                          <TableCell>{result.keterangan}</TableCell>
+                          <TableCell>
+                            <div
+                              style={{ display: "flex", alignItems: "center" }}
+                            >
+                              <IconButton>
+                                <EditIcon style={{ color: "#0F607D" }} />
+                              </IconButton>
+                              <IconButton
+                                onClick={() => {
+                                  handleDeleteLaporanLimbahProduksi(
+                                    result.id,
+                                    result.tahapProduksi,
+                                    result.noOrderProduksiId
+                                  );
+                                }}
+                                style={{ marginLeft: "8px" }}
+                              >
+                                <DeleteIcon style={{ color: "red" }} />
+                              </IconButton>
+                            </div>
+                          </TableCell>
+                        </TableRow>
+                      </React.Fragment>
+                    );
+                  })}
+                </TableBody>
+              </Table>
+            </TableContainer>
+          )}
         </div>
         <div
           style={{

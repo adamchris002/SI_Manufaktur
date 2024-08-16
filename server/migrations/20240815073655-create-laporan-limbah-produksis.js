@@ -21,6 +21,9 @@ module.exports = {
       keterangan: {
         type: Sequelize.STRING
       },
+      tahapProduksi: {
+        type: Sequelize.STRING
+      },
       createdAt: {
         allowNull: false,
         type: Sequelize.DATE
