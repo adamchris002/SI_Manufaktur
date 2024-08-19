@@ -26,6 +26,10 @@ productionRoutes.get(
   "/getAllLaporanLimbahProduksi",
   ProductionController.getAllLaporanLimbahProduksi
 );
+productionRoutes.get(
+  "/getOneLaporanLimbahProduksi/:id",
+  ProductionController.getOneLaporanLimbahProduksi
+);
 
 //post
 productionRoutes.post(
@@ -62,6 +66,10 @@ productionRoutes.put(
   "/kegiatanProduksiSelesai/:id",
   ProductionController.kegiatanProduksiSelesai
 );
+productionRoutes.put(
+  "/updateDataLimbahProduksi/:id",
+  ProductionController.updateDataLimbahProduksi
+);
 
 //delete
 productionRoutes.delete(
@@ -83,6 +91,10 @@ productionRoutes.delete(
 productionRoutes.delete(
   "/deleteItemLimbahProduksi/:id",
   ProductionController.deleteItemLimbahProduksi
+);
+productionRoutes.delete(
+  "/deleteItemLaporanLimbahProduksis/:id",
+  ProductionController.deleteItemLaporanLimbahProduksis
 );
 
 module.exports = productionRoutes;

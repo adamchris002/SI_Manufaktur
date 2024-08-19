@@ -142,6 +142,12 @@ const MaindashboardProduction = (props) => {
     });
   };
 
+  const handleGoToEditLaporanLimbahProduksi = (id) => {
+    navigate("/productionDashboard/laporanLimbahProduksi", {
+      state: { laporanLimbahProduksiId: id },
+    });
+  };
+
   const handleDeleteKegiatanProduksi = (id) => {
     axios({
       method: "DELETE",
@@ -274,7 +280,7 @@ const MaindashboardProduction = (props) => {
                 .scrollIntoView({ behavior: "smooth" });
             }}
           >
-            Kelola Laporan Limbah Produksi
+            Kelola Item Limbah Produksi
           </DefaultButton>
         </div>
         <div style={{ marginTop: "32px", fontSize: "24px" }}>
@@ -574,7 +580,7 @@ const MaindashboardProduction = (props) => {
             id="wastepickupactivity"
             style={{ fontSize: "36px", color: "#0F607D" }}
           >
-            Kelola Laporan Limbah Produksi
+            Kelola Item Limbah Produksi
           </Typography>
           <div>
             <DefaultButton
@@ -586,7 +592,7 @@ const MaindashboardProduction = (props) => {
                 navigate("/productionDashboard/laporanLimbahProduksi");
               }}
             >
-              Kelola laporan limbah produksi
+              Kelola item laporan limbah produksi
             </DefaultButton>
           </div>
         </div>
@@ -605,9 +611,8 @@ const MaindashboardProduction = (props) => {
                     <TableCell>No.</TableCell>
                     <TableCell>No Order Produksi</TableCell>
                     <TableCell>Tahap Produksi</TableCell>
-                    <TableCell>Nama Barang</TableCell>
-                    <TableCell>Jumlah Barang</TableCell>
-                    <TableCell>Keterangan</TableCell>
+                    <TableCell>Dibuat Oleh</TableCell>
+                    <TableCell>Tanggal Pembuatan</TableCell>
                     <TableCell>Actions</TableCell>
                   </TableRow>
                 </TableHead>
@@ -617,16 +622,21 @@ const MaindashboardProduction = (props) => {
                       <React.Fragment key={index}>
                         <TableRow>
                           <TableCell>{index + 1 + "."}</TableCell>
-                          <TableCell>{result.noOrderProduksiId}</TableCell>
+                          <TableCell>{result.noOrderProduksi}</TableCell>
                           <TableCell>{result.tahapProduksi}</TableCell>
-                          <TableCell>{result.namaBarang}</TableCell>
-                          <TableCell>{result.jumlahBarang}</TableCell>
-                          <TableCell>{result.keterangan}</TableCell>
+                          <TableCell>{result.dibuatOleh}</TableCell>
+                          <TableCell>
+                            {dayjs(result.tanggalPembuatan).format(
+                              "MM/DD/YYYY hh:mm A"
+                            )}
+                          </TableCell>
                           <TableCell>
                             <div
                               style={{ display: "flex", alignItems: "center" }}
                             >
-                              <IconButton>
+                              <IconButton onClick={() => {
+                                handleGoToEditLaporanLimbahProduksi(result.id)
+                              }}>
                                 <EditIcon style={{ color: "#0F607D" }} />
                               </IconButton>
                               <IconButton
@@ -634,7 +644,7 @@ const MaindashboardProduction = (props) => {
                                   handleDeleteLaporanLimbahProduksi(
                                     result.id,
                                     result.tahapProduksi,
-                                    result.noOrderProduksiId
+                                    result.noOrderProduksi
                                   );
                                 }}
                                 style={{ marginLeft: "8px" }}

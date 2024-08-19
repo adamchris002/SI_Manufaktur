@@ -13,15 +13,17 @@ module.exports = (sequelize, DataTypes) => {
         foreignKey: "laporanLimbahProduksiId",
         otherKey: "userId",
       });
+      laporanLimbahProduksis.hasMany(models.itemLaporanLimbahProduksis, {
+        foreignKey: "laporanLimbahProduksiId",onDelete: "CASCADE",
+      });
     }
   }
   laporanLimbahProduksis.init(
     {
-      noOrderProduksiId: DataTypes.INTEGER,
-      namaBarang: DataTypes.STRING,
-      jumlahBarang: DataTypes.STRING,
-      keterangan: DataTypes.STRING,
-      tahapProduksi: DataTypes.STRING
+      noOrderProduksi: DataTypes.INTEGER,
+      dibuatOleh: DataTypes.STRING,
+      tanggalPembuatan: DataTypes.STRING,
+      tahapProduksi: DataTypes.STRING,
     },
     {
       sequelize,

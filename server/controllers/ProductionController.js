@@ -9,6 +9,7 @@ const {
   orders,
   laporanLimbahProduksis,
   UserLaporanLimbahProduksis,
+  itemLaporanLimbahProduksis,
 } = require("../models");
 const dayjs = require("dayjs");
 
@@ -292,7 +293,9 @@ class ProductionController {
   static async addKegiatanProduksiFitur(req, res) {
     try {
       const { id } = req.params;
-      const { personil, dataProduksi, jadwalFitur } = req.body;
+      const { personil, dataProduksi, jadwalFitur, tanggalPengiriman } =
+        req.body;
+
       let getPrevKegiatanProduksi = await laporanProduksis.findOne({
         where: {
           noOrderProduksi: dataProduksi.noOrderProduksi,
@@ -312,6 +315,9 @@ class ProductionController {
         tahapProduksi: dataProduksi.tahapProduksi,
         tanggalPengiriman: tanggalPengiriman,
       });
+
+      console.log(result);
+
       if (
         dataProduksi.bahanProduksis &&
         Array.isArray(dataProduksi.bahanProduksis)
@@ -360,6 +366,10 @@ class ProductionController {
           })
         );
       }
+      await UserLaporanProduksis.create({
+        userId: parseInt(id),
+        laporanProduksiId: parseInt(result.id),
+      });
       res.json(result);
     } catch (error) {
       res.json(error);
@@ -723,38 +733,96 @@ class ProductionController {
       const { id } = req.params;
       const { dataLimbah } = req.body;
 
-      if (dataLimbah && Array.isArray(dataLimbah)) {
+      let result = await laporanLimbahProduksis.create({
+        noOrderProduksi: parseInt(dataLimbah.noOrderProduksi),
+        dibuatOleh: dataLimbah.dibuatOleh,
+        tanggalPembuatan: dataLimbah.tanggalPembuatan,
+        tahapProduksi: dataLimbah.tahapProduksi,
+      });
+
+      if (
+        dataLimbah.itemLaporanLimbahProdukses &&
+        Array.isArray(dataLimbah.itemLaporanLimbahProdukses)
+      ) {
         await Promise.all(
-          dataLimbah.map(async (result) => {
-            const laporanLimbahProduksi = await laporanLimbahProduksis.create({
-              noOrderProduksiId: parseInt(result.noOrderProduksi),
-              namaBarang: result.namaBarang,
-              jumlahBarang: result.jumlahBarang,
-              keterangan: result.keterangan,
-              tahapProduksi: result.tahapProduksi,
+          dataLimbah.itemLaporanLimbahProdukses.map(async (data) => {
+            await itemLaporanLimbahProduksis.create({
+              laporanLimbahProduksiId: result.id,
+              noOrderProduksiId: data.noOrderProduksi,
+              namaBarang: data.namaBarang,
+              jumlahBarang: data.jumlahBarang,
+              keterangan: data.keterangan,
             });
-            await UserLaporanLimbahProduksis.create({
-              userId: id,
-              laporanLimbahProduksiId: laporanLimbahProduksi.id,
-            });
-            await laporanProduksis.update(
-              {
-                statusLaporanLimbah: "Done",
-              },
-              {
-                where: {
-                  noOrderProduksi: result.noOrderProduksi,
-                  tahapProduksi: result.tahapProduksi,
-                },
-              }
-            );
           })
         );
       }
 
+      await UserLaporanLimbahProduksis.create({
+        userId: id,
+        laporanLimbahProduksiId: result.id,
+      });
+      await laporanProduksis.update(
+        {
+          statusLaporanLimbah: "Done",
+        },
+        {
+          where: {
+            noOrderProduksi: result.noOrderProduksi,
+            tahapProduksi: result.tahapProduksi,
+          },
+        }
+      );
+
       res
         .status(200)
         .json({ message: "Laporan limbah produksi added successfully" });
+    } catch (error) {
+      res.json(error);
+    }
+  }
+  static async updateDataLimbahProduksi(req, res) {
+    try {
+      const { id } = req.params;
+      const { dataLimbah } = req.body;
+      let result = await laporanLimbahProduksis.update(
+        {
+          dibuatOleh: dataLimbah.dibuatOleh,
+          tanggalPembuatan: dataLimbah.tanggalPembuatan,
+        },
+        { where: { id: dataLimbah.id } }
+      );
+
+      if (
+        dataLimbah.itemLaporanLimbahProdukses &&
+        Array.isArray(dataLimbah.itemLaporanLimbahProdukses)
+      ) {
+        await Promise.all(
+          dataLimbah.itemLaporanLimbahProdukses.map(async (data) => {
+            if (!data.id) {
+              await itemLaporanLimbahProduksis.create({
+                laporanLimbahProduksiId: dataLimbah.id,
+                noOrderProduksiId: data.noOrderProduksi,
+                namaBarang: data.namaBarang,
+                jumlahBarang: data.jumlahBarang,
+                tahapProduksi: data.tahapProduksi,
+                keterangan: data.keterangan,
+              });
+            } else {
+              await itemLaporanLimbahProduksis.update(
+                {
+                  noOrderProduksiId: data.noOrderProduksi,
+                  namaBarang: data.namaBarang,
+                  jumlahBarang: data.jumlahBarang,
+                  tahapProduksi: data.tahapProduksi,
+                  keterangan: data.keterangan,
+                },
+                { where: { id: data.id } }
+              );
+            }
+          })
+        );
+      }
+      res.json(result);
     } catch (error) {
       res.json(error);
     }
@@ -770,14 +838,6 @@ class ProductionController {
         ],
       });
       res.json(result);
-    } catch (error) {
-      res.json(error);
-    }
-  }
-  static async editLaporanLimbahProduksi(req, res) {
-    try {
-      const { id } = req.params;
-      const { dataLimbah } = req.body;
     } catch (error) {
       res.json(error);
     }
@@ -816,6 +876,30 @@ class ProductionController {
     try {
       let result = await laporanLimbahProduksis.findAll({});
 
+      res.json(result);
+    } catch (error) {
+      res.json(error);
+    }
+  }
+  static async getOneLaporanLimbahProduksi(req, res) {
+    try {
+      const { id } = req.params;
+      console.log(id);
+      let result = await laporanLimbahProduksis.findOne({
+        where: { id: id },
+        include: [{ model: itemLaporanLimbahProduksis }],
+      });
+      res.json(result);
+    } catch (error) {
+      res.json(error);
+    }
+  }
+  static async deleteItemLaporanLimbahProduksis(req, res) {
+    try {
+      const { id } = req.params;
+      let result = await itemLaporanLimbahProduksis.destroy({
+        where: { id: id },
+      });
       res.json(result);
     } catch (error) {
       res.json(error);

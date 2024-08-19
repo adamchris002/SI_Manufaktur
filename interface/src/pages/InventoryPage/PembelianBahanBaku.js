@@ -63,7 +63,9 @@ const PembelianBahanBaku = (props) => {
     allAcceptedPermohonanPembelianId,
     setAllAcceptedPermohonanPembelianId,
   ] = useState([]);
+  console.log(allAcceptedPermohonanPembelianId)
   const [allOrdersId, setAllOrdersId] = useState([]);
+  console.log(allOrdersId)
   const [allInventoryItems, setAllInventoryItems] = useState([]);
   const [oneInventoryItems, setOneInventoryItems] = useState([]);
   const [permohonanPembelian, setPermohonanPembelian] = useState([]);
@@ -148,6 +150,7 @@ const PembelianBahanBaku = (props) => {
     }).then((result) => {
       if (result.status === 200) {
         const orderIdList = result.data.map((data) => ({
+          ...data,
           value: data.id,
         }));
         setAllOrdersId(orderIdList);
@@ -162,10 +165,11 @@ const PembelianBahanBaku = (props) => {
   useEffect(() => {
     axios({
       method: "GET",
-      url: "http://localhost:3000/order/getAllOrderInfo",
+      url: "http://localhost:3000/inventory/getAllAcceptedPermohonanPembelian",
     }).then((result) => {
       if (result.status === 200) {
         const allIds = result.data.map((data) => ({
+          ...data,
           value: data.id,
         }));
         setAllAcceptedPermohonanPembelianId(allIds);
