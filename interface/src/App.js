@@ -28,6 +28,7 @@ import PenyerahanBarang from "./pages/InventoryPage/PenyerahanBarang";
 import KegiatanProduksi from "./pages/ProductionPage/KegiatanProduksi";
 import LaporanProduksi from "./pages/ProductionPage/LaporanProduksi";
 import LaporanLimbahProduksi from "./pages/ProductionPage/LaporanLimbahProduksi";
+import LaporanSampah from "./pages/InventoryPage/LaporanSampah";
 
 export const AppContext = createContext({});
 
@@ -202,6 +203,17 @@ function App() {
                   <Navigate to="/unauthorized" replace />
                 ) : (
                   <StokOpnam userInformation={userCredentials} />
+                )
+              }
+            />
+            <Route
+              path="/inventoryDashboard/laporanSampah"
+              element={
+                !userCredentials.data ||
+                userCredentials.data.department !== "Inventory" ? (
+                  <Navigate to="/unauthorized" replace />
+                ) : (
+                  <LaporanSampah userInformation={userCredentials} />
                 )
               }
             />

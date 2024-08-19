@@ -1318,7 +1318,9 @@ const MaindashboardInventory = (props) => {
           >
             Laporan Sampah
           </Typography>
-          <DefaultButton>Pergi ke halaman laporan sampah</DefaultButton>
+          <DefaultButton onClickFunction={() => {
+            navigate("/inventoryDashboard/laporanSampah")
+          }}>Pergi ke halaman laporan sampah</DefaultButton>
         </div>
         <div
           style={{

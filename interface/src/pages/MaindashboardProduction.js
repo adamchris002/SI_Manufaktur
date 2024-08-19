@@ -61,7 +61,7 @@ const MaindashboardProduction = (props) => {
         url: "http://localhost:3000/production/getAllLaporanLimbahProduksi",
       }).then((result) => {
         if (result.status === 200) {
-          setAllDataLaporanLimbahProduksi(result.data);
+          setAllDataLaporanLimbahProduksi(result?.data);
           setRefreshDataLaporanLimbahProduksi(false);
         } else {
           setOpenSnackbar(true);
@@ -597,7 +597,7 @@ const MaindashboardProduction = (props) => {
           </div>
         </div>
         <div style={{ marginLeft: "32px", marginTop: "32px" }}>
-          {allDataLaporanLimbahProduksi.length === 0 ? (
+          {allDataLaporanLimbahProduksi?.length === 0 ? (
             <div style={{ display: "flex", justifyContent: "center" }}>
               <Typography style={{ color: "#0F607D", fontSize: "1.5vw" }}>
                 Tidak ada data laporan limbah produksi
