@@ -398,9 +398,9 @@ const LaporanLimbahProduksi = (props) => {
         data: { dataLimbah: transformedDataLimbah },
       }).then((result) => {
         if (result.status === 200) {
-          setOpenSnackbar(true);
+          setSuccessMessage("Berhasil mengedit laporan limbah hasil produksi")
           setSnackbarStatus(true);
-          setSnackbarMessage("Berhasil mengedit laporan limbah hasil produksi");
+          navigate(-1)
         } else {
           setOpenSnackbar(true);
           setSnackbarStatus(false);
