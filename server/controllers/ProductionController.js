@@ -954,7 +954,7 @@ class ProductionController {
       res.json(error);
     }
   }
-  static async handleDeleteLaporanSampah(req, res) {
+  static async deleteLaporanSampah(req, res) {
     try {
       const { id } = req.params;
       let result = await laporanSampahs.destroy({
@@ -965,13 +965,69 @@ class ProductionController {
       res.json(error);
     }
   }
-  static async handleDeleteItemLaporanSampah(req, res) {
+  static async deleteItemLaporanSampah(req, res) {
     try {
       const { id } = req.params;
       let result = await itemLaporanSampahs.destroy({
         where: { id: id },
       });
       res.json(result);
+    } catch (error) {
+      res.json(error);
+    }
+  }
+  static async updateLaporanSampah(req, res) {
+    try {
+      const { id } = req.params;
+      const { dataLaporanSampah } = req.body;
+      let result = await laporanSampahs.update(
+        {
+          noOrderProduksi: dataLaporanSampah.noOrderProduksi,
+          tahapProduksi: dataLaporanSampah.tahapProduksi,
+        },
+        { where: { id: dataLaporanSampah.id } }
+      );
+
+      if (
+        dataLaporanSampah.itemLaporanSampahs &&
+        Array.isArray(dataLaporanSampah.itemLaporanSampahs)
+      ) {
+        await Promise.all(
+          dataLaporanSampah.itemLaporanSampahs.map(async (data) => {
+            if (!data.id) {
+              await itemLaporanSampahs.create({
+                laporanSampahId: dataLaporanSampah.id,
+                noOrderProduksi: dataLaporanSampah.noOrderProduksi,
+                tahapProduksi: dataLaporanSampah.tahapProduksi,
+                tanggal: data.tanggal,
+                pembeli: data.pembeli,
+                uraian: data.uraian,
+                jumlah: data.jumlah,
+                hargaSatuan: data.hargaSatuan,
+                pembayaran: data.pembayaran,
+                keterangan: data.keterangan,
+              });
+            } else {
+              await itemLaporanSampahs.update(
+                {
+                  laporanSampahId: dataLaporanSampah.id,
+                  noOrderProduksi: dataLaporanSampah.noOrderProduksi,
+                  tahapProduksi: dataLaporanSampah.tahapProduksi,
+                  tanggal: data.tanggal,
+                  pembeli: data.pembeli,
+                  uraian: data.uraian,
+                  jumlah: data.jumlah,
+                  hargaSatuan: data.hargaSatuan,
+                  pembayaran: data.pembayaran,
+                  keterangan: data.keterangan,
+                },
+                { where: { id: data.id } }
+              );
+            }
+          })
+        );
+      }
+      res.json(result)
     } catch (error) {
       res.json(error);
     }

@@ -78,6 +78,10 @@ productionRoutes.put(
   "/updateDataLimbahProduksi/:id",
   ProductionController.updateDataLimbahProduksi
 );
+productionRoutes.put(
+  "/updateLaporanSampah/:id",
+  ProductionController.updateLaporanSampah
+);
 
 //delete
 productionRoutes.delete(
@@ -103,6 +107,14 @@ productionRoutes.delete(
 productionRoutes.delete(
   "/deleteItemLaporanLimbahProduksis/:id",
   ProductionController.deleteItemLaporanLimbahProduksis
+);
+productionRoutes.delete(
+  "/deleteLaporanSampah/:id",
+  ProductionController.deleteLaporanSampah
+);
+productionRoutes.delete(
+  "/deleteItemLaporanSampah/:id",
+  ProductionController.deleteItemLaporanSampah
 );
 
 module.exports = productionRoutes;

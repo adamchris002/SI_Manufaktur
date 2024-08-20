@@ -82,7 +82,7 @@ const LaporanSampah = (props) => {
   const [allLaporanSampah, setAllLaporanSampah] = useState([]);
 
   const [dataLaporanSampahForEdit, setDataLaporanSampahForEdit] = useState([]);
-  console.log(dataLaporanSampahForEdit);
+  // console.log(dataLaporanSampahForEdit);
 
   const [openSnackbar, setOpenSnackbar] = useState(false);
   const [snackbarStatus, setSnackbarStatus] = useState(false);
@@ -198,6 +198,13 @@ const LaporanSampah = (props) => {
     }));
   };
 
+  const separateValueAndUnit = (str) => {
+    const parts = str.split(" ");
+    const value = parts[0];
+    const unit = parts.slice(1).join(" ");
+    return { value, unit };
+  };
+
   const handleDeleteItemLaporanSampah = (id, index) => {
     if (!id || id === undefined) {
       setDataLaporanSampah((oldObject) => ({
@@ -220,8 +227,17 @@ const LaporanSampah = (props) => {
         result.tahapProduksi === tahapProduksi
       );
     });
-
-    setDataLaporanSampahForEdit(laporanForEdit);
+    const modifyDataLaporanForEdit = {
+      ...laporanForEdit[0],
+      itemLaporanSampahs: laporanForEdit[0].itemLaporanSampahs.map((result) => {
+        return {
+          ...result,
+          tanggal: dayjs(result.tanggal),
+          jumlah: separateValueAndUnit(result.jumlah),
+        };
+      }),
+    };
+    setDataLaporanSampahForEdit(modifyDataLaporanForEdit);
     setOpenModal(true);
   };
 
@@ -373,9 +389,162 @@ const LaporanSampah = (props) => {
     }
   };
 
-  const handleDeleteLaporanSampah = (id) => {};
-  const handleDeleteItemLaporanSampahFromDB = (id) => {};
-  const handleEditLaporanSampah = () => {};
+  const handleDeleteLaporanSampah = (id) => {
+    axios({
+      method: "DELETE",
+      url: `http://localhost:3000/production/deleteLaporanSampah/${id}`,
+    }).then((result) => {
+      if (result.status === 200) {
+        setRefreshDataLaporanSampah(true);
+        setOpenSnackbar(true);
+        setSnackbarStatus(true);
+        setSnackbarMessage("Berhasil menghapus data laporan sampah");
+      } else {
+        setOpenSnackbar(true);
+        setSnackbarStatus(false);
+        setSnackbarMessage("Tidak berhasil menghapus data laporan sampah");
+      }
+    });
+  };
+  const handleDeleteItemLaporanSampahFromDB = (id) => {
+    axios({
+      method: "DELETE",
+      url: `http://localhost:3000/production/deleteItemLaporanSampah/${id}`,
+    }).then((result) => {
+      if (result.status === 200) {
+        setRefreshDataLaporanSampah(true);
+        setOpenSnackbar(true);
+        setSnackbarStatus(true);
+        setSnackbarMessage("Berhasil menghapus data item laporan sampah");
+      } else {
+        setOpenSnackbar(true);
+        setSnackbarStatus(false);
+        setSnackbarMessage("Tidak berhasil menghapus data item laporan sampah");
+      }
+    });
+  };
+  const handleTambahItemLaporanSampah = () => {
+    const newItem = {
+      tanggal: dayjs(""),
+      pembeli: "",
+      uraian: "",
+      jumlah: { value: "", unit: "" },
+      hargaSatuan: "",
+      pembayaran: "",
+      keterangan: "",
+    };
+
+    setDataLaporanSampahForEdit((oldArray) => {
+      return {
+        ...oldArray,
+        itemLaporanSampahs: [...oldArray.itemLaporanSampahs, newItem],
+      };
+    });
+  };
+
+  const handleChangeInputEditLaporanSampah = (event, field, index, unit) => {
+    const value = event && event.target ? event.target.value : event;
+    setDataLaporanSampahForEdit((oldObject) => {
+      const updatedItems = oldObject.itemLaporanSampahs.map((item, i) => {
+        if (i === index) {
+          let updatedItem = { ...item };
+          if (unit) {
+            return {
+              ...updatedItem,
+              [field]: {
+                value: item[field]?.value || "",
+                unit: value,
+              },
+            };
+          } else {
+            if (field === "jumlah") {
+              return {
+                ...updatedItem,
+                [field]: {
+                  ...updatedItem[field],
+                  value: value,
+                },
+              };
+            } else {
+              updatedItem = { ...updatedItem, [field]: value };
+            }
+          }
+          return updatedItem;
+        }
+        return item;
+      });
+      return { ...oldObject, itemLaporanSampahs: updatedItems };
+    });
+  };
+
+  const handleCheckIfLaporanSampahForEditComplete = () => {
+    if (
+      !dataLaporanSampahForEdit.noOrderProduksi ||
+      !dataLaporanSampahForEdit.tahapProduksi
+    ) {
+      return false;
+    }
+    for (const item of dataLaporanSampahForEdit.itemLaporanSampahs) {
+      if (
+        !item.hargaSatuan ||
+        !item.keterangan ||
+        !item.pembayaran ||
+        !item.pembeli ||
+        !item.tanggal ||
+        !dayjs(item.tanggal, "MM/DD/YYYY hh:mm A", true).isValid() ||
+        !item.uraian ||
+        !item.jumlah.value ||
+        !item.jumlah.unit
+      ) {
+        return false;
+      }
+    }
+    return true;
+  };
+
+  const handleModifyDataLaporanSampahForEdit = () => {
+    const changedDataLaporanSampahForEdit = {
+      ...dataLaporanSampahForEdit,
+      itemLaporanSampahs: dataLaporanSampahForEdit.itemLaporanSampahs.map(
+        (result) => {
+          return {
+            ...result,
+            jumlah: `${result.jumlah.value} ${result.jumlah.unit}`,
+          };
+        }
+      ),
+    };
+    return changedDataLaporanSampahForEdit;
+  };
+
+  const handleEditLaporanSampah = () => {
+    const checkLaporanForEditIsComplete =
+      handleCheckIfLaporanSampahForEditComplete();
+    if (checkLaporanForEditIsComplete === false) {
+      setOpenSnackbar(true);
+      setSnackbarStatus(false);
+      setSnackbarMessage("Lengkapi semua input");
+    } else {
+      const tempDataLaporanSampah = handleModifyDataLaporanSampahForEdit();
+      axios({
+        method: "PUT",
+        url: `http://localhost:3000/production/updateLaporanSampah/${userInformation?.data?.id}`,
+        data: { dataLaporanSampah: tempDataLaporanSampah },
+      }).then((result) => {
+        if (result.status === 200) {
+          handleCloseModal()
+          setRefreshDataLaporanSampah(true);
+          setOpenSnackbar(true);
+          setSnackbarStatus(true);
+          setSnackbarMessage("Berhasil mengedit laporan sampah");
+        } else {
+          setOpenSnackbar(true);
+          setSnackbarStatus(false);
+          setSnackbarMessage("Tidak berhasil mengedit laporan sampah");
+        }
+      });
+    }
+  };
   return (
     <div
       className="hideScrollbar"
@@ -715,13 +884,17 @@ const LaporanSampah = (props) => {
             <Typography style={{ fontSize: "2vw", color: "#0F607D" }}>
               Data-data laporan sampah
             </Typography>
-            <TableContainer component={Paper}>
+            <TableContainer sx={{ width: 650 }} component={Paper}>
               <Table sx={{ minWidth: 650 }}>
                 <TableHead>
                   <TableRow>
                     <TableCell style={{ width: "25px" }}>No.</TableCell>
-                    <TableCell>No Order Produksi</TableCell>
-                    <TableCell>Tahap Produksi</TableCell>
+                    <TableCell style={{ width: "200px" }}>
+                      No Order Produksi
+                    </TableCell>
+                    <TableCell style={{ width: "200px" }}>
+                      Tahap Produksi
+                    </TableCell>
                     <TableCell style={{ width: "80px" }}>Actions</TableCell>
                   </TableRow>
                 </TableHead>
@@ -744,7 +917,11 @@ const LaporanSampah = (props) => {
                             >
                               <EditIcon style={{ color: "#0F607D" }} />
                             </IconButton>
-                            <IconButton>
+                            <IconButton
+                              onClick={() => {
+                                handleDeleteLaporanSampah(result.id);
+                              }}
+                            >
                               <DeleteIcon style={{ color: "red" }} />
                             </IconButton>
                           </TableCell>
@@ -779,7 +956,13 @@ const LaporanSampah = (props) => {
               <Typography style={{ color: "#0F607D", fontSize: "3vw" }}>
                 Edit Laporan Sampah
               </Typography>
-              <DefaultButton>Tambah Item</DefaultButton>
+              <DefaultButton
+                onClickFunction={() => {
+                  handleTambahItemLaporanSampah();
+                }}
+              >
+                Tambah Item
+              </DefaultButton>
             </div>
             <TableContainer component={Paper} sx={{ overflowX: "auto" }}>
               <Table
@@ -802,7 +985,7 @@ const LaporanSampah = (props) => {
                   </TableRow>
                 </TableHead>
                 <TableBody>
-                  {dataLaporanSampahForEdit[0].itemLaporanSampahs.map(
+                  {dataLaporanSampahForEdit.itemLaporanSampahs.map(
                     (result, index) => {
                       return (
                         <React.Fragment key={index}>
@@ -814,6 +997,18 @@ const LaporanSampah = (props) => {
                                   <DemoItem>
                                     <DateTimePicker
                                       disablePast
+                                      value={
+                                        result.tanggal.isValid()
+                                          ? result.tanggal
+                                          : null
+                                      }
+                                      onChange={(event) => {
+                                        handleChangeInputEditLaporanSampah(
+                                          event,
+                                          "tanggal",
+                                          index
+                                        );
+                                      }}
                                       renderInput={(params) => (
                                         <TextField
                                           {...params}
@@ -831,10 +1026,28 @@ const LaporanSampah = (props) => {
                               </LocalizationProvider>
                             </TableCell>
                             <TableCell>
-                              <TextField />
+                              <TextField
+                                value={result.pembeli}
+                                onChange={(event) => {
+                                  handleChangeInputEditLaporanSampah(
+                                    event,
+                                    "pembeli",
+                                    index
+                                  );
+                                }}
+                              />
                             </TableCell>
                             <TableCell>
-                              <TextField />
+                              <TextField
+                                value={result.uraian}
+                                onChange={(event) => {
+                                  handleChangeInputEditLaporanSampah(
+                                    event,
+                                    "uraian",
+                                    index
+                                  );
+                                }}
+                              />
                             </TableCell>
                             <TableCell>
                               <div
@@ -843,14 +1056,43 @@ const LaporanSampah = (props) => {
                                   alignItems: "center",
                                 }}
                               >
-                                <TextField type="number" />
+                                <TextField
+                                  type="number"
+                                  value={result.jumlah.value}
+                                  onChange={(event) => {
+                                    handleChangeInputEditLaporanSampah(
+                                      event,
+                                      "jumlah",
+                                      index
+                                    );
+                                  }}
+                                />
                                 <div style={{ marginLeft: "8px" }}>
-                                  <MySelectTextField />
+                                  <MySelectTextField
+                                    data={units}
+                                    value={result.jumlah.unit}
+                                    onChange={(event) => {
+                                      handleChangeInputEditLaporanSampah(
+                                        event,
+                                        "jumlah",
+                                        index,
+                                        true
+                                      );
+                                    }}
+                                  />
                                 </div>
                               </div>
                             </TableCell>
                             <TableCell>
                               <TextField
+                                value={result.hargaSatuan}
+                                onChange={(event) => {
+                                  handleChangeInputEditLaporanSampah(
+                                    event,
+                                    "hargaSatuan",
+                                    index
+                                  );
+                                }}
                                 type="text"
                                 sx={{
                                   "& .MuiOutlinedInput-root": {
@@ -875,6 +1117,14 @@ const LaporanSampah = (props) => {
                             </TableCell>
                             <TableCell>
                               <TextField
+                                value={result.pembayaran}
+                                onChange={(event) => {
+                                  handleChangeInputEditLaporanSampah(
+                                    event,
+                                    "pembayaran",
+                                    index
+                                  );
+                                }}
                                 type="text"
                                 sx={{
                                   "& .MuiOutlinedInput-root": {
@@ -898,10 +1148,25 @@ const LaporanSampah = (props) => {
                               />
                             </TableCell>
                             <TableCell>
-                              <TextField />
+                              <TextField
+                                value={result.keterangan}
+                                onChange={(event) => {
+                                  handleChangeInputEditLaporanSampah(
+                                    event,
+                                    "keterangan",
+                                    index
+                                  );
+                                }}
+                              />
                             </TableCell>
                             <TableCell>
-                              <IconButton>
+                              <IconButton
+                                onClick={() => {
+                                  handleDeleteItemLaporanSampahFromDB(
+                                    result.id
+                                  );
+                                }}
+                              >
                                 <DeleteIcon style={{ color: "red" }} />
                               </IconButton>
                             </TableCell>
@@ -913,6 +1178,32 @@ const LaporanSampah = (props) => {
                 </TableBody>
               </Table>
             </TableContainer>
+            <div
+              style={{
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                padding: "32px",
+              }}
+            >
+              <DefaultButton
+                onClickFunction={() => {
+                  handleEditLaporanSampah();
+                }}
+              >
+                Edit Laporan Sampah
+              </DefaultButton>
+              <Button
+                variant="outlined"
+                color="error"
+                onClick={() => {
+                  handleCloseModal();
+                }}
+                style={{ textTransform: "none", marginLeft: "8px" }}
+              >
+                Cancel
+              </Button>
+            </div>
           </div>
         </MyModal>
       )}
