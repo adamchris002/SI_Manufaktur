@@ -10,6 +10,8 @@ const {
   laporanLimbahProduksis,
   UserLaporanLimbahProduksis,
   itemLaporanLimbahProduksis,
+  laporanSampahs,
+  itemLaporanSampahs,
 } = require("../models");
 const dayjs = require("dayjs");
 
@@ -315,8 +317,6 @@ class ProductionController {
         tahapProduksi: dataProduksi.tahapProduksi,
         tanggalPengiriman: tanggalPengiriman,
       });
-
-      console.log(result);
 
       if (
         dataProduksi.bahanProduksis &&
@@ -752,6 +752,7 @@ class ProductionController {
               namaBarang: data.namaBarang,
               jumlahBarang: data.jumlahBarang,
               keterangan: data.keterangan,
+              tahapProduksi: data.tahapProduksi,
             });
           })
         );
@@ -874,7 +875,9 @@ class ProductionController {
 
   static async getAllLaporanLimbahProduksi(req, res) {
     try {
-      let result = await laporanLimbahProduksis.findAll({});
+      let result = await laporanLimbahProduksis.findAll({
+        include: [{ model: itemLaporanLimbahProduksis }],
+      });
 
       res.json(result);
     } catch (error) {
@@ -884,7 +887,6 @@ class ProductionController {
   static async getOneLaporanLimbahProduksi(req, res) {
     try {
       const { id } = req.params;
-      console.log(id);
       let result = await laporanLimbahProduksis.findOne({
         where: { id: id },
         include: [{ model: itemLaporanLimbahProduksis }],
@@ -898,6 +900,75 @@ class ProductionController {
     try {
       const { id } = req.params;
       let result = await itemLaporanLimbahProduksis.destroy({
+        where: { id: id },
+      });
+      res.json(result);
+    } catch (error) {
+      res.json(error);
+    }
+  }
+  static async addLaporanSampah(req, res) {
+    try {
+      const { id } = req.params;
+      const { dataLaporanSampah } = req.body;
+
+      let result = await laporanSampahs.create({
+        laporanLimbahProduksiId: dataLaporanSampah.laporanLimbahProduksiId,
+        noOrderProduksi: dataLaporanSampah.noOrderProduksi,
+        tahapProduksi: dataLaporanSampah.tahapProduksi,
+      });
+
+      if (
+        dataLaporanSampah.itemLaporanSampahs &&
+        Array.isArray(dataLaporanSampah.itemLaporanSampahs)
+      ) {
+        await Promise.all(
+          dataLaporanSampah.itemLaporanSampahs.map(async (data) => {
+            await itemLaporanSampahs.create({
+              laporanSampahId: result.id,
+              noOrderProduksi: dataLaporanSampah.noOrderProduksi,
+              tahapProduksi: dataLaporanSampah.tahapProduksi,
+              tanggal: data.tanggal,
+              pembeli: data.pembeli,
+              uraian: data.uraian,
+              jumlah: data.jumlah,
+              hargaSatuan: data.hargaSatuan,
+              pembayaran: data.pembayaran,
+              keterangan: data.keterangan,
+            });
+          })
+        );
+      }
+      res.json(result);
+    } catch (error) {
+      res.json(error);
+    }
+  }
+  static async getLaporanSampah(req, res) {
+    try {
+      let result = await laporanSampahs.findAll({
+        include: [{ model: itemLaporanSampahs }],
+      });
+      res.json(result);
+    } catch (error) {
+      res.json(error);
+    }
+  }
+  static async handleDeleteLaporanSampah(req, res) {
+    try {
+      const { id } = req.params;
+      let result = await laporanSampahs.destroy({
+        where: { id: id },
+      });
+      res.json(result);
+    } catch (error) {
+      res.json(error);
+    }
+  }
+  static async handleDeleteItemLaporanSampah(req, res) {
+    try {
+      const { id } = req.params;
+      let result = await itemLaporanSampahs.destroy({
         where: { id: id },
       });
       res.json(result);

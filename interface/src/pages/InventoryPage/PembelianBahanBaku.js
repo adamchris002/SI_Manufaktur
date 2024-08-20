@@ -63,11 +63,8 @@ const PembelianBahanBaku = (props) => {
     allAcceptedPermohonanPembelianId,
     setAllAcceptedPermohonanPembelianId,
   ] = useState([]);
-  console.log(allAcceptedPermohonanPembelianId)
   const [allOrdersId, setAllOrdersId] = useState([]);
-  console.log(allOrdersId)
   const [allInventoryItems, setAllInventoryItems] = useState([]);
-  const [oneInventoryItems, setOneInventoryItems] = useState([]);
   const [permohonanPembelian, setPermohonanPembelian] = useState([]);
   const [pembelianBahanBaku, setPembelianBahanBaku] = useState({
     leveransir: "",

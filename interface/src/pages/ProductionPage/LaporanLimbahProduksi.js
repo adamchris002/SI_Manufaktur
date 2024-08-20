@@ -50,8 +50,6 @@ const LaporanLimbahProduksi = (props) => {
     ],
   });
 
-  console.log(dataLimbah);
-
   const [allDataProduksiSelesai, setAllDataProduksiSelesai] = useState([]);
   const [allNoOrderProduksi, setAllNoOrderProduksi] = useState([]);
   const [selectedNoOrderProduksi, setSelectedNoOrderProduksi] = useState("");
@@ -177,6 +175,7 @@ const LaporanLimbahProduksi = (props) => {
           namaBarang: "",
           jumlahBarang: { value: "", unit: "" },
           keterangan: "",
+          tahapProduksi: selectedTahapProduksi
         },
       ],
     }));
@@ -362,7 +361,8 @@ const LaporanLimbahProduksi = (props) => {
         !item.namaBarang ||
         !item.jumlahBarang.value ||
         !item.jumlahBarang.unit ||
-        !item.keterangan
+        !item.keterangan ||
+        !item.tahapProduksi
       ) {
         return false;
       }
@@ -419,7 +419,6 @@ const LaporanLimbahProduksi = (props) => {
       setSnackbarMessage("Mohon isi semua input");
     } else {
       const transformedDataLimbah = transformDataLimbahProduksi(dataLimbah);
-      console.log(transformedDataLimbah);
       axios({
         method: "POST",
         url: `http://localhost:3000/production/addLaporanLimbahProduksi/${userInformation?.data?.id}`,

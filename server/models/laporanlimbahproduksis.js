@@ -14,7 +14,12 @@ module.exports = (sequelize, DataTypes) => {
         otherKey: "userId",
       });
       laporanLimbahProduksis.hasMany(models.itemLaporanLimbahProduksis, {
-        foreignKey: "laporanLimbahProduksiId",onDelete: "CASCADE",
+        foreignKey: "laporanLimbahProduksiId",
+        onDelete: "CASCADE",
+      });
+      laporanLimbahProduksis.hasOne(models.laporanSampahs, {
+        foreignKey: "laporanLimbahProduksiId",
+        onDelete: "CASCADE",
       });
     }
   }
