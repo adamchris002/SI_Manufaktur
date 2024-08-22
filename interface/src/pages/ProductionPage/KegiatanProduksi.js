@@ -42,6 +42,7 @@ const KegiatanProduksi = (props) => {
   ]);
 
   const [allProductionPlan, setAllProductionPlan] = useState([]);
+  console.log(allProductionPlan);
   const [allInventoryItem, setAllInventoryItem] = useState([]);
   const [dataProduksi, setDataProduksi] = useState({
     tanggalProduksi: dayjs(""),
@@ -101,6 +102,8 @@ const KegiatanProduksi = (props) => {
       keterangan: "",
     },
   ]);
+  const [estimasiJadwal, setEstimasiJadwal] = useState([]);
+  console.log(estimasiJadwal);
 
   const [tanggalPengiriman, setTanggalPengiriman] = useState(dayjs(""));
 
@@ -193,23 +196,30 @@ const KegiatanProduksi = (props) => {
   }, []);
 
   useEffect(() => {
-    axios({
-      method: "GET",
-      url: "http://localhost:3000/inventory/getAllInventoryItem",
-    }).then((result) => {
-      if (result.status === 200) {
-        const tempValue = result.data.map((data) => ({
-          value: data.namaItem,
-          ...data,
-        }));
-        setAllInventoryItem(tempValue);
-      } else {
-        setOpenSnackbar(true);
-        setSnackbarStatus(false);
-        setSnackbarMessage("Tidak berhasil memanggil item bahan baku");
-      }
-    });
-  }, []);
+    if (
+      dataProduksi.noOrderProduksi !== "" &&
+      dataProduksi.noOrderProduksi !== null
+    ) {
+      axios({
+        method: "GET",
+        url: `http://localhost:3000/inventory/getPenyerahanBarangOrderId/${dataProduksi.noOrderProduksi}`,
+      }).then((result) => {
+        if (result.status === 200) {
+          const tempData = result?.data?.itemPenyerahanBarangs?.map(
+            (result) => ({
+              value: result.namaBarang,
+              ...result,
+            })
+          );
+          setAllInventoryItem(tempData);
+        } else {
+          setOpenSnackbar(true);
+          setSnackbarStatus(false);
+          setSnackbarMessage("Tidak berhasil memanggil item bahan baku");
+        }
+      });
+    }
+  }, [dataProduksi.noOrderProduksi]);
 
   useEffect(() => {
     if (
@@ -507,6 +517,7 @@ const KegiatanProduksi = (props) => {
           setTanggalPengiriman(
             dayjs(getSelectedOrder(value, "tanggalPengirimanBarang"))
           );
+          setEstimasiJadwal(getSelectedOrder(value, "estimasiJadwalProdukses"));
           return {
             ...oldObject,
             noOrderProduksi: value,
@@ -601,35 +612,39 @@ const KegiatanProduksi = (props) => {
                     updatedItem.jenis,
                     "kodeBarang"
                   );
-                  const inventoryHistorys = getSelectedInventoryItem(
-                    updatedItem.jenis,
-                    "inventoryHistorys"
-                  );
+                  // const inventoryHistorys = getSelectedInventoryItem(
+                  //   updatedItem.jenis,
+                  //   "inventoryHistorys"
+                  // );
                   const beratAwal = separateValueAndUnit(
-                    getSelectedInventoryItem(updatedItem.jenis, "jumlahItem")
+                    getSelectedInventoryItem(
+                      updatedItem.jenis,
+                      "jumlahYangDiambil"
+                    )
                   );
-                  if (inventoryHistorys.length === 0) {
-                    updatedItem.beratAwal = {
-                      value: beratAwal.value,
-                      unit: beratAwal.unit,
-                    };
-                  } else {
-                    const mostRecentItem = inventoryHistorys.reduce(
-                      (latest, item) => {
-                        return new Date(item.createdAt) >
-                          new Date(latest.createdAt)
-                          ? item
-                          : latest;
-                      }
-                    );
-                    const tempvalue = separateValueAndUnit(
-                      mostRecentItem.stokOpnamAkhir
-                    );
-                    updatedItem.beratAwal = {
-                      value: tempvalue.value,
-                      unit: tempvalue.unit,
-                    };
-                  }
+                  // if (inventoryHistorys.length === 0) {
+                  //   updatedItem.beratAwal = {
+                  //     value: beratAwal.value,
+                  //     unit: beratAwal.unit,
+                  //   };
+                  // } else {
+                  //   const mostRecentItem = inventoryHistorys.reduce(
+                  //     (latest, item) => {
+                  //       return new Date(item.createdAt) >
+                  //         new Date(latest.createdAt)
+                  //         ? item
+                  //         : latest;
+                  //     }
+                  //   );
+                  //   const tempvalue = separateValueAndUnit(
+                  //     mostRecentItem.stokOpnamAkhir
+                  //   );
+                  //   updatedItem.beratAwal = {
+                  //     value: tempvalue.value,
+                  //     unit: tempvalue.unit,
+                  //   };
+                  // }
+                  updatedItem.beratAwal = beratAwal;
                   updatedItem.kode = kodeBarang;
                 }
               }
@@ -1645,6 +1660,57 @@ const KegiatanProduksi = (props) => {
             </TableContainer>
           </div>
         </div>
+        {estimasiJadwal.length !== 0 && (
+          <div style={{ padding: "0px 32px 64px 32px" }}>
+            <Typography style={{ color: "#0F607D", fontSize: "2vw" }}>
+              Data Estimasi Jadwal Produksi
+            </Typography>
+            <TableContainer component={Paper} sx={{ overflowX: "auto" }}>
+              <Table
+                sx={{ minWidth: 650, tableLayout: "fixed", overflowX: "auto" }}
+              >
+                <TableHead>
+                  <TableRow>
+                    <TableCell>Bagian</TableCell>
+                    <TableCell>Jenis Pekerjaan</TableCell>
+                    <TableCell>Tanggal Mulai</TableCell>
+                    <TableCell>Tanggal Selesai</TableCell>
+                    <TableCell>Jumlah Hari</TableCell>
+                  </TableRow>
+                </TableHead>
+                <TableBody>
+                  {estimasiJadwal.map((result, index) => {
+                    return (
+                      <React.Fragment key={index}>
+                        {result.rencanaJadwalProdukses.map(
+                          (data, dataIndex) => {
+                            return (
+                              <TableRow key={dataIndex}>
+                                <TableCell>
+                                  {dataIndex === 0 ? result.bagian : null}
+                                </TableCell>
+                                <TableCell>{data.jenisPekerjaan}</TableCell>
+                                <TableCell>
+                                  {dayjs(data.tanggalMulai).format(
+                                    "MM/DD/YYYY hh:mm A"
+                                  )}
+                                </TableCell>
+                                <TableCell>{dayjs(data.tanggalSelesai).format(
+                                    "MM/DD/YYYY hh:mm A"
+                                  )}</TableCell>
+                                  <TableCell>{data.jumlahHari}</TableCell>
+                              </TableRow>
+                            );
+                          }
+                        )}
+                      </React.Fragment>
+                    );
+                  })}
+                </TableBody>
+              </Table>
+            </TableContainer>
+          </div>
+        )}
         {dataProduksi.tahapProduksi === "Produksi Pracetak" && (
           <div style={{ padding: "0px 32px 64px 32px" }}>
             <div

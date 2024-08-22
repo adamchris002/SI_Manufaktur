@@ -219,7 +219,21 @@ class ProductionPlanningController {
       });
       let estimatedOrderIds = allEstimatedOrder.map((order) => order.id);
       let result = await productionPlannings.findAll({
-        where: {orderId: {[Op.in]: estimatedOrderIds}},
+        where: { orderId: { [Op.in]: estimatedOrderIds } },
+        include: [
+          {
+            model: estimasiBahanBakus,
+            include: [{ model: bahanBakuAkanDigunakans }],
+          },
+          {
+            model: estimasiJadwalProduksis,
+            include: [
+              {
+                model: rencanaJadwalProduksis,
+              },
+            ],
+          },
+        ],
       });
       res.json(result);
     } catch (error) {

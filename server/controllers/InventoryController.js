@@ -388,7 +388,7 @@ class InventoryController {
   static async getAllInventoryItem(req, res) {
     try {
       let result = await inventorys.findAll({
-        include: [{model: inventoryHistorys}]
+        include: [{ model: inventoryHistorys }],
       });
 
       res.json(result);
@@ -838,10 +838,11 @@ class InventoryController {
         return { value, unit };
       };
 
-      const convertToKg = (value, unit) => {
+      const convertToKgIfApplicable = (value, unit) => {
         if (unit === "Ton") {
           return value * 1000;
         }
+        // If the unit is Kg or any other unit, return the value as is
         return value;
       };
 
@@ -888,13 +889,18 @@ class InventoryController {
               );
               const newJumlah = separateValueAndUnit(data.jumlahYangDiambil);
 
-              let originalValueInKg = convertToKg(
+              // Convert to Kg if applicable, otherwise use the raw value
+              const originalValue = convertToKgIfApplicable(
                 originalJumlah.value,
                 originalJumlah.unit
               );
-              let newValueInKg = convertToKg(newJumlah.value, newJumlah.unit);
+              const newValue = convertToKgIfApplicable(
+                newJumlah.value,
+                newJumlah.unit
+              );
 
-              let differenceInKg = newValueInKg - originalValueInKg;
+              // Calculate the difference, same units or not
+              const difference = newValue - originalValue;
 
               await itemPenyerahanBarangs.update(
                 {
@@ -916,20 +922,22 @@ class InventoryController {
                 inventoryItem.jumlahItem
               );
 
-              let inventoryValueInKg = convertToKg(
+              const inventoryValue = convertToKgIfApplicable(
                 inventoryJumlah.value,
                 inventoryJumlah.unit
               );
 
-              inventoryValueInKg -= differenceInKg;
+              // Update the inventory value based on the difference
+              const updatedValue = inventoryValue - difference;
 
+              // Determine the updated unit and value
               let updatedJumlah, updatedUnit;
-              if (inventoryValueInKg >= 1000) {
-                updatedJumlah = inventoryValueInKg / 1000;
+              if (updatedValue >= 1000 && inventoryJumlah.unit === "Kg") {
+                updatedJumlah = updatedValue / 1000;
                 updatedUnit = "Ton";
               } else {
-                updatedJumlah = inventoryValueInKg;
-                updatedUnit = "Kg";
+                updatedJumlah = updatedValue;
+                updatedUnit = inventoryJumlah.unit; // Keep the original unit
               }
 
               await inventorys.update(
@@ -948,6 +956,7 @@ class InventoryController {
       res.json({ success: false, error });
     }
   }
+
   static async statusStokOpnamComplete(req, res) {
     try {
       const { id } = req.params;
@@ -983,6 +992,18 @@ class InventoryController {
       });
 
       res.json(result);
+    } catch (error) {
+      res.json(error);
+    }
+  }
+  static async getPenyerahanBarangOrderId(req, res) {
+    try {
+      const {id } = req.params
+      let result = await penyerahanBarangs.findOne({
+        where: {orderId: id},
+        include: [{model: itemPenyerahanBarangs}]
+      })
+      res.json(result)
     } catch (error) {
       res.json(error);
     }

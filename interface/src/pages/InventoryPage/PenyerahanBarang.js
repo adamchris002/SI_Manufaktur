@@ -36,6 +36,8 @@ const PenyerahanBarang = (props) => {
   const [selectedEstimatedOrder, setSelectedEstimatedOrder] = useState([]);
   const [inventoryItems, setInventoryItems] = useState([]);
   const [dataBarangYangDiambil, setDatabarangYangDiambil] = useState({
+    orderId: "",
+    productionPlanningId: "",
     diambilOleh: "",
     tanggalPengambilan: dayjs(""),
     tanggalPenyerahan: dayjs(""),
@@ -102,6 +104,13 @@ const PenyerahanBarang = (props) => {
   const handleChangeIdLaporanPerencanaan = (id) => {
     const selectedItem = estimatedOrders?.find((result) => id === result.id);
     setSelectedEstimatedOrder(selectedItem);
+    setDatabarangYangDiambil((oldObject) => {
+      return {
+        ...oldObject,
+        orderId: selectedItem.orderId,
+        productionPlanningId: selectedItem.id,
+      };
+    });
   };
 
   const checkForSubmission = () => {
@@ -308,7 +317,7 @@ const PenyerahanBarang = (props) => {
   useEffect(() => {
     axios({
       method: "GET",
-      url: "http://localhost:3000/productionPlanning/getAllProductionPlanning",
+      url: "http://localhost:3000/productionPlanning/getAllProductionPlanStatusEstimated",
     }).then((result) => {
       if (result.status === 200) {
         const tempName = result?.data?.map((data) => ({
@@ -495,13 +504,41 @@ const PenyerahanBarang = (props) => {
                   updatedItem.namaItem,
                   "id"
                 );
+                const inventoryHistorys = getSelectedInventoryItem(
+                  updatedItem.namaItem,
+                  "inventoryHistorys"
+                );
+
+                if (
+                  inventoryHistorys.length === 0 ||
+                  inventoryHistorys === null
+                ) {
+                  updatedItem.beratAwal = {
+                    value: jumlahDigudang.value,
+                    unit: jumlahDigudang.unit,
+                  };
+                } else {
+                  const mostRecentItem = inventoryHistorys.reduce(
+                    (latest, item) => {
+                      return new Date(item.createdAt) >
+                        new Date(latest.createdAt)
+                        ? item
+                        : latest;
+                    }
+                  );
+                  const tempvalue = separateValueAndUnit(
+                    mostRecentItem.stokOpnamAkhir
+                  );
+                  updatedItem.jumlahDigudang = {
+                    value: tempvalue.value,
+                    unit: tempvalue.unit,
+                  };
+                }
+
                 updatedItem.kodeBarang = kodeBarang;
                 updatedItem.lokasiPeyimpanan = lokasiPenyimpanan;
                 updatedItem.rincianItem = rincianBarang;
-                updatedItem.jumlahDigudang = {
-                  value: jumlahDigudang.value,
-                  unit: jumlahDigudang.unit,
-                };
+
                 updatedItem.idBarang = idBarang;
               }
 
@@ -635,7 +672,7 @@ const PenyerahanBarang = (props) => {
             )}
             <div>
               {estimatedOrders
-                ?.filter((plan) => plan.id === selectedEstimatedOrder)
+                ?.filter((plan) => plan.id === selectedEstimatedOrder.id)
                 ?.map((result, index) => {
                   return (
                     <div key={index}>

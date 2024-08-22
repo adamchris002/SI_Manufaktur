@@ -45,6 +45,10 @@ inventoryRoutes.get(
   "/getPenyerahanBarang/:id",
   InventoryController.getPenyerahanBarang
 );
+inventoryRoutes.get(
+  "/getPenyerahanBarangOrderId/:id",
+  InventoryController.getPenyerahanBarangOrderId
+);
 
 //post
 inventoryRoutes.post(
@@ -79,8 +83,14 @@ inventoryRoutes.put(
   InventoryController.updateInventoryItem
 );
 inventoryRoutes.put("/editStokOpnam/:id", InventoryController.editStokOpnam);
-inventoryRoutes.put("/editPenyerahanBarang/:id", InventoryController.editPenyerahanBarang)
-inventoryRoutes.put("/statusStokOpnamComplete/:id", InventoryController.statusStokOpnamComplete)
+inventoryRoutes.put(
+  "/editPenyerahanBarang/:id",
+  InventoryController.editPenyerahanBarang
+);
+inventoryRoutes.put(
+  "/statusStokOpnamComplete/:id",
+  InventoryController.statusStokOpnamComplete
+);
 
 //delete
 inventoryRoutes.delete(

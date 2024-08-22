@@ -9,7 +9,6 @@ productionPlanningRoutes.get(
   "/getEstimatedOrders",
   ProductionPlanningController.getEstimatedOrders
 );
-
 productionPlanningRoutes.get(
   "/getOneOrder",
   ProductionPlanningController.getOneOrder
