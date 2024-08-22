@@ -33,6 +33,31 @@ class ProductionController {
       const { dataProduksi, jadwalPracetak, personil, tanggalPengiriman } =
         req.body;
 
+      const separateValueAndUnit = (str) => {
+        const parts = str.split(" ");
+        const value = parseFloat(parts[0]);
+        const unit = parts.slice(1).join(" ");
+        return { value, unit };
+      };
+
+      const convertUnit = (beratAwal, beratAkhir) => {
+        let { value: valueAwal, unit: unitAwal } =
+          separateValueAndUnit(beratAwal);
+        const { value: valueAkhir, unit: unitAkhir } =
+          separateValueAndUnit(beratAkhir);
+
+        if (unitAwal === "Ton" && unitAkhir === "Kg") {
+          valueAwal = valueAwal * 1000 - valueAkhir;
+          if (valueAwal < 1000) {
+            return `${valueAwal} Kg`;
+          } else {
+            return `${valueAwal / 1000} Ton`;
+          }
+        } else if (unitAwal === unitAkhir) {
+          return `${valueAwal - valueAkhir} ${unitAwal}`;
+        }
+      };
+
       let result = await laporanProduksis.create({
         tanggalProduksi: dataProduksi.tanggalProduksi,
         noOrderProduksi: dataProduksi.noOrderProduksi,
@@ -49,12 +74,19 @@ class ProductionController {
       ) {
         await Promise.all(
           dataProduksi.bahanProduksis.map(async (data) => {
+            let beratAwalNewValue;
+            try {
+              beratAwalNewValue = convertUnit(data.beratAwal, data.beratAkhir);
+            } catch (err) {
+              throw new Error(`Error converting units: ${err.message}`);
+            }
+
             await bahanLaporanProduksis.create({
               laporanProduksiId: result.id,
               tahapProduksi: dataProduksi.tahapProduksi,
               jenis: data.jenis,
               kode: data.kode,
-              beratAwal: data.beratAwal,
+              beratAwal: beratAwalNewValue,
               beratAkhir: data.beratAkhir,
               keterangan: data.keterangan,
             });
@@ -143,12 +175,32 @@ class ProductionController {
     try {
       const { id } = req.params;
       const { personil, dataProduksi, jadwalPracetak } = req.body;
-      // let findOrder = await orders.findOne({
-      //   where: { id: dataProduksi.noOrderProduksi },
-      // });
-      // await findOrder.update({
-      //   orderStatus: "Estimated",
-      // });
+
+      const separateValueAndUnit = (str) => {
+        const parts = str.split(" ");
+        const value = parseFloat(parts[0]);
+        const unit = parts.slice(1).join(" ");
+        return { value, unit };
+      };
+
+      const convertUnit = (beratAwal, beratAkhir) => {
+        let { value: valueAwal, unit: unitAwal } =
+          separateValueAndUnit(beratAwal);
+        const { value: valueAkhir, unit: unitAkhir } =
+          separateValueAndUnit(beratAkhir);
+
+        if (unitAwal === "Ton" && unitAkhir === "Kg") {
+          valueAwal = valueAwal * 1000 - valueAkhir;
+          if (valueAwal < 1000) {
+            return `${valueAwal} Kg`;
+          } else {
+            return `${valueAwal / 1000} Ton`;
+          }
+        } else if (unitAwal === unitAkhir) {
+          return `${valueAwal - valueAkhir} ${unitAwal}`;
+        }
+      };
+
       let result = await laporanProduksis.update(
         {
           tanggalProduksi: dataProduksi.tanggalProduksi,
@@ -166,13 +218,19 @@ class ProductionController {
       ) {
         await Promise.all(
           dataProduksi.bahanProduksis.map(async (data) => {
+            let beratAwalNewValue;
+            try {
+              beratAwalNewValue = convertUnit(data.beratAwal, data.beratAkhir);
+            } catch (err) {
+              throw new Error(`Error converting units: ${err.message}`);
+            }
             if (!data.id) {
               await bahanLaporanProduksis.create({
                 laporanProduksiId: dataProduksi.id,
                 tahapProduksi: dataProduksi.tahapProduksi,
                 jenis: data.jenis,
                 kode: data.kode,
-                beratAwal: data.beratAwal,
+                beratAwal: beratAwalNewValue,
                 beratAkhir: data.beratAkhir,
                 keterangan: data.keterangan,
               });
@@ -181,7 +239,7 @@ class ProductionController {
                 {
                   jenis: data.jenis,
                   kode: data.kode,
-                  beratAwal: data.beratAwal,
+                  beratAwal: beratAwalNewValue,
                   beratAkhir: data.beratAkhir,
                   keterangan: data.keterangan,
                 },
@@ -298,6 +356,31 @@ class ProductionController {
       const { personil, dataProduksi, jadwalFitur, tanggalPengiriman } =
         req.body;
 
+      const separateValueAndUnit = (str) => {
+        const parts = str.split(" ");
+        const value = parseFloat(parts[0]);
+        const unit = parts.slice(1).join(" ");
+        return { value, unit };
+      };
+
+      const convertUnit = (beratAwal, beratAkhir) => {
+        let { value: valueAwal, unit: unitAwal } =
+          separateValueAndUnit(beratAwal);
+        const { value: valueAkhir, unit: unitAkhir } =
+          separateValueAndUnit(beratAkhir);
+
+        if (unitAwal === "Ton" && unitAkhir === "Kg") {
+          valueAwal = valueAwal * 1000 - valueAkhir;
+          if (valueAwal < 1000) {
+            return `${valueAwal} Kg`;
+          } else {
+            return `${valueAwal / 1000} Ton`;
+          }
+        } else if (unitAwal === unitAkhir) {
+          return `${valueAwal - valueAkhir} ${unitAwal}`;
+        }
+      };
+
       let getPrevKegiatanProduksi = await laporanProduksis.findOne({
         where: {
           noOrderProduksi: dataProduksi.noOrderProduksi,
@@ -324,12 +407,18 @@ class ProductionController {
       ) {
         await Promise.all(
           dataProduksi.bahanProduksis.map(async (data) => {
+            let beratAwalNewValue;
+            try {
+              beratAwalNewValue = convertUnit(data.beratAwal, data.beratAkhir);
+            } catch (err) {
+              throw new Error(`Error converting units: ${err.message}`);
+            }
             await bahanLaporanProduksis.create({
               laporanProduksiId: result.id,
               tahapProduksi: dataProduksi.tahapProduksi,
               jenis: data.jenis,
               kode: data.kode,
-              beratAwal: data.beratAwal,
+              beratAwal: beratAwalNewValue,
               beratAkhir: data.beratAkhir,
               keterangan: data.keterangan,
             });
@@ -380,6 +469,32 @@ class ProductionController {
       const { id } = req.params;
       const { personil, jadwalCetak, dataProduksi, tanggalPengiriman } =
         req.body;
+
+      const separateValueAndUnit = (str) => {
+        const parts = str.split(" ");
+        const value = parseFloat(parts[0]);
+        const unit = parts.slice(1).join(" ");
+        return { value, unit };
+      };
+
+      const convertUnit = (beratAwal, beratAkhir) => {
+        let { value: valueAwal, unit: unitAwal } =
+          separateValueAndUnit(beratAwal);
+        const { value: valueAkhir, unit: unitAkhir } =
+          separateValueAndUnit(beratAkhir);
+
+        if (unitAwal === "Ton" && unitAkhir === "Kg") {
+          valueAwal = valueAwal * 1000 - valueAkhir;
+          if (valueAwal < 1000) {
+            return `${valueAwal} Kg`;
+          } else {
+            return `${valueAwal / 1000} Ton`;
+          }
+        } else if (unitAwal === unitAkhir) {
+          return `${valueAwal - valueAkhir} ${unitAwal}`;
+        }
+      };
+
       let getPrevKegiatanProduksi = await laporanProduksis.findOne({
         where: {
           noOrderProduksi: dataProduksi.noOrderProduksi,
@@ -407,12 +522,18 @@ class ProductionController {
       ) {
         await Promise.all(
           dataProduksi.bahanProduksis.map(async (data) => {
+            let beratAwalNewValue;
+            try {
+              beratAwalNewValue = convertUnit(data.beratAwal, data.beratAkhir);
+            } catch (err) {
+              throw new Error(`Error converting units: ${err.message}`);
+            }
             await bahanLaporanProduksis.create({
               laporanProduksiId: result.id,
               tahapProduksi: dataProduksi.tahapProduksi,
               jenis: data.jenis,
               kode: data.kode,
-              beratAwal: data.beratAwal,
+              beratAwal: beratAwalNewValue,
               beratAkhir: data.beratAkhir,
               keterangan: data.keterangan,
             });
@@ -470,6 +591,31 @@ class ProductionController {
       const { id } = req.params;
       const { personil, dataProduksi, jadwalCetak } = req.body;
 
+      const separateValueAndUnit = (str) => {
+        const parts = str.split(" ");
+        const value = parseFloat(parts[0]);
+        const unit = parts.slice(1).join(" ");
+        return { value, unit };
+      };
+
+      const convertUnit = (beratAwal, beratAkhir) => {
+        let { value: valueAwal, unit: unitAwal } =
+          separateValueAndUnit(beratAwal);
+        const { value: valueAkhir, unit: unitAkhir } =
+          separateValueAndUnit(beratAkhir);
+
+        if (unitAwal === "Ton" && unitAkhir === "Kg") {
+          valueAwal = valueAwal * 1000 - valueAkhir;
+          if (valueAwal < 1000) {
+            return `${valueAwal} Kg`;
+          } else {
+            return `${valueAwal / 1000} Ton`;
+          }
+        } else if (unitAwal === unitAkhir) {
+          return `${valueAwal - valueAkhir} ${unitAwal}`;
+        }
+      };
+
       let result = await laporanProduksis.update(
         {
           tanggalProduksi: dataProduksi.tanggalProduksi,
@@ -487,13 +633,19 @@ class ProductionController {
       ) {
         await Promise.all(
           dataProduksi.bahanProduksis.map(async (data) => {
+            let beratAwalNewValue;
+            try {
+              beratAwalNewValue = convertUnit(data.beratAwal, data.beratAkhir);
+            } catch (err) {
+              throw new Error(`Error converting units: ${err.message}`);
+            }
             if (!data.id) {
               await bahanLaporanProduksis.create({
                 laporanProduksiId: dataProduksi.id,
                 tahapProduksi: dataProduksi.tahapProduksi,
                 jenis: data.jenis,
                 kode: data.kode,
-                beratAwal: data.beratAwal,
+                beratAwal: beratAwalNewValue,
                 beratAkhir: data.beratAkhir,
                 keterangan: data.keterangan,
               });
@@ -502,7 +654,7 @@ class ProductionController {
                 {
                   jenis: data.jenis,
                   kode: data.kode,
-                  beratAwal: data.beratAwal,
+                  beratAwal: beratAwalNewValue,
                   beratAkhir: data.beratAkhir,
                   keterangan: data.keterangan,
                 },
@@ -585,6 +737,31 @@ class ProductionController {
       const { id } = req.params;
       const { personil, dataProduksi, jadwalFitur } = req.body;
 
+      const separateValueAndUnit = (str) => {
+        const parts = str.split(" ");
+        const value = parseFloat(parts[0]);
+        const unit = parts.slice(1).join(" ");
+        return { value, unit };
+      };
+
+      const convertUnit = (beratAwal, beratAkhir) => {
+        let { value: valueAwal, unit: unitAwal } =
+          separateValueAndUnit(beratAwal);
+        const { value: valueAkhir, unit: unitAkhir } =
+          separateValueAndUnit(beratAkhir);
+
+        if (unitAwal === "Ton" && unitAkhir === "Kg") {
+          valueAwal = valueAwal * 1000 - valueAkhir;
+          if (valueAwal < 1000) {
+            return `${valueAwal} Kg`;
+          } else {
+            return `${valueAwal / 1000} Ton`;
+          }
+        } else if (unitAwal === unitAkhir) {
+          return `${valueAwal - valueAkhir} ${unitAwal}`;
+        }
+      };
+
       let result = await laporanProduksis.update(
         {
           tanggalProduksi: dataProduksi.tanggalProduksi,
@@ -602,13 +779,19 @@ class ProductionController {
       ) {
         await Promise.all(
           dataProduksi.bahanProduksis.map(async (data) => {
+            let beratAwalNewValue;
+            try {
+              beratAwalNewValue = convertUnit(data.beratAwal, data.beratAkhir);
+            } catch (err) {
+              throw new Error(`Error converting units: ${err.message}`);
+            }
             if (!data.id) {
               await bahanLaporanProduksis.create({
                 laporanProduksiId: dataProduksi.id,
                 tahapProduksi: dataProduksi.tahapProduksi,
                 jenis: data.jenis,
                 kode: data.kode,
-                beratAwal: data.beratAwal,
+                beratAwal: beratAwalNewValue,
                 beratAkhir: data.beratAkhir,
                 keterangan: data.keterangan,
               });
@@ -617,7 +800,7 @@ class ProductionController {
                 {
                   jenis: data.jenis,
                   kode: data.kode,
-                  beratAwal: data.beratAwal,
+                  beratAwal: beratAwalNewValue,
                   beratAkhir: data.beratAkhir,
                   keterangan: data.keterangan,
                 },
@@ -1027,7 +1210,7 @@ class ProductionController {
           })
         );
       }
-      res.json(result)
+      res.json(result);
     } catch (error) {
       res.json(error);
     }

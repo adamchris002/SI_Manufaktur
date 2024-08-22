@@ -1,7 +1,7 @@
 {
   "development": {
     "username": "postgres",
-    "password": "1234",
+    "password": "admin",
     "database": "si_manufaktur",
     "host": "127.0.0.1",
     "dialect": "postgres"
@@ -11,7 +11,7 @@
     "password": null,
     "database": "database_test",
     "host": "127.0.0.1",
-    "dialect": "mysql"
+    "dialect": "myfsql"
   },
 "production": {
     "username": "root",

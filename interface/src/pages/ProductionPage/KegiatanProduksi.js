@@ -42,7 +42,8 @@ const KegiatanProduksi = (props) => {
   ]);
 
   const [allProductionPlan, setAllProductionPlan] = useState([]);
-  console.log(allProductionPlan);
+  // console.log(allProductionPlan)
+  const [dataBahanProduksiPrev, setDataBahanProduksiPrev] = useState([]);
   const [allInventoryItem, setAllInventoryItem] = useState([]);
   const [dataProduksi, setDataProduksi] = useState({
     tanggalProduksi: dayjs(""),
@@ -103,7 +104,7 @@ const KegiatanProduksi = (props) => {
     },
   ]);
   const [estimasiJadwal, setEstimasiJadwal] = useState([]);
-  console.log(estimasiJadwal);
+  console.log(estimasiJadwal)
 
   const [tanggalPengiriman, setTanggalPengiriman] = useState(dayjs(""));
 
@@ -131,6 +132,7 @@ const KegiatanProduksi = (props) => {
                 tahapProduksi: "Produksi Cetak",
               };
             });
+            setDataBahanProduksiPrev(result.data.bahanLaporanProdukses);
             if (dayjs(result.data.tanggalPengiriman).isValid()) {
               setTanggalPengiriman(dayjs(result.data.tanggalPengiriman));
             }
@@ -146,6 +148,7 @@ const KegiatanProduksi = (props) => {
                 tahapProduksi: "Produksi Fitur",
               };
             });
+            setDataBahanProduksiPrev(result.data.bahanLaporanProdukses);
             setTanggalPengiriman(dayjs(result.data.tanggalPengiriman));
           }
         } else {
@@ -205,13 +208,35 @@ const KegiatanProduksi = (props) => {
         url: `http://localhost:3000/inventory/getPenyerahanBarangOrderId/${dataProduksi.noOrderProduksi}`,
       }).then((result) => {
         if (result.status === 200) {
-          const tempData = result?.data?.itemPenyerahanBarangs?.map(
-            (result) => ({
-              value: result.namaBarang,
-              ...result,
-            })
-          );
-          setAllInventoryItem(tempData);
+          // if (isNewTahapProduksi) {
+            const tempData = result?.data?.itemPenyerahanBarangs?.map(
+              (item) => {
+                const matchingItem = dataBahanProduksiPrev.find(
+                  (bahan) =>
+                    bahan.jenis === item.namaBarang &&
+                    bahan.kode === item.kodeBarang
+                );
+                if (matchingItem) {
+                  return {
+                    ...item,
+                    value: matchingItem.jenis,
+                    jumlahYangDiambil: matchingItem.beratAwal,
+                  };
+                }
+                return {
+                  ...item,
+                  value: item.namaBarang,
+                };
+              }
+            );
+            setAllInventoryItem(tempData);
+          // } else {
+          //   let tempData = result?.data?.itemPenyerahanBarangs?.map((item) => ({
+          //     value: item.namaBarang,
+          //     ...item,
+          //   }));
+            // setAllInventoryItem(tempData);
+          // }
         } else {
           setOpenSnackbar(true);
           setSnackbarStatus(false);
@@ -219,7 +244,22 @@ const KegiatanProduksi = (props) => {
         }
       });
     }
-  }, [dataProduksi.noOrderProduksi]);
+  }, [dataProduksi.noOrderProduksi, allProductionPlan]);
+
+  useEffect(() => {
+    if (
+      allProductionPlan.length > 0 &&
+      dataProduksi.noOrderProduksi !== "" &&
+      dataProduksi.noOrderProduksi !== null
+    ) {
+      const jadwal = allProductionPlan
+        .filter(
+          (plan) => plan.value === parseFloat(dataProduksi.noOrderProduksi)
+        )
+        .map((plan) => plan.estimasiJadwalProdukses);
+      setEstimasiJadwal(jadwal);
+    }
+  }, [allProductionPlan, dataProduksi]);
 
   useEffect(() => {
     if (
@@ -284,6 +324,7 @@ const KegiatanProduksi = (props) => {
         }).then((result) => {
           if (result.status === 200) {
             setPersonil(result.data.personils);
+            setDataBahanProduksiPrev(result.data.bahanLaporanProdukses)
             setDataProduksi({
               id: result.data.id,
               tanggalProduksi: dayjs(result.data.tanggalProduksi),
@@ -292,11 +333,36 @@ const KegiatanProduksi = (props) => {
               mesin: result.data.mesin,
               dibuatOleh: result.data.dibuatOleh,
               tahapProduksi: result.data.tahapProduksi || "Produksi Pracetak",
-              bahanProduksis: result.data.bahanLaporanProdukses.map((item) => ({
-                ...item,
-                beratAwal: separateValueAndUnit(item.beratAwal),
-                beratAkhir: separateValueAndUnit(item.beratAkhir),
-              })),
+              bahanProduksis: result.data.bahanLaporanProdukses.map((item) => {
+                const tempBeratAwal = separateValueAndUnit(item.beratAwal);
+                const tempBeratAkhir = separateValueAndUnit(item.beratAkhir);
+                let totalBerat;
+
+                if (
+                  tempBeratAwal.unit === "Ton" &&
+                  tempBeratAkhir.unit === "Kg"
+                ) {
+                  totalBerat =
+                    parseFloat(tempBeratAwal.value) * 1000 +
+                    parseFloat(tempBeratAkhir.value);
+                  if (totalBerat < 1000) {
+                    totalBerat = `${totalBerat} Kg`;
+                  } else {
+                    totalBerat = `${totalBerat / 1000} Ton`;
+                  }
+                } else if (tempBeratAwal.unit === tempBeratAkhir.unit) {
+                  totalBerat = `${
+                    parseFloat(tempBeratAwal.value) +
+                    parseFloat(tempBeratAkhir.value)
+                  } ${tempBeratAwal.unit}`;
+                }
+
+                return {
+                  ...item,
+                  beratAwal: separateValueAndUnit(totalBerat),
+                  beratAkhir: tempBeratAkhir,
+                };
+              }),
             });
             if (result.data.tahapProduksi === "Produksi Pracetak") {
               const data = result.data.jadwalProdukses.map((item) => {
@@ -517,7 +583,7 @@ const KegiatanProduksi = (props) => {
           setTanggalPengiriman(
             dayjs(getSelectedOrder(value, "tanggalPengirimanBarang"))
           );
-          setEstimasiJadwal(getSelectedOrder(value, "estimasiJadwalProdukses"));
+          // setEstimasiJadwal(getSelectedOrder(value, "estimasiJadwalProdukses"));
           return {
             ...oldObject,
             noOrderProduksi: value,
@@ -1660,7 +1726,7 @@ const KegiatanProduksi = (props) => {
             </TableContainer>
           </div>
         </div>
-        {estimasiJadwal.length !== 0 && (
+        {estimasiJadwal?.length !== 0 && (
           <div style={{ padding: "0px 32px 64px 32px" }}>
             <Typography style={{ color: "#0F607D", fontSize: "2vw" }}>
               Data Estimasi Jadwal Produksi
@@ -1679,10 +1745,10 @@ const KegiatanProduksi = (props) => {
                   </TableRow>
                 </TableHead>
                 <TableBody>
-                  {estimasiJadwal.map((result, index) => {
+                  {estimasiJadwal[0]?.map((result, index) => {
                     return (
                       <React.Fragment key={index}>
-                        {result.rencanaJadwalProdukses.map(
+                        {result?.rencanaJadwalProdukses?.map(
                           (data, dataIndex) => {
                             return (
                               <TableRow key={dataIndex}>
@@ -1695,10 +1761,12 @@ const KegiatanProduksi = (props) => {
                                     "MM/DD/YYYY hh:mm A"
                                   )}
                                 </TableCell>
-                                <TableCell>{dayjs(data.tanggalSelesai).format(
+                                <TableCell>
+                                  {dayjs(data.tanggalSelesai).format(
                                     "MM/DD/YYYY hh:mm A"
-                                  )}</TableCell>
-                                  <TableCell>{data.jumlahHari}</TableCell>
+                                  )}
+                                </TableCell>
+                                <TableCell>{data.jumlahHari}</TableCell>
                               </TableRow>
                             );
                           }
