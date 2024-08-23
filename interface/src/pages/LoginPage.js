@@ -105,8 +105,8 @@ const LoginPage = (props) => {
               case "Production":
                 navigate("productionDashboard");
                 break;
-              case "Waste":
-                navigate("/wasteDashboard");
+              case "Finance":
+                navigate("/financeDashboard");
                 break;
               default:
                 setOpenSnackbar(true);

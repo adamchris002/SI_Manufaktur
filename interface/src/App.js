@@ -13,7 +13,7 @@ import MaindashboardMarketing from "./pages/MaindashboardMarketing";
 import MaindashboardProductionPlanning from "./pages/MaindashboardProductionPlanning";
 import MaindashboardInventory from "./pages/MaindashboardInventory";
 import MaindashboardProduction from "./pages/MaindashboardProduction";
-import MaindasboardWaste from "./pages/MaindashboardWaste";
+import MaindashboardFinance from "./pages/MaindashboardFinance";
 import UnauthorizedPage from "./pages/UnauthorizedPage";
 import OrderDetail from "./pages/MarketingPage/OrderDetail";
 import MarketingActivityLog from "./pages/MarketingPage/MarketingActivityLog";
@@ -56,6 +56,8 @@ function App() {
     isTablet,
     isMobile,
   };
+
+  console.log(userCredentials)
 
   return (
     <>
@@ -273,13 +275,13 @@ function App() {
               }
             />
             <Route
-              path="/wasteDashboard"
+              path="/financeDashboard"
               element={
                 !userCredentials.data ||
-                userCredentials.data.department !== "Waste" ? (
+                userCredentials.data.department !== "Finance" ? (
                   <Navigate to="/unauthorized" replace />
                 ) : (
-                  <MaindasboardWaste />
+                  <MaindashboardFinance userInformation={userCredentials}/>
                 )
               }
             />

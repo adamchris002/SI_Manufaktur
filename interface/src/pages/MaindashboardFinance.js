@@ -1,15 +1,65 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import factoryBackground from "../assets/factorybackground.png";
 import companyLogo from "../assets/PT_Aridas_Karya_Satria_Logo.png";
 import DefaultButton from "../components/Button";
 import AccountCircleIcon from "@mui/icons-material/AccountCircle";
-import { Typography } from "@mui/material";
+import VisibilityIcon from "@mui/icons-material/Visibility";
+import {
+  IconButton,
+  Paper,
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TableRow,
+  Typography,
+} from "@mui/material";
+import axios from "axios";
+import MySnackbar from "../components/Snackbar";
 
-const MaindasboardWaste = () => {
-  const [username, setUsername] = useState("Ricky_Sutar22");
-  const [division, setDivision] = useState("Waste Storage Division");
+const MaindashboardFinance = (props) => {
+  const { userInformation } = props;
 
   const orderList = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
+
+  const [
+    allDataPermohonanPembelianRequested,
+    setAllDataPermohonanPembelianRequested,
+  ] = useState([]);
+  const [refreshDataPermohonanPembelian, setRefreshDataPermohonanPembelian] =
+    useState(true);
+
+  const [openSnackbar, setOpenSnackbar] = useState(false);
+  const [snackbarStatus, setSnackbarStatus] = useState(false);
+  const [snackbarMessage, setSnackbarMessage] = useState("");
+
+  useEffect(() => {
+    if (refreshDataPermohonanPembelian) {
+      axios({
+        method: "GET",
+        url: "http://localhost:3000/inventory/getAllPermohonanPembelianRequested",
+      }).then((result) => {
+        if (result.status === 200) {
+          setAllDataPermohonanPembelianRequested(result.data);
+          setRefreshDataPermohonanPembelian(false);
+        } else {
+          setRefreshDataPermohonanPembelian(false);
+          setOpenSnackbar(true);
+          setSnackbarStatus(false);
+          setSnackbarMessage(
+            "Tidak berhasil memanggil data permohonan pembelian"
+          );
+        }
+      });
+    }
+  }, [refreshDataPermohonanPembelian]);
+
+  const handleCloseSnackbar = () => {
+    setOpenSnackbar(false);
+    setSnackbarMessage("");
+    setSnackbarStatus(true);
+  };
 
   return (
     <div
@@ -48,11 +98,11 @@ const MaindasboardWaste = () => {
             fontSize="16px"
             onClickFunction={() => {
               document
-                .getElementById("managewaste")
+                .getElementById("permohonanpembelian")
                 .scrollIntoView({ behavior: "smooth" });
             }}
           >
-            Manage Waste
+            Permohonan Pembelian
           </DefaultButton>
         </div>
         <div style={{ marginTop: "32px", fontSize: "24px" }}>
@@ -119,32 +169,68 @@ const MaindasboardWaste = () => {
           />
           <div style={{ textAlign: "left" }}>
             <Typography style={{ fontSize: "48px", color: "#0F607D" }}>
-              Welcome back, {username}
+              Welcome back, {userInformation?.data?.username}
             </Typography>
             <Typography style={{ fontSize: "24px", color: "#0F607D" }}>
-              {division}
+              {userInformation.data.department} Division
             </Typography>
           </div>
         </div>
         <div
           style={{
-            marginLeft: "32px",
+            margin: "32px",
             marginTop: "64px",
-            display: "flex",
-            justifyContent: "space-between",
-            alignItems: "center",
+            // display: "flex",
+            // justifyContent: "space-between",
+            // alignItems: "center",
             width: "72vw",
           }}
         >
           <Typography
-            id="managewaste"
+            id="permohonanpembelian"
             style={{ color: "#0F607D", fontSize: "36px" }}
           >
-            Manage Waste
+            Daftar Permohonan Pembelian
           </Typography>
-          <div>
-            <DefaultButton>Go to Waste Page</DefaultButton>
-          </div>
+          {allDataPermohonanPembelianRequested.length === 0 ? (
+            <div>
+              <Typography>Tidak ada data permohonan pembelian</Typography>
+            </div>
+          ) : (
+            <TableContainer component={Paper} sx={{ overflowX: "auto", width: 650 }}>
+              <Table
+                sx={{ overflowX: "auto", tableLayout: "fixed", width: 650 }}
+                aria-label="simple table"
+              >
+                <TableHead>
+                  <TableRow>
+                    <TableCell>No.</TableCell>
+                    <TableCell>Nomor</TableCell>
+                    <TableCell>Perihal</TableCell>
+                    <TableCell style={{width: "150px"}}>Status Permohonan</TableCell>
+                    <TableCell>Actions</TableCell>
+                  </TableRow>
+                </TableHead>
+                <TableBody>
+                  {allDataPermohonanPembelianRequested?.map((result, index) => {
+                    return (
+                      <React.Fragment key={index}>
+                        <TableCell>{index + 1 + "."}</TableCell>
+                        <TableCell>{result.nomor}</TableCell>
+                        <TableCell>{result.perihal}</TableCell>
+                        <TableCell>{result.statusPermohonan}</TableCell>
+                        <TableCell>
+                          <IconButton>
+                            <VisibilityIcon style={{ color: "#0F607D" }} />
+                          </IconButton>
+                        </TableCell>
+                      </React.Fragment>
+                    );
+                  })}
+                </TableBody>
+              </Table>
+            </TableContainer>
+          )}
         </div>
         <div
           style={{
@@ -226,8 +312,17 @@ const MaindasboardWaste = () => {
           </div>
         </div>
       </div>
+      
+      {snackbarMessage !== ("" || null) && (
+        <MySnackbar
+          open={openSnackbar}
+          handleClose={handleCloseSnackbar}
+          messageStatus={snackbarStatus}
+          popupMessage={snackbarMessage}
+        />
+      )}
     </div>
   );
 };
 
-export default MaindasboardWaste;
+export default MaindashboardFinance;

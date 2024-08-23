@@ -178,9 +178,10 @@ const PenyerahanBarang = (props) => {
           if (jumlahYangDiambilValue > tempValue) {
             return false;
           }
-        } else {
-          return false;
         }
+        //  else {
+        //   return false;
+        // }
       }
     }
 
@@ -210,14 +211,14 @@ const PenyerahanBarang = (props) => {
   };
 
   const handleAddPengambilanBarang = () => {
-    const checkIfDataPengambilanComplete = checkForSubmission();
-    if (checkIfDataPengambilanComplete === false) {
-      setOpenSnackbar(true);
-      setSnackbarStatus(false);
-      setSnackbarMessage(
-        "Tolong isi input dengan lengkap atau perbaiki data pada input"
-      );
-    } else {
+    // const checkIfDataPengambilanComplete = checkForSubmission();
+    // if (checkIfDataPengambilanComplete === false) {
+    //   setOpenSnackbar(true);
+    //   setSnackbarStatus(false);
+    //   setSnackbarMessage(
+    //     "Tolong isi input dengan lengkap atau perbaiki data pada input"
+    //   );
+    // } else {
       const transformedData = transformDataForSubmission(dataBarangYangDiambil);
       axios({
         method: "POST",
@@ -236,7 +237,7 @@ const PenyerahanBarang = (props) => {
           );
         }
       });
-    }
+    // }
   };
 
   const handleEditPenyerahanBarang = () => {

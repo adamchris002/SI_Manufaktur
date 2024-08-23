@@ -267,6 +267,17 @@ class InventoryController {
       res.json(error);
     }
   }
+  static async getAllPermohonanPembelianRequested(req, res) {
+    try {
+      let result = await permohonanPembelians.findAll({
+        where: {statusPermohonan: "Requested"},
+        include: [{model: itemPermohonanPembelians}]
+      })
+      res.json(result);
+    } catch (error) {
+      res.json(error);
+    }
+  }
   static async getAllAcceptedPermohonanPembelian(req, res) {
     try {
       let result = await permohonanPembelians.findAll({

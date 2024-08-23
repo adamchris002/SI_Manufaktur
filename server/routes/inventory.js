@@ -49,6 +49,10 @@ inventoryRoutes.get(
   "/getPenyerahanBarangOrderId/:id",
   InventoryController.getPenyerahanBarangOrderId
 );
+inventoryRoutes.get(
+  "/getAllPermohonanPembelianRequested",
+  InventoryController.getAllPermohonanPembelianRequested
+);
 
 //post
 inventoryRoutes.post(
