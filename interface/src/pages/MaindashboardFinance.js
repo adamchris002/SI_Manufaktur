@@ -1,10 +1,11 @@
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import factoryBackground from "../assets/factorybackground.png";
 import companyLogo from "../assets/PT_Aridas_Karya_Satria_Logo.png";
 import DefaultButton from "../components/Button";
 import AccountCircleIcon from "@mui/icons-material/AccountCircle";
 import VisibilityIcon from "@mui/icons-material/Visibility";
 import {
+  Button,
   IconButton,
   Paper,
   Table,
@@ -17,9 +18,12 @@ import {
 } from "@mui/material";
 import axios from "axios";
 import MySnackbar from "../components/Snackbar";
+import MyModal from "../components/Modal";
+import { AppContext } from "../App";
 
 const MaindashboardFinance = (props) => {
   const { userInformation } = props;
+  const { isMobile } = useContext(AppContext);
 
   const orderList = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
 
@@ -29,7 +33,11 @@ const MaindashboardFinance = (props) => {
   ] = useState([]);
   const [refreshDataPermohonanPembelian, setRefreshDataPermohonanPembelian] =
     useState(true);
+  const [selectedPermohonanPembelian, setSelectedPermohonanPembelian] =
+    useState([]);
+  console.log(selectedPermohonanPembelian);
 
+  const [openModal, setOpenModal] = useState(false);
   const [openSnackbar, setOpenSnackbar] = useState(false);
   const [snackbarStatus, setSnackbarStatus] = useState(false);
   const [snackbarMessage, setSnackbarMessage] = useState("");
@@ -55,10 +63,39 @@ const MaindashboardFinance = (props) => {
     }
   }, [refreshDataPermohonanPembelian]);
 
+  const handleCloseModal = () => {
+    setOpenModal(false);
+  };
+
   const handleCloseSnackbar = () => {
     setOpenSnackbar(false);
     setSnackbarMessage("");
     setSnackbarStatus(true);
+  };
+
+  const handleOpenModalForConfirmationPermohonanPembelian = (data) => {
+    setOpenModal(true);
+    setSelectedPermohonanPembelian(data);
+  };
+
+  const handleAcceptPermohonanPembelian = (id) => {
+    axios({
+      method: "PUT",
+      url: `http://localhost:3000/inventory/acceptPermohonanPembelian/${id}`,
+    }).then((result) => {
+      if (result.status === 200) {
+        handleCloseModal();
+        setRefreshDataPermohonanPembelian(true);
+        setOpenSnackbar(true);
+        setSnackbarStatus(true);
+        setSnackbarMessage("Berhasil menerima permohonan pembelian");
+      } else {
+        handleCloseModal();
+        setOpenSnackbar(true);
+        setSnackbarStatus(false);
+        setSnackbarMessage("Tidak berhasil acc permohonan pembelian");
+      }
+    });
   };
 
   return (
@@ -197,7 +234,10 @@ const MaindashboardFinance = (props) => {
               <Typography>Tidak ada data permohonan pembelian</Typography>
             </div>
           ) : (
-            <TableContainer component={Paper} sx={{ overflowX: "auto", width: 650 }}>
+            <TableContainer
+              component={Paper}
+              sx={{ overflowX: "auto", width: 650 }}
+            >
               <Table
                 sx={{ overflowX: "auto", tableLayout: "fixed", width: 650 }}
                 aria-label="simple table"
@@ -207,7 +247,9 @@ const MaindashboardFinance = (props) => {
                     <TableCell>No.</TableCell>
                     <TableCell>Nomor</TableCell>
                     <TableCell>Perihal</TableCell>
-                    <TableCell style={{width: "150px"}}>Status Permohonan</TableCell>
+                    <TableCell style={{ width: "150px" }}>
+                      Status Permohonan
+                    </TableCell>
                     <TableCell>Actions</TableCell>
                   </TableRow>
                 </TableHead>
@@ -215,15 +257,23 @@ const MaindashboardFinance = (props) => {
                   {allDataPermohonanPembelianRequested?.map((result, index) => {
                     return (
                       <React.Fragment key={index}>
-                        <TableCell>{index + 1 + "."}</TableCell>
-                        <TableCell>{result.nomor}</TableCell>
-                        <TableCell>{result.perihal}</TableCell>
-                        <TableCell>{result.statusPermohonan}</TableCell>
-                        <TableCell>
-                          <IconButton>
-                            <VisibilityIcon style={{ color: "#0F607D" }} />
-                          </IconButton>
-                        </TableCell>
+                        <TableRow>
+                          <TableCell>{index + 1 + "."}</TableCell>
+                          <TableCell>{result.nomor}</TableCell>
+                          <TableCell>{result.perihal}</TableCell>
+                          <TableCell>{result.statusPermohonan}</TableCell>
+                          <TableCell>
+                            <IconButton
+                              onClick={() => {
+                                handleOpenModalForConfirmationPermohonanPembelian(
+                                  result
+                                );
+                              }}
+                            >
+                              <VisibilityIcon style={{ color: "#0F607D" }} />
+                            </IconButton>
+                          </TableCell>
+                        </TableRow>
                       </React.Fragment>
                     );
                   })}
@@ -312,7 +362,105 @@ const MaindashboardFinance = (props) => {
           </div>
         </div>
       </div>
-      
+      {openModal === true && (
+        <MyModal open={openModal} handleClose={handleCloseModal}>
+          <div
+            className="hideScrollbar"
+            style={{
+              margin: isMobile ? "24px" : "0.83vw 1.667vw 0.83vw 1.667vw",
+              overflow: "auto",
+              width: isMobile ? "80vw" : "50vw",
+              maxHeight: "80vh",
+            }}
+          >
+            <Typography
+              style={{ color: "#0F607D", fontSize: isMobile ? "7vw" : "2.5vw" }}
+            >
+              Permohonan Pembelian
+            </Typography>
+            <div>
+              <div>
+                <Typography
+                  style={{
+                    fontSize: isMobile ? "" : "1.5vw",
+                    color: "#0F607D",
+                  }}
+                >
+                  Nomor: {selectedPermohonanPembelian.nomor}
+                </Typography>
+                <Typography
+                  style={{
+                    marginTop: "16px",
+                    fontSize: isMobile ? "" : "1.5vw",
+                    color: "#0F607D",
+                  }}
+                >
+                  Perihal: {selectedPermohonanPembelian.perihal}
+                </Typography>
+              </div>
+              <div>
+                <TableContainer style={{ marginTop: "16px" }} component={Paper}>
+                  <Table sx={{ minWidth: 650 }} aria-label="simple table">
+                    <TableHead>
+                      <TableRow>
+                        <TableCell>No.</TableCell>
+                        <TableCell align="left">Jenis Barang</TableCell>
+                        <TableCell align="left">Jumlah</TableCell>
+                        <TableCell align="left">Untuk Pekerjaan</TableCell>
+                        <TableCell align="left">Stok</TableCell>
+                        <TableCell align="left">Keterangan</TableCell>
+                      </TableRow>
+                    </TableHead>
+                    <TableBody>
+                      {selectedPermohonanPembelian.itemPermohonanPembelians.map(
+                        (result, index) => {
+                          return (
+                            <React.Fragment key={index}>
+                              <TableRow>
+                                <TableCell>{index + 1 + "."}</TableCell>
+                                <TableCell>{result.jenisBarang}</TableCell>
+                                <TableCell>{result.jumlah}</TableCell>
+                                <TableCell>{result.untukPekerjaan}</TableCell>
+                                <TableCell>{result.stok}</TableCell>
+                                <TableCell>{result.keterangan}</TableCell>
+                              </TableRow>
+                            </React.Fragment>
+                          );
+                        }
+                      )}
+                    </TableBody>
+                  </Table>
+                </TableContainer>
+              </div>
+              <div
+                style={{
+                  display: "flex",
+                  justifyContent: "center",
+                  marginTop: "16px",
+                }}
+              >
+                <DefaultButton
+                  onClickFunction={() => {
+                    handleAcceptPermohonanPembelian(
+                      selectedPermohonanPembelian.id
+                    );
+                  }}
+                >
+                  Accept
+                </DefaultButton>
+                <Button
+                  onClick={handleCloseModal}
+                  style={{ marginLeft: "8px", textTransform: "none" }}
+                  variant="outlined"
+                  color="error"
+                >
+                  Cancel
+                </Button>
+              </div>
+            </div>
+          </div>
+        </MyModal>
+      )}
       {snackbarMessage !== ("" || null) && (
         <MySnackbar
           open={openSnackbar}

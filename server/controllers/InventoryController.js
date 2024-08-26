@@ -270,9 +270,9 @@ class InventoryController {
   static async getAllPermohonanPembelianRequested(req, res) {
     try {
       let result = await permohonanPembelians.findAll({
-        where: {statusPermohonan: "Requested"},
-        include: [{model: itemPermohonanPembelians}]
-      })
+        where: { statusPermohonan: "Requested" },
+        include: [{ model: itemPermohonanPembelians }],
+      });
       res.json(result);
     } catch (error) {
       res.json(error);
@@ -1009,11 +1009,25 @@ class InventoryController {
   }
   static async getPenyerahanBarangOrderId(req, res) {
     try {
-      const {id } = req.params
+      const { id } = req.params;
       let result = await penyerahanBarangs.findOne({
-        where: {orderId: id},
-        include: [{model: itemPenyerahanBarangs}]
-      })
+        where: { orderId: id },
+        include: [{ model: itemPenyerahanBarangs }],
+      });
+      res.json(result);
+    } catch (error) {
+      res.json(error);
+    }
+  }
+  static async acceptPermohonanPembelian(req, res) {
+    try {
+      const { id } = req.params;
+      let result = await permohonanPembelians.update(
+        {
+          statusPermohonan: "Accepted",
+        },
+        { where: { id: id } }
+      );
       res.json(result)
     } catch (error) {
       res.json(error);

@@ -95,6 +95,10 @@ inventoryRoutes.put(
   "/statusStokOpnamComplete/:id",
   InventoryController.statusStokOpnamComplete
 );
+inventoryRoutes.put(
+  "/acceptPermohonanPembelian/:id",
+  InventoryController.acceptPermohonanPembelian
+);
 
 //delete
 inventoryRoutes.delete(
