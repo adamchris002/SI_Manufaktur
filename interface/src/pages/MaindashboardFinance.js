@@ -1,4 +1,7 @@
 import React, { useContext, useEffect, useState } from "react";
+import { AppContext } from "../App";
+import { useNavigate } from "react-router-dom";
+import axios from "axios";
 import factoryBackground from "../assets/factorybackground.png";
 import companyLogo from "../assets/PT_Aridas_Karya_Satria_Logo.png";
 import DefaultButton from "../components/Button";
@@ -16,16 +19,14 @@ import {
   TableRow,
   Typography,
 } from "@mui/material";
-import axios from "axios";
+
 import MySnackbar from "../components/Snackbar";
 import MyModal from "../components/Modal";
-import { AppContext } from "../App";
 
 const MaindashboardFinance = (props) => {
   const { userInformation } = props;
   const { isMobile } = useContext(AppContext);
-
-  const orderList = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
+  const navigate = useNavigate();
 
   const [
     allDataPermohonanPembelianRequested,
@@ -151,11 +152,43 @@ const MaindashboardFinance = (props) => {
             fontSize="16px"
             onClickFunction={() => {
               document
-                .getElementById("managewastereports")
+                .getElementById("pembelianbahanbaku")
                 .scrollIntoView({ behavior: "smooth" });
             }}
           >
-            Manage Waste Reports
+            Pembelian Bahan Baku
+          </DefaultButton>
+        </div>
+        <div style={{ marginTop: "32px", fontSize: "24px" }}>
+          <DefaultButton
+            width="232px"
+            height="40px"
+            backgroundColor="#0F607D"
+            borderRadius="16px"
+            fontSize="16px"
+            onClickFunction={() => {
+              document
+                .getElementById("bukubank")
+                .scrollIntoView({ behavior: "smooth" });
+            }}
+          >
+            Buku Bank
+          </DefaultButton>
+        </div>
+        <div style={{ marginTop: "32px", fontSize: "24px" }}>
+          <DefaultButton
+            width="232px"
+            height="40px"
+            backgroundColor="#0F607D"
+            borderRadius="16px"
+            fontSize="16px"
+            onClickFunction={() => {
+              document
+                .getElementById("kasharian")
+                .scrollIntoView({ behavior: "smooth" });
+            }}
+          >
+            Kas Harian
           </DefaultButton>
         </div>
         <div style={{ marginTop: "32px", fontSize: "24px" }}>
@@ -293,10 +326,10 @@ const MaindashboardFinance = (props) => {
           }}
         >
           <Typography
-            id="managewastereports"
+            id="pembelianbahanbaku"
             style={{ fontSize: "36px", color: "#0F607D" }}
           >
-            Manage Waste Reports
+            Pembelian Bahan Baku
           </Typography>
           <DefaultButton
             height="40px"
@@ -307,39 +340,61 @@ const MaindashboardFinance = (props) => {
             Add Waste Reports
           </DefaultButton>
         </div>
-        <div style={{ marginLeft: "32px", marginTop: "32px" }}>
-          <div
-            style={{
-              width: "72vw",
-              overflowX: "auto",
-              whiteSpace: "nowrap",
+        <div
+          style={{
+            marginLeft: "32px",
+            marginTop: "64px",
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "center",
+            width: "72vw",
+          }}
+        >
+          <Typography
+            id="bukubank"
+            style={{ fontSize: "36px", color: "#0F607D" }}
+          >
+            Buku Bank
+          </Typography>
+          <DefaultButton
+            height="40px"
+            width="232px"
+            borderRadius="16px"
+            fontSize="14px"
+            onClickFunction={() => {
+              navigate("/financeDashboard/bukuBank");
             }}
           >
-            {orderList.map((data, index) => {
-              return (
-                <div
-                  style={{
-                    height: "256px",
-                    width: "256px",
-                    backgroundColor: "#d9d9d9",
-                    borderRadius: "20px",
-                    display: "inline-block",
-                    marginRight: index === orderList.length - 1 ? "" : "32px",
-                    cursor: "pointer",
-                    transition: "background-color 0.3s ease",
-                  }}
-                  onMouseEnter={(e) =>
-                    (e.target.style.backgroundColor = "#a0a0a0")
-                  }
-                  onMouseLeave={(e) =>
-                    (e.target.style.backgroundColor = "#d9d9d9")
-                  }
-                >
-                  {/* <img src="" alt=""/> */}
-                </div>
-              );
-            })}
-          </div>
+            Pergi ke Halaman Buku Bank
+          </DefaultButton>
+        </div>
+        <div
+          style={{
+            marginLeft: "32px",
+            marginTop: "64px",
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "center",
+            width: "72vw",
+          }}
+        >
+          <Typography
+            id="kasharian"
+            style={{ fontSize: "36px", color: "#0F607D" }}
+          >
+            Kas Harian
+          </Typography>
+          <DefaultButton
+            height="40px"
+            width="232px"
+            borderRadius="16px"
+            fontSize="14px"
+            onClickFunction={() => {
+              navigate("/financeDashboard/kasHarian");
+            }}
+          >
+            Pergi ke Halaman Kas Harian
+          </DefaultButton>
         </div>
         <div
           style={{

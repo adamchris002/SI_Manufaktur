@@ -29,6 +29,8 @@ import KegiatanProduksi from "./pages/ProductionPage/KegiatanProduksi";
 import LaporanProduksi from "./pages/ProductionPage/LaporanProduksi";
 import LaporanLimbahProduksi from "./pages/ProductionPage/LaporanLimbahProduksi";
 import LaporanSampah from "./pages/InventoryPage/LaporanSampah";
+import BukuBank from "./pages/FinancePage/BukuBank";
+import KasHarian from "./pages/FinancePage/KasHarian";
 
 export const AppContext = createContext({});
 
@@ -282,6 +284,28 @@ function App() {
                   <Navigate to="/unauthorized" replace />
                 ) : (
                   <MaindashboardFinance userInformation={userCredentials}/>
+                )
+              }
+            />
+            <Route
+              path="/financeDashboard/bukuBank"
+              element={
+                !userCredentials.data ||
+                userCredentials.data.department !== "Finance" ? (
+                  <Navigate to="/unauthorized" replace />
+                ) : (
+                  <BukuBank userInformation={userCredentials}/>
+                )
+              }
+            />
+            <Route
+              path="/financeDashboard/kasHarian"
+              element={
+                !userCredentials.data ||
+                userCredentials.data.department !== "Finance" ? (
+                  <Navigate to="/unauthorized" replace />
+                ) : (
+                  <KasHarian userInformation={userCredentials}/>
                 )
               }
             />
