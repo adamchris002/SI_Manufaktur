@@ -29,6 +29,7 @@ import MySnackbar from "../../components/Snackbar";
 import MySelectTextField from "../../components/SelectTextField";
 import VisibilityIcon from "@mui/icons-material/Visibility";
 import CloseIcon from "@mui/icons-material/Close";
+import { useAuth } from "../../components/AuthContext";
 
 const NumericFormatCustom = React.forwardRef((props, ref) => {
   const { onChange, ...other } = props;
@@ -56,6 +57,7 @@ const BukuBank = (props) => {
   const { userInformation } = props;
   const { isMobile } = useContext(AppContext);
   const navigate = useNavigate();
+  const {setSuccessMessage} = useAuth();
 
   const [dataBukuBank, setDataBukuBank] = useState([
     {
@@ -283,12 +285,18 @@ const BukuBank = (props) => {
                     result.data[0].itemBukuBanks.length - 1
                   ];
 
-                const formattedItem = [{
-                  ...latestItem,
-                  tanggal: dayjs(latestItem.tanggal),
-                }];
+                const formattedItem = [
+                  {
+                    tanggal: dayjs(latestItem.tanggal),
+                    uraian: latestItem.uraian,
+                    debet: latestItem.debet,
+                    kredit: latestItem.kredit,
+                    saldo: latestItem.saldo,
+                    keterangan: latestItem.keterangan,
+                  },
+                ];
 
-                setDataBukuBank(formattedItem)
+                setDataBukuBank(formattedItem);
               } else {
                 setOpenSnackbar(true);
                 setSnackbarStatus(false);
@@ -345,9 +353,9 @@ const BukuBank = (props) => {
         data: { namaBank: selectedBank, dataBukuBank: dataBukuBank },
       }).then((result) => {
         if (result.status === 200) {
-          setOpenSnackbar(true);
+          setSuccessMessage("Berhasil menambahkan data buku bank");
           setSnackbarStatus(true);
-          setSnackbarMessage("Berhasil menambahkan data buku bank");
+          navigate(-1);
         } else {
           setOpenSnackbar(true);
           setSnackbarStatus(false);
@@ -699,7 +707,7 @@ const BukuBank = (props) => {
               Sejarah Buku Bank
             </Typography>
             {bukuBankDone.length === 0 ? (
-              <div style={{ display: "flex", justifyContent: "center" }}>
+              <div>
                 <Typography style={{ fontSize: "2vw", color: "#0F607D" }}>
                   Belum ada sejarah buku bank
                 </Typography>

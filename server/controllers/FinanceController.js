@@ -41,7 +41,7 @@ class FinanceController {
     const { namaBank, dataBukuBank } = req.body;
 
     let findBank = await bukuBanks.findOne({
-      where: { namaBank: namaBank },
+      where: { namaBank: namaBank, statusBukuBank: "Ongoing" },
     });
 
     if (dataBukuBank && Array.isArray(dataBukuBank)) {
@@ -67,7 +67,7 @@ class FinanceController {
                 saldo: data.saldo,
                 keterangan: data.keterangan,
               },
-              { where: { bukuBankId: findBank.id } }
+              { where: { id: data.id } }
             );
           }
         })

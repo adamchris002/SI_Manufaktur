@@ -23,11 +23,13 @@ import DeleteIcon from "@mui/icons-material/Delete";
 import MySnackbar from "../components/Snackbar";
 import MyModal from "../components/Modal";
 import dayjs from "dayjs";
+import { useAuth } from "../components/AuthContext";
 
 const MaindashboardFinance = (props) => {
   const { userInformation } = props;
   const { isMobile } = useContext(AppContext);
   const navigate = useNavigate();
+  const { message, clearMessage, setSuccessMessage } = useAuth();
 
   const [
     allDataPermohonanPembelianRequested,
@@ -38,7 +40,6 @@ const MaindashboardFinance = (props) => {
   const [selectedPermohonanPembelian, setSelectedPermohonanPembelian] =
     useState([]);
   const [daftarBank, setDaftarBank] = useState([]);
-  console.log(daftarBank);
 
   const [openModal, setOpenModal] = useState(false);
   const [openSnackbar, setOpenSnackbar] = useState(false);
@@ -46,6 +47,15 @@ const MaindashboardFinance = (props) => {
   const [snackbarMessage, setSnackbarMessage] = useState("");
   const [refreshNamaBank, setRefreshNamaBank] = useState(true);
   const [triggerStatusBukuBank, setTriggerStatusBukuBank] = useState(false);
+
+  useEffect(() => {
+    if (message) {
+      setSnackbarMessage(message);
+      setSnackbarStatus(true);
+      setOpenSnackbar(true);
+      clearMessage();
+    }
+  }, [message, clearMessage]);
 
   useEffect(() => {
     if (refreshDataPermohonanPembelian) {
