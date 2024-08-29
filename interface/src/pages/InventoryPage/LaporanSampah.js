@@ -82,7 +82,7 @@ const LaporanSampah = (props) => {
   const [allLaporanSampah, setAllLaporanSampah] = useState([]);
 
   const [dataLaporanSampahForEdit, setDataLaporanSampahForEdit] = useState([]);
-  // console.log(dataLaporanSampahForEdit);
+
 
   const [openSnackbar, setOpenSnackbar] = useState(false);
   const [snackbarStatus, setSnackbarStatus] = useState(false);

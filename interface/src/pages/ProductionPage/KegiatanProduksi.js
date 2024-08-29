@@ -42,7 +42,6 @@ const KegiatanProduksi = (props) => {
   ]);
 
   const [allProductionPlan, setAllProductionPlan] = useState([]);
-  // console.log(allProductionPlan)
   const [dataBahanProduksiPrev, setDataBahanProduksiPrev] = useState([]);
   const [allInventoryItem, setAllInventoryItem] = useState([]);
   const [dataProduksi, setDataProduksi] = useState({
@@ -104,7 +103,6 @@ const KegiatanProduksi = (props) => {
     },
   ]);
   const [estimasiJadwal, setEstimasiJadwal] = useState([]);
-  console.log(estimasiJadwal)
 
   const [tanggalPengiriman, setTanggalPengiriman] = useState(dayjs(""));
 

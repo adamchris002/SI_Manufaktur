@@ -47,15 +47,18 @@ const KasHarian = (props) => {
 
   const [dataKasharian, setDataKasHarian] = useState([
     {
-        tanggal: dayjs(),
-        uraian: "",
-        nomorBp: "",
-        pos: "",
-        debet: "",
-        kredit: "",
-        sisa: "",
-    }
-  ])
+      tanggal: dayjs(),
+      uraian: "",
+      nomorBp: "",
+      pos: "",
+      debet: "",
+      kredit: "",
+      sisa: "",
+    },
+  ]);
+  console.log(dataKasharian)
+
+  
 
   return (
     <div
@@ -89,7 +92,7 @@ const KasHarian = (props) => {
                   <TableCell style={{ width: "25px" }}>No.</TableCell>
                   <TableCell style={{ width: "300px" }}>Tanggal</TableCell>
                   <TableCell style={{ width: "200px" }}>Uraian</TableCell>
-                  <TableCell style={{ width: "200px" }}>Nomor BP</TableCell>    
+                  <TableCell style={{ width: "200px" }}>Nomor BP</TableCell>
                   <TableCell style={{ width: "200px" }}>Pos</TableCell>
                   <TableCell style={{ width: "200px" }}>Debet</TableCell>
                   <TableCell style={{ width: "200px" }}>Kredit</TableCell>
@@ -132,6 +135,10 @@ const KasHarian = (props) => {
                         </TableCell>
                         <TableCell>
                           <TextField
+                            // value={result.uraian}
+                            onChange={(event) => {
+                              // handleChangeInput(event, index, "uraian");
+                            }}
                             type="text"
                             sx={{
                               "& .MuiOutlinedInput-root": {

@@ -59,8 +59,6 @@ function App() {
     isMobile,
   };
 
-  console.log(userCredentials)
-
   return (
     <>
       <AppContext.Provider value={AppContextValue}>

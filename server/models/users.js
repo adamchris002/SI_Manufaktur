@@ -43,6 +43,14 @@ module.exports = (sequelize, DataTypes) => {
       users.hasMany(models.UserLaporanLimbahProduksis, {
         foreignKey: "userId",
       });
+      users.belongsToMany(models.bukuBanks, {
+        through: "UserBukuBanks",
+        foreignKey: "userId",
+        otherKey: "bukuBankId",
+      });
+      users.hasMany(models.UserBukuBanks, {
+        foreignKey: "userId",
+      });
     }
   }
   users.init(

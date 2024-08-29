@@ -19,9 +19,10 @@ import {
   TableRow,
   Typography,
 } from "@mui/material";
-
+import DeleteIcon from "@mui/icons-material/Delete";
 import MySnackbar from "../components/Snackbar";
 import MyModal from "../components/Modal";
+import dayjs from "dayjs";
 
 const MaindashboardFinance = (props) => {
   const { userInformation } = props;
@@ -36,12 +37,15 @@ const MaindashboardFinance = (props) => {
     useState(true);
   const [selectedPermohonanPembelian, setSelectedPermohonanPembelian] =
     useState([]);
-  console.log(selectedPermohonanPembelian);
+  const [daftarBank, setDaftarBank] = useState([]);
+  console.log(daftarBank);
 
   const [openModal, setOpenModal] = useState(false);
   const [openSnackbar, setOpenSnackbar] = useState(false);
   const [snackbarStatus, setSnackbarStatus] = useState(false);
   const [snackbarMessage, setSnackbarMessage] = useState("");
+  const [refreshNamaBank, setRefreshNamaBank] = useState(true);
+  const [triggerStatusBukuBank, setTriggerStatusBukuBank] = useState(false);
 
   useEffect(() => {
     if (refreshDataPermohonanPembelian) {
@@ -63,6 +67,58 @@ const MaindashboardFinance = (props) => {
       });
     }
   }, [refreshDataPermohonanPembelian]);
+
+  useEffect(() => {
+    if (refreshNamaBank) {
+      axios({
+        method: "GET",
+        url: "http://localhost:3000/finance/getOngoingBukuBank",
+      }).then((result) => {
+        if (result.status === 200) {
+          setDaftarBank(result.data);
+          setRefreshNamaBank(true);
+          setTriggerStatusBukuBank(true);
+        } else {
+          setOpenSnackbar(true);
+          setSnackbarStatus(false);
+          setSnackbarMessage("Tidak berhasil memanggil data bank");
+        }
+      });
+    }
+  }, []);
+
+  useEffect(() => {
+    if (triggerStatusBukuBank) {
+      if (
+        Array.isArray(daftarBank) &&
+        daftarBank.some(
+          (dataBank) =>
+            dataBank.createdAt &&
+            dayjs().isAfter(dayjs(dataBank.createdAt).add(1, "month"))
+        )
+      ) {
+        daftarBank.forEach((result) => {
+          if (result.statusBukuBank !== "Done") {
+            if (dayjs().isAfter(dayjs(result.createdAt).add(1, "month"))) {
+              axios({
+                method: "PUT",
+                url: `http://localhost:3000/finance/updateStatusDone/${result.id}`,
+              }).then((response) => {
+                if (response.status === 200) {
+                  setTriggerStatusBukuBank(false);
+                  setRefreshNamaBank(true);
+                } else {
+                  setOpenSnackbar(true);
+                  setSnackbarStatus(false);
+                  setSnackbarMessage("Tidak dapat mengupdate data buku bank");
+                }
+              });
+            }
+          }
+        });
+      }
+    }
+  }, [triggerStatusBukuBank]);
 
   const handleCloseModal = () => {
     setOpenModal(false);
@@ -367,6 +423,48 @@ const MaindashboardFinance = (props) => {
           >
             Pergi ke Halaman Buku Bank
           </DefaultButton>
+        </div>
+        <div style={{ margin: "32px", width: "50%" }}>
+          {daftarBank?.length === 0 ? (
+            <div>
+              <Typography>Tidak ada data buku bank</Typography>
+            </div>
+          ) : (
+            <TableContainer component={Paper}>
+              <Table sx={{ minWidth: 650 }} aria-label="simple table">
+                <TableHead>
+                  <TableRow>
+                    <TableCell>No.</TableCell>
+                    <TableCell>Tanggal</TableCell>
+                    <TableCell>Nama Bank</TableCell>
+                    <TableCell>Actions</TableCell>
+                  </TableRow>
+                </TableHead>
+                <TableBody>
+                  {daftarBank.map((result, index) => {
+                    return (
+                      <React.Fragment key={index}>
+                        <TableRow>
+                          <TableCell>{index + 1 + "."}</TableCell>
+                          <TableCell>
+                            {dayjs(result.createdAt).format(
+                              "MM/DD/YYYY hh:mm A"
+                            )}
+                          </TableCell>
+                          <TableCell>{result.namaBank}</TableCell>
+                          <TableCell>
+                            <IconButton>
+                              <DeleteIcon style={{ color: "red" }} />
+                            </IconButton>
+                          </TableCell>
+                        </TableRow>
+                      </React.Fragment>
+                    );
+                  })}
+                </TableBody>
+              </Table>
+            </TableContainer>
+          )}
         </div>
         <div
           style={{
