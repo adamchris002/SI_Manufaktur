@@ -17,6 +17,10 @@ module.exports = (sequelize, DataTypes) => {
         foreignKey: "kasHarianId",
         onDelete: "CASCADE",
       });
+      kasHarians.hasMany(models.posPembayarans, {
+        foreignKey: "kasHarianId",
+        onDelete: "CASCADE",
+      });
     }
   }
   kasHarians.init(

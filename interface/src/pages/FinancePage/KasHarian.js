@@ -29,6 +29,7 @@ import MySnackbar from "../../components/Snackbar";
 import VisibilityIcon from "@mui/icons-material/Visibility";
 import MyModal from "../../components/Modal";
 import CloseIcon from "@mui/icons-material/Close";
+import MySelectTextField from "../../components/SelectTextField";
 
 const NumericFormatCustom = React.forwardRef((props, ref) => {
   const { onChange, ...other } = props;
@@ -73,6 +74,8 @@ const KasHarian = (props) => {
   const [judulKasHarian, setJudulKasHarian] = useState(
     `Kas Harian ${dayjs().format("MM/DD/YYYY")}`
   );
+  const [posPembayaran, setPosPembayaran] = useState([]);
+  console.log(posPembayaran)
   const [totalDebet, setTotalDebet] = useState(0);
   const [totalKredit, setTotalKredit] = useState(0);
   const [totalSisa, setTotalSisa] = useState(0);
@@ -81,10 +84,47 @@ const KasHarian = (props) => {
   const [snackbarStatus, setSnackbarStatus] = useState(false);
   const [snackbarMessage, setSnackbarMessage] = useState("");
   const [openModal, setOpenModal] = useState(false);
+  const [openModalPosPembayaran, setOpenModalPosPembayaran] = useState(false);
   const [selectedKasHarianDone, setSelectedKasHarianDone] = useState({});
-  console.log(selectedKasHarianDone);
+  const [refreshPosPembayaran, setRefreshPosPembayaran] = useState(true);
 
   // const postBiaya = [{value: "A1"}]
+
+  useEffect(() => {
+    axios({
+      method: "POST",
+      url: "http://localhost:3000/finance/checkForDefaultPosPembayaran",
+    }).then((result) => {
+      if (result.status === 200) {
+        setRefreshPosPembayaran(true);
+      } else {
+        setOpenSnackBar(true);
+        setSnackbarStatus(false);
+        setSnackbarMessage("Tidak berhasil memanggil data pos pembayaran");
+      }
+    });
+  }, []);
+
+  useEffect(() => {
+    if (refreshPosPembayaran) {
+      axios({
+        method: "GET",
+        url: "http://localhost:3000/finance/getAllPosPembayaran",
+      }).then((result) => {
+        if (result.status === 200) {
+          const tempData = result?.data?.map(({ kode, ...rest }) => ({
+            value: kode,
+            ...rest,
+          }));
+          setPosPembayaran(tempData);
+        } else {
+          setOpenSnackBar(true);
+          setSnackbarStatus(false);
+          setSnackbarMessage("Tidak berhasil memanggil data pos pembayaran");
+        }
+      });
+    }
+  }, [refreshPosPembayaran]);
 
   useEffect(() => {
     let totalKredit = 0;
@@ -141,6 +181,17 @@ const KasHarian = (props) => {
     });
   }, []);
 
+  const handleTambahPosPembayaran = () => {
+    setPosPembayaran((oldArray) => [
+      ...oldArray,
+      { kode: "", uraian: "", kataKunci: "" },
+    ]);
+  };
+
+  const handleLihatDataPosPembayaran = () => {
+    setOpenModalPosPembayaran(true);
+  };
+
   const handleViewDoneKasHarian = (result) => {
     setSelectedKasHarianDone(result);
     setOpenModal(true);
@@ -148,6 +199,22 @@ const KasHarian = (props) => {
 
   const handleCloseModal = () => {
     setOpenModal(false);
+  };
+
+  const handleCloseModalPosPembayaran = () => {
+    setOpenModalPosPembayaran(false);
+  };
+
+  const handleChangeInputPosPembayaran = (event, index, field) => {
+    const value = event.target.value;
+    setPosPembayaran((oldArray) =>
+      oldArray.map((item, i) => {
+        if (i === index) {
+          return { ...item, [field]: value };
+        }
+        return item;
+      })
+    );
   };
 
   const handleChangeInputKasHarian = (event, index, field) => {
@@ -274,6 +341,23 @@ const KasHarian = (props) => {
     }
   };
 
+  const simpanDataPosPembayaran = () => {
+    axios({
+      method: "PUT",
+      url: `http://localhost:3000/finance/savePosPembayaran/${userInformation?.data?.id}`,
+      data: { dataPosPembayaran: posPembayaran },
+    }).then((result) => {
+      if (result.status === 200) {
+        handleCloseModalPosPembayaran();
+        setRefreshPosPembayaran(true);
+      } else {
+        setOpenSnackBar(true);
+        setSnackbarStatus(false);
+        setSnackbarMessage("Tidak berhasil menyimpan data pos pembayaran");
+      }
+    });
+  };
+
   const handleCloseSnackbar = () => {
     setOpenSnackBar(false);
     setSnackbarMessage("");
@@ -306,13 +390,24 @@ const KasHarian = (props) => {
             <Typography style={{ color: "#0F607D", fontSize: "3vw" }}>
               Kas Harian
             </Typography>
-            <DefaultButton
-              onClickFunction={() => {
-                handleTambahBaris();
-              }}
-            >
-              Tambah Baris
-            </DefaultButton>
+            <div style={{ display: "flex", alignItems: "center" }}>
+              <DefaultButton
+                onClickFunction={() => {
+                  handleLihatDataPosPembayaran();
+                }}
+              >
+                Pos Pembayaran
+              </DefaultButton>
+              <div style={{ marginLeft: "8px" }}>
+                <DefaultButton
+                  onClickFunction={() => {
+                    handleTambahBaris();
+                  }}
+                >
+                  Tambah Baris
+                </DefaultButton>
+              </div>
+            </div>
           </div>
           <TableContainer component={Paper} sx={{ overflowX: "auto" }}>
             <Table
@@ -425,28 +520,12 @@ const KasHarian = (props) => {
                           />
                         </TableCell>
                         <TableCell>
-                          <TextField
+                          <MySelectTextField
+                            width="200px"
+                            data={posPembayaran}
                             value={result.pos}
                             onChange={(event) => {
                               handleChangeInputKasHarian(event, index, "pos");
-                            }}
-                            type="text"
-                            sx={{
-                              "& .MuiOutlinedInput-root": {
-                                height: isMobile ? "15px" : "3vw",
-                                width: isMobile ? "120px" : "200px",
-                                fontSize: isMobile ? "10px" : "1.5vw",
-                                borderRadius: "10px",
-                                "& fieldset": {
-                                  borderColor: "#0F607D",
-                                },
-                                "&:hover fieldset": {
-                                  borderColor: "#0F607D",
-                                },
-                                "&.Mui-focused fieldset": {
-                                  borderColor: "#0F607D",
-                                },
-                              },
                             }}
                           />
                         </TableCell>
@@ -786,6 +865,132 @@ const KasHarian = (props) => {
                 </TableBody>
               </Table>
             </TableContainer>
+          </div>
+        </MyModal>
+      )}
+      {openModalPosPembayaran === true && (
+        <MyModal
+          open={openModalPosPembayaran}
+          handleClose={handleCloseModalPosPembayaran}
+        >
+          <div
+            className="hideScrollbar"
+            style={{
+              margin: isMobile ? "24px" : "0.83vw 1.667vw 0.83vw 1.667vw",
+              overflow: "auto",
+              width: isMobile ? "80vw" : "50vw",
+              maxHeight: "80vh",
+            }}
+          >
+            <div
+              style={{
+                display: "flex",
+                justifyContent: "space-between",
+                alignItems: "center",
+              }}
+            >
+              <Typography style={{ color: "#0F607D", fontSize: "3vw" }}>
+                Data Pos Pembayaran
+              </Typography>
+              <DefaultButton
+                onClickFunction={() => {
+                  handleTambahPosPembayaran();
+                }}
+              >
+                Tambah Item
+              </DefaultButton>
+            </div>
+            <TableContainer component={Paper}>
+              <Table>
+                <TableHead>
+                  <TableRow>
+                    <TableCell>No.</TableCell>
+                    <TableCell style={{ width: "70px" }}>Kode</TableCell>
+                    <TableCell>Uraian</TableCell>
+                    <TableCell>Kata Kunci</TableCell>
+                    <TableCell>Actions</TableCell>
+                  </TableRow>
+                </TableHead>
+                <TableBody>
+                  {posPembayaran?.map((result, index) => {
+                    return (
+                      <React.Fragment key={index}>
+                        <TableRow>
+                          <TableCell>{index + 1 + "."}</TableCell>
+                          <TableCell>
+                            <TextField
+                              onChange={(event) => {
+                                handleChangeInputPosPembayaran(
+                                  event,
+                                  index,
+                                  "value"
+                                );
+                              }}
+                              value={result.value}
+                            />
+                          </TableCell>
+                          <TableCell>
+                            <TextField
+                              onChange={(event) => {
+                                handleChangeInputPosPembayaran(
+                                  event,
+                                  index,
+                                  "uraian"
+                                );
+                              }}
+                              value={result.uraian}
+                            />
+                          </TableCell>
+                          <TableCell>
+                            <TextField
+                              onChange={(event) => {
+                                handleChangeInputPosPembayaran(
+                                  event,
+                                  index,
+                                  "kataKunci"
+                                );
+                              }}
+                              value={result.kataKunci}
+                            />
+                          </TableCell>
+                          <TableCell>
+                            <IconButton>
+                              <DeleteIcon style={{ color: "red" }} />
+                            </IconButton>
+                          </TableCell>
+                        </TableRow>
+                      </React.Fragment>
+                    );
+                  })}
+                </TableBody>
+              </Table>
+            </TableContainer>
+            <div
+              style={{
+                padding: "16px",
+                display: "flex",
+                justifyContent: "center",
+                alignItems: "center",
+              }}
+            >
+              <DefaultButton
+                onClickFunction={() => {
+                  simpanDataPosPembayaran();
+                }}
+              >
+                Simpan Data Pos Pembayaran
+              </DefaultButton>
+              <Button
+                variant="outlined"
+                color="error"
+                style={{ textTransform: "none", marginLeft: "8px" }}
+                onClick={() => {
+                  handleCloseModalPosPembayaran();
+                }}
+              >
+                Cancel
+              </Button>
+            </div>
           </div>
         </MyModal>
       )}
