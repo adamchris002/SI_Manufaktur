@@ -51,6 +51,12 @@ module.exports = (sequelize, DataTypes) => {
       users.hasMany(models.UserBukuBanks, {
         foreignKey: "userId",
       });
+      users.belongsToMany(models.kasHarians, {
+        through: "UserKasHarians",
+        foreignKey: "userId",
+        otherKey: "kasHarianId",
+      });
+      users.hasMany(models.UserKasHarians, { foreignKey: "userId" });
     }
   }
   users.init(

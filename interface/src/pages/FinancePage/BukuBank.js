@@ -332,8 +332,8 @@ const BukuBank = (props) => {
       if (!item.uraian || !item.saldo || !item.keterangan) {
         return false;
       }
-      if (item.debet || item.kredit) {
-        return true;
+      if (!item.debet && !item.kredit) {
+        return false;
       }
     }
 
@@ -345,7 +345,7 @@ const BukuBank = (props) => {
     if (checkDataBukuBank === false) {
       setOpenSnackbar(true);
       setSnackbarStatus(false);
-      setSnackbarMessage("Tolong isi semua input");
+      setSnackbarMessage("Mohon isi semua input");
     } else {
       axios({
         method: "POST",
@@ -450,7 +450,6 @@ const BukuBank = (props) => {
                 <TableContainer component={Paper} sx={{ overflowX: "auto" }}>
                   <Table
                     sx={{
-                      minWidth: 650,
                       tableLayout: "fixed",
                       overflowX: "auto",
                     }}
@@ -688,7 +687,7 @@ const BukuBank = (props) => {
                   handleAddItemBukuBank();
                 }}
               >
-                Tambah Data Buku Bank
+                Simpan Data Buku Bank
               </DefaultButton>
               <Button
                 variant="outlined"
@@ -702,7 +701,7 @@ const BukuBank = (props) => {
               </Button>
             </div>
           )}
-          <div style={{ padding: "8px 0px", width: "50%" }}>
+          <div style={{ padding: "8px 0px", width: "40%" }}>
             <Typography style={{ fontSize: "3vw", color: "#0F607D" }}>
               Sejarah Buku Bank
             </Typography>

@@ -40,13 +40,16 @@ const MaindashboardFinance = (props) => {
   const [selectedPermohonanPembelian, setSelectedPermohonanPembelian] =
     useState([]);
   const [daftarBank, setDaftarBank] = useState([]);
+  const [kasHarian, setKasHarian] = useState([]);
 
   const [openModal, setOpenModal] = useState(false);
   const [openSnackbar, setOpenSnackbar] = useState(false);
   const [snackbarStatus, setSnackbarStatus] = useState(false);
   const [snackbarMessage, setSnackbarMessage] = useState("");
   const [refreshNamaBank, setRefreshNamaBank] = useState(true);
+  const [refreshKasHarian, setRefreshKasHarian] = useState(true);
   const [triggerStatusBukuBank, setTriggerStatusBukuBank] = useState(false);
+  const [triggerStatusKasHarian, setTriggerStatusKasHarian] = useState(false);
 
   useEffect(() => {
     if (message) {
@@ -98,6 +101,25 @@ const MaindashboardFinance = (props) => {
   }, []);
 
   useEffect(() => {
+    if (refreshKasHarian) {
+      axios({
+        method: "GET",
+        url: "http://localhost:3000/finance/getOngoingKasHarian",
+      }).then((result) => {
+        if (result.status === 200) {
+          setKasHarian(result.data);
+          setRefreshKasHarian(false);
+          setTriggerStatusKasHarian(true);
+        } else {
+          setOpenSnackbar(true);
+          setSnackbarStatus(false);
+          setSnackbarMessage("Tidak berhasil memanggil data kas harian");
+        }
+      });
+    }
+  }, []);
+
+  useEffect(() => {
     if (triggerStatusBukuBank) {
       if (
         Array.isArray(daftarBank) &&
@@ -129,6 +151,31 @@ const MaindashboardFinance = (props) => {
       }
     }
   }, [triggerStatusBukuBank]);
+
+  useEffect(() => {
+    if (triggerStatusKasHarian) {
+      if (
+        kasHarian?.createdAt &&
+        dayjs().isAfter(dayjs(kasHarian?.createdAt).add(1, "month"))
+      ) {
+        if (kasHarian?.statusKasHarian !== "Done") {
+          axios({
+            method: "PUT",
+            url: `http://localhost:3000/finance/updateStatusKasHarianDone/${kasHarian.id}`,
+          }).then((response) => {
+            if (response.status === 200) {
+              setTriggerStatusKasHarian(false);
+              setRefreshKasHarian(true);
+            } else {
+              setOpenSnackbar(true);
+              setSnackbarStatus(false);
+              setSnackbarMessage("Tidak dapat mengupdate data kas harian");
+            }
+          });
+        }
+      }
+    }
+  }, [triggerStatusKasHarian]);
 
   const handleCloseModal = () => {
     setOpenModal(false);
@@ -435,7 +482,7 @@ const MaindashboardFinance = (props) => {
           </DefaultButton>
         </div>
         <div style={{ margin: "32px", width: "50%" }}>
-          {daftarBank?.length === 0 ? (
+          {/* {daftarBank?.length === 0 ? (
             <div>
               <Typography>Tidak ada data buku bank</Typography>
             </div>
@@ -474,7 +521,7 @@ const MaindashboardFinance = (props) => {
                 </TableBody>
               </Table>
             </TableContainer>
-          )}
+          )} */}
         </div>
         <div
           style={{
