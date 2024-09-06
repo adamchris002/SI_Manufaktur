@@ -1028,7 +1028,7 @@ class InventoryController {
         },
         { where: { id: id } }
       );
-      res.json(result)
+      res.json(result);
     } catch (error) {
       res.json(error);
     }

@@ -14,6 +14,14 @@ module.exports = (sequelize, DataTypes) => {
         foreignKey: "productionPlanningId",
         onDelete: "CASCADE",
       });
+      productionPlannings.hasMany(models.rincianCetakans, {
+        foreignKey: "productionPlanningId",
+        onDelete: "CASCADE",
+      });
+      productionPlannings.hasMany(models.perincians, {
+        foreignKey: "productionPlanningId",
+        onDelete: "CASCADE",
+      });
     }
   }
   productionPlannings.init(

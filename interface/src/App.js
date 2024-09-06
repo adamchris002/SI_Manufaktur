@@ -31,6 +31,7 @@ import LaporanLimbahProduksi from "./pages/ProductionPage/LaporanLimbahProduksi"
 import LaporanSampah from "./pages/InventoryPage/LaporanSampah";
 import BukuBank from "./pages/FinancePage/BukuBank";
 import KasHarian from "./pages/FinancePage/KasHarian";
+import Pajak from "./pages/FinancePage/Pajak";
 
 export const AppContext = createContext({});
 
@@ -304,6 +305,17 @@ function App() {
                   <Navigate to="/unauthorized" replace />
                 ) : (
                   <KasHarian userInformation={userCredentials}/>
+                )
+              }
+            />
+            <Route
+              path="/financeDashboard/pajak"
+              element={
+                !userCredentials.data ||
+                userCredentials.data.department !== "Finance" ? (
+                  <Navigate to="/unauthorized" replace />
+                ) : (
+                  <Pajak userInformation={userCredentials}/>
                 )
               }
             />

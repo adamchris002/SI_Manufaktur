@@ -11,6 +11,8 @@ const {
   estimasiJadwalProduksis,
   activitylogs,
   UserActivityLogs,
+  rincianCetakans,
+  perincians,
 } = require("../models");
 
 class ProductionPlanningController {
@@ -32,6 +34,8 @@ class ProductionPlanningController {
         setting,
         estimasiBahanBaku,
         estimasiJadwal,
+        rincianCetakan,
+        perincian,
         orderId,
       } = req.body;
 
@@ -122,6 +126,39 @@ class ProductionPlanningController {
         );
       } else {
         res.status(500).json({ error: "Error adding Estimasi Jadwal" });
+      }
+      if (rincianCetakan && Array.isArray(rincianCetakan)) {
+        await Promise.all(
+          rincianCetakan.map(async (data) => {
+            await rincianCetakans.create({
+              productionPlanningId: productionPlanning.id,
+              namaCetakan: data.namaCetakan,
+              ukuran: data.ukuran,
+              jenisKertas: data.jenisKertas,
+              beratKertas: data.beratKertas,
+              warna: data.warna,
+              kuantitas: data.kuantitas,
+              ply: data.ply,
+              isi: data.isi,
+              nomorator: data.nomorator,
+              keterangan: data.keterangan,
+            });
+          })
+        );
+      }
+      if (perincian && Array.isArray(perincian)) {
+        await Promise.all(
+          perincian.map(async (data) => {
+            await perincians.create({
+              productionPlanningId: productionPlanning.id,
+              namaRekanan: data.namaRekanan,
+              keterangan: data.keterangan,
+              jenisCetakan: data.jenisCetakan,
+              isi: data.isi,
+              harga: data.harga,
+            });
+          })
+        );
       }
       await orders.update(
         {
@@ -244,6 +281,8 @@ class ProductionPlanningController {
     try {
       let result = await productionPlannings.findAll({
         include: [
+          { model: rincianCetakans },
+          { model: perincians },
           {
             model: estimasiBahanBakus,
             include: [
@@ -316,6 +355,8 @@ class ProductionPlanningController {
       let result = await productionPlannings.findOne({
         where: { id: id },
         include: [
+          { model: rincianCetakans },
+          { model: perincians },
           {
             model: estimasiBahanBakus,
             include: [
@@ -359,6 +400,8 @@ class ProductionPlanningController {
         setting,
         estimasiBahanBaku,
         estimasiJadwal,
+        rincianCetakan,
+        perincian,
       } = req.body;
 
       let productionPlan = await productionPlannings.findOne({
@@ -420,6 +463,72 @@ class ProductionPlanningController {
         id: updateProductionPlanningActivity.id,
         activityLogsId: updateProductionPlanningActivity.id,
       });
+
+      if (perincian && Array.isArray(perincian)) {
+        await Promise.all(
+          perincian.map(async (data) => {
+            if (!data.id) {
+              await perincians.create({
+                productionPlanningId: productionPlanId,
+                namaRekanan: data.namaRekanan,
+                keterangan: data.keterangan,
+                jenisCetakan: data.jenisCetakan,
+                isi: data.isi,
+                harga: data.harga,
+              });
+            } else {
+              await perincians.update(
+                {
+                  namaRekanan: data.namaRekanan,
+                  keterangan: data.keterangan,
+                  jenisCetakan: data.jenisCetakan,
+                  isi: data.isi,
+                  harga: data.harga,
+                },
+                { where: { id: data.id } }
+              );
+            }
+          })
+        );
+      }
+
+      if (rincianCetakan && Array.isArray(rincianCetakan)) {
+        await Promise.all(
+          rincianCetakan.map(async (data) => {
+            if (!data.id) {
+              await rincianCetakans.create({
+                productionPlanningId: productionPlanId,
+                namaCetakan: data.namaCetakan,
+                ukuran: data.ukuran,
+                jenisKertas: data.jenisKertas,
+                beratKertas: data.beratKertas,
+                warna: data.warna,
+                kuantitas: data.kuantitas,
+                ply: data.ply,
+                isi: data.isi,
+                nomorator: data.nomorator,
+                keterangan: data.keterangan,
+              });
+            } else {
+              await rincianCetakans.update(
+                {
+                  namaCetakan: data.namaCetakan,
+                  ukuran: data.ukuran,
+                  jenisKertas: data.jenisKertas,
+                  beratKertas: data.beratKertas,
+                  warna: data.warna,
+                  kuantitas: data.kuantitas,
+                  ply: data.ply,
+                  isi: data.isi,
+                  nomorator: data.nomorator,
+                  keterangan: data.keterangan,
+                },
+                { where: { id: data.id } }
+              );
+            }
+          })
+        );
+      }
 
       if (estimasiBahanBaku && Array.isArray(estimasiBahanBaku)) {
         await Promise.all(
@@ -596,6 +705,28 @@ class ProductionPlanningController {
         where: { id: id },
       });
       res.json(deleteBahanBakuRow);
+    } catch (error) {
+      res.json(error);
+    }
+  }
+  static async deleteItemRincianCetakan(req, res) {
+    try {
+      const { id } = req.params;
+      let result = await rincianCetakans.destroy({
+        where: { id: id },
+      });
+      res.json(result);
+    } catch (error) {
+      res.json(error);
+    }
+  }
+  static async deleteItemPerincian(req, res) {
+    try {
+      const { id } = req.params;
+      let result = await perincians.destroy({
+        where: { id: id },
+      });
+      res.json(result);
     } catch (error) {
       res.json(error);
     }

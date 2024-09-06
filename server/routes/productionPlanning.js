@@ -63,4 +63,13 @@ productionPlanningRoutes.delete(
   "/deleteJadwal/:id",
   ProductionPlanningController.deleteJadwal
 );
+productionPlanningRoutes.delete(
+  "/deleteItemRincianCetakan/:id",
+  ProductionPlanningController.deleteItemRincianCetakan
+);
+productionPlanningRoutes.delete(
+  "/deleteItemPerincian/:id",
+  ProductionPlanningController.deleteItemPerincian
+);
+
 module.exports = productionPlanningRoutes;

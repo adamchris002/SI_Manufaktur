@@ -33,9 +33,32 @@ import MyModal from "../../components/Modal";
 import DefaultButton from "../../components/Button";
 import { useAuth } from "../../components/AuthContext";
 import MySelectTextField from "../../components/SelectTextField";
+import { NumericFormat } from "react-number-format";
 
 dayjs.extend(utc);
 dayjs.extend(timezone);
+
+const NumericFormatCustom = React.forwardRef((props, ref) => {
+  const { onChange, ...other } = props;
+
+  return (
+    <NumericFormat
+      {...other}
+      getInputRef={ref}
+      onValueChange={(values) => {
+        onChange({
+          target: {
+            name: props.name,
+            value: values.value,
+          },
+        });
+      }}
+      thousandSeparator
+      valueIsNumericString
+      prefix="Rp."
+    />
+  );
+});
 
 const EditProductionPlanPage = (props) => {
   const { userInformation } = props;
@@ -70,6 +93,30 @@ const EditProductionPlanPage = (props) => {
   const [contoh, setContoh] = useState(false);
   const [plate, setPlate] = useState(false);
   const [setting, setSetting] = useState(false);
+  const [rincianCetakan, setRincianCetakan] = useState([
+    {
+      namaCetakan: "",
+      ukuran: "",
+      jenisKertas: "",
+      beratKertas: "",
+      warna: "",
+      kuantitas: { value: "", unit: "" },
+      ply: "",
+      isi: { value: "", unit: "" },
+      nomorator: "",
+      keterangan: "",
+    },
+  ]);
+
+  const [dataPerincian, setDataPerincian] = useState([
+    {
+      namaRekanan: "",
+      keterangan: "",
+      jenisCetakan: "",
+      isi: { value: "", unit: "" },
+      harga: "",
+    },
+  ]);
 
   const [refreshProductionPlanData, setRefreshProductionPlanData] =
     useState(true);
@@ -117,6 +164,21 @@ const EditProductionPlanPage = (props) => {
     });
   };
 
+  const handleTambahPerincian = () => {
+    setDataPerincian((oldArray) => [
+      ...oldArray,
+      {
+        namaRekanan: "",
+        keterangan: "",
+        jenisCetakan: "",
+        isi: { value: "", unit: "" },
+        harga: "",
+      },
+    ]);
+  };
+
+
+
   const deleteJadwal = (id) => {
     axios({
       method: "DELETE",
@@ -131,6 +193,42 @@ const EditProductionPlanPage = (props) => {
         setOpenSnackbar(false);
         setSnackbarStatus(false);
         setSnackbarMessage("Tidak berhasil menghapus bagian jadwal!");
+      }
+    });
+  };
+
+  const handleDeleteItemPerincian = (id) => {
+    axios({
+      method: "DELETE",
+      url: `http://localhost:3000/productionPlanning/deleteItemPerincian/${id}`,
+    }).then((result) => {
+      if (result.status === 200) {
+        setOpenSnackbar(true);
+        setSnackbarStatus(true);
+        setSnackbarMessage("Berhasil menghapus perincian");
+        setRefreshProductionPlanData(true);
+      } else {
+        setOpenSnackbar(true);
+        setSnackbarStatus(false);
+        setSnackbarMessage("Tidak berhasil menghapus perincian");
+      }
+    });
+  };
+
+  const handleDeleteItemRincianCetakan = (id) => {
+    axios({
+      method: "DELETE",
+      url: `http://localhost:3000/productionPlanning/deleteItemRincianCetakan/${id}`,
+    }).then((result) => {
+      if (result.status === 200) {
+        setOpenSnackbar(true);
+        setSnackbarStatus(true);
+        setSnackbarMessage("Berhasil menghapus item rincian cetakan");
+        setRefreshProductionPlanData(true);
+      } else {
+        setOpenSnackbar(true);
+        setSnackbarStatus(false);
+        setSnackbarMessage("Tidak berhasil menghapus item rincian cetakan");
       }
     });
   };
@@ -200,6 +298,21 @@ const EditProductionPlanPage = (props) => {
         setEstimasiJadwal(result.data.estimasiJadwalProdukses);
         setCallSelectedOrder(true);
         setRefreshProductionPlanData(false);
+        const tempData = result.data.rincianCetakans.map((result) => {
+          return {
+            ...result,
+            kuantitas: separateValueAndUnit(result.kuantitas),
+            isi: separateValueAndUnit(result.isi),
+          };
+        });
+        setRincianCetakan(tempData);
+        const tempPerincianData = result.data.perincians.map((result) => {
+          return {
+            ...result,
+            isi: separateValueAndUnit(result.isi)
+          }
+        })
+        setDataPerincian(tempPerincianData)
       });
     }
   }, [refreshProductionPlanData]);
@@ -219,6 +332,41 @@ const EditProductionPlanPage = (props) => {
         setSnackbarStatus(false);
         setSnackbarMessage("Tidak berhasil menghapus tabel jenis!");
       }
+    });
+  };
+
+  const handleChangeInputPerincian = (event, index, field, unit) => {
+    const value = event && event.target ? event.target.value : event;
+    setDataPerincian((oldArray) => {
+      const updatedItems = oldArray.map((item, i) => {
+        let updatedItem = { ...item };
+        if (i === index) {
+          if (unit) {
+            updatedItem = {
+              ...updatedItem,
+              [field]: {
+                value: item[field]?.value || "",
+                unit: value,
+              },
+            };
+          } else {
+            if (field === "isi") {
+              updatedItem = {
+                ...updatedItem,
+                [field]: {
+                  ...updatedItem[field],
+                  value: value,
+                },
+              };
+            } else {
+              updatedItem = { ...updatedItem, [field]: value };
+            }
+          }
+          return updatedItem;
+        }
+        return item;
+      });
+      return updatedItems;
     });
   };
 
@@ -333,6 +481,24 @@ const EditProductionPlanPage = (props) => {
     }
   };
 
+  const handleTambahRincianCetakan = () => {
+    setRincianCetakan((oldArray) => [
+      ...oldArray,
+      {
+        namaCetakan: "",
+        ukuran: "",
+        jenisKertas: "",
+        beratKertas: "",
+        warna: "",
+        kuantitas: { value: "", unit: "" },
+        ply: "",
+        isi: { value: "", unit: "" },
+        nomorator: "",
+        keterangan: "",
+      },
+    ]);
+  };
+
   const handleAddData = (index) => {
     setEstimasiBahanBaku((oldArray) =>
       oldArray.map((item, i) =>
@@ -409,6 +575,41 @@ const EditProductionPlanPage = (props) => {
     return true;
   };
 
+  const handleInputChangeRincianCetakan = (event, index, field, unit) => {
+    const value = event && event.target ? event.target.value : event;
+    setRincianCetakan((oldArray) => {
+      const updatedItems = oldArray.map((item, i) => {
+        let updatedItem = { ...item };
+        if (i === index) {
+          if (unit) {
+            updatedItem = {
+              ...updatedItem,
+              [field]: {
+                value: item[field]?.value || "",
+                unit: value,
+              },
+            };
+          } else {
+            if (field === "kuantitas" || field === "isi") {
+              updatedItem = {
+                ...updatedItem,
+                [field]: {
+                  ...updatedItem[field],
+                  value: value,
+                },
+              };
+            } else {
+              updatedItem = { ...updatedItem, [field]: value };
+            }
+          }
+          return updatedItem;
+        }
+        return item;
+      });
+      return updatedItems;
+    });
+  };
+
   const transformDataForSubmission = (data) => {
     return data.map((item) => {
       return {
@@ -432,12 +633,74 @@ const EditProductionPlanPage = (props) => {
     });
   };
 
+  const isRincianCetakanEmpty = () => {
+    for (const item of rincianCetakan) {
+      if (
+        !item.namaCetakan ||
+        !item.ukuran ||
+        !item.jenisKertas ||
+        !item.beratKertas ||
+        !item.warna ||
+        !item.kuantitas.value ||
+        !item.kuantitas.unit ||
+        !item.ply ||
+        !item.isi.value ||
+        !item.isi.unit ||
+        !item.nomorator ||
+        !item.keterangan
+      ) {
+        return false;
+      }
+    }
+    return true;
+  };
+
+  const transformDataForSubmissionRincianCetakan = (data) => {
+    return data.map((item) => {
+      return {
+        ...item,
+        isi: `${item.isi.value} ${item.isi.unit}`,
+        kuantitas: `${item.kuantitas.value} ${item.kuantitas.unit}`,
+      };
+    });
+  };
+  const isPerincianEmpty = () => {
+    for (const item of dataPerincian) {
+      if (
+        !item.namaRekanan ||
+        !item.keterangan ||
+        !item.jenisCetakan ||
+        !item.isi.value ||
+        !item.isi.unit ||
+        !item.harga
+      ) {
+        return false;
+      }
+    }
+    return true;
+  };
+
+  const transformDataForSubmissionPerincian = (data) => {
+    return data.map((item) => {
+      return {
+        ...item,
+        isi: `${item.isi.value} ${item.isi.unit}`,
+      };
+    });
+  };
+
   const handleUpdatePerencanaanProduksi = () => {
     const checkIfEstimasiBahanBakuEmpty = isEstimasiBahanBakuComplete();
     const checkIfEstimasiJadwalEmpty = isEstimasiJadwalEmpty();
+    const checkIfRincianCetakanEmpty = isRincianCetakanEmpty();
+    const checkIfPerincianEmpty = isPerincianEmpty();
+    
 
     const updatedEstimasiBahanBaku =
       transformDataForSubmission(estimasiBahanBaku);
+    const newRincianCetakan =
+      transformDataForSubmissionRincianCetakan(rincianCetakan);
+      const newPerincian = transformDataForSubmissionPerincian(dataPerincian);
 
     const perencanaanProduksiData = {
       pemesan: pemesan,
@@ -455,7 +718,9 @@ const EditProductionPlanPage = (props) => {
       setting: setting,
       estimasiBahanBaku: updatedEstimasiBahanBaku,
       estimasiJadwal: estimasiJadwal,
+      rincianCetakan: newRincianCetakan,
       productionPlanId: productionPlanId,
+      perincian: newPerincian,
     };
     if (
       pemesan === "" ||
@@ -471,7 +736,9 @@ const EditProductionPlanPage = (props) => {
       estimasiJadwal.length === 0 ||
       estimasiBahanBaku.length === 0 ||
       checkIfEstimasiBahanBakuEmpty === false ||
-      checkIfEstimasiJadwalEmpty === false
+      checkIfRincianCetakanEmpty === false ||
+      checkIfEstimasiJadwalEmpty === false ||
+      checkIfPerincianEmpty === false
     ) {
       setOpenSnackbar(true);
       setSnackbarStatus(false);
@@ -1876,6 +2143,464 @@ const EditProductionPlanPage = (props) => {
                       </Table>
                     </TableContainer>
                   </div>
+                </div>
+                <div
+                  style={{
+                    width: "100%",
+                    height: "1px",
+                    backgroundColor: "#0F607D",
+                    margin: " 24px 0px ",
+                    borderRadius: "5px",
+                  }}
+                />
+                <div style={{ marginTop: "32px" }}>
+                  <div style={{ display: "flex", alignItems: "center" }}>
+                    <Typography
+                      style={{
+                        color: "#0F607D",
+                        fontSize: "2vw",
+                        marginRight: "8px",
+                      }}
+                    >
+                      Rincian Cetakan
+                    </Typography>
+                    <IconButton
+                      style={{ height: "50%" }}
+                      onClick={() => {
+                        handleTambahRincianCetakan();
+                      }}
+                    >
+                      <AddIcon style={{ color: "#0F607D" }} />
+                    </IconButton>
+                  </div>
+                  <TableContainer component={Paper} sx={{ overflowX: "auto" }}>
+                    <Table
+                      aria-label="simple table"
+                      sx={{
+                        minWidth: 650,
+                        tableLayout: "fixed",
+                        overflowX: "auto",
+                      }}
+                    >
+                      <TableHead>
+                        <TableRow>
+                          <TableCell style={{ width: "25px" }}>No.</TableCell>
+                          <TableCell style={{ width: "200px" }}>
+                            Nama Cetakan
+                          </TableCell>
+                          <TableCell style={{ width: "200px" }}>
+                            Ukuran
+                          </TableCell>
+                          <TableCell style={{ width: "200px" }}>
+                            Jenis Kertas
+                          </TableCell>
+                          <TableCell style={{ width: "200px" }}>
+                            Berat Kertas (Gram)
+                          </TableCell>
+                          <TableCell style={{ width: "200px" }}>
+                            Warna
+                          </TableCell>
+                          <TableCell style={{ width: "200px" }}>
+                            Kuantitas
+                          </TableCell>
+                          <TableCell style={{ width: "100px" }}>Ply</TableCell>
+                          <TableCell style={{ width: "200px" }}>Isi</TableCell>
+                          <TableCell style={{ width: "200px" }}>
+                            Nomorator
+                          </TableCell>
+                          <TableCell style={{ width: "200px" }}>
+                            Keterangan
+                          </TableCell>
+                          <TableCell>Actions</TableCell>
+                        </TableRow>
+                      </TableHead>
+                      <TableBody>
+                        {rincianCetakan?.map((result, index) => {
+                          return (
+                            <React.Fragment key={index}>
+                              <TableRow>
+                                <TableCell>{index + 1 + "."}</TableCell>
+                                <TableCell>
+                                  <TextField
+                                    value={result.namaCetakan}
+                                    onChange={(event) => {
+                                      handleInputChangeRincianCetakan(
+                                        event,
+                                        index,
+                                        "namaCetakan"
+                                      );
+                                    }}
+                                  />
+                                </TableCell>
+                                <TableCell>
+                                  <TextField
+                                    value={result.ukuran}
+                                    onChange={(event) => {
+                                      handleInputChangeRincianCetakan(
+                                        event,
+                                        index,
+                                        "ukuran"
+                                      );
+                                    }}
+                                  />
+                                </TableCell>
+                                <TableCell>
+                                  <TextField
+                                    value={result.jenisKertas}
+                                    onChange={(event) => {
+                                      handleInputChangeRincianCetakan(
+                                        event,
+                                        index,
+                                        "jenisKertas"
+                                      );
+                                    }}
+                                  />
+                                </TableCell>
+                                <TableCell>
+                                  <TextField
+                                    type="number"
+                                    value={result.beratKertas}
+                                    onChange={(event) => {
+                                      handleInputChangeRincianCetakan(
+                                        event,
+                                        index,
+                                        "beratKertas"
+                                      );
+                                    }}
+                                  />
+                                </TableCell>
+                                <TableCell>
+                                  <TextField
+                                    value={result.warna}
+                                    onChange={(event) => {
+                                      handleInputChangeRincianCetakan(
+                                        event,
+                                        index,
+                                        "warna"
+                                      );
+                                    }}
+                                  />
+                                </TableCell>
+                                <TableCell>
+                                  <div
+                                    style={{
+                                      display: "flex",
+                                      alignItems: "center",
+                                    }}
+                                  >
+                                    <TextField
+                                      type="number"
+                                      value={result.kuantitas.value}
+                                      onChange={(event) => {
+                                        handleInputChangeRincianCetakan(
+                                          event,
+                                          index,
+                                          "kuantitas"
+                                        );
+                                      }}
+                                    />
+                                    <div style={{ marginLeft: "8px" }}>
+                                      <MySelectTextField
+                                        width="50px"
+                                        data={units}
+                                        value={result.kuantitas.unit}
+                                        onChange={(event) => {
+                                          handleInputChangeRincianCetakan(
+                                            event,
+                                            index,
+                                            "kuantitas",
+                                            true
+                                          );
+                                        }}
+                                      />
+                                    </div>
+                                  </div>
+                                </TableCell>
+                                <TableCell>
+                                  <TextField
+                                    width="100px"
+                                    type="number"
+                                    value={result.ply}
+                                    onChange={(event) => {
+                                      handleInputChangeRincianCetakan(
+                                        event,
+                                        index,
+                                        "ply"
+                                      );
+                                    }}
+                                  />
+                                </TableCell>
+                                <TableCell>
+                                  <div
+                                    style={{
+                                      display: "flex",
+                                      alignItems: "center",
+                                    }}
+                                  >
+                                    <TextField
+                                      type="number"
+                                      value={result.isi.value}
+                                      onChange={(event) => {
+                                        handleInputChangeRincianCetakan(
+                                          event,
+                                          index,
+                                          "isi"
+                                        );
+                                      }}
+                                    />
+                                    <div style={{ marginLeft: "8px" }}>
+                                      <MySelectTextField
+                                        width="50px"
+                                        data={units}
+                                        value={result.isi.unit}
+                                        onChange={(event) => {
+                                          handleInputChangeRincianCetakan(
+                                            event,
+                                            index,
+                                            "isi",
+                                            true
+                                          );
+                                        }}
+                                      />
+                                    </div>
+                                  </div>
+                                </TableCell>
+                                <TableCell>
+                                  <TextField
+                                    value={result.nomorator}
+                                    onChange={(event) => {
+                                      handleInputChangeRincianCetakan(
+                                        event,
+                                        index,
+                                        "nomorator"
+                                      );
+                                    }}
+                                  />
+                                </TableCell>
+                                <TableCell>
+                                  <TextField
+                                    value={result.keterangan}
+                                    onChange={(event) => {
+                                      handleInputChangeRincianCetakan(
+                                        event,
+                                        index,
+                                        "keterangan"
+                                      );
+                                    }}
+                                  />
+                                </TableCell>
+                                <TableCell>
+                                  <IconButton
+                                    onClick={() => {
+                                      handleDeleteItemRincianCetakan(result.id);
+                                    }}
+                                  >
+                                    <DeleteIcon sx={{ color: "red" }} />
+                                  </IconButton>
+                                </TableCell>
+                              </TableRow>
+                            </React.Fragment>
+                          );
+                        })}
+                      </TableBody>
+                    </Table>
+                  </TableContainer>
+                </div>
+                <div
+                  style={{
+                    width: "100%",
+                    height: "1px",
+                    backgroundColor: "#0F607D",
+                    margin: " 24px 0px ",
+                    borderRadius: "5px",
+                  }}
+                />
+                <div style={{ marginTop: "32px" }}>
+                  <div style={{ display: "flex", alignItems: "center" }}>
+                    <Typography
+                      style={{
+                        color: "#0F607D",
+                        fontSize: "2vw",
+                        marginRight: "8px",
+                      }}
+                    >
+                      Perincian
+                    </Typography>
+                    <IconButton
+                      style={{ height: "50%" }}
+                      onClick={() => {
+                        handleTambahPerincian();
+                      }}
+                    >
+                      <AddIcon style={{ color: "#0F607D" }} />
+                    </IconButton>
+                  </div>
+                  <TableContainer component={Paper} sx={{ overflowX: "auto" }}>
+                    <Table
+                      aria-label="simple table"
+                      sx={{
+                        minWidth: 650,
+                        overflowX: "auto",
+                      }}
+                    >
+                      <TableHead>
+                        <TableRow>
+                          <TableCell colSpan={3} style={{ width: "50%" }}>
+                            <Typography style={{ fontSize: "1.5vw" }}>
+                              Perincian Rekanan
+                            </Typography>
+                          </TableCell>
+                          <TableCell colSpan={5} style={{ width: "50%" }}>
+                            <Typography style={{ fontSize: "1.5vw" }}>
+                              Perincian Harga Cetak
+                            </Typography>
+                          </TableCell>
+                        </TableRow>
+                        <TableRow>
+                          <TableCell style={{ width: "25px" }}>No.</TableCell>
+                          <TableCell style={{ width: "200px" }}>
+                            Nama Rekanan
+                          </TableCell>
+                          <TableCell style={{ width: "200px" }}>
+                            Keterangan
+                          </TableCell>
+                          <TableCell style={{ width: "25px" }}>No.</TableCell>
+                          <TableCell style={{ width: "200px" }}>
+                            Jenis Cetakan
+                          </TableCell>
+                          <TableCell style={{ width: "200px" }}>Isi</TableCell>
+                          <TableCell style={{ width: "200px" }}>
+                            Harga
+                          </TableCell>
+                          <TableCell>Actions</TableCell>
+                        </TableRow>
+                      </TableHead>
+                      <TableBody>
+                        {dataPerincian?.map((result, index) => {
+                          return (
+                            <React.Fragment key={index}>
+                              <TableRow>
+                                <TableCell>{index + 1 + "."}</TableCell>
+                                <TableCell>
+                                  <TextField
+                                    value={result.namaRekanan}
+                                    onChange={(event) => {
+                                      handleChangeInputPerincian(
+                                        event,
+                                        index,
+                                        "namaRekanan"
+                                      );
+                                    }}
+                                  />
+                                </TableCell>
+                                <TableCell>
+                                  <TextField
+                                    value={result.keterangan}
+                                    onChange={(event) => {
+                                      handleChangeInputPerincian(
+                                        event,
+                                        index,
+                                        "keterangan"
+                                      );
+                                    }}
+                                  />
+                                </TableCell>
+                                <TableCell>{index + 1 + "."}</TableCell>
+                                <TableCell>
+                                  <TextField
+                                    value={result.jenisCetakan}
+                                    onChange={(event) => {
+                                      handleChangeInputPerincian(
+                                        event,
+                                        index,
+                                        "jenisCetakan"
+                                      );
+                                    }}
+                                  />
+                                </TableCell>
+                                <TableCell>
+                                  <div
+                                    style={{
+                                      display: "flex",
+                                      alignItems: "center",
+                                    }}
+                                  >
+                                    <TextField
+                                      type="number"
+                                      value={result.isi.value}
+                                      onChange={(event) => {
+                                        handleChangeInputPerincian(
+                                          event,
+                                          index,
+                                          "isi"
+                                        );
+                                      }}
+                                    />
+                                    <div style={{ marginLeft: "8px" }}>
+                                      <MySelectTextField
+                                        data={units}
+                                        value={result.isi.unit}
+                                        onChange={(event) => {
+                                          handleChangeInputPerincian(
+                                            event,
+                                            index,
+                                            "isi",
+                                            true
+                                          );
+                                        }}
+                                      />
+                                    </div>
+                                  </div>
+                                </TableCell>
+                                <TableCell>
+                                  <TextField
+                                    value={result.harga}
+                                    onChange={(event) => {
+                                      handleChangeInputPerincian(
+                                        event,
+                                        index,
+                                        "harga"
+                                      );
+                                    }}
+                                    type="text"
+                                    sx={{
+                                      "& .MuiOutlinedInput-root": {
+                                        height: isMobile ? "15px" : "3vw",
+                                        width: isMobile ? "120px" : "200px",
+                                        fontSize: isMobile ? "10px" : "1.5vw",
+                                        borderRadius: "10px",
+                                        "& fieldset": {
+                                          borderColor: "#0F607D",
+                                        },
+                                        "&:hover fieldset": {
+                                          borderColor: "#0F607D",
+                                        },
+                                        "&.Mui-focused fieldset": {
+                                          borderColor: "#0F607D",
+                                        },
+                                      },
+                                    }}
+                                    InputProps={{
+                                      inputComponent: NumericFormatCustom,
+                                    }}
+                                  />
+                                </TableCell>
+                                <TableCell>
+                                  <IconButton
+                                    onClick={() => {
+                                      handleDeleteItemPerincian(result.id);
+                                    }}
+                                  >
+                                    <DeleteIcon sx={{ color: "red" }} />
+                                  </IconButton>
+                                </TableCell>
+                              </TableRow>
+                            </React.Fragment>
+                          );
+                        })}
+                      </TableBody>
+                    </Table>
+                  </TableContainer>
                 </div>
               </div>
             </div>

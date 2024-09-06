@@ -313,11 +313,11 @@ const MaindashboardFinance = (props) => {
             fontSize="16px"
             onClickFunction={() => {
               document
-                .getElementById("wastereportshistory")
+                .getElementById("pajak")
                 .scrollIntoView({ behavior: "smooth" });
             }}
           >
-            Waste Reports History
+            Pajak
           </DefaultButton>
         </div>
       </div>
@@ -561,14 +561,21 @@ const MaindashboardFinance = (props) => {
             width: "72vw",
           }}
         >
-          <Typography
-            id="wastereportshistory"
-            style={{ fontSize: "36px", color: "#0F607D" }}
-          >
-            Waste Reports History
+          <Typography id="pajak" style={{ fontSize: "36px", color: "#0F607D" }}>
+            Pajak
           </Typography>
           <div>
-            <DefaultButton>Go to Waste Reports History Page</DefaultButton>
+            <DefaultButton
+              height="40px"
+              width="232px"
+              borderRadius="16px"
+              fontSize="14px"
+              onClickFunction={() => {
+                navigate("/financeDashboard/pajak");
+              }}
+            >
+              Pergi ke Halaman Pajak
+            </DefaultButton>
           </div>
         </div>
       </div>
