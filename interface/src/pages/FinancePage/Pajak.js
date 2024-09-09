@@ -209,8 +209,6 @@ const Pajak = (props) => {
     return { value, unit };
   };
 
-  console.log(allDataProductionPlanning);
-
   const handleChangeSelectedProductionPlanning = (event) => {
     const selectedItem = allDataProductionPlanning.find(
       (item) => item.id === event.target.value

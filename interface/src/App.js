@@ -32,6 +32,8 @@ import LaporanSampah from "./pages/InventoryPage/LaporanSampah";
 import BukuBank from "./pages/FinancePage/BukuBank";
 import KasHarian from "./pages/FinancePage/KasHarian";
 import Pajak from "./pages/FinancePage/Pajak";
+import RencanaPembayaran from "./pages/FinancePage/RencanaPembayaran";
+import LaporanAktual from "./pages/ProductionPage/LaporanAktual";
 
 export const AppContext = createContext({});
 
@@ -282,7 +284,7 @@ function App() {
                 userCredentials.data.department !== "Finance" ? (
                   <Navigate to="/unauthorized" replace />
                 ) : (
-                  <MaindashboardFinance userInformation={userCredentials}/>
+                  <MaindashboardFinance userInformation={userCredentials} />
                 )
               }
             />
@@ -293,7 +295,7 @@ function App() {
                 userCredentials.data.department !== "Finance" ? (
                   <Navigate to="/unauthorized" replace />
                 ) : (
-                  <BukuBank userInformation={userCredentials}/>
+                  <BukuBank userInformation={userCredentials} />
                 )
               }
             />
@@ -304,7 +306,7 @@ function App() {
                 userCredentials.data.department !== "Finance" ? (
                   <Navigate to="/unauthorized" replace />
                 ) : (
-                  <KasHarian userInformation={userCredentials}/>
+                  <KasHarian userInformation={userCredentials} />
                 )
               }
             />
@@ -315,7 +317,29 @@ function App() {
                 userCredentials.data.department !== "Finance" ? (
                   <Navigate to="/unauthorized" replace />
                 ) : (
-                  <Pajak userInformation={userCredentials}/>
+                  <Pajak userInformation={userCredentials} />
+                )
+              }
+            />
+            <Route
+              path="/financeDashboard/rencanaPembayaran"
+              element={
+                !userCredentials.data ||
+                userCredentials.data.department !== "Finance" ? (
+                  <Navigate to="/unauthorized" replace />
+                ) : (
+                  <RencanaPembayaran userInformation={userCredentials} />
+                )
+              }
+            />
+<Route
+              path="/productionDashboard/laporanAktual"
+              element={
+                !userCredentials.data ||
+                userCredentials.data.department !== "Production" ? (
+                  <Navigate to="/unauthorized" replace />
+                ) : (
+                  <LaporanAktual userInformation={userCredentials} />
                 )
               }
             />

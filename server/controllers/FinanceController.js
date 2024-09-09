@@ -4,7 +4,14 @@ const {
   kasHarians,
   itemKasHarians,
   posPembayarans,
+  hutangs,
+  UserBukuBanks,
+  UserKasHarians,
+  UserRencanaPembayarans,
+  rencanaPembayarans,
+  itemRencanaPembayarans,
 } = require("../models");
+const dayjs = require("dayjs");
 
 class FinanceController {
   static async getDoneBukuBank(req, res) {
@@ -479,6 +486,135 @@ class FinanceController {
           })
         );
       }
+    } catch (error) {
+      res.json(error);
+    }
+  }
+  static async addHutang(req, res) {
+    try {
+      const { id } = req.params;
+      const { dataHutang } = req.body;
+
+      const latestTanggalJatuhTempo = dataHutang.reduce((maxDate, current) => {
+        const currentDate = dayjs(current.tanggalJatuhTempo);
+        return currentDate.isAfter(maxDate) ? currentDate : maxDate;
+      }, dayjs(dataHutang[0].tanggalJatuhTempo));
+
+      const totalNominal = dataHutang.reduce((sum, current) => {
+        return parseFloat(sum) + parseFloat(current.jumlahHarga);
+      }, 0);
+
+      let result = await rencanaPembayarans.findOne({
+        where: { statusRencanaPembayaran: "Ongoing" },
+      });
+
+      let itemTempRencanaPembayarans = await itemRencanaPembayarans.create({
+        rencanaPembayaranId: result.id,
+        tanggal: dayjs().format("MM/DD/YYYY hh:mm A"),
+        uraian: `Hutang Pembelian ${dataHutang[0].id}`,
+        tanggalJatuhTempo: dayjs(latestTanggalJatuhTempo).format(
+          "MM/DD/YYYY hh:mm A"
+        ),
+        nominal: totalNominal,
+        keterangan: "",
+        statusRencanaPembayaran: "Ongoing",
+      });
+
+      if (dataHutang && Array.isArray(dataHutang)) {
+        await Promise.all(
+          dataHutang.map(async (data) => {
+            await hutangs.create({
+              itemRencanaPembayaranId: itemTempRencanaPembayarans.id,
+              tanggal: data.tanggal,
+              supplier: data.supplier,
+              jenisBarang: data.jenisBarang,
+              noInvoiceKwitansiJs: data.noInvoiceKwitansiSj,
+              jumlahHarga: data.jumlahHarga,
+              tanggalJatuhTempo: data.tanggalJatuhTempo,
+              pembayaran: data.pembayaran,
+              keterangan: data.keterangan,
+            });
+          })
+        );
+      }
+
+      res.json(result);
+    } catch (error) {
+      res.status(500).json({ error: error.message });
+    }
+  }
+  static async getAllOngoingRencanaPembayaran(req, res) {
+    try {
+      let result = await rencanaPembayarans.findAll({
+        where: { statusRencanaPembayaran: "Ongoing" },
+        include: [
+          {
+            model: itemRencanaPembayarans,
+            include: [{ model: hutangs }],
+          },
+        ],
+      });
+      res.json(result);
+    } catch (error) {
+      res.json(error);
+    }
+  }
+  static async updateDoneRencanaPembayaran(req, res) {
+    try {
+      const { id } = req.params;
+
+      const ongoingRecords = await rencanaPembayarans.findAll({
+        where: { statusRencanaPembayaran: "Ongoing" },
+      });
+
+      if (ongoingRecords && Array.isArray(ongoingRecords)) {
+        await Promise.all(
+          ongoingRecords.map(async (record) => {
+            await record.update({
+              statusRencanaPembayaran: "Done",
+            });
+          })
+        );
+      }
+
+      res
+        .status(200)
+        .json({ message: "All ongoing records updated to 'Done'" });
+    } catch (error) {
+      res.status(500).json({ error: error.message });
+    }
+  }
+
+  static async checkIfRencanaPembayaranExists(req, res) {
+    try {
+      let result = await rencanaPembayarans.findAll({
+        where: { statusRencanaPembayaran: "Ongoing" },
+      });
+      if (result.length === 0) {
+        await rencanaPembayarans.create({
+          judulRencanaPembayaran: `Rencana Pembayaran ${dayjs().format(
+            "MM/DD/YYYY"
+          )}`,
+          statusRencanaPembayaran: "Ongoing",
+        });
+      }
+      res.json(result);
+    } catch (error) {
+      res.json(error);
+    }
+  }
+  static async getDoneRencanaPembayaran(req, res) {
+    try {
+      let result = await rencanaPembayarans.findAll({
+        where: { statusRencanaPembayaran: "Done" },
+        include: [
+          {
+            model: itemRencanaPembayarans,
+            include: [{ model: hutangs }],
+          },
+        ],
+      });
+      res.json(result);
     } catch (error) {
       res.json(error);
     }

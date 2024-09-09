@@ -634,9 +634,13 @@ const MaindashboardProduction = (props) => {
                             <div
                               style={{ display: "flex", alignItems: "center" }}
                             >
-                              <IconButton onClick={() => {
-                                handleGoToEditLaporanLimbahProduksi(result.id)
-                              }}>
+                              <IconButton
+                                onClick={() => {
+                                  handleGoToEditLaporanLimbahProduksi(
+                                    result.id
+                                  );
+                                }}
+                              >
                                 <EditIcon style={{ color: "#0F607D" }} />
                               </IconButton>
                               <IconButton
@@ -699,7 +703,13 @@ const MaindashboardProduction = (props) => {
             Actual Reports History
           </Typography>
           <div>
-            <DefaultButton>Go to Actual Reports History Page</DefaultButton>
+            <DefaultButton
+              onClickFunction={() => {
+                navigate("/productionDashboard/laporanAktual");
+              }}
+            >
+              Go to Actual Reports History Page
+            </DefaultButton>
           </div>
         </div>
       </div>

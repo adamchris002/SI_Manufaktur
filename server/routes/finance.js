@@ -21,6 +21,18 @@ financeRoutes.get(
   "/getAllPosPembayaran",
   FinanceController.getAllPosPembayaran
 );
+financeRoutes.get(
+  "/getAllOngoingRencanaPembayaran",
+  FinanceController.getAllOngoingRencanaPembayaran
+);
+financeRoutes.get(
+  "/checkIfRencanaPembayaranExists",
+  FinanceController.checkIfRencanaPembayaranExists
+);
+financeRoutes.get(
+  "/getDoneRencanaPembayaran",
+  FinanceController.getDoneRencanaPembayaran
+);
 //post
 financeRoutes.post("/addNamaBank/:id", FinanceController.addNamaBank);
 financeRoutes.post("/addItemBukuBank/:id", FinanceController.addNewBukuBank);
@@ -29,6 +41,7 @@ financeRoutes.post(
   "/checkForDefaultPosPembayaran",
   FinanceController.checkForDefaultPosPembayaran
 );
+financeRoutes.post("/addHutang/:id", FinanceController.addHutang);
 //put
 financeRoutes.put("/updateStatusDone/:id", FinanceController.updateStatusDone);
 financeRoutes.put(
@@ -39,6 +52,10 @@ financeRoutes.put(
   "/savePosPembayaran/:id",
   FinanceController.savePosPembayaran
 );
-//delete
+financeRoutes.put(
+  "/updateDoneRencanaPembayaran/:id",
+  FinanceController.updateDoneRencanaPembayaran
+);
+// delete
 
 module.exports = financeRoutes;
