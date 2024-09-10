@@ -324,6 +324,16 @@ const EstimationOrderPage = (props) => {
         keterangan: "",
       },
     ]);
+    setDataPerincian((oldArray) => [
+      ...oldArray,
+      {
+        namaRekanan: "",
+        keterangan: "",
+        jenisCetakan: "",
+        isi: { value: "", unit: "" },
+        harga: "",
+      },
+    ]);
   };
 
   const handleAddData = (index) => {
@@ -438,6 +448,7 @@ const EstimationOrderPage = (props) => {
 
   const handleDeleteItemRincianCetakan = (index) => {
     setRincianCetakan((oldArray) => oldArray.filter((_, j) => j !== index));
+    setDataPerincian((oldArray) => oldArray.filter((_, j) => j !== index));
   };
 
   const handleDeleteItemPerincian = (index) => {
@@ -661,8 +672,34 @@ const EstimationOrderPage = (props) => {
                 unit: value,
               },
             };
+            if (field === "isi") {
+              setDataPerincian((oldArray) => {
+                const newArray = [...oldArray];
+                newArray[index] = {
+                  ...newArray[index],
+                  isi: {
+                    ...newArray[index].isi,
+                    unit: value,
+                  },
+                };
+                return newArray;
+              });
+            }
           } else {
             if (field === "kuantitas" || field === "isi") {
+              if (field === "isi") {
+                setDataPerincian((oldArray) => {
+                  const newArray = [...oldArray];
+                  newArray[index] = {
+                    ...newArray[index],
+                    isi: {
+                      ...newArray[index].isi,
+                      value: value,
+                    },
+                  };
+                  return newArray;
+                });
+              }
               updatedItem = {
                 ...updatedItem,
                 [field]: {
@@ -671,6 +708,16 @@ const EstimationOrderPage = (props) => {
                 },
               };
             } else {
+              if (field === "namaCetakan") {
+                setDataPerincian((oldArray) => {
+                  const newArray = [...oldArray];
+                  newArray[index] = {
+                    ...newArray[index],
+                    jenisCetakan: value,
+                  };
+                  return newArray;
+                });
+              }
               updatedItem = { ...updatedItem, [field]: value };
             }
           }
@@ -2464,14 +2511,14 @@ const EstimationOrderPage = (props) => {
                     >
                       Perincian
                     </Typography>
-                    <IconButton
+                    {/* <IconButton
                       style={{ height: "50%" }}
                       onClick={() => {
                         handleTambahPerincian();
                       }}
                     >
                       <AddIcon style={{ color: "#0F607D" }} />
-                    </IconButton>
+                    </IconButton> */}
                   </div>
                   <TableContainer component={Paper} sx={{ overflowX: "auto" }}>
                     <Table
@@ -2510,7 +2557,7 @@ const EstimationOrderPage = (props) => {
                           <TableCell style={{ width: "200px" }}>
                             Harga
                           </TableCell>
-                          <TableCell>Actions</TableCell>
+                          {/* <TableCell>Actions</TableCell> */}
                         </TableRow>
                       </TableHead>
                       <TableBody>
@@ -2546,14 +2593,15 @@ const EstimationOrderPage = (props) => {
                                 <TableCell>{index + 1 + "."}</TableCell>
                                 <TableCell>
                                   <TextField
+                                    disabled
                                     value={result.jenisCetakan}
-                                    onChange={(event) => {
-                                      handleChangeInputPerincian(
-                                        event,
-                                        index,
-                                        "jenisCetakan"
-                                      );
-                                    }}
+                                    // onChange={(event) => {
+                                    //   handleChangeInputPerincian(
+                                    //     event,
+                                    //     index,
+                                    //     "jenisCetakan"
+                                    //   );
+                                    // }}
                                   />
                                 </TableCell>
                                 <TableCell>
@@ -2565,27 +2613,29 @@ const EstimationOrderPage = (props) => {
                                   >
                                     <TextField
                                       type="number"
+                                      disabled
                                       value={result.isi.value}
-                                      onChange={(event) => {
-                                        handleChangeInputPerincian(
-                                          event,
-                                          index,
-                                          "isi"
-                                        );
-                                      }}
+                                      // onChange={(event) => {
+                                      //   handleChangeInputPerincian(
+                                      //     event,
+                                      //     index,
+                                      //     "isi"
+                                      //   );
+                                      // }}
                                     />
                                     <div style={{ marginLeft: "8px" }}>
                                       <MySelectTextField
                                         data={units}
                                         value={result.isi.unit}
-                                        onChange={(event) => {
-                                          handleChangeInputPerincian(
-                                            event,
-                                            index,
-                                            "isi",
-                                            true
-                                          );
-                                        }}
+                                        disabled
+                                        // onChange={(event) => {
+                                        //   handleChangeInputPerincian(
+                                        //     event,
+                                        //     index,
+                                        //     "isi",
+                                        //     true
+                                        //   );
+                                        // }}
                                       />
                                     </div>
                                   </div>
@@ -2623,7 +2673,7 @@ const EstimationOrderPage = (props) => {
                                     }}
                                   />
                                 </TableCell>
-                                <TableCell>
+                                {/* <TableCell>
                                   <IconButton
                                     onClick={() => {
                                       handleDeleteItemPerincian(index);
@@ -2631,7 +2681,7 @@ const EstimationOrderPage = (props) => {
                                   >
                                     <DeleteIcon sx={{ color: "red" }} />
                                   </IconButton>
-                                </TableCell>
+                                </TableCell> */}
                               </TableRow>
                             </React.Fragment>
                           );

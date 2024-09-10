@@ -177,8 +177,6 @@ const EditProductionPlanPage = (props) => {
     ]);
   };
 
-
-
   const deleteJadwal = (id) => {
     axios({
       method: "DELETE",
@@ -231,6 +229,21 @@ const EditProductionPlanPage = (props) => {
         setSnackbarMessage("Tidak berhasil menghapus item rincian cetakan");
       }
     });
+    // axios({
+    //   method: "DELETE",
+    //   url: `http://localhost:3000/productionPlanning/deleteItemPerincian/${id}`,
+    // }).then((result) => {
+    //   if (result.status === 200) {
+    //     setOpenSnackbar(true);
+    //     setSnackbarStatus(true);
+    //     setSnackbarMessage("Berhasil menghapus perincian");
+    //     setRefreshProductionPlanData(true);
+    //   } else {
+    //     setOpenSnackbar(true);
+    //     setSnackbarStatus(false);
+    //     setSnackbarMessage("Tidak berhasil menghapus perincian");
+    //   }
+    // });
   };
 
   const separateValueAndUnit = (str) => {
@@ -309,10 +322,10 @@ const EditProductionPlanPage = (props) => {
         const tempPerincianData = result.data.perincians.map((result) => {
           return {
             ...result,
-            isi: separateValueAndUnit(result.isi)
-          }
-        })
-        setDataPerincian(tempPerincianData)
+            isi: separateValueAndUnit(result.isi),
+          };
+        });
+        setDataPerincian(tempPerincianData);
       });
     }
   }, [refreshProductionPlanData]);
@@ -497,6 +510,16 @@ const EditProductionPlanPage = (props) => {
         keterangan: "",
       },
     ]);
+    setDataPerincian((oldArray) => [
+      ...oldArray,
+      {
+        namaRekanan: "",
+        keterangan: "",
+        jenisCetakan: "",
+        isi: { value: "", unit: "" },
+        harga: "",
+      },
+    ]);
   };
 
   const handleAddData = (index) => {
@@ -589,8 +612,34 @@ const EditProductionPlanPage = (props) => {
                 unit: value,
               },
             };
+            if (field === "isi") {
+              setDataPerincian((oldArray) => {
+                const newArray = [...oldArray];
+                newArray[index] = {
+                  ...newArray[index],
+                  isi: {
+                    ...newArray[index].isi,
+                    unit: value,
+                  },
+                };
+                return newArray;
+              });
+            }
           } else {
             if (field === "kuantitas" || field === "isi") {
+              if (field === "isi") {
+                setDataPerincian((oldArray) => {
+                  const newArray = [...oldArray];
+                  newArray[index] = {
+                    ...newArray[index],
+                    isi: {
+                      ...newArray[index].isi,
+                      value: value,
+                    },
+                  };
+                  return newArray;
+                });
+              }
               updatedItem = {
                 ...updatedItem,
                 [field]: {
@@ -599,6 +648,16 @@ const EditProductionPlanPage = (props) => {
                 },
               };
             } else {
+              if (field === "namaCetakan") {
+                setDataPerincian((oldArray) => {
+                  const newArray = [...oldArray];
+                  newArray[index] = {
+                    ...newArray[index],
+                    jenisCetakan: value,
+                  };
+                  return newArray;
+                });
+              }
               updatedItem = { ...updatedItem, [field]: value };
             }
           }
@@ -694,13 +753,12 @@ const EditProductionPlanPage = (props) => {
     const checkIfEstimasiJadwalEmpty = isEstimasiJadwalEmpty();
     const checkIfRincianCetakanEmpty = isRincianCetakanEmpty();
     const checkIfPerincianEmpty = isPerincianEmpty();
-    
 
     const updatedEstimasiBahanBaku =
       transformDataForSubmission(estimasiBahanBaku);
     const newRincianCetakan =
       transformDataForSubmissionRincianCetakan(rincianCetakan);
-      const newPerincian = transformDataForSubmissionPerincian(dataPerincian);
+    const newPerincian = transformDataForSubmissionPerincian(dataPerincian);
 
     const perencanaanProduksiData = {
       pemesan: pemesan,
@@ -2472,7 +2530,7 @@ const EditProductionPlanPage = (props) => {
                           <TableCell style={{ width: "200px" }}>
                             Harga
                           </TableCell>
-                          <TableCell>Actions</TableCell>
+                          {/* <TableCell>Actions</TableCell> */}
                         </TableRow>
                       </TableHead>
                       <TableBody>
@@ -2508,14 +2566,15 @@ const EditProductionPlanPage = (props) => {
                                 <TableCell>{index + 1 + "."}</TableCell>
                                 <TableCell>
                                   <TextField
+                                    disabled
                                     value={result.jenisCetakan}
-                                    onChange={(event) => {
-                                      handleChangeInputPerincian(
-                                        event,
-                                        index,
-                                        "jenisCetakan"
-                                      );
-                                    }}
+                                    // onChange={(event) => {
+                                    //   handleChangeInputPerincian(
+                                    //     event,
+                                    //     index,
+                                    //     "jenisCetakan"
+                                    //   );
+                                    // }}
                                   />
                                 </TableCell>
                                 <TableCell>
@@ -2526,28 +2585,30 @@ const EditProductionPlanPage = (props) => {
                                     }}
                                   >
                                     <TextField
+                                      disabled
                                       type="number"
                                       value={result.isi.value}
-                                      onChange={(event) => {
-                                        handleChangeInputPerincian(
-                                          event,
-                                          index,
-                                          "isi"
-                                        );
-                                      }}
+                                      // onChange={(event) => {
+                                      //   handleChangeInputPerincian(
+                                      //     event,
+                                      //     index,
+                                      //     "isi"
+                                      //   );
+                                      // }}
                                     />
                                     <div style={{ marginLeft: "8px" }}>
                                       <MySelectTextField
                                         data={units}
                                         value={result.isi.unit}
-                                        onChange={(event) => {
-                                          handleChangeInputPerincian(
-                                            event,
-                                            index,
-                                            "isi",
-                                            true
-                                          );
-                                        }}
+                                        disabled
+                                        // onChange={(event) => {
+                                        //   handleChangeInputPerincian(
+                                        //     event,
+                                        //     index,
+                                        //     "isi",
+                                        //     true
+                                        //   );
+                                        // }}
                                       />
                                     </div>
                                   </div>
@@ -2585,7 +2646,7 @@ const EditProductionPlanPage = (props) => {
                                     }}
                                   />
                                 </TableCell>
-                                <TableCell>
+                                {/* <TableCell>
                                   <IconButton
                                     onClick={() => {
                                       handleDeleteItemPerincian(result.id);
@@ -2593,7 +2654,7 @@ const EditProductionPlanPage = (props) => {
                                   >
                                     <DeleteIcon sx={{ color: "red" }} />
                                   </IconButton>
-                                </TableCell>
+                                </TableCell> */}
                               </TableRow>
                             </React.Fragment>
                           );
