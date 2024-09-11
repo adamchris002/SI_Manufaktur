@@ -42,6 +42,8 @@ financeRoutes.post(
   FinanceController.checkForDefaultPosPembayaran
 );
 financeRoutes.post("/addHutang/:id", FinanceController.addHutang);
+financeRoutes.post("/addPajakMasukan/:id", FinanceController.addPajakMasukan);
+financeRoutes.post("/addPajakKeluaran/:id", FinanceController.addPajakKeluaran);
 //put
 financeRoutes.put("/updateStatusDone/:id", FinanceController.updateStatusDone);
 financeRoutes.put(

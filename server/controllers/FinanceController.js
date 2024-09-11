@@ -10,6 +10,9 @@ const {
   UserRencanaPembayarans,
   rencanaPembayarans,
   itemRencanaPembayarans,
+  pajakMasukans,
+  pajakKeluarans,
+  cicilans,
 } = require("../models");
 const dayjs = require("dayjs");
 
@@ -615,6 +618,131 @@ class FinanceController {
         ],
       });
       res.json(result);
+    } catch (error) {
+      res.json(error);
+    }
+  }
+  static async addPajakMasukan(req, res) {
+    try {
+      const { id } = req.params;
+      const { dataPajakMasukan, dataBank } = req.body;
+
+      let findPrevItemBukuBanks = await bukuBanks.findOne({
+        where: { namaBank: dataBank.namaBank },
+        include: [{ model: itemBukuBanks }],
+      });
+
+      let prevSaldo = 0;
+
+      if (
+        findPrevItemBukuBanks &&
+        findPrevItemBukuBanks.itemBukuBanks.length > 0
+      ) {
+        const mostRecentSaldo = findPrevItemBukuBanks.itemBukuBanks.sort(
+          (a, b) => new Date(b.createdAt) - new Date(a.createdAt)
+        )[0].saldo;
+
+        prevSaldo = parseFloat(mostRecentSaldo);
+      }
+
+      if (dataPajakMasukan && Array.isArray(dataPajakMasukan)) {
+        await Promise.all(
+          dataPajakMasukan.map(async (data) => {
+            await pajakMasukans.create({
+              bukuBankId: dataBank.id,
+              tanggal: data.tanggal,
+              leveransir: data.leveransir,
+              jenisBarang: data.jenisBarang,
+              noTglOrder: data.noTanggalOrder,
+              kuantitas: data.kuantitas,
+              hargaSatuan: data.hargaSatuan,
+              jumlahHarga: data.jumlahHarga,
+              noInvoiceKwitansiSj: data.noInvoiceKwitansiSj,
+              noSeriFakturPajak: data.noSeriTglFakturPajak,
+              dpp: data.dpp,
+              ppn: data.ppn,
+              keterangan: data.keterangan,
+            });
+
+            prevSaldo -= (parseFloat(data.jumlahHarga) + parseFloat(data.ppn));
+
+            await itemBukuBanks.create({
+              bukuBankId: dataBank.id,
+              tanggal: data.tanggal,
+              uraian: `Pajak Masukan Barang ${data.jenisBarang}`,
+              debet: null,
+              kredit: parseFloat(data.jumlahHarga) + parseFloat(data.ppn),
+              saldo: prevSaldo,
+              keterangan: data.keterangan,
+            });
+          })
+        );
+      }
+
+      res.status(200).json({ message: "Pajak Masukan added successfully" });
+    } catch (error) {
+      res.status(500).json({ error: error.message });
+    }
+  }
+
+  static async addPajakKeluaran(req, res) {
+    try {
+      const { id } = req.params;
+      const { dataPajakKeluaran, dataBank } = req.body;
+      
+
+      let findPrevItemBukuBanks = await bukuBanks.findOne({
+        where: { namaBank: dataBank.namaBank },
+        include: [{ model: itemBukuBanks }],
+      });
+
+      let prevSaldo = 0;
+
+      if (
+        findPrevItemBukuBanks &&
+        findPrevItemBukuBanks.itemBukuBanks.length > 0
+      ) {
+        const mostRecentSaldo = findPrevItemBukuBanks.itemBukuBanks.sort(
+          (a, b) => new Date(b.createdAt) - new Date(a.createdAt)
+        )[0].saldo;
+
+        prevSaldo = parseFloat(mostRecentSaldo);
+      }
+
+      if (dataPajakKeluaran && Array.isArray(dataPajakKeluaran)) {
+        await Promise.all(
+          dataPajakKeluaran.map(async (data) => {
+            await pajakKeluarans.create({
+              bukuBankId: dataBank.id,
+              tanggal: data.tanggal,
+              pemberiPekerjaan: data.pemberiPekerjaan,
+              jenisBarang: data.jenisBarang,
+              kuantitas: data.kuantitas,
+              hargaSatuan: data.hargaSatuan,
+              jumlahHarga: data.jumlahHarga,
+              noTglSpk: data.noTanggalOrder,
+              noSeriTglFakturPajak: data.noSeriTglFakturPajak,
+              dpp: data.dpp,
+              ppn: data.ppn,
+              pph: data.pphPs22,
+              keterangan: data.keterangan,
+            });
+
+            prevSaldo -= (parseFloat(data.jumlahHarga) + parseFloat(data.ppn) + parseFloat(data.pphPs22));
+
+            await itemBukuBanks.create({
+              bukuBankId: dataBank.id,
+              tanggal: data.tanggal,
+              uraian: `Pajak Keluaran Orderan ${data.jenisBarang}`,
+              debet: null,
+              kredit: parseFloat(data.jumlahHarga) + parseFloat(data.ppn) + parseFloat(data.pphPs22),
+              saldo: prevSaldo,
+              keterangan: data.keterangan,
+            });
+          })
+        );
+      }
+      res.status(200).json({ message: "Pajak Keluaran added successfully" });
     } catch (error) {
       res.json(error);
     }

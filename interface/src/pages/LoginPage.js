@@ -134,7 +134,6 @@ const LoginPage = (props) => {
         backgroundSize: "cover",
         overflow: "auto",
         position: "relative",
-        // display: "flex"
       }}
       className="login-page"
     >

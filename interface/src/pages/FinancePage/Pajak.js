@@ -1,6 +1,7 @@
 import React, { useContext, useEffect, useState } from "react";
 import factoryBackground from "../../assets/factorybackground.png";
 import {
+  Button,
   Paper,
   Table,
   TableBody,
@@ -21,6 +22,10 @@ import { NumericFormat } from "react-number-format";
 import { AppContext } from "../../App";
 import axios from "axios";
 import MySnackbar from "../../components/Snackbar";
+import DefaultButton from "../../components/Button";
+import MyModal from "../../components/Modal";
+import { useNavigate } from "react-router-dom";
+import { useAuth } from "../../components/AuthContext";
 
 const NumericFormatCustom = React.forwardRef((props, ref) => {
   const { onChange, ...other } = props;
@@ -47,11 +52,13 @@ const NumericFormatCustom = React.forwardRef((props, ref) => {
 const Pajak = (props) => {
   const { userInformation } = props;
   const { isMobile } = useContext(AppContext);
+  const navigate = useNavigate();
+  const { setSuccessMessage } = useAuth();
 
+  const [allOngoingBukuBank, setAllOngoingBukuBank] = useState([]);
   const [allDataProductionPlanning, setAllDataProductionPlanning] = useState(
     []
   );
-  console.log(allDataProductionPlanning);
   const [allDataPembelianBahanBaku, setAllDataPembelianBahanBaku] = useState(
     []
   );
@@ -94,6 +101,8 @@ const Pajak = (props) => {
     },
   ]);
 
+  const [selectedBukuBank, setSelectedBukuBank] = useState({});
+
   const jenisPajak = [{ value: "Pajak Masukan" }, { value: "Pajak Keluaran" }];
 
   const units = [
@@ -120,6 +129,31 @@ const Pajak = (props) => {
   const [openSnackbar, setOpenSnackBar] = useState(false);
   const [snackbarStatus, setSnackbarStatus] = useState(false);
   const [snackbarMessage, setSnackbarMessage] = useState("");
+
+  const [openModal, setOpenModal] = useState(false);
+
+  useEffect(() => {
+    axios({
+      method: "GET",
+      url: "http://localhost:3000/finance/getOngoingBukuBank",
+    }).then((result) => {
+      if (result.status === 200) {
+        const tempData = result?.data?.map((result) => {
+          return {
+            ...result,
+            value: result.namaBank,
+          };
+        });
+        setAllOngoingBukuBank(tempData);
+      } else {
+        setOpenSnackBar(true);
+        setSnackbarStatus(false);
+        setSnackbarMessage(
+          "Tidak berhasil memanggil data buku bank yang berlangsung"
+        );
+      }
+    });
+  }, []);
 
   useEffect(() => {
     axios({
@@ -173,6 +207,15 @@ const Pajak = (props) => {
     setSnackbarStatus(true);
   };
 
+  const handleSelectBukuBank = (event) => {
+    const value = event.target.value;
+
+    const tempSelectedBukuBank = allOngoingBukuBank.find(
+      (item) => item.namaBank === value
+    );
+    setSelectedBukuBank(tempSelectedBukuBank);
+  };
+
   const handleChangeInputPajakMasukan = (event, field, index) => {
     const value = event && event.target ? event.target.value : event;
     setDataPajakMasukan((oldArray) => {
@@ -213,9 +256,9 @@ const Pajak = (props) => {
     const selectedItem = allDataProductionPlanning.find(
       (item) => item.id === event.target.value
     );
-  
+
     setSelectedProductionPlanning(selectedItem.id);
-  
+
     if (selectedItem) {
       const newItems = selectedItem.rincianCetakans.map((result) => {
         const tempQuantity = separateValueAndUnit(result.kuantitas);
@@ -227,11 +270,12 @@ const Pajak = (props) => {
           hargaSatuan: selectedItem.perincians.find(
             (item) => item.jenisCetakan === result.namaCetakan
           ).harga,
-          jumlahHarga: parseFloat(
-            selectedItem.perincians.find(
-              (item) => item.jenisCetakan === result.namaCetakan
-            ).harga
-          ) * tempQuantity.value,
+          jumlahHarga:
+            parseFloat(
+              selectedItem.perincians.find(
+                (item) => item.jenisCetakan === result.namaCetakan
+              ).harga
+            ) * tempQuantity.value,
           noTglSpk: "",
           noSeriTglFakturPajak: "",
           dpp: "",
@@ -243,7 +287,6 @@ const Pajak = (props) => {
       setDataPajakKeluaran(newItems);
     }
   };
-  
 
   const handleChangeSelectedPembelianBahanBaku = (event) => {
     const selectedItem = allDataPembelianBahanBaku.find(
@@ -269,6 +312,152 @@ const Pajak = (props) => {
       }));
 
       setDataPajakMasukan(newItems);
+    }
+  };
+
+  const handleCloseModal = () => {
+    setOpenModal(false);
+  };
+
+  const handleCheckIfDataPajakMasukanIsEmpty = () => {
+    for (const item of dataPajakMasukan) {
+      if (
+        !item.tanggal ||
+        !dayjs(item.tanggal, "MM/DD/YYYY hh:mm A", true).isValid() ||
+        !item.leveransir ||
+        !item.noTanggalOrder ||
+        !item.jenisBarang ||
+        !item.kuantitas.value ||
+        !item.kuantitas.unit ||
+        !item.hargaSatuan ||
+        !item.jumlahHarga ||
+        !item.noInvoiceKwitansiSj ||
+        !item.noSeriTglFakturPajak ||
+        !item.dpp ||
+        !item.ppn ||
+        !item.keterangan
+      ) {
+        return false;
+      }
+    }
+    return true;
+  };
+
+  const handleCheckIfDataPajakKeluaranIsEmpty = () => {
+    for (const item of dataPajakKeluaran) {
+      if (
+        !item.tanggal ||
+        !dayjs(item.tanggal, "MM/DD/YYYY hh:mm A", true).isValid() ||
+        !item.pemberiPekerjaan ||
+        !item.jenisBarang ||
+        !item.kuantitas.value ||
+        !item.kuantitas.unit ||
+        !item.hargaSatuan ||
+        !item.jumlahHarga ||
+        !item.noTglSpk ||
+        !item.noSeriTglFakturPajak ||
+        !item.dpp ||
+        !item.ppn ||
+        !item.pphPs22 ||
+        !item.keterangan
+      ) {
+        return false;
+      }
+    }
+    return true;
+  };
+
+  const handleOpenModalPajakMasukan = () => {
+    const checkIfDataPajakMasukanIsEmpty =
+      handleCheckIfDataPajakMasukanIsEmpty();
+
+    if (checkIfDataPajakMasukanIsEmpty === false) {
+      setOpenSnackBar(true);
+      setSnackbarMessage("Mohon isi semua input");
+      setSnackbarStatus(false);
+    } else {
+      setOpenModal(true);
+    }
+  };
+
+  const handleOpenModalPajakKeluaran = () => {
+    const checkIfDataPajakKeluaranIsEmpty =
+      handleCheckIfDataPajakKeluaranIsEmpty();
+
+    if (checkIfDataPajakKeluaranIsEmpty === false) {
+      setOpenSnackBar(true);
+      setSnackbarMessage("Mohon isi semua input");
+      setSnackbarStatus(false);
+    } else {
+      setOpenModal(true);
+    }
+  };
+
+  const handleTransformDataPajak = (data) => {
+    const tempData = data.map((result) => {
+      return {
+        ...result,
+        kuantitas: `${result.kuantitas.value} ${result.kuantitas.unit}`,
+      };
+    });
+    return tempData;
+  };
+
+  const handleAddPajakMasukan = () => {
+    if (selectedBukuBank.value === "" || selectedBukuBank.namaBank === "") {
+      setOpenSnackBar(true);
+      setSnackbarStatus(false);
+      setSnackbarMessage("Silahkan pilih buku bank yang ingin digunakan");
+    } else {
+      const transformedData = handleTransformDataPajak(dataPajakMasukan);
+      console.log(transformedData)
+      axios({
+        method: "POST",
+        url: `http://localhost:3000/finance/addPajakMasukan/${userInformation?.data?.id}`,
+        data: { dataPajakMasukan: transformedData, dataBank: selectedBukuBank },
+      }).then((result) => {
+        if (result.status === 200) {
+          setSuccessMessage(
+            `Berhasil menambahkan pajak masukan ke buku bank ${selectedBukuBank.namaBank}`
+          );
+          setSnackbarStatus(true);
+          navigate(-1);
+        } else {
+          setOpenSnackBar(true);
+          setSnackbarStatus(false);
+          setSnackbarMessage("Tidak berhasil menambahkan data pajak masukan");
+        }
+      });
+    }
+  };
+
+  const handleAddPajakKeluaran = () => {
+    if (selectedBukuBank.value === "" || selectedBukuBank.namaBank === "") {
+      setOpenSnackBar(true);
+      setSnackbarStatus(false);
+      setSnackbarMessage("Silahkan pilih buku bank yang ingin digunakan");
+    } else {
+      const transformedData = handleTransformDataPajak(dataPajakKeluaran);
+      axios({
+        method: "POST",
+        url: `http://localhost:3000/finance/addPajakKeluaran/${userInformation?.data?.id}`,
+        data: {
+          dataPajakKeluaran: transformedData,
+          dataBank: selectedBukuBank,
+        },
+      }).then((result) => {
+        if (result.status === 200) {
+          setSuccessMessage(
+            `Berhasil menambahkan pajak keluaran ke buku bank ${selectedBukuBank.namaBank}`
+          );
+          setSnackbarStatus(true);
+          navigate(-1);
+        } else {
+          setOpenSnackBar(true);
+          setSnackbarStatus(false);
+          setSnackbarMessage("Tidak berhasil menambahkan data pajak keluaran");
+        }
+      });
     }
   };
 
@@ -626,6 +815,28 @@ const Pajak = (props) => {
                         </TableBody>
                       </Table>
                     </TableContainer>
+                    <div
+                      style={{
+                        display: "flex",
+                        marginTop: "16px",
+                        justifyContent: "center",
+                      }}
+                    >
+                      <DefaultButton
+                        onClickFunction={() => {
+                          handleOpenModalPajakMasukan();
+                        }}
+                      >
+                        Tambah Pajak Masukan
+                      </DefaultButton>
+                      <Button
+                        variant="outlined"
+                        color="error"
+                        sx={{ textTransform: "none", marginLeft: "8px" }}
+                      >
+                        Cancel
+                      </Button>
+                    </div>
                   </div>
                 )}
 
@@ -978,6 +1189,28 @@ const Pajak = (props) => {
                         </TableBody>
                       </Table>
                     </TableContainer>
+                    <div
+                      style={{
+                        display: "flex",
+                        marginTop: "16px",
+                        justifyContent: "center",
+                      }}
+                    >
+                      <DefaultButton
+                        onClickFunction={() => {
+                          handleOpenModalPajakKeluaran();
+                        }}
+                      >
+                        Tambah Pajak Keluaran
+                      </DefaultButton>
+                      <Button
+                        variant="outlined"
+                        color="error"
+                        sx={{ textTransform: "none", marginLeft: "8px" }}
+                      >
+                        Cancel
+                      </Button>
+                    </div>
                   </div>
                 )}
               </div>
@@ -985,6 +1218,84 @@ const Pajak = (props) => {
           </div>
         </div>
       </div>
+      {openModal === true && (
+        <MyModal open={openModal} handleClose={handleCloseModal}>
+          <div
+            className="hideScrollbar"
+            style={{
+              margin: isMobile ? "24px" : "0.83vw 1.667vw 0.83vw 1.667vw",
+              overflow: "auto",
+              width: isMobile ? "80vw" : "50vw",
+              maxHeight: "80vh",
+            }}
+          >
+            <Typography style={{ color: "#0F607D", fontSize: "2.5vw" }}>
+              Pilih Buku Bank
+            </Typography>
+
+            <div
+              style={{
+                display: "flex",
+                alignItems: "center",
+                marginTop: "16px",
+              }}
+            >
+              <Typography style={{ color: "#0F607D", fontSize: "1.5vw" }}>
+                No Rekening:
+              </Typography>
+              <div style={{ marginLeft: "8px" }}>
+                <MySelectTextField
+                  value={selectedBukuBank.value}
+                  onChange={(event) => {
+                    handleSelectBukuBank(event);
+                  }}
+                  width={isMobile ? "75px" : "100px"}
+                  data={allOngoingBukuBank}
+                />
+              </div>
+            </div>
+            <div style={{ marginTop: "16px" }}>
+              <Typography style={{ color: "#0F607D", fontSize: "1.5vw" }}>
+                Nama Buku Bank: {selectedBukuBank.namaBank}
+              </Typography>
+            </div>
+          </div>
+          {(selectedBukuBank.namaBank !== "" ||
+            selectedBukuBank.namaBank !== undefined ||
+            selectedBukuBank.namaBank !== null) && (
+            <div
+              style={{
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                margin: "16px",
+              }}
+            >
+              <DefaultButton
+                onClickFunction={() => {
+                  selectedJenisPajak === "Pajak Masukan"
+                    ? handleAddPajakMasukan()
+                    : handleAddPajakKeluaran();
+                }}
+              >
+                {selectedJenisPajak === "Pajak Masukan"
+                  ? "Tambah Pajak Masukan"
+                  : "Tambah Pajak Keluaran"}
+              </DefaultButton>
+              <Button
+                onClick={() => {
+                  handleCloseModal();
+                }}
+                variant="outlined"
+                color="error"
+                style={{ marginLeft: "8px", textTransform: "none" }}
+              >
+                Cancel
+              </Button>
+            </div>
+          )}
+        </MyModal>
+      )}
       {snackbarMessage !== ("" || null) && (
         <MySnackbar
           open={openSnackbar}
