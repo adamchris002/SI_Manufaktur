@@ -979,7 +979,13 @@ const MaindashboardInventory = (props) => {
             </div>
           ) : (
             <div>
-              <div style={{ display: "flex", justifyContent: "space-between" }}>
+              <div
+                style={{
+                  display: "flex",
+                  justifyContent: isMobile ? "none" : "space-between",
+                  flexDirection: isMobile ? "column" : "",
+                }}
+              >
                 <div style={{ width: isMobile ? "100%" : "48%" }}>
                   <Typography>
                     Permohonan pembelian yang sudah diacc & diproses
@@ -1035,11 +1041,21 @@ const MaindashboardInventory = (props) => {
                   </TableContainer>
                 </div>
                 {pembelianBahanBaku?.data?.length === 0 ? (
-                  <div style={{ display: "flex" }}>
+                  <div
+                    style={{
+                      display: "flex",
+                      marginTop: isMobile ? "32px" : "",
+                    }}
+                  >
                     <Typography>Tidak ada data pembelian bahan baku</Typography>
                   </div>
                 ) : (
-                  <div style={{ width: isMobile ? "100%" : "48%" }}>
+                  <div
+                    style={{
+                      width: isMobile ? "100%" : "48%",
+                      marginTop: isMobile ? "32px" : "",
+                    }}
+                  >
                     <Typography>Daftar Pembelian Bahan Baku</Typography>
                     <TableContainer component={Paper}>
                       <Table sx={{ minWidth: 650 }} aria-label="simple table">
@@ -1142,7 +1158,12 @@ const MaindashboardInventory = (props) => {
             <Typography>Tidak ada data stok opnam</Typography>
           </div>
         ) : (
-          <div style={{ width: "70%", margin: "1.667vw" }}>
+          <div
+            style={{
+              width: "70%",
+              margin: isMobile ? "0px 32px 0px 32px" : "1.667vw",
+            }}
+          >
             <TableContainer component={Paper}>
               <Table sx={{ minWidth: 650 }} aria-label="simple table">
                 <TableHead>
@@ -1232,7 +1253,7 @@ const MaindashboardInventory = (props) => {
                 navigate("/inventoryDashboard/penyerahanBarang");
               }}
             >
-              <Typography style={{ fontSize: isMobile ? "12px" : "1.042vw" }}>
+              <Typography style={{ fontSize: isMobile ? "10px" : "1.042vw" }}>
                 Pergi ke halaman Pengambilan/Penyerahan Barang
               </Typography>
             </DefaultButton>
@@ -1245,7 +1266,7 @@ const MaindashboardInventory = (props) => {
             </Typography>
           </div>
         ) : (
-          <div style={{ width: "70%", margin: "1.667vw" }}>
+          <div style={{ width: "70%", margin: isMobile ? "0px 32px 0px 32px" : "1.667vw" }}>
             <TableContainer component={Paper}>
               <Table sx={{ minWidth: 650 }} aria-label="simple table">
                 <TableHead>
@@ -1318,9 +1339,13 @@ const MaindashboardInventory = (props) => {
           >
             Laporan Sampah
           </Typography>
-          <DefaultButton onClickFunction={() => {
-            navigate("/inventoryDashboard/laporanSampah")
-          }}>Pergi ke halaman laporan sampah</DefaultButton>
+          <DefaultButton
+            onClickFunction={() => {
+              navigate("/inventoryDashboard/laporanSampah");
+            }}
+          >
+            Pergi ke halaman laporan sampah
+          </DefaultButton>
         </div>
         <div
           style={{
@@ -1590,8 +1615,8 @@ const MaindashboardInventory = (props) => {
                                     <div style={{ marginLeft: "8px" }}>
                                       <MySelectTextField
                                         type="text"
-                                        width={isMobile ? "50px" : "55px"}
-                                        height={isMobile ? "15px" : "55px"}
+                                        width={isMobile ? "75px" : "100px"}
+                                        height={"55px"}
                                         borderRadius="10px"
                                         data={units}
                                         fontSize={isMobile ? "10px" : "0.8vw"}
@@ -1660,8 +1685,8 @@ const MaindashboardInventory = (props) => {
                                             true
                                           );
                                         }}
-                                        width={isMobile ? "50px" : "55px"}
-                                        height={isMobile ? "15px" : "55px"}
+                                        width={isMobile ? "75px" : "100px"}
+                                        height={"55px"}
                                         borderRadius="10px"
                                         data={units}
                                         fontSize={isMobile ? "10px" : "0.8vw"}

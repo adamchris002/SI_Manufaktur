@@ -320,6 +320,22 @@ const MaindashboardFinance = (props) => {
             Pajak
           </DefaultButton>
         </div>
+        <div style={{ marginTop: "32px", fontSize: "24px" }}>
+          <DefaultButton
+            width="232px"
+            height="40px"
+            backgroundColor="#0F607D"
+            borderRadius="16px"
+            fontSize="16px"
+            onClickFunction={() => {
+              document
+                .getElementById("rencanaPembayaran")
+                .scrollIntoView({ behavior: "smooth" });
+            }}
+          >
+            Rencana Pembayaran
+          </DefaultButton>
+        </div>
       </div>
       <div
         id="test"
@@ -588,7 +604,10 @@ const MaindashboardFinance = (props) => {
             width: "72vw",
           }}
         >
-          <Typography id="hutang" style={{ fontSize: "36px", color: "#0F607D" }}>
+          <Typography
+            id="rencanaPembayaran"
+            style={{ fontSize: "36px", color: "#0F607D" }}
+          >
             Rencana Pembayaran
           </Typography>
           <div>

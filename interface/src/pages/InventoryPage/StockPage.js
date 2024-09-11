@@ -299,29 +299,34 @@ const StockPage = (props) => {
         overflow: "auto",
       }}
     >
-      <div style={{ margin: "32px", height: "100%", width: "100%" }}>
-        <div
-          style={{
-            display: isMobile ? "" : "flex",
-            justifyContent: "space-between",
-            alignItems: "center",
-          }}
-        >
-          <Typography
-            style={{ fontSize: isMobile ? "" : "3vw", color: "#0F607D" }}
-          >
-            Kelola Bahan Baku
-          </Typography>
-          <DefaultButton
-            onClickFunction={() => {
-              setOpenModal(true);
-
+      <div style={{ height: "100%", width: "100%" }}>
+        <div style={{ margin: "32px" }}>
+          <div
+            style={{
+              display: "flex",
+              justifyContent: "space-between",
+              alignItems: "center",
             }}
           >
-            Tambah Stok Bahan Baku
-          </DefaultButton>
+            <Typography
+              style={{
+                fontSize: isMobile ? "20px" : "3vw",
+                color: "#0F607D",
+              }}
+            >
+              Kelola Bahan Baku
+            </Typography>
+            <DefaultButton
+              fontSize={isMobile ? "10px" : ""}
+              onClickFunction={() => {
+                setOpenModal(true);
+              }}
+            >
+              Tambah Stok Bahan Baku
+            </DefaultButton>
+          </div>
         </div>
-        <div style={{ margin: "16px 0px" }}>
+        <div style={{ margin: "16px 32px" }}>
           <TextField
             type="text"
             placeholder="Search item"
@@ -352,6 +357,7 @@ const StockPage = (props) => {
           {allInventoryItems?.data?.length === 0 ? (
             <div
               style={{
+                margin: "32px",
                 display: "flex",
                 justifyContent: "center",
                 alignItems: "center",
@@ -367,194 +373,209 @@ const StockPage = (props) => {
               </Typography>
             </div>
           ) : (
-            <TableContainer component={Paper}>
-              <Table sx={{ minWidth: 650 }} aria-label="simple table">
-                <TableHead>
-                  <TableRow>
-                    <TableCell>
-                      <IconButton
-                        aria-label="expand row"
-                        size="small"
-                        onClick={() => setOpen(!open)}
-                      >
-                        {open ? (
-                          <KeyboardArrowUpIcon />
-                        ) : (
-                          <KeyboardArrowDownIcon />
-                        )}
-                      </IconButton>
-                    </TableCell>
-                    <TableCell component="th" scope="row">
-                      No.
-                    </TableCell>
-                    <TableCell align="left">
-                      <div style={{ display: "flex", alignItems: "center" }}>
-                        <Typography style={{ width: "100px" }}>
-                          Nama Barang
-                        </Typography>
-                        {sortName ? (
-                          <IconButton
-                            onClick={() => {
-                              handleSortNamaItem("namaItem", "asc");
-                            }}
-                          >
-                            <ArrowDropDownIcon />
-                          </IconButton>
-                        ) : (
-                          <IconButton
-                            onClick={() => {
-                              handleSortNamaItem("namaItem", "desc");
-                            }}
-                          >
-                            <ArrowDropUpIcon />
-                          </IconButton>
-                        )}
-                      </div>
-                    </TableCell>
-                    <TableCell align="left">Kode Barang</TableCell>
-                    <TableCell align="left">Rincian Item</TableCell>
-                    <TableCell align="left">Jumlah Item</TableCell>
-                    <TableCell align="left">Lokasi Penyimpanan</TableCell>
-                    <TableCell style={{ width: 60 }} align="left">
-                      Actions
-                    </TableCell>
-                  </TableRow>
-                </TableHead>
-                <TableBody>
-                  {allInventoryItems?.data
-                    ?.filter((element) => {
-                      return element.namaItem
-                        .toLowerCase()
-                        .includes(searchItem.toLowerCase());
-                    })
-                    .map((result, index) => {
-                      return (
-                        <React.Fragment key={index}>
-                          <TableRow sx={{ "& > *": { borderBottom: "unset" } }}>
-                            <TableCell></TableCell>
-                            <TableCell>{index + 1}</TableCell>
-                            <TableCell>{result.namaItem}</TableCell>
-                            <TableCell>{result.kodeBarang}</TableCell>
-                            <TableCell>{result.rincianItem}</TableCell>
-                            <TableCell>{result.jumlahItem}</TableCell>
-                            <TableCell>{result.lokasi}</TableCell>
-                            <TableCell>
-                              <div
-                                style={{
-                                  display: "flex",
-                                  alignItems: "center",
-                                }}
-                              >
-                                <IconButton
-                                  onClick={() => {
-                                    handleOpenEditInventoryItems(result);
-                                  }}
-                                >
-                                  <EditIcon style={{ color: "#0F607D" }} />
-                                </IconButton>
-                                <IconButton
-                                  onClick={() => {
-                                    handleDeleteInventoryItem(result.id);
-                                  }}
-                                >
-                                  <DeleteIcon style={{ color: "red" }} />
-                                </IconButton>
-                              </div>
-                            </TableCell>
-                          </TableRow>
-                          <TableRow>
-                            <TableCell
-                              style={{ paddingBottom: 0, paddingTop: 0 }}
-                              colSpan={8}
+            <div style={{ margin: "32px" }}>
+              <TableContainer component={Paper}>
+                <Table sx={{ minWidth: 650 }} aria-label="simple table">
+                  <TableHead>
+                    <TableRow>
+                      <TableCell>
+                        <IconButton
+                          aria-label="expand row"
+                          size="small"
+                          onClick={() => setOpen(!open)}
+                        >
+                          {open ? (
+                            <KeyboardArrowUpIcon />
+                          ) : (
+                            <KeyboardArrowDownIcon />
+                          )}
+                        </IconButton>
+                      </TableCell>
+                      <TableCell component="th" scope="row">
+                        No.
+                      </TableCell>
+                      <TableCell align="left">
+                        <div style={{ display: "flex", alignItems: "center" }}>
+                          <Typography style={{ width: "100px" }}>
+                            Nama Barang
+                          </Typography>
+                          {sortName ? (
+                            <IconButton
+                              onClick={() => {
+                                handleSortNamaItem("namaItem", "asc");
+                              }}
                             >
-                              <Collapse in={open} timeout="auto" unmountOnExit>
-                                <Box sx={{ margin: 1 }}>
-                                  <Box>
-                                    <Typography
-                                      variant="h6"
-                                      gutterBottom
-                                      component="div"
-                                    >
-                                      History
-                                    </Typography>
-                                    <Table size="small" aria-label="penggunaan">
-                                      <TableHead>
-                                        <TableRow>
-                                          <TableCell>Inventory Id</TableCell>
-                                          <TableCell>
-                                            Nomor Surat Pesanan
-                                          </TableCell>
-                                          <TableCell align="left">
-                                            Tanggal Masuk
-                                          </TableCell>
-                                          <TableCell align="left">
-                                            Tanggal Pengembalian
-                                          </TableCell>
-                                          <TableCell align="left">
-                                            Stok Opnam Awal
-                                          </TableCell>
-                                          <TableCell align="left">
-                                            Stok Opnam Akhir
-                                          </TableCell>
-                                          <TableCell align="left">
-                                            Stok Fisik
-                                          </TableCell>
-                                          <TableCell align="left">
-                                            Stok Selisih
-                                          </TableCell>
-                                        </TableRow>
-                                      </TableHead>
-                                      <TableBody>
-                                        {result?.inventoryHistorys?.map(
-                                          (historyRow, historyIndex) => (
-                                            <TableRow key={historyIndex}>
-                                              <TableCell
-                                                component="th"
-                                                scope="row"
-                                              >
-                                                {historyRow.inventoryId}
-                                              </TableCell>
-                                              <TableCell align="left">
-                                                {historyRow.suratPesanan}
-                                              </TableCell>
-                                              <TableCell align="left">
-                                                {dayjs(
-                                                  historyRow.tanggalMasuk
-                                                ).format("MM/DD/YYYY hh:mm A")}
-                                              </TableCell>
-                                              <TableCell align="left">
-                                                {dayjs(
-                                                  historyRow.tanggalPengembalian
-                                                ).format("MM/DD/YYYY hh:mm A")}
-                                              </TableCell>
-                                              <TableCell align="left">
-                                                {historyRow.stokOpnamAwal}
-                                              </TableCell>
-                                              <TableCell align="left">
-                                                {historyRow.stokOpnamAkhir}
-                                              </TableCell>
-                                              <TableCell align="left">
-                                                {historyRow.stokFisik}
-                                              </TableCell>
-                                              <TableCell align="left">
-                                                {historyRow.stokSelisih}
-                                              </TableCell>
-                                            </TableRow>
-                                          )
-                                        )}
-                                      </TableBody>
-                                    </Table>
+                              <ArrowDropDownIcon />
+                            </IconButton>
+                          ) : (
+                            <IconButton
+                              onClick={() => {
+                                handleSortNamaItem("namaItem", "desc");
+                              }}
+                            >
+                              <ArrowDropUpIcon />
+                            </IconButton>
+                          )}
+                        </div>
+                      </TableCell>
+                      <TableCell align="left">Kode Barang</TableCell>
+                      <TableCell align="left">Rincian Item</TableCell>
+                      <TableCell align="left">Jumlah Item</TableCell>
+                      <TableCell align="left">Lokasi Penyimpanan</TableCell>
+                      <TableCell style={{ width: 60 }} align="left">
+                        Actions
+                      </TableCell>
+                    </TableRow>
+                  </TableHead>
+                  <TableBody>
+                    {allInventoryItems?.data
+                      ?.filter((element) => {
+                        return element.namaItem
+                          .toLowerCase()
+                          .includes(searchItem.toLowerCase());
+                      })
+                      .map((result, index) => {
+                        return (
+                          <React.Fragment key={index}>
+                            <TableRow
+                              sx={{ "& > *": { borderBottom: "unset" } }}
+                            >
+                              <TableCell></TableCell>
+                              <TableCell>{index + 1}</TableCell>
+                              <TableCell>{result.namaItem}</TableCell>
+                              <TableCell>{result.kodeBarang}</TableCell>
+                              <TableCell>{result.rincianItem}</TableCell>
+                              <TableCell>{result.jumlahItem}</TableCell>
+                              <TableCell>{result.lokasi}</TableCell>
+                              <TableCell>
+                                <div
+                                  style={{
+                                    display: "flex",
+                                    alignItems: "center",
+                                  }}
+                                >
+                                  <IconButton
+                                    onClick={() => {
+                                      handleOpenEditInventoryItems(result);
+                                    }}
+                                  >
+                                    <EditIcon style={{ color: "#0F607D" }} />
+                                  </IconButton>
+                                  <IconButton
+                                    onClick={() => {
+                                      handleDeleteInventoryItem(result.id);
+                                    }}
+                                  >
+                                    <DeleteIcon style={{ color: "red" }} />
+                                  </IconButton>
+                                </div>
+                              </TableCell>
+                            </TableRow>
+                            <TableRow>
+                              <TableCell
+                                style={{ paddingBottom: 0, paddingTop: 0 }}
+                                colSpan={8}
+                              >
+                                <Collapse
+                                  in={open}
+                                  timeout="auto"
+                                  unmountOnExit
+                                >
+                                  <Box sx={{ margin: 1 }}>
+                                    <Box>
+                                      <Typography
+                                        variant="h6"
+                                        gutterBottom
+                                        component="div"
+                                      >
+                                        History
+                                      </Typography>
+                                      <Table
+                                        size="small"
+                                        aria-label="penggunaan"
+                                      >
+                                        <TableHead>
+                                          <TableRow>
+                                            <TableCell>Inventory Id</TableCell>
+                                            <TableCell>
+                                              Nomor Surat Pesanan
+                                            </TableCell>
+                                            <TableCell align="left">
+                                              Tanggal Masuk
+                                            </TableCell>
+                                            <TableCell align="left">
+                                              Tanggal Pengembalian
+                                            </TableCell>
+                                            <TableCell align="left">
+                                              Stok Opnam Awal
+                                            </TableCell>
+                                            <TableCell align="left">
+                                              Stok Opnam Akhir
+                                            </TableCell>
+                                            <TableCell align="left">
+                                              Stok Fisik
+                                            </TableCell>
+                                            <TableCell align="left">
+                                              Stok Selisih
+                                            </TableCell>
+                                          </TableRow>
+                                        </TableHead>
+                                        <TableBody>
+                                          {result?.inventoryHistorys?.map(
+                                            (historyRow, historyIndex) => (
+                                              <TableRow key={historyIndex}>
+                                                <TableCell
+                                                  component="th"
+                                                  scope="row"
+                                                >
+                                                  {historyRow.inventoryId}
+                                                </TableCell>
+                                                <TableCell align="left">
+                                                  {historyRow.suratPesanan}
+                                                </TableCell>
+                                                <TableCell align="left">
+                                                  {dayjs(
+                                                    historyRow.tanggalMasuk
+                                                  ).format(
+                                                    "MM/DD/YYYY hh:mm A"
+                                                  )}
+                                                </TableCell>
+                                                <TableCell align="left">
+                                                  {dayjs(
+                                                    historyRow.tanggalPengembalian
+                                                  ).format(
+                                                    "MM/DD/YYYY hh:mm A"
+                                                  )}
+                                                </TableCell>
+                                                <TableCell align="left">
+                                                  {historyRow.stokOpnamAwal}
+                                                </TableCell>
+                                                <TableCell align="left">
+                                                  {historyRow.stokOpnamAkhir}
+                                                </TableCell>
+                                                <TableCell align="left">
+                                                  {historyRow.stokFisik}
+                                                </TableCell>
+                                                <TableCell align="left">
+                                                  {historyRow.stokSelisih}
+                                                </TableCell>
+                                              </TableRow>
+                                            )
+                                          )}
+                                        </TableBody>
+                                      </Table>
+                                    </Box>
                                   </Box>
-                                </Box>
-                              </Collapse>
-                            </TableCell>
-                          </TableRow>
-                        </React.Fragment>
-                      );
-                    })}
-                </TableBody>
-              </Table>
-            </TableContainer>
+                                </Collapse>
+                              </TableCell>
+                            </TableRow>
+                          </React.Fragment>
+                        );
+                      })}
+                  </TableBody>
+                </Table>
+              </TableContainer>
+            </div>
           )}
         </div>
       </div>

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import factoryBackground from "../../assets/factorybackground.png";
 import axios from "axios";
 import {
@@ -25,6 +25,7 @@ import { DemoContainer, DemoItem } from "@mui/x-date-pickers/internals/demo";
 import { DateTimePicker } from "@mui/x-date-pickers/DateTimePicker";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useAuth } from "../../components/AuthContext";
+import { AppContext } from "../../App";
 
 const PenyerahanBarang = (props) => {
   const location = useLocation();
@@ -32,6 +33,8 @@ const PenyerahanBarang = (props) => {
   const { userInformation } = props;
   const navigate = useNavigate();
   const { setSuccessMessage } = useAuth();
+  const { isMobile } = useContext(AppContext);
+
   const [estimatedOrders, setEstimatedOrders] = useState([]);
   const [selectedEstimatedOrder, setSelectedEstimatedOrder] = useState([]);
   const [inventoryItems, setInventoryItems] = useState([]);
@@ -219,24 +222,24 @@ const PenyerahanBarang = (props) => {
     //     "Tolong isi input dengan lengkap atau perbaiki data pada input"
     //   );
     // } else {
-      const transformedData = transformDataForSubmission(dataBarangYangDiambil);
-      axios({
-        method: "POST",
-        url: `http://localhost:3000/inventory/addPenyerahanBarang/${userInformation?.data?.id}`,
-        data: { dataPenyerahanBarang: transformedData },
-      }).then((result) => {
-        if (result.status === 200) {
-          setSuccessMessage("Berhasil menambahkan form penyerahan barang");
-          setSnackbarStatus(true);
-          navigate(-1);
-        } else {
-          setOpenSnackbar(true);
-          setSnackbarStatus(false);
-          setSnackbarMessage(
-            "Tidak berhasil menambahkan data penyerahan/pengambilan barang"
-          );
-        }
-      });
+    const transformedData = transformDataForSubmission(dataBarangYangDiambil);
+    axios({
+      method: "POST",
+      url: `http://localhost:3000/inventory/addPenyerahanBarang/${userInformation?.data?.id}`,
+      data: { dataPenyerahanBarang: transformedData },
+    }).then((result) => {
+      if (result.status === 200) {
+        setSuccessMessage("Berhasil menambahkan form penyerahan barang");
+        setSnackbarStatus(true);
+        navigate(-1);
+      } else {
+        setOpenSnackbar(true);
+        setSnackbarStatus(false);
+        setSnackbarMessage(
+          "Tidak berhasil menambahkan data penyerahan/pengambilan barang"
+        );
+      }
+    });
     // }
   };
 
@@ -646,7 +649,9 @@ const PenyerahanBarang = (props) => {
     >
       <div style={{ width: "100%", height: "100vh" }}>
         <div style={{ margin: "32px" }}>
-          <Typography style={{ color: "#0F607D", fontSize: "3vw" }}>
+          <Typography
+            style={{ color: "#0F607D", fontSize: isMobile ? "24px" : "3vw" }}
+          >
             Penyerahan/Pengambilan Barang
           </Typography>
         </div>
@@ -654,8 +659,13 @@ const PenyerahanBarang = (props) => {
           <div>
             {penyerahanBarangId === undefined ? (
               <div style={{ display: "flex", alignItems: "center" }}>
-                <Typography style={{ color: "#0F607D", fontSize: "2vw" }}>
-                  Laporan Perancanaan yang berlangsung
+                <Typography
+                  style={{
+                    color: "#0F607D",
+                    fontSize: isMobile ? "18px" : "2vw",
+                  }}
+                >
+                  Laporan Perencanaan yang berlangsung
                 </Typography>
                 <div style={{ marginLeft: "8px" }}>
                   <MySelectTextField
@@ -745,8 +755,13 @@ const PenyerahanBarang = (props) => {
                 })}
             </div>
             <div style={{ marginTop: "32px" }}>
-              <Typography style={{ color: "#0F607D", fontSize: "2vw" }}>
-                Form Penyerahan/Pengambilan Barang{" "}
+              <Typography
+                style={{
+                  color: "#0F607D",
+                  fontSize: isMobile ? "18px" : "2vw",
+                }}
+              >
+                Form Penyerahan/Pengambilan Barang
               </Typography>
               <div>
                 <div>
@@ -780,9 +795,25 @@ const PenyerahanBarang = (props) => {
                       <Typography>Tanggal Pengambilan: </Typography>
                     </div>
                     <LocalizationProvider dateAdapter={AdapterDayjs}>
-                      <DemoContainer components={["DateTimePicker"]}>
+                      <DemoContainer
+                        sx={{
+                          padding: 0,
+                          overflow: isMobile ? "hidden" : "",
+                        }}
+                        components={["DateTimePicker"]}
+                      >
                         <DemoItem>
                           <DateTimePicker
+                            sx={{
+                              width: isMobile ? "200px" : "300px",
+                              height: isMobile ? "30px" : "50px",
+                              ".MuiInputBase-root": {
+                                height: isMobile ? "30px" : "50px",
+                                width: isMobile ? "200px" : "300px",
+                                fontSize: isMobile ? "12px" : "",
+                                minWidth: "",
+                              },
+                            }}
                             disablePast
                             value={
                               dataBarangYangDiambil.tanggalPengambilan.isValid()
@@ -817,9 +848,25 @@ const PenyerahanBarang = (props) => {
                       <Typography>Tanggal Penyerahan: </Typography>
                     </div>
                     <LocalizationProvider dateAdapter={AdapterDayjs}>
-                      <DemoContainer components={["DateTimePicker"]}>
+                      <DemoContainer
+                        sx={{
+                          padding: 0,
+                          overflow: isMobile ? "hidden" : "",
+                        }}
+                        components={["DateTimePicker"]}
+                      >
                         <DemoItem>
                           <DateTimePicker
+                            sx={{
+                              width: isMobile ? "200px" : "300px",
+                              height: isMobile ? "30px" : "50px",
+                              ".MuiInputBase-root": {
+                                height: isMobile ? "30px" : "50px",
+                                width: isMobile ? "200px" : "300px",
+                                fontSize: isMobile ? "12px" : "",
+                                minWidth: "",
+                              },
+                            }}
                             disablePast
                             minDate={
                               !dataBarangYangDiambil.tanggalPengambilan.isValid()
@@ -875,7 +922,12 @@ const PenyerahanBarang = (props) => {
                     justifyContent: "space-between",
                   }}
                 >
-                  <Typography style={{ color: "#0F607D", fontSize: "1.5vw" }}>
+                  <Typography
+                    style={{
+                      color: "#0F607D",
+                      fontSize: isMobile ? "20px" : "1.5vw",
+                    }}
+                  >
                     Barang yang Diambil:
                   </Typography>
                   <DefaultButton
@@ -886,8 +938,18 @@ const PenyerahanBarang = (props) => {
                     Tambah Item
                   </DefaultButton>
                 </div>
-                <TableContainer component={Paper} style={{ marginTop: "16px" }}>
-                  <Table sx={{ minWidth: 650 }} aria-label="simple table">
+                <TableContainer
+                  component={Paper}
+                  style={{ marginTop: "16px", overflowX: "auto" }}
+                >
+                  <Table
+                    sx={{
+                      minWidth: 650,
+                      tableLayout: "fixed",
+                      overflowX: "auto",
+                    }}
+                    aria-label="simple table"
+                  >
                     <TableHead>
                       <TableRow>
                         <TableCell style={{ width: "50px" }}>No.</TableCell>
@@ -995,19 +1057,22 @@ const PenyerahanBarang = (props) => {
                                         );
                                       }}
                                     />
-                                    <MySelectTextField
-                                      data={units}
-                                      width={"70px"}
-                                      value={result?.jumlahYangDiambil?.unit}
-                                      onChange={(event) => {
-                                        handleChangeInput(
-                                          "jumlahYangDiambil",
-                                          event,
-                                          index,
-                                          true
-                                        );
-                                      }}
-                                    />
+                                    <div style={{ marginLeft: "8px" }}>
+                                      <MySelectTextField
+                                        data={units}
+                                        width={isMobile ? "75px" : "100px"}
+                                        height={"55px"}
+                                        value={result?.jumlahYangDiambil?.unit}
+                                        onChange={(event) => {
+                                          handleChangeInput(
+                                            "jumlahYangDiambil",
+                                            event,
+                                            index,
+                                            true
+                                          );
+                                        }}
+                                      />
+                                    </div>
                                   </div>
                                 </TableCell>
                                 <TableCell>

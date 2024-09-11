@@ -1054,9 +1054,10 @@ const EditProductionPlanPage = (props) => {
                 <div
                   style={{
                     display: "flex",
-                    justifyContent: "space-between",
+                    justifyContent: isMobile ? "" : "space-between",
                     marginTop: "16px",
                     width: "100%",
+                    flexDirection: isMobile ? "column" : "",
                   }}
                 >
                   <div
@@ -1116,14 +1117,27 @@ const EditProductionPlanPage = (props) => {
                     >
                       Tanggal Pengiriman:
                     </Typography>
-                    <div>
+                    <div style={{ marginTop: isMobile ? "16px" : "" }}>
                       <LocalizationProvider dateAdapter={AdapterDayjs}>
                         <DemoContainer
-                          sx={{ padding: 0 }}
+                          sx={{
+                            padding: 0,
+                            overflow: isMobile ? "hidden" : "",
+                          }}
                           components={["DateTimePicker"]}
                         >
                           <DemoItem sx={{ padding: 0 }}>
                             <DateTimePicker
+                              sx={{
+                                width: isMobile ? "200px" : "300px",
+                                height: isMobile ? "30px" : "50px",
+                                ".MuiInputBase-root": {
+                                  height: isMobile ? "30px" : "50px",
+                                  width: isMobile ? "200px" : "300px",
+                                  fontSize: isMobile ? "12px" : "",
+                                  minWidth: "",
+                                },
+                              }}
                               value={tanggalPengiriman}
                               disablePast
                               maxDateTime={dayjs(
@@ -1134,7 +1148,9 @@ const EditProductionPlanPage = (props) => {
                           </DemoItem>
                         </DemoContainer>
                       </LocalizationProvider>
-                      <Typography>{`Tanggal jatuh tempo: ${dayjs(
+                      <Typography
+                        style={{ fontSize: isMobile ? "12px" : "" }}
+                      >{`Tanggal jatuh tempo: ${dayjs(
                         selectedOrder?.data?.orderDueDate
                       ).format("MM/DD/YYYY hh:mm A")}`}</Typography>
                     </div>
@@ -1633,15 +1649,27 @@ const EditProductionPlanPage = (props) => {
                   {estimasiBahanBaku?.map((result, index) => {
                     return (
                       <div key={index} style={{ marginTop: "32px" }}>
-                        <TableContainer component={Paper}>
+                        <TableContainer
+                          sx={{ overflowX: "auto" }}
+                          component={Paper}
+                        >
                           <Table
-                            sx={{ minWidth: 650 }}
+                            sx={{
+                              minWidth: 650,
+                              tableLayout: "fixed",
+                              overflowX: "auto",
+                            }}
                             aria-label="simple table"
                           >
                             <TableHead>
                               <TableRow key={index}>
-                                <TableCell>No.</TableCell>
-                                <TableCell align="left">
+                                <TableCell style={{ width: "25px" }}>
+                                  No.
+                                </TableCell>
+                                <TableCell
+                                  style={{ width: "200px" }}
+                                  align="left"
+                                >
                                   <div
                                     style={{
                                       display: "flex",
@@ -1651,18 +1679,40 @@ const EditProductionPlanPage = (props) => {
                                     {result?.jenis}
                                   </div>
                                 </TableCell>
-                                <TableCell align="left">
+                                <TableCell
+                                  style={{ width: "200px" }}
+                                  align="left"
+                                >
                                   {result?.informasi}
                                 </TableCell>
-                                <TableCell align="left">Warna</TableCell>
-                                <TableCell align="left">
+                                <TableCell
+                                  style={{ width: "200px" }}
+                                  l
+                                  align="left"
+                                >
+                                  Warna
+                                </TableCell>
+                                <TableCell
+                                  style={{ width: "200px" }}
+                                  align="left"
+                                >
                                   Estimasi Kebutuhan
                                 </TableCell>
-                                <TableCell align="left">Waste</TableCell>
-                                <TableCell align="left">
+                                <TableCell
+                                  style={{ width: "200px" }}
+                                  align="left"
+                                >
+                                  Waste
+                                </TableCell>
+                                <TableCell
+                                  style={{ width: "200px" }}
+                                  align="left"
+                                >
                                   Jumlah Kebutuhan
                                 </TableCell>
-                                <TableCell>Actions</TableCell>
+                                <TableCell style={{ width: "50px" }}>
+                                  Actions
+                                </TableCell>
                               </TableRow>
                             </TableHead>
                             <TableBody>
@@ -1754,15 +1804,13 @@ const EditProductionPlanPage = (props) => {
                                                 <MySelectTextField
                                                   type="text"
                                                   width={
-                                                    isMobile ? "50px" : "55px"
+                                                    isMobile ? "75px" : "100px"
                                                   }
-                                                  height={
-                                                    isMobile ? "15px" : "55px"
-                                                  }
+                                                  height={"55px"}
                                                   borderRadius="10px"
                                                   data={units}
                                                   fontSize={
-                                                    isMobile ? "10px" : "0.8vw"
+                                                    isMobile ? "15px" : "1vw"
                                                   }
                                                   value={
                                                     dataJenis.estimasiKebutuhan
@@ -1808,15 +1856,13 @@ const EditProductionPlanPage = (props) => {
                                                 <MySelectTextField
                                                   type="text"
                                                   width={
-                                                    isMobile ? "50px" : "55px"
+                                                    isMobile ? "75px" : "100px"
                                                   }
-                                                  height={
-                                                    isMobile ? "15px" : "55px"
-                                                  }
+                                                  height={"55px"}
                                                   borderRadius="10px"
                                                   data={units}
                                                   fontSize={
-                                                    isMobile ? "10px" : "0.8vw"
+                                                    isMobile ? "15px" : "1vw"
                                                   }
                                                   value={dataJenis.waste.unit}
                                                   onChange={(event) => {
@@ -1862,15 +1908,13 @@ const EditProductionPlanPage = (props) => {
                                                 <MySelectTextField
                                                   type="text"
                                                   width={
-                                                    isMobile ? "50px" : "55px"
+                                                    isMobile ? "75px" : "100px"
                                                   }
-                                                  height={
-                                                    isMobile ? "15px" : "55px"
-                                                  }
+                                                  height={"55px"}
                                                   borderRadius="10px"
                                                   data={units}
                                                   fontSize={
-                                                    isMobile ? "10px" : "0.8vw"
+                                                    isMobile ? "15px" : "1vw"
                                                   }
                                                   value={
                                                     dataJenis.jumlahKebutuhan
@@ -1952,26 +1996,26 @@ const EditProductionPlanPage = (props) => {
                               )}
                             </TableBody>
                           </Table>
-                          <div
-                            style={{
-                              display: "flex",
-                              justifyContent: "flex-end",
-                              margin: "16px",
-                            }}
-                          >
-                            <DefaultButton
-                              onClickFunction={() => handleAddData(index)}
-                            >{`Tambah Kelompok ${result.jenis}`}</DefaultButton>
-                            <Button
-                              onClick={() => {
-                                handleRemoveDataEstimasiBahanBaku(result.id);
-                              }}
-                              sx={{ marginLeft: "8px", textTransform: "none" }}
-                              variant="outlined"
-                              color="error"
-                            >{`Hapus Tabel ${result.jenis}`}</Button>
-                          </div>
                         </TableContainer>
+                        <div
+                          style={{
+                            display: "flex",
+                            justifyContent: "flex-end",
+                            margin: "16px",
+                          }}
+                        >
+                          <DefaultButton
+                            onClickFunction={() => handleAddData(index)}
+                          >{`Tambah Kelompok ${result.jenis}`}</DefaultButton>
+                          <Button
+                            onClick={() => {
+                              handleRemoveDataEstimasiBahanBaku(result.id);
+                            }}
+                            sx={{ marginLeft: "8px", textTransform: "none" }}
+                            variant="outlined"
+                            color="error"
+                          >{`Hapus Tabel ${result.jenis}`}</Button>
+                        </div>
                       </div>
                     );
                   })}
@@ -2006,16 +2050,38 @@ const EditProductionPlanPage = (props) => {
                     </IconButton>
                   </div>
                   <div style={{ marginTop: "16px" }}>
-                    <TableContainer component={Paper}>
-                      <Table sx={{ minWidth: 650 }} aria-label="simple table">
+                    <TableContainer
+                      sx={{ overflowX: "auto" }}
+                      component={Paper}
+                    >
+                      <Table
+                        sx={{
+                          minWidth: 650,
+                          tableLayout: "fixed",
+                          overflowX: "auto",
+                        }}
+                        aria-label="simple table"
+                      >
                         <TableHead>
                           <TableRow>
-                            <TableCell>Bagian</TableCell>
-                            <TableCell align="left">Jenis Pekerjaan </TableCell>
-                            <TableCell align="left">Tanggal Mulai</TableCell>
-                            <TableCell align="left">Tanggal Selesai</TableCell>
-                            <TableCell align="left">Jumlah Hari</TableCell>
-                            <TableCell align="left">Actions</TableCell>
+                            <TableCell style={{ width: "200px" }}>
+                              Bagian
+                            </TableCell>
+                            <TableCell style={{ width: "200px" }} align="left">
+                              Jenis Pekerjaan{" "}
+                            </TableCell>
+                            <TableCell style={{ width: "300px" }} align="left">
+                              Tanggal Mulai
+                            </TableCell>
+                            <TableCell style={{ width: "300px" }} align="left">
+                              Tanggal Selesai
+                            </TableCell>
+                            <TableCell style={{ width: "200px" }} align="left">
+                              Jumlah Hari
+                            </TableCell>
+                            <TableCell style={{ width: "50px" }} align="left">
+                              Actions
+                            </TableCell>
                           </TableRow>
                         </TableHead>
                         <TableBody>
@@ -2269,7 +2335,9 @@ const EditProductionPlanPage = (props) => {
                           <TableCell style={{ width: "200px" }}>
                             Keterangan
                           </TableCell>
-                          <TableCell>Actions</TableCell>
+                          <TableCell style={{ width: "50px" }}>
+                            Actions
+                          </TableCell>
                         </TableRow>
                       </TableHead>
                       <TableBody>
@@ -2526,7 +2594,7 @@ const EditProductionPlanPage = (props) => {
                           <TableCell style={{ width: "200px" }}>
                             Jenis Cetakan
                           </TableCell>
-                          <TableCell style={{ width: "200px" }}>Isi</TableCell>
+                          <TableCell style={{ width: "350px" }}>Isi</TableCell>
                           <TableCell style={{ width: "200px" }}>
                             Harga
                           </TableCell>
@@ -2587,6 +2655,7 @@ const EditProductionPlanPage = (props) => {
                                     <TextField
                                       disabled
                                       type="number"
+                                      sx={{width: isMobile ? "100px" : "auto"}}
                                       value={result.isi.value}
                                       // onChange={(event) => {
                                       //   handleChangeInputPerincian(
@@ -2626,7 +2695,7 @@ const EditProductionPlanPage = (props) => {
                                     type="text"
                                     sx={{
                                       "& .MuiOutlinedInput-root": {
-                                        height: isMobile ? "15px" : "3vw",
+                                        height: isMobile ? "50px" : "4vw",
                                         width: isMobile ? "120px" : "200px",
                                         fontSize: isMobile ? "10px" : "1.5vw",
                                         borderRadius: "10px",

@@ -479,10 +479,17 @@ const OrderDetail = (props) => {
                 display: "flex",
                 overflowX: "auto",
                 width: "100%",
-                margin: "0px 32px"
+                margin: "0px 32px",
               }}
             >
-              <Typography style={{fontSize: isMobile ? "24px" : "2vw", color: "#0F607D"}}>Tidak ada dokumen untuk pesanan ini</Typography>
+              <Typography
+                style={{
+                  fontSize: isMobile ? "24px" : "2vw",
+                  color: "#0F607D",
+                }}
+              >
+                Tidak ada dokumen untuk pesanan ini
+              </Typography>
             </div>
           ) : (
             <div
@@ -642,7 +649,7 @@ const OrderDetail = (props) => {
               margin: isMobile ? "24px" : "0.83vw 1.667vw 0.83vw 1.667vw",
               overflow: "auto",
               width: isMobile ? "80vw" : "50vw",
-              height: "80vh",
+              maxHeight: "80vh",
             }}
           >
             <div style={{ display: "flex", margin: "1.667vw 0px 1.042vw 0px" }}>
@@ -1149,9 +1156,22 @@ const OrderDetail = (props) => {
                   </Typography>
                 </div>
                 <LocalizationProvider dateAdapter={AdapterDayjs}>
-                  <DemoContainer components={["DateTimePicker"]}>
+                  <DemoContainer
+                    sx={{ overflow: isMobile ? "hidden" : "" }}
+                    components={["DateTimePicker"]}
+                  >
                     <DemoItem>
                       <DateTimePicker
+                        sx={{
+                          width: isMobile ? "200px" : "300px",
+                          height: isMobile ? "30px" : "50px",
+                          ".MuiInputBase-root": {
+                            height: isMobile ? "30px" : "50px",
+                            width: isMobile ? "200px" : "300px",
+                            fontSize: isMobile ? "12px" : "",
+                            minWidth: "",
+                          },
+                        }}
                         disablePast
                         value={orderDueDate}
                         onChange={(event) => setOrderDueDate(event)}

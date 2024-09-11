@@ -240,8 +240,8 @@ const StokOpnam = (props) => {
                   [field]: {
                     ...updatedItem[field],
                     value: value,
-                  }
-                }
+                  },
+                };
               }
               if (field === "jenisBarang") {
                 updatedItem = { ...updatedItem, [field]: value };
@@ -522,14 +522,17 @@ const StokOpnam = (props) => {
           ) : (
             <div
               style={{
-                display: isMobile ? "" : "flex",
+                display: "flex",
                 justifyContent: "space-between",
                 alignItems: "center",
                 margin: "32px",
               }}
             >
               <Typography
-                style={{ fontSize: isMobile ? "" : "3vw", color: "#0F607D" }}
+                style={{
+                  fontSize: isMobile ? "24px" : "3vw",
+                  color: "#0F607D",
+                }}
               >
                 {stokOpnamId !== undefined
                   ? "Edit Stok Opnam"
@@ -862,28 +865,30 @@ const StokOpnam = (props) => {
                                       );
                                     }}
                                   />
-                                  <MySelectTextField
-                                    key={"unit"}
-                                    disabled={
-                                      stokOpnamId === undefined
-                                        ? result.stokOpnamAwal.id
-                                          ? true
-                                          : false
-                                        : true
-                                    }
-                                    width={isMobile ? "50px" : "60px"}
-                                    height={isMobile ? "15px" : "55px"}
-                                    data={units}
-                                    value={result.stokOpnamAwal.unit}
-                                    onChange={(event) => {
-                                      handleChangeInputStokOpnam(
-                                        "stokOpnamAwal",
-                                        event,
-                                        index,
-                                        true
-                                      );
-                                    }}
-                                  />
+                                  <div style={{ marginLeft: "8px" }}>
+                                    <MySelectTextField
+                                      key={"unit"}
+                                      disabled={
+                                        stokOpnamId === undefined
+                                          ? result.stokOpnamAwal.id
+                                            ? true
+                                            : false
+                                          : true
+                                      }
+                                      width={isMobile ? "75px" : "100px"}
+                                      height={"55px"}
+                                      data={units}
+                                      value={result.stokOpnamAwal.unit}
+                                      onChange={(event) => {
+                                        handleChangeInputStokOpnam(
+                                          "stokOpnamAwal",
+                                          event,
+                                          index,
+                                          true
+                                        );
+                                      }}
+                                    />
+                                  </div>
                                 </div>
                               </TableCell>
                               <TableCell>
@@ -906,20 +911,23 @@ const StokOpnam = (props) => {
                                       );
                                     }}
                                   />
-                                  <MySelectTextField
-                                    type="text"
-                                    width={"60px"}
-                                    data={units}
-                                    value={result.stokOpnamAkhir?.unit}
-                                    onChange={(event) => {
-                                      handleChangeInputStokOpnam(
-                                        "stokOpnamAkhir",
-                                        event,
-                                        index,
-                                        true
-                                      );
-                                    }}
-                                  />
+                                  <div style={{ marginLeft: "8px" }}>
+                                    <MySelectTextField
+                                      type="text"
+                                      width={isMobile ? "75px" : "100px"}
+                                      height={"55px"}
+                                      data={units}
+                                      value={result.stokOpnamAkhir?.unit}
+                                      onChange={(event) => {
+                                        handleChangeInputStokOpnam(
+                                          "stokOpnamAkhir",
+                                          event,
+                                          index,
+                                          true
+                                        );
+                                      }}
+                                    />
+                                  </div>
                                 </div>
                               </TableCell>
                               <TableCell>
@@ -942,20 +950,23 @@ const StokOpnam = (props) => {
                                       );
                                     }}
                                   />
-                                  <MySelectTextField
-                                    type="text"
-                                    width={"60px"}
-                                    data={units}
-                                    value={result.stokFisik?.unit}
-                                    onChange={(event) => {
-                                      handleChangeInputStokOpnam(
-                                        "stokFisik",
-                                        event,
-                                        index,
-                                        true
-                                      );
-                                    }}
-                                  />
+                                  <div style={{ marginLeft: "8px" }}>
+                                    <MySelectTextField
+                                      type="text"
+                                      width={isMobile ? "75px" : "100px"}
+                                      height={"55px"}
+                                      data={units}
+                                      value={result.stokFisik?.unit}
+                                      onChange={(event) => {
+                                        handleChangeInputStokOpnam(
+                                          "stokFisik",
+                                          event,
+                                          index,
+                                          true
+                                        );
+                                      }}
+                                    />
+                                  </div>
                                 </div>
                               </TableCell>
                               <TableCell>
@@ -978,20 +989,23 @@ const StokOpnam = (props) => {
                                       );
                                     }}
                                   />
-                                  <MySelectTextField
-                                    type="text"
-                                    width={"60px"}
-                                    data={units}
-                                    value={result.stokSelisih?.unit}
-                                    onChange={(event) => {
-                                      handleChangeInputStokOpnam(
-                                        "stokSelisih",
-                                        event,
-                                        index,
-                                        true
-                                      );
-                                    }}
-                                  />
+                                  <div style={{ marginLeft: "8px" }}>
+                                    <MySelectTextField
+                                      type="text"
+                                      width={isMobile ? "75px" : "100px"}
+                                      height={"55px"}
+                                      data={units}
+                                      value={result.stokSelisih?.unit}
+                                      onChange={(event) => {
+                                        handleChangeInputStokOpnam(
+                                          "stokSelisih",
+                                          event,
+                                          index,
+                                          true
+                                        );
+                                      }}
+                                    />
+                                  </div>
                                 </div>
                               </TableCell>
                               <TableCell>

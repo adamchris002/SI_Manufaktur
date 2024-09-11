@@ -520,7 +520,7 @@ const PembelianBahanBaku = (props) => {
           }}
         >
           <Typography
-            style={{ fontSize: isMobile ? "18px" : "2vw", color: "#0F607D" }}
+            style={{ fontSize: isMobile ? "24px" : "2vw", color: "#0F607D" }}
           >
             {pembelianBahanBakuId
               ? "Edit Pembelian Bahan Baku/Bahan Pembantu"
@@ -536,7 +536,7 @@ const PembelianBahanBaku = (props) => {
             >
               <Typography
                 style={{
-                  fontSize: isMobile ? "12px" : "1.5vw",
+                  fontSize: isMobile ? "20px" : "1.5vw",
                   color: "#0F607D",
                 }}
               >
@@ -839,8 +839,8 @@ const PembelianBahanBaku = (props) => {
                                     <div style={{ marginLeft: "8px" }}>
                                       <MySelectTextField
                                         data={units}
-                                        width={isMobile ? "50px" : "55px"}
-                                        height={isMobile ? "15px" : "55px"}
+                                        width={isMobile ? "75px" : "100px"}
+                                        height={"55px"}
                                         value={result.jumlahOrder.unit}
                                         onChange={(event) => {
                                           handleChangeInput(
@@ -867,8 +867,8 @@ const PembelianBahanBaku = (props) => {
                                     }}
                                     sx={{
                                       "& .MuiOutlinedInput-root": {
-                                        height: isMobile ? "15px" : "3vw",
-                                        width: isMobile ? "120px" : "200px",
+                                        height: isMobile ? "50px" : "4vw",
+                                        width: isMobile ? "200px" : "200px",
                                         fontSize: isMobile ? "10px" : "1.5vw",
                                         borderRadius: "10px",
                                         "& fieldset": {
@@ -894,8 +894,8 @@ const PembelianBahanBaku = (props) => {
                                     value={result.jumlahHarga}
                                     sx={{
                                       "& .MuiOutlinedInput-root": {
-                                        height: isMobile ? "15px" : "3vw",
-                                        width: isMobile ? "120px" : "200px",
+                                        height: isMobile ? "50px" : "4vw",
+                                        width: isMobile ? "200px" : "200px",
                                         fontSize: isMobile ? "10px" : "1.5vw",
                                         borderRadius: "10px",
                                         "& fieldset": {
@@ -1141,8 +1141,8 @@ const PembelianBahanBaku = (props) => {
                                     <div style={{ marginLeft: "8px" }}>
                                       <MySelectTextField
                                         data={units}
-                                        width={isMobile ? "50px" : "55px"}
-                                        height={isMobile ? "15px" : "55px"}
+                                        width={isMobile ? "75px" : "100px"}
+                                        height={"55px"}
                                         value={
                                           result.jumlahTerimaPengiriman?.unit
                                         }
@@ -1179,8 +1179,8 @@ const PembelianBahanBaku = (props) => {
                                     <div style={{ marginLeft: "8px" }}>
                                       <MySelectTextField
                                         data={units}
-                                        width={isMobile ? "50px" : "55px"}
-                                        height={isMobile ? "15px" : "55px"}
+                                        width={isMobile ? "75px" : "100px"}
+                                        height={"55px"}
                                         value={result.sisaPengiriman?.unit}
                                         onChange={(event) => {
                                           handleChangeInput(
@@ -1259,7 +1259,7 @@ const PembelianBahanBaku = (props) => {
               <Typography
                 style={{
                   color: "#0F607D",
-                  fontSize: isMobile ? "24px" : "2vw",
+                  fontSize: isMobile ? "20px" : "2vw",
                 }}
               >
                 Silahkan pilih ID permohonan Pembelian

@@ -83,7 +83,6 @@ const LaporanSampah = (props) => {
 
   const [dataLaporanSampahForEdit, setDataLaporanSampahForEdit] = useState([]);
 
-
   const [openSnackbar, setOpenSnackbar] = useState(false);
   const [snackbarStatus, setSnackbarStatus] = useState(false);
   const [snackbarMessage, setSnackbarMessage] = useState("");
@@ -532,7 +531,7 @@ const LaporanSampah = (props) => {
         data: { dataLaporanSampah: tempDataLaporanSampah },
       }).then((result) => {
         if (result.status === 200) {
-          handleCloseModal()
+          handleCloseModal();
           setRefreshDataLaporanSampah(true);
           setOpenSnackbar(true);
           setSnackbarStatus(true);
@@ -560,7 +559,9 @@ const LaporanSampah = (props) => {
     >
       <div style={{ width: "100%", height: "100vh" }}>
         <div style={{ margin: "32px" }}>
-          <Typography style={{ color: "#0F607D", fontSize: "3vw" }}>
+          <Typography
+            style={{ color: "#0F607D", fontSize: isMobile ? "24px" : "3vw" }}
+          >
             Laporan Sampah
           </Typography>
         </div>
@@ -595,7 +596,12 @@ const LaporanSampah = (props) => {
         <div style={{ margin: "32px" }}>
           {selectedKegiatanProduksi.length !== 0 && (
             <div>
-              <Typography style={{ color: "#0F607D", fontSize: "2vw" }}>
+              <Typography
+                style={{
+                  color: "#0F607D",
+                  fontSize: isMobile ? "18px" : "2vw",
+                }}
+              >
                 Data Item Limbah Hasil Produksi
               </Typography>
               <TableContainer component={Paper} sx={{ overflowX: "auto" }}>
@@ -755,6 +761,8 @@ const LaporanSampah = (props) => {
                               <MySelectTextField
                                 data={units}
                                 value={result.jumlah.unit}
+                                height={"55px"}
+                                width={isMobile ? "75px" : "100px"}
                                 onChange={(event) => {
                                   handleChangeInputLaporanSampah(
                                     event,
@@ -772,7 +780,8 @@ const LaporanSampah = (props) => {
                             type="text"
                             sx={{
                               "& .MuiOutlinedInput-root": {
-                                width: isMobile ? "120px" : "200px",
+                                height: isMobile ? "50px" : "4vw",
+                                width: isMobile ? "200px" : "200px",
                                 fontSize: isMobile ? "10px" : "1.5vw",
                                 borderRadius: "10px",
                                 "& fieldset": {
@@ -802,7 +811,8 @@ const LaporanSampah = (props) => {
                             type="text"
                             sx={{
                               "& .MuiOutlinedInput-root": {
-                                width: isMobile ? "120px" : "200px",
+                                height: isMobile ? "50px" : "4vw",
+                                width: isMobile ? "200px" : "200px",
                                 fontSize: isMobile ? "10px" : "1.5vw",
                                 borderRadius: "10px",
                                 "& fieldset": {
@@ -879,61 +889,73 @@ const LaporanSampah = (props) => {
             </Button>
           </div>
         </div>
-        {allLaporanSampah.length !== 0 && (
-          <div style={{ padding: "0px 32px 32px 32px" }}>
-            <Typography style={{ fontSize: "2vw", color: "#0F607D" }}>
-              Data-data laporan sampah
-            </Typography>
-            <TableContainer sx={{ width: 650 }} component={Paper}>
-              <Table sx={{ minWidth: 650 }}>
-                <TableHead>
-                  <TableRow>
-                    <TableCell style={{ width: "25px" }}>No.</TableCell>
-                    <TableCell style={{ width: "200px" }}>
-                      No Order Produksi
-                    </TableCell>
-                    <TableCell style={{ width: "200px" }}>
-                      Tahap Produksi
-                    </TableCell>
-                    <TableCell style={{ width: "80px" }}>Actions</TableCell>
-                  </TableRow>
-                </TableHead>
-                <TableBody>
-                  {allLaporanSampah?.map((result, index) => {
-                    return (
-                      <React.Fragment key={index}>
-                        <TableRow>
-                          <TableCell>{index + 1 + "."}</TableCell>
-                          <TableCell>{result.noOrderProduksi}</TableCell>
-                          <TableCell>{result.tahapProduksi}</TableCell>
-                          <TableCell>
-                            <IconButton
-                              onClick={() => {
-                                handleOpenModalForEditLaporanSampah(
-                                  result.noOrderProduksi,
-                                  result.tahapProduksi
-                                );
-                              }}
-                            >
-                              <EditIcon style={{ color: "#0F607D" }} />
-                            </IconButton>
-                            <IconButton
-                              onClick={() => {
-                                handleDeleteLaporanSampah(result.id);
-                              }}
-                            >
-                              <DeleteIcon style={{ color: "red" }} />
-                            </IconButton>
-                          </TableCell>
-                        </TableRow>
-                      </React.Fragment>
-                    );
-                  })}
-                </TableBody>
-              </Table>
-            </TableContainer>
-          </div>
-        )}
+        <div
+          style={{
+            width: isMobile ? "100%" : "60%",
+            padding: "0px 0px 32px 0px",
+          }}
+        >
+          {allLaporanSampah.length !== 0 && (
+            <div style={{ margin: "32px" }}>
+              <Typography
+                style={{
+                  fontSize: isMobile ? "20px" : "2vw",
+                  color: "#0F607D",
+                }}
+              >
+                Data-data laporan sampah
+              </Typography>
+              <TableContainer sx={{}} component={Paper}>
+                <Table sx={{ minWidth: 650 }}>
+                  <TableHead>
+                    <TableRow>
+                      <TableCell style={{ width: "25px" }}>No.</TableCell>
+                      <TableCell style={{ width: "50px" }}>
+                        No Order Produksi
+                      </TableCell>
+                      <TableCell style={{ width: "50px" }}>
+                        Tahap Produksi
+                      </TableCell>
+                      <TableCell style={{ width: "20px" }}>Actions</TableCell>
+                    </TableRow>
+                  </TableHead>
+                  <TableBody>
+                    {allLaporanSampah?.map((result, index) => {
+                      return (
+                        <React.Fragment key={index}>
+                          <TableRow>
+                            <TableCell>{index + 1 + "."}</TableCell>
+                            <TableCell>{result.noOrderProduksi}</TableCell>
+                            <TableCell>{result.tahapProduksi}</TableCell>
+                            <TableCell>
+                              <IconButton
+                                onClick={() => {
+                                  handleOpenModalForEditLaporanSampah(
+                                    result.noOrderProduksi,
+                                    result.tahapProduksi
+                                  );
+                                }}
+                              >
+                                <EditIcon style={{ color: "#0F607D" }} />
+                              </IconButton>
+                              <IconButton
+                                onClick={() => {
+                                  handleDeleteLaporanSampah(result.id);
+                                }}
+                              >
+                                <DeleteIcon style={{ color: "red" }} />
+                              </IconButton>
+                            </TableCell>
+                          </TableRow>
+                        </React.Fragment>
+                      );
+                    })}
+                  </TableBody>
+                </Table>
+              </TableContainer>
+            </div>
+          )}
+        </div>
       </div>
       {openModal === true && (
         <MyModal open={openModal} handleClose={handleCloseModal}>
@@ -1070,6 +1092,8 @@ const LaporanSampah = (props) => {
                                 <div style={{ marginLeft: "8px" }}>
                                   <MySelectTextField
                                     data={units}
+                                    width={isMobile ? "75px" : "100px"}
+                                    height={"55px"}
                                     value={result.jumlah.unit}
                                     onChange={(event) => {
                                       handleChangeInputEditLaporanSampah(
@@ -1096,7 +1120,8 @@ const LaporanSampah = (props) => {
                                 type="text"
                                 sx={{
                                   "& .MuiOutlinedInput-root": {
-                                    width: isMobile ? "120px" : "200px",
+                                    height: isMobile ? "50px" : "4vw",
+                                    width: isMobile ? "200px" : "200px",
                                     fontSize: isMobile ? "10px" : "1.5vw",
                                     borderRadius: "10px",
                                     "& fieldset": {
@@ -1128,7 +1153,8 @@ const LaporanSampah = (props) => {
                                 type="text"
                                 sx={{
                                   "& .MuiOutlinedInput-root": {
-                                    width: isMobile ? "120px" : "200px",
+                                    height: isMobile ? "50px" : "4vw",
+                                    width: isMobile ? "200px" : "200px",
                                     fontSize: isMobile ? "10px" : "1.5vw",
                                     borderRadius: "10px",
                                     "& fieldset": {

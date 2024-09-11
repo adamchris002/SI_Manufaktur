@@ -1373,7 +1373,7 @@ const MaindashboardMarketing = (props) => {
                               ?.slice(0, 3)
                               .map((document, index) => {
                                 return (
-                                  <div key ={index}>
+                                  <div key={index}>
                                     <img
                                       style={{
                                         height: isMobile ? "30px" : "3.125vw",
@@ -1808,7 +1808,7 @@ const MaindashboardMarketing = (props) => {
                       {Array.from(orderDocuments).map((result, index) => {
                         return (
                           <div
-                          key={index}
+                            key={index}
                             style={{
                               width: "2.96vw",
                               height: "2.96vw",
@@ -2092,7 +2092,7 @@ const MaindashboardMarketing = (props) => {
                   justifyContent: "space-between",
                 }}
               >
-                <div style={{ display: "flex" }}>
+                <div>
                   <Typography
                     style={{
                       color: "#0F607D",
@@ -2103,11 +2103,28 @@ const MaindashboardMarketing = (props) => {
                   </Typography>
                 </div>
                 <LocalizationProvider dateAdapter={AdapterDayjs}>
-                  <DemoContainer components={["DateTimePicker"]}>
+                  <DemoContainer
+                    sx={{ overflow: isMobile ? "hidden" : "" }}
+                    components={["DateTimePicker"]}
+                  >
                     <DemoItem>
                       <DateTimePicker
+                        sx={{
+                          width: isMobile ? "200px" : "300px",
+                          height: isMobile ? "30px" : "50px",
+                          ".MuiInputBase-root": {
+                            height: isMobile ? "30px" : "50px",
+                            width: isMobile ? "200px" : "300px",
+                            fontSize: isMobile ? "12px" : "",
+                            minWidth: "",
+                          },
+                        }}
                         disablePast
-                        onChange={(event) => setOrderDueDate(dayjs(event).format("MM/DD/YYYY hh:mm A"))}
+                        onChange={(event) =>
+                          setOrderDueDate(
+                            dayjs(event).format("MM/DD/YYYY hh:mm A")
+                          )
+                        }
                       />
                     </DemoItem>
                   </DemoContainer>
