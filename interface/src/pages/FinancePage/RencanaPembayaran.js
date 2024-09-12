@@ -77,8 +77,11 @@ const RencanaPembayaran = (props) => {
   const [allDataRencanaPembayaran, setAllDataRencanaPembayaran] = useState([]);
   const [selectedPembelianBahanBakuId, setSelectedPembelianBahanBakuId] =
     useState("");
-
+  const [ongoingHutangsAndCicilans, setOngoingHutangsAndCicilans] = useState(
+    []
+  );
   const [viewDataHutang, setViewDataHutang] = useState([]);
+  console.log(viewDataHutang)
   const [openSnackbar, setOpenSnackBar] = useState(false);
   const [snackbarStatus, setSnackbarStatus] = useState(false);
   const [snackbarMessage, setSnackbarMessage] = useState("");
@@ -164,6 +167,28 @@ const RencanaPembayaran = (props) => {
       });
     }
   }, [refreshRencanaPembayaran]);
+
+  useEffect(() => {
+    axios({
+      method: "GET",
+      url: "http://localhost:3000/finance/findPrevOngoingHutangs",
+    }).then((result) => {
+      if (result.status === 200) {
+        const resultIds = result.data.map((item) => item.id);
+        const existingIds =
+          allDataRencanaPembayaran[0]?.itemRencanaPembayarans.map(
+            (item) => item.id
+          ) || [];
+
+        const itemsToAdd = result.data.filter(
+          (item) => !existingIds.includes(item.id)
+        );
+
+        setOngoingHutangsAndCicilans(itemsToAdd);
+      } else {
+      }
+    });
+  }, [allDataRencanaPembayaran]);
 
   useEffect(() => {
     axios({
@@ -385,6 +410,14 @@ const RencanaPembayaran = (props) => {
     setOpenModalView(false);
   };
 
+  const handleViewHutangPrev = (id) => {
+    let prevItemRencanaPembayaran = ongoingHutangsAndCicilans.find(
+      (item) => item.id === id
+    );
+    setOpenModalView(true);
+    setViewDataHutang(prevItemRencanaPembayaran.hutangs);
+  };
+
   const handleViewHutang = (id) => {
     let itemRencanaPembayaran = allDataRencanaPembayaran
       .map((item) => {
@@ -461,6 +494,52 @@ const RencanaPembayaran = (props) => {
               </div>
             </div>
           </div>
+          {ongoingHutangsAndCicilans.length !== 0 && (
+            <div style={{ width: "50%", marginBottom: "64px" }}>
+              <Typography>Data Hutangs dari bulan sebelum</Typography>
+              <TableContainer component={Paper}>
+                <Table>
+                  <TableHead>
+                    <TableRow>
+                      <TableCell>Uraian</TableCell>
+                      <TableCell>Tanggal Jatuh Tempo</TableCell>
+                      <TableCell>Nominal</TableCell>
+                      <TableCell>Actions</TableCell>
+                    </TableRow>
+                  </TableHead>
+                  <TableBody>
+                    {ongoingHutangsAndCicilans.length !== 0 && (
+                      <React.Fragment>
+                        {ongoingHutangsAndCicilans.map((data, indexOngoing) => {
+                          return (
+                            <TableRow>
+                              <TableCell>{data.uraian}</TableCell>
+                              <TableCell>{data.tanggalJatuhTempo}</TableCell>
+                              <TableCell>{`Rp. ${data.nominal
+                                .toString()
+                                .replace(
+                                  /\B(?=(\d{3})+(?!\d))/g,
+                                  "."
+                                )},-`}</TableCell>
+                              <TableCell>
+                                <IconButton
+                                  onClick={() => {
+                                    handleViewHutangPrev(data.id);
+                                  }}
+                                >
+                                  <VisibilityIcon sx={{ color: "#0F607D" }} />
+                                </IconButton>
+                              </TableCell>
+                            </TableRow>
+                          );
+                        })}
+                      </React.Fragment>
+                    )}
+                  </TableBody>
+                </Table>
+              </TableContainer>
+            </div>
+          )}
           {allDataRencanaPembayaran[0]?.itemRencanaPembayarans?.length === 0 ? (
             <div style={{ display: "flex", justifyContent: "center" }}>
               <Typography style={{ color: "#0F607D", fontSize: "2vw" }}>
@@ -860,7 +939,7 @@ const RencanaPembayaran = (props) => {
               )}
               <Button
                 onClick={() => {
-                  handleCloseModal()
+                  handleCloseModal();
                 }}
                 variant="outlined"
                 color="error"

@@ -33,6 +33,10 @@ financeRoutes.get(
   "/getDoneRencanaPembayaran",
   FinanceController.getDoneRencanaPembayaran
 );
+financeRoutes.get(
+  "/findPrevOngoingHutangs",
+  FinanceController.findPrevOngoingHutangs
+);
 //post
 financeRoutes.post("/addNamaBank/:id", FinanceController.addNamaBank);
 financeRoutes.post("/addItemBukuBank/:id", FinanceController.addNewBukuBank);
@@ -58,7 +62,7 @@ financeRoutes.put(
   "/updateDoneRencanaPembayaran/:id",
   FinanceController.updateDoneRencanaPembayaran
 );
-financeRoutes.put("/updateCicilan/:id", FinanceController.updateCicilan)
+financeRoutes.put("/updateCicilan/:id", FinanceController.updateCicilan);
 // delete
 
 module.exports = financeRoutes;

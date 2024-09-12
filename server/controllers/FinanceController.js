@@ -623,15 +623,6 @@ class FinanceController {
       let result = await rencanaPembayarans.findAll({
         where: { statusRencanaPembayaran: "Ongoing" },
       });
-      let ongoingHutangsAndCicilans = await itemRencanaPembayarans.findAll({
-        include: [
-          {
-            model: hutangs,
-            where: { keterangan: "Belum Lunas" },
-            include: [{ model: cicilans }],
-          },
-        ],
-      });
 
       if (result.length === 0) {
         await rencanaPembayarans.create({
@@ -895,6 +886,22 @@ class FinanceController {
       res.json();
     } catch (error) {
       res.json(error);
+    }
+  }
+  static async findPrevOngoingHutangs (req,res) {
+    try {
+      let ongoingHutangsAndCicilans = await itemRencanaPembayarans.findAll({
+        include: [
+          {
+            model: hutangs,
+            where: { keterangan: "Belum Lunas" },
+            include: [{ model: cicilans }],
+          },
+        ],
+      });
+      res.json(ongoingHutangsAndCicilans)
+    } catch (error) {
+      res.json(error)
     }
   }
 }
