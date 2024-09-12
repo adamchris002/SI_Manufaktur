@@ -624,6 +624,36 @@ const MaindashboardFinance = (props) => {
             </DefaultButton>
           </div>
         </div>
+        <div
+          style={{
+            marginLeft: "32px",
+            marginTop: "64px",
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "center",
+            width: "72vw",
+          }}
+        >
+          <Typography
+            id="daftartagihansatutahun"
+            style={{ fontSize: "36px", color: "#0F607D" }}
+          >
+            Daftar Tagihan 1 Tahun
+          </Typography>
+          <div>
+            <DefaultButton
+              height="40px"
+              width="232px"
+              borderRadius="16px"
+              fontSize="14px"
+              onClickFunction={() => {
+                navigate("/financeDashboard/rencanaPembayaran");
+              }}
+            >
+              
+            </DefaultButton>
+          </div>
+        </div>
       </div>
       {openModal === true && (
         <MyModal open={openModal} handleClose={handleCloseModal}>

@@ -18,13 +18,9 @@ module.exports = (sequelize, DataTypes) => {
     {
       hutangId: DataTypes.INTEGER,
       tanggal: DataTypes.STRING,
-      supplier: DataTypes.STRING,
-      jenisBarang: DataTypes.STRING,
-      noInvoiceKwitansiSj: DataTypes.STRING,
       jumlahHarga: DataTypes.STRING,
       tanggalJatuhTempo: DataTypes.STRING,
-      pembayaran: DataTypes.STRING,
-      keterangan: DataTypes.STRING,
+      statusCicilan: DataTypes.STRING,
     },
     {
       sequelize,

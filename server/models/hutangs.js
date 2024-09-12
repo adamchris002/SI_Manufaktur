@@ -12,6 +12,10 @@ module.exports = (sequelize, DataTypes) => {
         foreignKey: "itemRencanaPembayaranId",
         onDelete: "CASCADE",
       });
+      hutangs.hasMany(models.cicilans, {
+        foreignKey: "hutangId",
+        onDelete: "CASCADE",
+      });
     }
   }
   hutangs.init(

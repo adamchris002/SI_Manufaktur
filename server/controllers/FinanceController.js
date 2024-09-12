@@ -526,7 +526,8 @@ class FinanceController {
       if (dataHutang && Array.isArray(dataHutang)) {
         await Promise.all(
           dataHutang.map(async (data) => {
-            await hutangs.create({
+            console.log(data.cicilan);
+            let tempHutangs = await hutangs.create({
               itemRencanaPembayaranId: itemTempRencanaPembayarans.id,
               tanggal: data.tanggal,
               supplier: data.supplier,
@@ -537,6 +538,19 @@ class FinanceController {
               pembayaran: data.pembayaran,
               keterangan: data.keterangan,
             });
+            if (data.cicilan && Array.isArray(data.cicilan)) {
+              await Promise.all(
+                data.cicilan.map(async (value) => {
+                  await cicilans.create({
+                    hutangId: tempHutangs.id,
+                    tanggal: value.tanggal,
+                    jumlahHarga: value.jumlah,
+                    tanggalJatuhTempo: value.tanggal,
+                    statusCicilan: "Belum Lunas",
+                  });
+                })
+              );
+            }
           })
         );
       }
@@ -548,20 +562,36 @@ class FinanceController {
   }
   static async getAllOngoingRencanaPembayaran(req, res) {
     try {
-      let result = await rencanaPembayarans.findAll({
+      const result = await rencanaPembayarans.findAll({
         where: { statusRencanaPembayaran: "Ongoing" },
         include: [
           {
             model: itemRencanaPembayarans,
-            include: [{ model: hutangs }],
+            include: [
+              {
+                model: hutangs,
+                include: [
+                  {
+                    model: cicilans,
+                  },
+                ],
+              },
+            ],
           },
         ],
       });
-      res.json(result);
+
+      res.status(200).json(result);
     } catch (error) {
-      res.json(error);
+      console.error("Error fetching ongoing rencana pembayaran:", error);
+
+      res.status(500).json({
+        message: "Failed to retrieve ongoing rencana pembayaran.",
+        error: error.message,
+      });
     }
   }
+
   static async updateDoneRencanaPembayaran(req, res) {
     try {
       const { id } = req.params;
@@ -593,6 +623,16 @@ class FinanceController {
       let result = await rencanaPembayarans.findAll({
         where: { statusRencanaPembayaran: "Ongoing" },
       });
+      let ongoingHutangsAndCicilans = await itemRencanaPembayarans.findAll({
+        include: [
+          {
+            model: hutangs,
+            where: { keterangan: "Belum Lunas" },
+            include: [{ model: cicilans }],
+          },
+        ],
+      });
+
       if (result.length === 0) {
         await rencanaPembayarans.create({
           judulRencanaPembayaran: `Rencana Pembayaran ${dayjs().format(
@@ -600,6 +640,60 @@ class FinanceController {
           )}`,
           statusRencanaPembayaran: "Ongoing",
         });
+        // if (ongoingHutangsAndCicilans.length !== 0) {
+        //   if (
+        //     ongoingHutangsAndCicilans &&
+        //     Array.isArray(ongoingHutangsAndCicilans)
+        //   ) {
+        //     await Promise.all(
+        //       ongoingHutangsAndCicilans.map(async (data) => {
+        //         let tempItemRencanaPembayaran =
+        //           await itemRencanaPembayarans.create({
+        //             rencanaPembayaranId: dataRencanaPembayaran.id,
+        //             tanggal: data.tanggal,
+        //             uraian: data.uraian,
+        //             tanggalJatuhTempo: data.tanggalJatuhTempo,
+        //             nominal: data.nominal,
+        //             keterangan: "",
+        //             statusRencanaPembayaran: data.statusRencanaPembayaran,
+        //           });
+        //         if (data.hutangs && Array.isArray(data.hutangs)) {
+        //           await Promise.all(
+        //             data.hutangs.map(async (dataHutangs) => {
+        //               let tempHutangs =await hutangs.create({
+        //                 itemRencanaPembayaranId: tempItemRencanaPembayaran.id,
+        //                 tanggal: dataHutangs.tanggal,
+        //                 supplier: dataHutangs.supplier,
+        //                 jenisBarang: dataHutangs.jenisBarang,
+        //                 noInvoiceKwitansiJs: dataHutangs.noInvoiceKwitansiJs,
+        //                 jumlahHarga: dataHutangs.jumlahHarga,
+        //                 tanggalJatuhTempo: dataHutangs.tanggalJatuhTempo,
+        //                 pembayaran: dataHutangs.pembayaran,
+        //                 keterangan: dataHutangs.keterangan,
+        //               });
+        //               if (
+        //                 dataHutangs.cicilans &&
+        //                 Array.isArray(dataHutangs.cicilans)
+        //               ) {
+        //                 await Promise.all(
+        //                   dataHutangs.cicilans.map(async (dataCicilans) => {
+        //                     await cicilans.create({
+        //                       hutangId: tempHutangs.id,
+        //                       tanggal: dataCicilans.tanggal,
+        //                       jumlahHarga: dataCicilans.jumlahHarga,
+        //                       tanggalJatuhTempo: dataCicilans.tanggal,
+        //                       statusCicilan: dataCicilans.statusCicilan,
+        //                     });
+        //                   })
+        //                 );
+        //               }
+        //             })
+        //           );
+        //         }
+        //       })
+        //     );
+        //   }
+        // }
       }
       res.json(result);
     } catch (error) {
@@ -613,7 +707,16 @@ class FinanceController {
         include: [
           {
             model: itemRencanaPembayarans,
-            include: [{ model: hutangs }],
+            include: [
+              {
+                model: hutangs,
+                include: [
+                  {
+                    model: cicilans,
+                  },
+                ],
+              },
+            ],
           },
         ],
       });
@@ -664,7 +767,7 @@ class FinanceController {
               keterangan: data.keterangan,
             });
 
-            prevSaldo -= (parseFloat(data.jumlahHarga) + parseFloat(data.ppn));
+            prevSaldo -= parseFloat(data.jumlahHarga) + parseFloat(data.ppn);
 
             await itemBukuBanks.create({
               bukuBankId: dataBank.id,
@@ -689,7 +792,6 @@ class FinanceController {
     try {
       const { id } = req.params;
       const { dataPajakKeluaran, dataBank } = req.body;
-      
 
       let findPrevItemBukuBanks = await bukuBanks.findOne({
         where: { namaBank: dataBank.namaBank },
@@ -728,14 +830,20 @@ class FinanceController {
               keterangan: data.keterangan,
             });
 
-            prevSaldo -= (parseFloat(data.jumlahHarga) + parseFloat(data.ppn) + parseFloat(data.pphPs22));
+            prevSaldo -=
+              parseFloat(data.jumlahHarga) +
+              parseFloat(data.ppn) +
+              parseFloat(data.pphPs22);
 
             await itemBukuBanks.create({
               bukuBankId: dataBank.id,
               tanggal: data.tanggal,
               uraian: `Pajak Keluaran Orderan ${data.jenisBarang}`,
               debet: null,
-              kredit: parseFloat(data.jumlahHarga) + parseFloat(data.ppn) + parseFloat(data.pphPs22),
+              kredit:
+                parseFloat(data.jumlahHarga) +
+                parseFloat(data.ppn) +
+                parseFloat(data.pphPs22),
               saldo: prevSaldo,
               keterangan: data.keterangan,
             });
@@ -743,6 +851,48 @@ class FinanceController {
         );
       }
       res.status(200).json({ message: "Pajak Keluaran added successfully" });
+    } catch (error) {
+      res.json(error);
+    }
+  }
+  static async updateCicilan(req, res) {
+    try {
+      const { id } = req.params;
+      const { dataCicilan } = req.body;
+
+      if (dataCicilan && Array.isArray(dataCicilan)) {
+        await Promise.all(
+          dataCicilan.map(async (data) => {
+            const allCicilanLunas = dataCicilan.every((data) =>
+              data.cicilans.every((item) => item.statusCicilan === "Lunas")
+            );
+
+            if (allCicilanLunas) {
+              await hutangs.update(
+                {
+                  keterangan: "Lunas",
+                },
+                { where: { id: data.id } }
+              );
+            }
+
+            if (data.cicilans && Array.isArray(data.cicilans)) {
+              await Promise.all(
+                data.cicilans.map(async (value) => {
+                  await cicilans.update(
+                    {
+                      statusCicilan: value.statusCicilan,
+                    },
+                    { where: { id: value.id } }
+                  );
+                })
+              );
+            }
+          })
+        );
+      }
+
+      res.json();
     } catch (error) {
       res.json(error);
     }

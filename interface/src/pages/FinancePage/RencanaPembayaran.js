@@ -91,6 +91,45 @@ const RencanaPembayaran = (props) => {
 
   const keterangan = [{ value: "Lunas" }, { value: "Belum Lunas" }];
   const pembayaran = [{ value: "Hutang" }, { value: "Piutang" }];
+  const kaliPembayaran = [
+    { value: 2 },
+    { value: 4 },
+    { value: 8 },
+    { value: 12 },
+  ];
+  const tanggal = [
+    { value: 1 },
+    { value: 2 },
+    { value: 3 },
+    { value: 4 },
+    { value: 5 },
+    { value: 6 },
+    { value: 7 },
+    { value: 8 },
+    { value: 9 },
+    { value: 10 },
+    { value: 11 },
+    { value: 12 },
+    { value: 13 },
+    { value: 14 },
+    { value: 15 },
+    { value: 16 },
+    { value: 17 },
+    { value: 18 },
+    { value: 19 },
+    { value: 20 },
+    { value: 21 },
+    { value: 22 },
+    { value: 23 },
+    { value: 24 },
+    { value: 25 },
+    { value: 26 },
+    { value: 27 },
+    { value: 28 },
+    { value: 29 },
+    { value: 30 },
+    { value: 31 },
+  ];
 
   useEffect(() => {
     axios({
@@ -225,6 +264,48 @@ const RencanaPembayaran = (props) => {
     setSnackbarStatus(true);
   };
 
+  const handleEditCicilan = () => {
+    axios({
+      method: "PUT",
+      url: `http://localhost:3000/finance/updateCicilan/${userInformation?.data?.id}`,
+      data: { dataCicilan: viewDataHutang },
+    }).then((result) => {
+      if (result.status === 200) {
+        handleCloseModalView();
+        setRefreshRencanaPembayaran(true);
+        setOpenSnackBar(true);
+        setSnackbarStatus(true);
+        setSnackbarMessage("Berhasil mengedit cicilan");
+      } else {
+        setOpenSnackBar(true);
+        setSnackbarStatus(false);
+        setSnackbarMessage("Tidak berhasil mengedit cicilan");
+      }
+    });
+  };
+
+  const handleChangeInputCicilan = (event, index, indexCicilan) => {
+    const value = event.target.value;
+
+    setViewDataHutang((oldArray) => {
+      const updatedItems = oldArray.map((item, i) => {
+        if (i === index) {
+          const updatedCicilans = item.cicilans.map((data, cicilanIndex) => {
+            if (cicilanIndex === indexCicilan) {
+              return { ...data, statusCicilan: value };
+            }
+            return data;
+          });
+
+          return { ...item, cicilans: updatedCicilans };
+        }
+        return item;
+      });
+
+      return updatedItems;
+    });
+  };
+
   const handleChangeInputDataHutang = (event, index, field) => {
     const value = event.target.value;
     setDataHutang((oldArray) => {
@@ -232,6 +313,38 @@ const RencanaPembayaran = (props) => {
         let updatedItem = { ...item };
         if (i === index) {
           updatedItem = { ...updatedItem, [field]: value };
+          if (field === "kaliPembayaran") {
+            if (
+              updatedItem?.tanggalJatuhTempoPembayaran === "" ||
+              !updatedItem.tanggalJatuhTempoPembayaran
+            ) {
+              setOpenSnackBar(true);
+              setSnackbarStatus(false);
+              setSnackbarMessage(
+                "Mohon isi tanggal jatuh tempo pembayaran terlebih dahulu"
+              );
+              return item;
+            } else {
+              let dataCicilan = [];
+              const jumlahPerBulan =
+                parseFloat(updatedItem.jumlahHarga) / value;
+              const tanggalAwal = dayjs(updatedItem.createdAt);
+              const month = tanggalAwal.month();
+              const year = tanggalAwal.year();
+
+              const startDate = dayjs(
+                `${month}/${updatedItem.tanggalJatuhTempoPembayaran}/${year}`
+              );
+              for (let i = 0; i < value; i++) {
+                let newDataCicilan = {
+                  jumlah: jumlahPerBulan,
+                  tanggal: dayjs(startDate).add(i, "month"),
+                };
+                dataCicilan = [...dataCicilan, newDataCicilan];
+              }
+              updatedItem = { ...updatedItem, cicilan: dataCicilan };
+            }
+          }
           return updatedItem;
         }
         return item;
@@ -335,13 +448,18 @@ const RencanaPembayaran = (props) => {
             <Typography style={{ color: "#0F607D", fontSize: "3vw" }}>
               Rencana Pembayaran
             </Typography>
-            <DefaultButton
-              onClickFunction={() => {
-                setOpenModal(true);
-              }}
-            >
-              Tambah Hutang
-            </DefaultButton>
+            <div style={{ display: "flex", alignItems: "center" }}>
+              <DefaultButton>Tambah Pembayaran Lain-Lain</DefaultButton>
+              <div style={{ marginLeft: "8px" }}>
+                <DefaultButton
+                  onClickFunction={() => {
+                    setOpenModal(true);
+                  }}
+                >
+                  Tambah Hutang
+                </DefaultButton>
+              </div>
+            </div>
           </div>
           {allDataRencanaPembayaran[0]?.itemRencanaPembayarans?.length === 0 ? (
             <div style={{ display: "flex", justifyContent: "center" }}>
@@ -361,7 +479,7 @@ const RencanaPembayaran = (props) => {
                     <TableCell>Uraian</TableCell>
                     <TableCell>Tanggal Jatuh Tempo</TableCell>
                     <TableCell>Nominal</TableCell>
-                    <TableCell>Keterangan</TableCell>
+                    {/* <TableCell>Keterangan</TableCell> */}
                     <TableCell>Actions</TableCell>
                   </TableRow>
                 </TableHead>
@@ -384,7 +502,7 @@ const RencanaPembayaran = (props) => {
                                 /\B(?=(\d{3})+(?!\d))/g,
                                 "."
                               )},-`}</TableCell>
-                            <TableCell>{result.keterangan}</TableCell>
+                            {/* <TableCell>{result.keterangan}</TableCell> */}
                             <TableCell>
                               <IconButton
                                 onClick={() => {
@@ -476,6 +594,18 @@ const RencanaPembayaran = (props) => {
                       <TableCell style={{ width: "200px" }}>
                         Keterangan
                       </TableCell>
+                      {dataHutang.some(
+                        (item) => item.keterangan === "Belum Lunas"
+                      ) && (
+                        <>
+                          <TableCell style={{ width: "200px" }}>
+                            Tanggal Jatuh Tempo Pembayaran
+                          </TableCell>
+                          <TableCell style={{ width: "100px" }}>
+                            X Pembayaran
+                          </TableCell>
+                        </>
+                      )}
                       <TableCell style={{ width: "50px" }}>Actions</TableCell>
                     </TableRow>
                   </TableHead>
@@ -605,12 +735,106 @@ const RencanaPembayaran = (props) => {
                                 }}
                               />
                             </TableCell>
+                            {result.keterangan === "Belum Lunas" ? (
+                              <>
+                                <TableCell>
+                                  <MySelectTextField
+                                    value={result?.tanggalJatuhTempoPembayaran}
+                                    width={"200px"}
+                                    data={tanggal}
+                                    onChange={(event) => {
+                                      handleChangeInputDataHutang(
+                                        event,
+                                        index,
+                                        "tanggalJatuhTempoPembayaran"
+                                      );
+                                    }}
+                                  />
+                                </TableCell>
+                                <TableCell>
+                                  <MySelectTextField
+                                    value={result?.kaliPembayaran}
+                                    width={"100px"}
+                                    data={kaliPembayaran}
+                                    onChange={(event) => {
+                                      handleChangeInputDataHutang(
+                                        event,
+                                        index,
+                                        "kaliPembayaran"
+                                      );
+                                    }}
+                                  />
+                                </TableCell>
+                              </>
+                            ) : (
+                              <>
+                                <TableCell></TableCell>
+                                <TableCell></TableCell>
+                              </>
+                            )}
                             <TableCell>
                               <IconButton>
                                 <DeleteIcon style={{ color: "red" }} />
                               </IconButton>
                             </TableCell>
                           </TableRow>
+                          <div
+                            style={{
+                              display: "flex",
+                              justifyContent: "space-between",
+                            }}
+                          >
+                            <div style={{ minWidth: "1909px" }}></div>
+                            <div>
+                              {result?.cicilan && (
+                                <Table
+                                  sx={{
+                                    minWidth: 650,
+                                    tableLayout: "fixed",
+                                    overflowX: "auto",
+                                  }}
+                                >
+                                  <TableHead>
+                                    <TableRow>
+                                      <TableCell style={{ width: "25px" }}>
+                                        No.
+                                      </TableCell>
+                                      <TableCell style={{ width: "200px" }}>
+                                        Jumlah Pembayaran Per Bulan
+                                      </TableCell>
+                                      <TableCell style={{ width: "200px" }}>
+                                        Tanggal Pembayaran
+                                      </TableCell>
+                                    </TableRow>
+                                  </TableHead>
+                                  <TableBody>
+                                    {result.cicilan.map(
+                                      (cicilan, cicilanIndex) => (
+                                        <React.Fragment key={cicilanIndex}>
+                                          <TableRow>
+                                            <TableCell>
+                                              {cicilanIndex + 1 + "."}
+                                            </TableCell>
+                                            <TableCell>{`Rp. ${cicilan.jumlah
+                                              .toString()
+                                              .replace(
+                                                /\B(?=(\d{3})+(?!\d))/g,
+                                                "."
+                                              )},-`}</TableCell>
+                                            <TableCell>
+                                              {dayjs(cicilan.tanggal).format(
+                                                "MM/DD/YYYY"
+                                              )}
+                                            </TableCell>
+                                          </TableRow>
+                                        </React.Fragment>
+                                      )
+                                    )}
+                                  </TableBody>
+                                </Table>
+                              )}
+                            </div>
+                          </div>
                         </React.Fragment>
                       );
                     })}
@@ -636,7 +860,7 @@ const RencanaPembayaran = (props) => {
               )}
               <Button
                 onClick={() => {
-                  navigate(-1);
+                  handleCloseModal()
                 }}
                 variant="outlined"
                 color="error"
@@ -660,7 +884,13 @@ const RencanaPembayaran = (props) => {
               padding: "32px",
             }}
           >
-            <div style={{display: "flex", justifyContent: "space-between", alignItems: "center"}}>
+            <div
+              style={{
+                display: "flex",
+                justifyContent: "space-between",
+                alignItems: "center",
+              }}
+            >
               <Typography
                 style={{
                   color: "#0F607D",
@@ -723,12 +953,153 @@ const RencanaPembayaran = (props) => {
                           <TableCell>{result.pembayaran}</TableCell>
                           <TableCell>{result.keterangan}</TableCell>
                         </TableRow>
+                        {result.keterangan === "Belum Lunas" && (
+                          <div
+                            style={{
+                              display: "flex",
+                              justifyContent: "space-between",
+                            }}
+                          >
+                            <div
+                              style={{
+                                minWidth: "700px",
+                                backgroundColor: "#d3f8fd",
+                              }}
+                            ></div>
+                            {result.cicilans.length !== 0 && (
+                              <Table
+                                sx={{
+                                  minWidth: 650,
+                                  tableLayout: "fixed",
+                                  overflowX: "auto",
+                                }}
+                              >
+                                <TableHead>
+                                  <TableRow>
+                                    <TableCell
+                                      style={{
+                                        width: "25px",
+                                        backgroundColor: "#d3f8fd",
+                                      }}
+                                    >
+                                      No.
+                                    </TableCell>
+                                    <TableCell
+                                      style={{
+                                        width: "200px",
+                                        backgroundColor: "#d3f8fd",
+                                      }}
+                                    >
+                                      Jumlah Pembayaran Per Bulan
+                                    </TableCell>
+                                    <TableCell
+                                      style={{
+                                        width: "200px",
+                                        backgroundColor: "#d3f8fd",
+                                      }}
+                                    >
+                                      Tanggal Pembayaran
+                                    </TableCell>
+                                    <TableCell
+                                      style={{
+                                        width: "200px",
+                                        backgroundColor: "#d3f8fd",
+                                      }}
+                                    >
+                                      Status Cicilan
+                                    </TableCell>
+                                  </TableRow>
+                                </TableHead>
+                                <TableBody>
+                                  {result.cicilans.map(
+                                    (cicilan, cicilanIndex) => (
+                                      <React.Fragment key={cicilanIndex}>
+                                        <TableRow>
+                                          <TableCell
+                                            style={{
+                                              backgroundColor: "#d3f8fd",
+                                            }}
+                                          >
+                                            {cicilanIndex + 1 + "."}
+                                          </TableCell>
+                                          <TableCell
+                                            style={{
+                                              backgroundColor: "#d3f8fd",
+                                            }}
+                                          >{`Rp. ${cicilan.jumlahHarga
+                                            .toString()
+                                            .replace(
+                                              /\B(?=(\d{3})+(?!\d))/g,
+                                              "."
+                                            )},-`}</TableCell>
+                                          <TableCell
+                                            style={{
+                                              backgroundColor: "#d3f8fd",
+                                            }}
+                                          >
+                                            {dayjs(cicilan.tanggal).format(
+                                              "MM/DD/YYYY"
+                                            )}
+                                          </TableCell>
+                                          <TableCell
+                                            style={{
+                                              backgroundColor: "#d3f8fd",
+                                            }}
+                                          >
+                                            <MySelectTextField
+                                              onChange={(event) => {
+                                                handleChangeInputCicilan(
+                                                  event,
+                                                  index,
+                                                  cicilanIndex
+                                                );
+                                              }}
+                                              id="statusCicilan"
+                                              width={"200px"}
+                                              value={cicilan.statusCicilan}
+                                              data={keterangan}
+                                            />
+                                          </TableCell>
+                                        </TableRow>
+                                      </React.Fragment>
+                                    )
+                                  )}
+                                </TableBody>
+                              </Table>
+                            )}
+                          </div>
+                        )}
                       </React.Fragment>
                     );
                   })}
                 </TableBody>
               </Table>
             </TableContainer>
+            <div
+              style={{
+                margin: "16px",
+                display: "flex",
+                justifyContent: "center",
+              }}
+            >
+              <DefaultButton
+                onClickFunction={() => {
+                  handleEditCicilan();
+                }}
+              >
+                Edit Cicilan
+              </DefaultButton>
+              <Button
+                onClick={() => {
+                  handleCloseModalView();
+                }}
+                variant="outlined"
+                color="error"
+                style={{ textTransform: "none", marginLeft: "8px" }}
+              >
+                Cancel
+              </Button>
+            </div>
           </div>
         </MyModal>
       )}

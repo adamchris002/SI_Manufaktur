@@ -58,6 +58,7 @@ financeRoutes.put(
   "/updateDoneRencanaPembayaran/:id",
   FinanceController.updateDoneRencanaPembayaran
 );
+financeRoutes.put("/updateCicilan/:id", FinanceController.updateCicilan)
 // delete
 
 module.exports = financeRoutes;
