@@ -13,6 +13,8 @@ const {
   pajakMasukans,
   pajakKeluarans,
   cicilans,
+  pembayaranLains,
+  cicilanPemLains,
 } = require("../models");
 const dayjs = require("dayjs");
 
@@ -493,6 +495,71 @@ class FinanceController {
       res.json(error);
     }
   }
+  static async addPembayaranLainLain(req, res) {
+    try {
+      const { id } = req.params;
+      const { dataPembayaranLainLain } = req.body;
+
+      const totalNominal = dataPembayaranLainLain.reduce((sum, current) => {
+        return parseFloat(sum) + parseFloat(current.jumlahHarga);
+      }, 0);
+
+      const latestTanggalJatuhTempo = dataPembayaranLainLain.reduce(
+        (maxDate, current) => {
+          const currentDate = dayjs(current.tanggalJatuhTempo);
+          return currentDate.isAfter(maxDate) ? currentDate : maxDate;
+        },
+        dayjs(dataPembayaranLainLain[0].tanggalJatuhTempo)
+      );
+
+      let result = await rencanaPembayarans.findOne({
+        where: { statusRencanaPembayaran: "Ongoing" },
+      });
+
+      let itemTempRencanaPembayarans = await itemRencanaPembayarans.create({
+        rencanaPembayaranId: result.id,
+        tanggal: dayjs().format("MM/DD/YYYY hh:mm A"),
+        uraian: `Pembelian Lain-Lain ${dayjs().format("MM/DD/YYYY hh:mm A")}`,
+        tanggalJatuhTempo: dayjs(latestTanggalJatuhTempo).format(
+          "MM/DD/YYYY hh:mm A"
+        ),
+        nominal: totalNominal,
+        keterangan: "",
+        statusRencanaPembayaran: "Ongoing",
+      });
+      if (dataPembayaranLainLain && Array.isArray(dataPembayaranLainLain)) {
+        await Promise.all(
+          dataPembayaranLainLain.map(async (data) => {
+            let tempDataPembayaranLainLain = await pembayaranLains.create({
+              itemRencanaPembayaranId: itemTempRencanaPembayarans.id,
+              tanggal: data.tanggal,
+              uraian: data.uraian,
+              noInvoiceKwitansiJs: data.noInvoiceKwitansiSj,
+              jumlahHarga: data.jumlahHarga,
+              tanggalJatuhTempo: data.tanggalJatuhTempo,
+              pembayaran: data.pembayaran,
+              keterangan: data.keterangan,
+            });
+            if (data.cicilan && Array.isArray(data.cicilan)) {
+              await Promise.all(
+                data.cicilan.map(async (value) => {
+                  await cicilanPemLains.create({
+                    pembayaranLainId: tempDataPembayaranLainLain.id,
+                    tanggal: value.tanggal,
+                    jumlahHarga: value.jumlah,
+                    tanggalJatuhTempo: value.tanggal,
+                    statusCicilan: "Ongoing",
+                  });
+                })
+              );
+            }
+          })
+        );
+      }
+    } catch (error) {
+      res.json(error);
+    }
+  }
   static async addHutang(req, res) {
     try {
       const { id } = req.params;
@@ -573,6 +640,14 @@ class FinanceController {
                 include: [
                   {
                     model: cicilans,
+                  },
+                ],
+              },
+              {
+                model: pembayaranLains,
+                include: [
+                  {
+                    model: cicilanPemLains,
                   },
                 ],
               },
@@ -888,7 +963,7 @@ class FinanceController {
       res.json(error);
     }
   }
-  static async findPrevOngoingHutangs (req,res) {
+  static async findPrevOngoingHutangs(req, res) {
     try {
       let ongoingHutangsAndCicilans = await itemRencanaPembayarans.findAll({
         include: [
@@ -899,9 +974,9 @@ class FinanceController {
           },
         ],
       });
-      res.json(ongoingHutangsAndCicilans)
+      res.json(ongoingHutangsAndCicilans);
     } catch (error) {
-      res.json(error)
+      res.json(error);
     }
   }
 }

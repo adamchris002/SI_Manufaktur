@@ -48,6 +48,10 @@ financeRoutes.post(
 financeRoutes.post("/addHutang/:id", FinanceController.addHutang);
 financeRoutes.post("/addPajakMasukan/:id", FinanceController.addPajakMasukan);
 financeRoutes.post("/addPajakKeluaran/:id", FinanceController.addPajakKeluaran);
+financeRoutes.post(
+  "/addPembayaranLainLain/:id",
+  FinanceController.addPembayaranLainLain
+);
 //put
 financeRoutes.put("/updateStatusDone/:id", FinanceController.updateStatusDone);
 financeRoutes.put(

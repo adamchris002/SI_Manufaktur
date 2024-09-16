@@ -1,39 +1,38 @@
 "use strict";
 const { Model } = require("sequelize");
 module.exports = (sequelize, DataTypes) => {
-  class itemRencanaPembayarans extends Model {
+  class pembayaranLains extends Model {
     /**
      * Helper method for defining associations.
      * This method is not a part of Sequelize lifecycle.
      * The `models/index` file will call this method automatically.
      */
     static associate(models) {
-      itemRencanaPembayarans.belongsTo(models.rencanaPembayarans, {
-        foreignKey: "rencanaPembayaranId",
-        onDelete: "CASCADE",
-      });
-      itemRencanaPembayarans.hasMany(models.hutangs, {
+      pembayaranLains.belongsTo(models.itemRencanaPembayarans, {
         foreignKey: "itemRencanaPembayaranId",
         onDelete: "CASCADE",
       });
-      itemRencanaPembayarans.hasMany(models.pembayaranLains, {
-        foreignKey: "itemRencanaPembayaranId",
+      pembayaranLains.hasMany(models.cicilanPemLains, {
+        foreignKey: "pembayaranLainId",
         onDelete: "CASCADE",
       });
     }
   }
-  itemRencanaPembayarans.init(
+  pembayaranLains.init(
     {
-      rencanaPembayaranId: DataTypes.INTEGER,
+      itemRencanaPembayaranId: DataTypes.INTEGER,
+      tanggal: DataTypes.STRING,
       uraian: DataTypes.STRING,
+      noInvoiceKwitansiJs: DataTypes.STRING,
+      jumlahHarga: DataTypes.STRING,
       tanggalJatuhTempo: DataTypes.STRING,
-      nominal: DataTypes.STRING,
+      pembayaran: DataTypes.STRING,
       keterangan: DataTypes.STRING,
     },
     {
       sequelize,
-      modelName: "itemRencanaPembayarans",
+      modelName: "pembayaranLains",
     }
   );
-  return itemRencanaPembayarans;
+  return pembayaranLains;
 };

@@ -69,6 +69,21 @@ const RencanaPembayaran = (props) => {
       keterangan: "",
     },
   ]);
+  // console.log(dataHutang);
+
+  const [dataPembayaranLainLain, setDataPembayaranLainLain] = useState([
+    {
+      tanggal: dayjs(""),
+      uraian: "",
+      noInvoiceKwitansiSj: "",
+      jumlahHarga: "",
+      tanggalJatuhTempo: dayjs(""),
+      pembayaran: "",
+      keterangan: "",
+    },
+  ]);
+
+  console.log(dataPembayaranLainLain);
 
   const [historyRencanaPembayaran, setRencanaPembayaran] = useState([]);
   const [allDataPembelianBahanBaku, setAllDataPembelianBahanBaku] = useState(
@@ -81,11 +96,12 @@ const RencanaPembayaran = (props) => {
     []
   );
   const [viewDataHutang, setViewDataHutang] = useState([]);
-  console.log(viewDataHutang)
   const [openSnackbar, setOpenSnackBar] = useState(false);
   const [snackbarStatus, setSnackbarStatus] = useState(false);
   const [snackbarMessage, setSnackbarMessage] = useState("");
   const [openModal, setOpenModal] = useState(false);
+  const [openModalPembayaranLainLain, setOpenModalPembayaranLainLain] =
+    useState(false);
   const [refreshRencanaPembayaran, setRefreshRencanaPembayaran] =
     useState(true);
   const [triggerCheckRencanaPembayaran, setTriggerCheckRencanaPembayaran] =
@@ -174,7 +190,7 @@ const RencanaPembayaran = (props) => {
       url: "http://localhost:3000/finance/findPrevOngoingHutangs",
     }).then((result) => {
       if (result.status === 200) {
-        const resultIds = result.data.map((item) => item.id);
+        // const resultIds = result.data.map((item) => item.id);
         const existingIds =
           allDataRencanaPembayaran[0]?.itemRencanaPembayarans.map(
             (item) => item.id
@@ -331,6 +347,61 @@ const RencanaPembayaran = (props) => {
     });
   };
 
+  const handleChangeInputDataPembelianLainLain = (event, index, field) => {
+    const value = event && event.target ? event.target.value : event;
+    setDataPembayaranLainLain((oldArray) => {
+      const updatedItems = oldArray.map((item, i) => {
+        let updatedItem = { ...item };
+        if (i === index) {
+          updatedItem = { ...updatedItem, [field]: value };
+          if (field === "kaliPembayaran") {
+            if (
+              updatedItem?.tanggalJatuhTempoPembayaran === "" ||
+              !updatedItem.tanggalJatuhTempoPembayaran
+            ) {
+              setOpenSnackBar(true);
+              setSnackbarStatus(false);
+              setSnackbarMessage(
+                "Mohon isi tanggal jatuh tempo pembayaran terlebih dahulu"
+              );
+              return item;
+            } else if (
+              updatedItem.jumlahHarga === "" ||
+              !updatedItem.jumlahHarga
+            ) {
+              setOpenSnackBar(true);
+              setSnackbarStatus(false);
+              setSnackbarMessage("Mohon isi jumlah harga terlebih dahulu");
+              return item;
+            } else {
+              let dataCicilan = [];
+              const jumlahPerBulan =
+                parseFloat(updatedItem.jumlahHarga) / value;
+              const tanggalAwal = dayjs(updatedItem.createdAt);
+              const month = tanggalAwal.month();
+              const year = tanggalAwal.year();
+
+              const startDate = dayjs(
+                `${month}/${updatedItem.tanggalJatuhTempoPembayaran}/${year}`
+              );
+              for (let i = 0; i < value; i++) {
+                let newDataCicilan = {
+                  jumlah: jumlahPerBulan,
+                  tanggal: dayjs(startDate).add(i, "month"),
+                };
+                dataCicilan = [...dataCicilan, newDataCicilan];
+              }
+              updatedItem = { ...updatedItem, cicilan: dataCicilan };
+            }
+          }
+          return updatedItem;
+        }
+        return item;
+      });
+      return updatedItems;
+    });
+  };
+
   const handleChangeInputDataHutang = (event, index, field) => {
     const value = event.target.value;
     setDataHutang((oldArray) => {
@@ -410,6 +481,10 @@ const RencanaPembayaran = (props) => {
     setOpenModalView(false);
   };
 
+  const handleCloseModalPembayaranLainLain = () => {
+    setOpenModalPembayaranLainLain(false);
+  };
+
   const handleViewHutangPrev = (id) => {
     let prevItemRencanaPembayaran = ongoingHutangsAndCicilans.find(
       (item) => item.id === id
@@ -427,6 +502,53 @@ const RencanaPembayaran = (props) => {
 
     setOpenModalView(true);
     setViewDataHutang(itemRencanaPembayaran[0].hutangs);
+  };
+
+  const handleCheckifDataPembayaranLainLainIsEmpty = () => {
+    for (const item of dataPembayaranLainLain) {
+      if (
+        !item.tanggal ||
+        !dayjs(item.tanggal, "MM/DD/YYYY hh:mm A", true).isValid() ||
+        !item.uraian ||
+        !item.noInvoiceKwitansiSj ||
+        !item.jumlahHarga ||
+        !item.tanggalJatuhTempo ||
+        !dayjs(item.tanggalJatuhTempo, "MM/DD/YYYY hh:mm A", true).isValid() ||
+        !item.pembayaran ||
+        !item.keterangan
+      ) {
+        return false;
+      }
+    }
+    return true;
+  };
+
+  const handleAddPembayaranLainLain = () => {
+    const checkIfDataPembayaranLainLainEmpty =
+      handleCheckifDataPembayaranLainLainIsEmpty();
+
+    if (checkIfDataPembayaranLainLainEmpty === false) {
+      setOpenSnackBar(true);
+      setSnackbarStatus(false);
+      setSnackbarMessage("Mohon isi semua input");
+    } else {
+      axios({
+        method: "POST",
+        url: `http://localhost:3000/finance/addPembayaranLainLain/${userInformation?.data?.id}`,
+        data: { dataPembayaranLainLain: dataPembayaranLainLain },
+      }).then((result) => {
+        if (result.status === 200) {
+          handleCloseModalPembayaranLainLain();
+          setRefreshRencanaPembayaran(true);
+        } else {
+          setOpenSnackBar(true);
+          setSnackbarStatus(false);
+          setSnackbarMessage(
+            "Tidak berhasil menambahkan data pembayaran lain-lain"
+          );
+        }
+      });
+    }
   };
 
   const handleAddHutang = () => {
@@ -453,6 +575,21 @@ const RencanaPembayaran = (props) => {
         }
       });
     }
+  };
+
+  const handleTambahItemDataPembayaranLainLain = () => {
+    setDataPembayaranLainLain((oldArray) => [
+      ...oldArray,
+      {
+        tanggal: dayjs(""),
+        uraian: "",
+        noInvoiceKwitansiSj: "",
+        jumlahHarga: "",
+        tanggalJatuhTempo: dayjs(""),
+        pembayaran: "",
+        keterangan: "",
+      },
+    ]);
   };
 
   return (
@@ -482,7 +619,13 @@ const RencanaPembayaran = (props) => {
               Rencana Pembayaran
             </Typography>
             <div style={{ display: "flex", alignItems: "center" }}>
-              <DefaultButton>Tambah Pembayaran Lain-Lain</DefaultButton>
+              <DefaultButton
+                onClickFunction={() => {
+                  setOpenModalPembayaranLainLain(true);
+                }}
+              >
+                Tambah Pembayaran Lain-Lain
+              </DefaultButton>
               <div style={{ marginLeft: "8px" }}>
                 <DefaultButton
                   onClickFunction={() => {
@@ -846,10 +989,7 @@ const RencanaPembayaran = (props) => {
                                 </TableCell>
                               </>
                             ) : (
-                              <>
-                                <TableCell></TableCell>
-                                <TableCell></TableCell>
-                              </>
+                              ""
                             )}
                             <TableCell>
                               <IconButton>
@@ -1174,6 +1314,368 @@ const RencanaPembayaran = (props) => {
                 }}
                 variant="outlined"
                 color="error"
+                style={{ textTransform: "none", marginLeft: "8px" }}
+              >
+                Cancel
+              </Button>
+            </div>
+          </div>
+        </MyModal>
+      )}
+      {openModalPembayaranLainLain === true && (
+        <MyModal
+          open={openModalPembayaranLainLain}
+          handleClose={handleCloseModalPembayaranLainLain}
+        >
+          <div
+            className="hideScrollbar"
+            style={{
+              margin: isMobile ? "24px" : "0.83vw 1.667vw 0.83vw 1.667vw",
+              overflow: "auto",
+              width: isMobile ? "80vw" : "50vw",
+              maxHeight: "80vh",
+              padding: "32px",
+            }}
+          >
+            <div
+              style={{
+                display: "flex",
+                alignItems: "center",
+                marginBottom: "16px",
+                justifyContent: "space-between",
+              }}
+            >
+              <Typography style={{ color: "#0F607D", fontSize: "3vw" }}>
+                Pembayaran Lain-Lain
+              </Typography>
+              <DefaultButton
+                onClickFunction={() => {
+                  handleTambahItemDataPembayaranLainLain();
+                }}
+              >
+                Tambah Item
+              </DefaultButton>
+            </div>
+            <TableContainer sx={{ overflowX: "auto" }} component={Paper}>
+              <Table
+                sx={{ overflowX: "auto", minWidth: 650, tableLayout: "fixed" }}
+                aria-label="simple table"
+              >
+                <TableHead>
+                  <TableRow>
+                    <TableCell style={{ width: "25px" }}>No.</TableCell>
+                    <TableCell style={{ width: "300px" }}>Tanggal</TableCell>
+                    <TableCell style={{ width: "200px" }}>Uraian</TableCell>
+                    <TableCell style={{ width: "200px" }}>
+                      No Invoice/ Kwitansi/ SJ
+                    </TableCell>
+                    <TableCell style={{ width: "200px" }}>
+                      Jumlah Harga
+                    </TableCell>
+                    <TableCell style={{ width: "300px" }}>
+                      Tanggal Jatuh Tempo
+                    </TableCell>
+                    <TableCell style={{ width: "200px" }}>Pembayaran</TableCell>
+                    <TableCell style={{ width: "200px" }}>Keterangan</TableCell>
+                    {dataPembayaranLainLain.some(
+                      (item) => item.keterangan === "Belum Lunas"
+                    ) && (
+                      <>
+                        <TableCell style={{ width: "200px" }}>
+                          Tanggal Jatuh Tempo Pembayaran
+                        </TableCell>
+                        <TableCell style={{ width: "100px" }}>
+                          X Pembayaran
+                        </TableCell>
+                      </>
+                    )}
+                    <TableCell style={{ width: "50px" }}>Actions</TableCell>
+                  </TableRow>
+                </TableHead>
+                <TableBody>
+                  {dataPembayaranLainLain.map((result, index) => {
+                    return (
+                      <React.Fragment key={index}>
+                        <TableRow>
+                          <TableCell>{index + 1 + "."}</TableCell>
+                          <TableCell>
+                            <LocalizationProvider dateAdapter={AdapterDayjs}>
+                              <DemoContainer components={["DateTimePicker"]}>
+                                <DemoItem>
+                                  <DateTimePicker
+                                    // disabled
+                                    value={
+                                      result.tanggal.isValid()
+                                        ? result.tanggal
+                                        : null
+                                    }
+                                    onChange={(event) => {
+                                      handleChangeInputDataPembelianLainLain(
+                                        event,
+                                        index,
+                                        "tanggal"
+                                      );
+                                    }}
+                                    renderInput={(params) => (
+                                      <TextField
+                                        {...params}
+                                        error={params.error || !params.value}
+                                        helperText={
+                                          params.error
+                                            ? "Invalid date format"
+                                            : ""
+                                        }
+                                      />
+                                    )}
+                                  />
+                                </DemoItem>
+                              </DemoContainer>
+                            </LocalizationProvider>
+                          </TableCell>
+                          <TableCell>
+                            <TextField
+                              value={result.uraian}
+                              //  disabled
+                              onChange={(event) => {
+                                handleChangeInputDataPembelianLainLain(
+                                  event,
+                                  index,
+                                  "uraian"
+                                );
+                              }}
+                            />
+                          </TableCell>
+                          <TableCell>
+                            <TextField
+                              value={result.noInvoiceKwitansiSj}
+                              // disabled
+                              onChange={(event) => {
+                                handleChangeInputDataPembelianLainLain(
+                                  event,
+                                  index,
+                                  "noInvoiceKwitansiSj"
+                                );
+                              }}
+                            />
+                          </TableCell>
+                          <TableCell>
+                            <TextField
+                              // disabled
+                              onChange={(event) => {
+                                handleChangeInputDataPembelianLainLain(
+                                  event,
+                                  index,
+                                  "jumlahHarga"
+                                );
+                              }}
+                              value={result.jumlahHarga}
+                              sx={{
+                                "& .MuiOutlinedInput-root": {
+                                  height: isMobile ? "15px" : "3vw",
+                                  width: isMobile ? "120px" : "200px",
+                                  fontSize: isMobile ? "10px" : "1.5vw",
+                                  borderRadius: "10px",
+                                  "& fieldset": {
+                                    borderColor: "#0F607D",
+                                  },
+                                  "&:hover fieldset": {
+                                    borderColor: "#0F607D",
+                                  },
+                                  "&.Mui-focused fieldset": {
+                                    borderColor: "#0F607D",
+                                  },
+                                },
+                              }}
+                              InputProps={{
+                                inputComponent: NumericFormatCustom,
+                              }}
+                            />
+                          </TableCell>
+                          <TableCell>
+                            <LocalizationProvider dateAdapter={AdapterDayjs}>
+                              <DemoContainer components={["DateTimePicker"]}>
+                                <DemoItem>
+                                  <DateTimePicker
+                                    // disabled
+                                    onChange={(event) => {
+                                      handleChangeInputDataPembelianLainLain(
+                                        event,
+                                        index,
+                                        "tanggalJatuhTempo"
+                                      );
+                                    }}
+                                    value={
+                                      result.tanggalJatuhTempo.isValid()
+                                        ? result.tanggalJatuhTempo
+                                        : null
+                                    }
+                                    renderInput={(params) => (
+                                      <TextField
+                                        {...params}
+                                        error={params.error || !params.value}
+                                        helperText={
+                                          params.error
+                                            ? "Invalid date format"
+                                            : ""
+                                        }
+                                      />
+                                    )}
+                                  />
+                                </DemoItem>
+                              </DemoContainer>
+                            </LocalizationProvider>
+                          </TableCell>
+                          <TableCell>
+                            <MySelectTextField
+                              width="200px"
+                              data={pembayaran}
+                              value={result.pembayaran}
+                              onChange={(event) => {
+                                handleChangeInputDataPembelianLainLain(
+                                  event,
+                                  index,
+                                  "pembayaran"
+                                );
+                              }}
+                            />
+                          </TableCell>
+                          <TableCell>
+                            <MySelectTextField
+                              width="200px"
+                              data={keterangan}
+                              value={result.keterangan}
+                              onChange={(event) => {
+                                handleChangeInputDataPembelianLainLain(
+                                  event,
+                                  index,
+                                  "keterangan"
+                                );
+                              }}
+                            />
+                          </TableCell>
+                          {result.keterangan === "Belum Lunas" ? (
+                            <>
+                              <TableCell>
+                                <MySelectTextField
+                                  value={result?.tanggalJatuhTempoPembayaran}
+                                  width={"200px"}
+                                  data={tanggal}
+                                  onChange={(event) => {
+                                    handleChangeInputDataPembelianLainLain(
+                                      event,
+                                      index,
+                                      "tanggalJatuhTempoPembayaran"
+                                    );
+                                  }}
+                                />
+                              </TableCell>
+                              <TableCell>
+                                <MySelectTextField
+                                  value={result?.kaliPembayaran}
+                                  width={"100px"}
+                                  data={kaliPembayaran}
+                                  onChange={(event) => {
+                                    handleChangeInputDataPembelianLainLain(
+                                      event,
+                                      index,
+                                      "kaliPembayaran"
+                                    );
+                                  }}
+                                />
+                              </TableCell>
+                            </>
+                          ) : (
+                            ""
+                          )}
+                          <TableCell>
+                            <IconButton>
+                              <DeleteIcon style={{ color: "red" }} />
+                            </IconButton>
+                          </TableCell>
+                        </TableRow>
+                        <div
+                          style={{
+                            display: "flex",
+                            justifyContent: "space-between",
+                          }}
+                        >
+                          <div style={{ minWidth: "1677px" }}></div>
+                          <div>
+                            {result?.cicilan && (
+                              <Table
+                                sx={{
+                                  minWidth: 650,
+                                  tableLayout: "fixed",
+                                  overflowX: "auto",
+                                }}
+                              >
+                                <TableHead>
+                                  <TableRow>
+                                    <TableCell style={{ width: "25px" }}>
+                                      No.
+                                    </TableCell>
+                                    <TableCell style={{ width: "200px" }}>
+                                      Jumlah Pembayaran Per Bulan
+                                    </TableCell>
+                                    <TableCell style={{ width: "200px" }}>
+                                      Tanggal Pembayaran
+                                    </TableCell>
+                                  </TableRow>
+                                </TableHead>
+                                <TableBody>
+                                  {result.cicilan.map(
+                                    (cicilan, cicilanIndex) => (
+                                      <React.Fragment key={cicilanIndex}>
+                                        <TableRow>
+                                          <TableCell>
+                                            {cicilanIndex + 1 + "."}
+                                          </TableCell>
+                                          <TableCell>{`Rp. ${cicilan.jumlah
+                                            .toString()
+                                            .replace(
+                                              /\B(?=(\d{3})+(?!\d))/g,
+                                              "."
+                                            )},-`}</TableCell>
+                                          <TableCell>
+                                            {dayjs(cicilan.tanggal).format(
+                                              "MM/DD/YYYY"
+                                            )}
+                                          </TableCell>
+                                        </TableRow>
+                                      </React.Fragment>
+                                    )
+                                  )}
+                                </TableBody>
+                              </Table>
+                            )}
+                          </div>
+                        </div>
+                      </React.Fragment>
+                    );
+                  })}
+                </TableBody>
+              </Table>
+            </TableContainer>
+            <div
+              style={{
+                display: "flex",
+                justifyContent: "center",
+                marginTop: "32px",
+              }}
+            >
+              <DefaultButton
+                onClickFunction={() => {
+                  handleAddPembayaranLainLain();
+                }}
+              >
+                Tambah Pembayaran Lain-Lain
+              </DefaultButton>
+              <Button
+                onClick={() => {
+                  handleCloseModalPembayaranLainLain();
+                }}
+                color="error"
+                variant="outlined"
                 style={{ textTransform: "none", marginLeft: "8px" }}
               >
                 Cancel
