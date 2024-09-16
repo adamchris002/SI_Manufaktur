@@ -548,7 +548,7 @@ class FinanceController {
                     tanggal: value.tanggal,
                     jumlahHarga: value.jumlah,
                     tanggalJatuhTempo: value.tanggal,
-                    statusCicilan: "Ongoing",
+                    statusCicilan: "Belum Lunas",
                   });
                 })
               );
@@ -975,6 +975,47 @@ class FinanceController {
         ],
       });
       res.json(ongoingHutangsAndCicilans);
+    } catch (error) {
+      res.json(error);
+    }
+  }
+  static async updateCicilanPemLains(req, res) {
+    try {
+      const { id } = req.params;
+      const { dataCicilanPemLains } = req.body;
+
+      console.log(dataCicilanPemLains);
+
+      if (dataCicilanPemLains && Array.isArray(dataCicilanPemLains)) {
+        await Promise.all(
+          dataCicilanPemLains.map(async (data) => {
+            const allCicilanLunas = dataCicilanPemLains.every((data) =>
+              data.cicilanPemLains.every((item) => item.statusCi === "Lunas")
+            );
+
+            if (allCicilanLunas) {
+              await pembayaranLains.update(
+                { keterangan: "Lunas" },
+                { where: { id: data.id } }
+              );
+            }
+
+            if (data.cicilanPemLains && Array.isArray(data.cicilanPemLains)) {
+              await Promise.all(
+                data.cicilanPemLains.map(async (value) => {
+                  await cicilanPemLains.update(
+                    {
+                      statusCicilan: value.statusCi,
+                    },
+                    { where: { id: value.id } }
+                  );
+                })
+              );
+            }
+          })
+        );
+      }
+      res.json();
     } catch (error) {
       res.json(error);
     }

@@ -83,7 +83,7 @@ const RencanaPembayaran = (props) => {
     },
   ]);
 
-  console.log(dataPembayaranLainLain);
+  // console.log(dataPembayaranLainLain);
 
   const [historyRencanaPembayaran, setRencanaPembayaran] = useState([]);
   const [allDataPembelianBahanBaku, setAllDataPembelianBahanBaku] = useState(
@@ -96,6 +96,8 @@ const RencanaPembayaran = (props) => {
     []
   );
   const [viewDataHutang, setViewDataHutang] = useState([]);
+  const [viewDataPembayaranLain, setViewDataPembayaranLain] = useState([]);
+  console.log(viewDataPembayaranLain);
   const [openSnackbar, setOpenSnackBar] = useState(false);
   const [snackbarStatus, setSnackbarStatus] = useState(false);
   const [snackbarMessage, setSnackbarMessage] = useState("");
@@ -107,6 +109,8 @@ const RencanaPembayaran = (props) => {
   const [triggerCheckRencanaPembayaran, setTriggerCheckRencanaPembayaran] =
     useState(false);
   const [openModalView, setOpenModalView] = useState(false);
+  const [openModalViewPembelianlain, setOpenModalViewPembelianlain] =
+    useState(false);
 
   const keterangan = [{ value: "Lunas" }, { value: "Belum Lunas" }];
   const pembayaran = [{ value: "Hutang" }, { value: "Piutang" }];
@@ -325,6 +329,26 @@ const RencanaPembayaran = (props) => {
     });
   };
 
+  const handleEditCicilanPemLains = () => {
+    axios({
+      method: "PUT",
+      url: `http://localhost:3000/finance/updateCicilanPemLains/${userInformation?.data?.id}`,
+      data: { dataCicilanPemLains: viewDataPembayaranLain },
+    }).then((result) => {
+      if (result.status === 200) {
+        handleCloseModalViewPembayaranLainLain();
+        setRefreshRencanaPembayaran(true);
+        setOpenSnackBar(true);
+        setSnackbarStatus(true);
+        setSnackbarMessage("Berhasil mengedit cicilan");
+      } else {
+        setOpenSnackBar(true);
+        setSnackbarStatus(false);
+        setSnackbarMessage("Tidak berhasil mengedit cicilan");
+      }
+    });
+  };
+
   const handleChangeInputCicilan = (event, index, indexCicilan) => {
     const value = event.target.value;
 
@@ -343,6 +367,32 @@ const RencanaPembayaran = (props) => {
         return item;
       });
 
+      return updatedItems;
+    });
+  };
+
+  const handleChangeInputCicilanPembayaranLains = (
+    event,
+    index,
+    indexCicilan
+  ) => {
+    const value = event.target.value;
+
+    setViewDataPembayaranLain((oldArray) => {
+      const updatedItems = oldArray.map((item, i) => {
+        if (i === index) {
+          const updatedCicilans = item.cicilanPemLains.map(
+            (data, cicilanIndex) => {
+              if (cicilanIndex === indexCicilan) {
+                return { ...data, statusCi: value };
+              }
+              return data;
+            }
+          );
+          return { ...item, cicilanPemLains: updatedCicilans };
+        }
+        return item;
+      });
       return updatedItems;
     });
   };
@@ -485,6 +535,10 @@ const RencanaPembayaran = (props) => {
     setOpenModalPembayaranLainLain(false);
   };
 
+  const handleCloseModalViewPembayaranLainLain = () => {
+    setOpenModalViewPembelianlain(false);
+  };
+
   const handleViewHutangPrev = (id) => {
     let prevItemRencanaPembayaran = ongoingHutangsAndCicilans.find(
       (item) => item.id === id
@@ -495,13 +549,24 @@ const RencanaPembayaran = (props) => {
 
   const handleViewHutang = (id) => {
     let itemRencanaPembayaran = allDataRencanaPembayaran
-      .map((item) => {
-        return item.itemRencanaPembayarans.find((data) => data.id === id);
+      ?.map((item) => {
+        return item?.itemRencanaPembayarans?.find((data) => data.id === id);
       })
       .filter(Boolean);
 
     setOpenModalView(true);
     setViewDataHutang(itemRencanaPembayaran[0].hutangs);
+  };
+
+  const handleViewPembayaranLainLain = (id) => {
+    let itemRencanaPembayaran = allDataRencanaPembayaran
+      ?.map((item) => {
+        return item?.itemRencanaPembayarans?.find((data) => data.id === id);
+      })
+      .filter(Boolean);
+
+    setOpenModalViewPembelianlain(true);
+    setViewDataPembayaranLain(itemRencanaPembayaran[0].pembayaranLains);
   };
 
   const handleCheckifDataPembayaranLainLainIsEmpty = () => {
@@ -683,6 +748,9 @@ const RencanaPembayaran = (props) => {
               </TableContainer>
             </div>
           )}
+          <Typography style={{ color: "#0F607D", fontSize: "2vw" }}>
+            Pembayaran Lain-Lain
+          </Typography>
           {allDataRencanaPembayaran[0]?.itemRencanaPembayarans?.length === 0 ? (
             <div style={{ display: "flex", justifyContent: "center" }}>
               <Typography style={{ color: "#0F607D", fontSize: "2vw" }}>
@@ -706,8 +774,69 @@ const RencanaPembayaran = (props) => {
                   </TableRow>
                 </TableHead>
                 <TableBody>
-                  {allDataRencanaPembayaran[0]?.itemRencanaPembayarans?.map(
-                    (result, index) => {
+                  {allDataRencanaPembayaran[0]?.itemRencanaPembayarans
+                    ?.filter((item) => item.pembayaranLains.length > 0)
+                    ?.map((result, index) => {
+                      return (
+                        <React.Fragment key={index}>
+                          <TableRow>
+                            <TableCell>{index + 1 + "."}</TableCell>
+                            <TableCell>{result.uraian}</TableCell>
+                            <TableCell>
+                              {dayjs(result.tanggalJatuhTempo).format(
+                                "MM/DD/YYYY hh:mm A"
+                              )}
+                            </TableCell>
+                            <TableCell>{`Rp. ${result.nominal
+                              .toString()
+                              .replace(
+                                /\B(?=(\d{3})+(?!\d))/g,
+                                "."
+                              )},-`}</TableCell>
+                            {/* <TableCell>{result.keterangan}</TableCell> */}
+                            <TableCell>
+                              <IconButton
+                                onClick={() => {
+                                  handleViewPembayaranLainLain(result.id);
+                                }}
+                              >
+                                <VisibilityIcon sx={{ color: "#0F607D" }} />
+                              </IconButton>
+                            </TableCell>
+                          </TableRow>
+                        </React.Fragment>
+                      );
+                    })}
+                </TableBody>
+              </Table>
+            </TableContainer>
+          )}
+
+          <Typography style={{ color: "#0F607D", fontSize: "2vw" }}>
+            Hutang
+          </Typography>
+          {allDataRencanaPembayaran[0]?.itemRencanaPembayarans?.length === 0 ? (
+            ""
+          ) : (
+            <TableContainer component={Paper} sx={{ overflowX: "auto" }}>
+              <Table
+                aria-label="simple table"
+                sx={{ overflowX: "auto", tableLayout: "fixed", minWidth: 650 }}
+              >
+                <TableHead>
+                  <TableRow>
+                    <TableCell style={{ width: "25px" }}>No.</TableCell>
+                    <TableCell>Uraian</TableCell>
+                    <TableCell>Tanggal Jatuh Tempo</TableCell>
+                    <TableCell>Nominal</TableCell>
+                    {/* <TableCell>Keterangan</TableCell> */}
+                    <TableCell>Actions</TableCell>
+                  </TableRow>
+                </TableHead>
+                <TableBody>
+                  {allDataRencanaPembayaran[0]?.itemRencanaPembayarans
+                    ?.filter((item) => item.hutangs.length > 0)
+                    ?.map((result, index) => {
                       return (
                         <React.Fragment key={index}>
                           <TableRow>
@@ -737,8 +866,7 @@ const RencanaPembayaran = (props) => {
                           </TableRow>
                         </React.Fragment>
                       );
-                    }
-                  )}
+                    })}
                 </TableBody>
               </Table>
             </TableContainer>
@@ -1084,6 +1212,235 @@ const RencanaPembayaran = (props) => {
                 variant="outlined"
                 color="error"
                 sx={{ textTransform: "none", marginLeft: "8px" }}
+              >
+                Cancel
+              </Button>
+            </div>
+          </div>
+        </MyModal>
+      )}
+      {openModalViewPembelianlain === true && (
+        <MyModal
+          open={openModalViewPembelianlain}
+          handleClose={handleCloseModalViewPembayaranLainLain}
+        >
+          <div
+            className="hideScrollbar"
+            style={{
+              margin: isMobile ? "24px" : "0.83vw 1.667vw 0.83vw 1.667vw",
+              overflow: "auto",
+              width: isMobile ? "80vw" : "50vw",
+              maxHeight: "80vh",
+              padding: "32px",
+            }}
+          >
+            <div
+              style={{
+                display: "flex",
+                justifyContent: "space-between",
+                alignItems: "center",
+              }}
+            >
+              <Typography
+                style={{
+                  color: "#0F607D",
+                  fontSize: "3vw",
+                  marginBottom: "16px",
+                }}
+              >
+                Data Pembayaran Lain-Lain
+              </Typography>
+              <IconButton
+                onClick={() => {
+                  handleCloseModalViewPembayaranLainLain();
+                }}
+              >
+                <CloseIcon />
+              </IconButton>
+            </div>
+            <TableContainer component={Paper} sx={{ overflowX: "auto" }}>
+              <Table
+                aria-label="simple table"
+                sx={{
+                  minWidth: 650,
+                  tableLayout: "fixed",
+                  overflowX: "auto",
+                }}
+              >
+                <TableHead>
+                  <TableRow>
+                    <TableCell style={{ width: "25px" }}>No.</TableCell>
+                    <TableCell style={{ width: "200px" }}>Tanggal</TableCell>
+                    <TableCell style={{ width: "200px" }}>Uraian</TableCell>
+                    <TableCell style={{ width: "200px" }}>
+                      No Invoice/ Kwitansi/ SJ
+                    </TableCell>
+                    <TableCell style={{ width: "200px" }}>
+                      Jumlah Harga
+                    </TableCell>
+                    <TableCell style={{ width: "200px" }}>
+                      Tanggal Jatuh Tempo
+                    </TableCell>
+                    <TableCell style={{ width: "200px" }}>Pembayaran</TableCell>
+                    <TableCell style={{ width: "200px" }}>Keterangan</TableCell>
+                  </TableRow>
+                </TableHead>
+                <TableBody>
+                  {viewDataPembayaranLain.map((result, index) => {
+                    return (
+                      <React.Fragment key={index}>
+                        <TableRow>
+                          <TableCell>{index + 1 + "."}</TableCell>
+                          <TableCell>
+                            {dayjs(result.tanggal).format("MM/DD/YYYY hh:mm A")}
+                          </TableCell>
+                          <TableCell>{result.uraian}</TableCell>
+                          <TableCell>{result.noInvoiceKwitansiJs}</TableCell>
+                          <TableCell>{result.jumlahHarga}</TableCell>
+                          <TableCell>
+                            {dayjs(result.tanggalJatuhTempo).format(
+                              "MM/DD/YYYY hh:mm A"
+                            )}
+                          </TableCell>
+                          <TableCell>{result.pembayaran}</TableCell>
+                          <TableCell>{result.keterangan}</TableCell>
+                        </TableRow>
+                        {result.keterangan === "Belum Lunas" && (
+                          <div
+                            style={{
+                              display: "flex",
+                              justifyContent: "space-between",
+                            }}
+                          >
+                            <div
+                              style={{
+                                minWidth: "928px",
+                                backgroundColor: "#d3f8fd",
+                              }}
+                            ></div>
+                            {result.cicilanPemLains.length !== 0 && (
+                              <Table
+                                sx={{
+                                  minWidth: 650,
+                                  tableLayout: "fixed",
+                                  overflowX: "auto",
+                                }}
+                              >
+                                <TableHead>
+                                  <TableRow>
+                                    <TableCell
+                                      style={{
+                                        width: "25px",
+                                        backgroundColor: "#d3f8fd",
+                                      }}
+                                    >
+                                      No.
+                                    </TableCell>
+                                    <TableCell
+                                      style={{
+                                        width: "200px",
+                                        backgroundColor: "#d3f8fd",
+                                      }}
+                                    >
+                                      Jumlah Pembayaran Per Bulan
+                                    </TableCell>
+                                    <TableCell
+                                      style={{
+                                        width: "200px",
+                                        backgroundColor: "#d3f8fd",
+                                      }}
+                                    >
+                                      Tanggal Pembayaran
+                                    </TableCell>
+                                    <TableCell
+                                      style={{
+                                        width: "200px",
+                                        backgroundColor: "#d3f8fd",
+                                      }}
+                                    >
+                                      Status Cicilan
+                                    </TableCell>
+                                  </TableRow>
+                                </TableHead>
+                                <TableBody>
+                                  {result.cicilanPemLains.map(
+                                    (cicilan, cicilanIndex) => (
+                                      <React.Fragment key={cicilanIndex}>
+                                        <TableRow>
+                                          <TableCell
+                                            style={{
+                                              backgroundColor: "#d3f8fd",
+                                            }}
+                                          >
+                                            {index + 1 + "."}
+                                          </TableCell>
+                                          <TableCell
+                                            style={{
+                                              backgroundColor: "#d3f8fd",
+                                            }}
+                                          >{`Rp. ${cicilan.jumlahHa
+                                            .toString()
+                                            .replace(
+                                              /\B(?=(\d{3})+(?!\d))/g,
+                                              "."
+                                            )},-`}</TableCell>
+                                          <TableCell
+                                            style={{
+                                              backgroundColor: "#d3f8fd",
+                                            }}
+                                          >
+                                            {dayjs(cicilan.tanggalJ).format(
+                                              "MM/DD/YYYY"
+                                            )}
+                                          </TableCell>
+                                          <TableCell
+                                            style={{
+                                              backgroundColor: "#d3f8fd",
+                                            }}
+                                          >
+                                            <MySelectTextField
+                                              onChange={(event) => {
+                                                handleChangeInputCicilanPembayaranLains(
+                                                  event,
+                                                  index,
+                                                  cicilanIndex
+                                                );
+                                              }}
+                                              id="statusCi"
+                                              width={"200px"}
+                                              value={cicilan?.statusCi}
+                                              data={keterangan}
+                                            />
+                                          </TableCell>
+                                        </TableRow>
+                                      </React.Fragment>
+                                    )
+                                  )}
+                                </TableBody>
+                              </Table>
+                            )}
+                          </div>
+                        )}
+                      </React.Fragment>
+                    );
+                  })}
+                </TableBody>
+              </Table>
+            </TableContainer>
+            <div
+              style={{
+                display: "flex",
+                marginTop: "32px",
+                justifyContent: "center",
+              }}
+            >
+              <DefaultButton onClickFunction={() => {
+                handleEditCicilanPemLains()
+              }}>Edit Cicilan Pembayaran Lain-Lain</DefaultButton>
+              <Button
+                style={{ marginLeft: "8px", textTransform: "none" }}
+                variant="outlined"
+                color="error"
               >
                 Cancel
               </Button>
