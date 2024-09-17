@@ -95,6 +95,10 @@ const RencanaPembayaran = (props) => {
   const [ongoingHutangsAndCicilans, setOngoingHutangsAndCicilans] = useState(
     []
   );
+  const [ongoingPembayaranLainLain, setongoingPembayaranLainLain] = useState(
+    []
+  );
+  // console.log(ongoingPembayaranLainLain);
   const [viewDataHutang, setViewDataHutang] = useState([]);
   const [viewDataPembayaranLain, setViewDataPembayaranLain] = useState([]);
   console.log(viewDataPembayaranLain);
@@ -206,6 +210,37 @@ const RencanaPembayaran = (props) => {
 
         setOngoingHutangsAndCicilans(itemsToAdd);
       } else {
+        setOpenSnackBar(true);
+        setSnackbarStatus(false);
+        setSnackbarMessage(
+          "Tidak berhasil memanggil data pembayaran lain-lain dari bulan sebelumnya"
+        );
+      }
+    });
+  }, [allDataRencanaPembayaran]);
+
+  useEffect(() => {
+    axios({
+      method: "GET",
+      url: "http://localhost:3000/finance/findPrevOngoingPembayaranLainLain",
+    }).then((result) => {
+      if (result.status === 200) {
+        const existingIds =
+          allDataRencanaPembayaran[0]?.itemRencanaPembayarans.map(
+            (item) => item.id
+          ) || [];
+
+        const itemsToAdd = result.data.filter(
+          (item) => !existingIds.includes(item.id)
+        );
+
+        setongoingPembayaranLainLain(itemsToAdd);
+      } else {
+        setOpenSnackBar(true);
+        setSnackbarStatus(false);
+        setSnackbarMessage(
+          "Tidak berhasil memanggil data hutang dari bulan sebelumnya"
+        );
       }
     });
   }, [allDataRencanaPembayaran]);
@@ -543,8 +578,16 @@ const RencanaPembayaran = (props) => {
     let prevItemRencanaPembayaran = ongoingHutangsAndCicilans.find(
       (item) => item.id === id
     );
-    setOpenModalView(true);
     setViewDataHutang(prevItemRencanaPembayaran.hutangs);
+    setOpenModalView(true);
+  };
+
+  const handleViewPembayaranLainsPrev = (id) => {
+    let prevItemPembayaranLainLain = ongoingPembayaranLainLain.find(
+      (item) => item.id === id
+    );
+    setViewDataPembayaranLain(prevItemPembayaranLainLain.pembayaranLains);
+    setOpenModalViewPembelianlain(true);
   };
 
   const handleViewHutang = (id) => {
@@ -702,174 +745,279 @@ const RencanaPembayaran = (props) => {
               </div>
             </div>
           </div>
-          {ongoingHutangsAndCicilans.length !== 0 && (
-            <div style={{ width: "50%", marginBottom: "64px" }}>
-              <Typography>Data Hutangs dari bulan sebelum</Typography>
-              <TableContainer component={Paper}>
-                <Table>
+          <div
+            style={{
+              marginBottom: "64px",
+              display: "flex",
+              justifyContent: "space-between",
+            }}
+          >
+            {ongoingHutangsAndCicilans.length !== 0 && (
+              <div style={{ width: "48%" }}>
+                <Typography>Data Hutang dari bulan sebelum</Typography>
+                <TableContainer component={Paper}>
+                  <Table>
+                    <TableHead>
+                      <TableRow>
+                        <TableCell>Uraian</TableCell>
+                        <TableCell>Tanggal Jatuh Tempo</TableCell>
+                        <TableCell>Nominal</TableCell>
+                        <TableCell>Actions</TableCell>
+                      </TableRow>
+                    </TableHead>
+                    <TableBody>
+                      {ongoingHutangsAndCicilans.length !== 0 && (
+                        <React.Fragment>
+                          {ongoingHutangsAndCicilans.map(
+                            (data, indexOngoing) => {
+                              return (
+                                <TableRow key={indexOngoing}>
+                                  <TableCell>{data.uraian}</TableCell>
+                                  <TableCell>
+                                    {data.tanggalJatuhTempo}
+                                  </TableCell>
+                                  <TableCell>{`Rp. ${data.nominal
+                                    .toString()
+                                    .replace(
+                                      /\B(?=(\d{3})+(?!\d))/g,
+                                      "."
+                                    )},-`}</TableCell>
+                                  <TableCell>
+                                    <IconButton
+                                      onClick={() => {
+                                        handleViewHutangPrev(data.id);
+                                      }}
+                                    >
+                                      <VisibilityIcon
+                                        sx={{ color: "#0F607D" }}
+                                      />
+                                    </IconButton>
+                                  </TableCell>
+                                </TableRow>
+                              );
+                            }
+                          )}
+                        </React.Fragment>
+                      )}
+                    </TableBody>
+                  </Table>
+                </TableContainer>
+              </div>
+            )}
+            {ongoingPembayaranLainLain.length !== 0 && (
+              <div style={{ width: "48%" }}>
+                <Typography>
+                  Data pembayaran lain-lain dari bulan sebelum
+                </Typography>
+                <TableContainer component={Paper}>
+                  <Table aria-label="simple table">
+                    <TableHead>
+                      <TableRow>
+                        <TableCell>Uraian</TableCell>
+                        <TableCell>Tanggal Jatuh Tempo</TableCell>
+                        <TableCell>Nominal</TableCell>
+                        <TableCell>Actions</TableCell>
+                      </TableRow>
+                    </TableHead>
+                    <TableBody>
+                      {ongoingPembayaranLainLain.length !== 0 && (
+                        <React.Fragment>
+                          {ongoingPembayaranLainLain.map(
+                            (data, indexOngoing) => {
+                              return (
+                                <TableRow key={indexOngoing}>
+                                  <TableCell>{data.uraian}</TableCell>
+                                  <TableCell>
+                                    {dayjs(data.tanggalJatuhTempo).format(
+                                      "MM/DD/YYYY hh:mm A"
+                                    )}
+                                  </TableCell>
+                                  <TableCell>{`Rp. ${data.nominal
+                                    .toString()
+                                    .replace(
+                                      /\B(?=(\d{3})+(?!\d))/g,
+                                      "."
+                                    )},-`}</TableCell>
+                                  <TableCell>
+                                    <IconButton
+                                      onClick={() => {
+                                        handleViewPembayaranLainsPrev(data.id);
+                                      }}
+                                    >
+                                      <VisibilityIcon
+                                        style={{ color: "#0F607D" }}
+                                      />
+                                    </IconButton>
+                                  </TableCell>
+                                </TableRow>
+                              );
+                            }
+                          )}
+                        </React.Fragment>
+                      )}
+                    </TableBody>
+                  </Table>
+                </TableContainer>
+              </div>
+            )}
+          </div>
+          {allDataRencanaPembayaran[0]?.itemRencanaPembayarans?.some(
+            (item) => item.pembayaranLains.length > 0
+          ) ? (
+            <>
+              <Typography style={{ color: "#0F607D", fontSize: "2vw" }}>
+                Pembayaran Lain-Lain
+              </Typography>
+              <TableContainer
+                component={Paper}
+                sx={{ overflowX: "auto", marginBottom: "32px" }}
+              >
+                <Table
+                  aria-label="simple table"
+                  sx={{
+                    overflowX: "auto",
+                    tableLayout: "fixed",
+                    minWidth: 650,
+                  }}
+                >
                   <TableHead>
                     <TableRow>
+                      <TableCell style={{ width: "25px" }}>No.</TableCell>
                       <TableCell>Uraian</TableCell>
                       <TableCell>Tanggal Jatuh Tempo</TableCell>
                       <TableCell>Nominal</TableCell>
+                      {/* <TableCell>Keterangan</TableCell> */}
                       <TableCell>Actions</TableCell>
                     </TableRow>
                   </TableHead>
                   <TableBody>
-                    {ongoingHutangsAndCicilans.length !== 0 && (
-                      <React.Fragment>
-                        {ongoingHutangsAndCicilans.map((data, indexOngoing) => {
-                          return (
+                    {allDataRencanaPembayaran[0]?.itemRencanaPembayarans
+                      ?.filter((item) => item.pembayaranLains.length > 0)
+                      ?.map((result, index) => {
+                        return (
+                          <React.Fragment key={index}>
                             <TableRow>
-                              <TableCell>{data.uraian}</TableCell>
-                              <TableCell>{data.tanggalJatuhTempo}</TableCell>
-                              <TableCell>{`Rp. ${data.nominal
+                              <TableCell>{index + 1 + "."}</TableCell>
+                              <TableCell>{result.uraian}</TableCell>
+                              <TableCell>
+                                {dayjs(result.tanggalJatuhTempo).format(
+                                  "MM/DD/YYYY hh:mm A"
+                                )}
+                              </TableCell>
+                              <TableCell>{`Rp. ${result.nominal
                                 .toString()
                                 .replace(
                                   /\B(?=(\d{3})+(?!\d))/g,
                                   "."
                                 )},-`}</TableCell>
+                              {/* <TableCell>{result.keterangan}</TableCell> */}
                               <TableCell>
                                 <IconButton
                                   onClick={() => {
-                                    handleViewHutangPrev(data.id);
+                                    handleViewPembayaranLainLain(result.id);
                                   }}
                                 >
                                   <VisibilityIcon sx={{ color: "#0F607D" }} />
                                 </IconButton>
                               </TableCell>
                             </TableRow>
-                          );
-                        })}
-                      </React.Fragment>
-                    )}
+                          </React.Fragment>
+                        );
+                      })}
                   </TableBody>
                 </Table>
               </TableContainer>
-            </div>
-          )}
-          <Typography style={{ color: "#0F607D", fontSize: "2vw" }}>
-            Pembayaran Lain-Lain
-          </Typography>
-          {allDataRencanaPembayaran[0]?.itemRencanaPembayarans?.length === 0 ? (
-            <div style={{ display: "flex", justifyContent: "center" }}>
+            </>
+          ) : (
+            <div
+              style={{
+                display: "flex",
+                justifyContent: "center",
+                marginTop: "32px",
+              }}
+            >
               <Typography style={{ color: "#0F607D", fontSize: "2vw" }}>
-                Belum ada data rencana pembayaran
+                Belum ada data pembayaran lain-lain
               </Typography>
             </div>
-          ) : (
-            <TableContainer component={Paper} sx={{ overflowX: "auto" }}>
-              <Table
-                aria-label="simple table"
-                sx={{ overflowX: "auto", tableLayout: "fixed", minWidth: 650 }}
-              >
-                <TableHead>
-                  <TableRow>
-                    <TableCell style={{ width: "25px" }}>No.</TableCell>
-                    <TableCell>Uraian</TableCell>
-                    <TableCell>Tanggal Jatuh Tempo</TableCell>
-                    <TableCell>Nominal</TableCell>
-                    {/* <TableCell>Keterangan</TableCell> */}
-                    <TableCell>Actions</TableCell>
-                  </TableRow>
-                </TableHead>
-                <TableBody>
-                  {allDataRencanaPembayaran[0]?.itemRencanaPembayarans
-                    ?.filter((item) => item.pembayaranLains.length > 0)
-                    ?.map((result, index) => {
-                      return (
-                        <React.Fragment key={index}>
-                          <TableRow>
-                            <TableCell>{index + 1 + "."}</TableCell>
-                            <TableCell>{result.uraian}</TableCell>
-                            <TableCell>
-                              {dayjs(result.tanggalJatuhTempo).format(
-                                "MM/DD/YYYY hh:mm A"
-                              )}
-                            </TableCell>
-                            <TableCell>{`Rp. ${result.nominal
-                              .toString()
-                              .replace(
-                                /\B(?=(\d{3})+(?!\d))/g,
-                                "."
-                              )},-`}</TableCell>
-                            {/* <TableCell>{result.keterangan}</TableCell> */}
-                            <TableCell>
-                              <IconButton
-                                onClick={() => {
-                                  handleViewPembayaranLainLain(result.id);
-                                }}
-                              >
-                                <VisibilityIcon sx={{ color: "#0F607D" }} />
-                              </IconButton>
-                            </TableCell>
-                          </TableRow>
-                        </React.Fragment>
-                      );
-                    })}
-                </TableBody>
-              </Table>
-            </TableContainer>
           )}
 
-          <Typography style={{ color: "#0F607D", fontSize: "2vw" }}>
-            Hutang
-          </Typography>
-          {allDataRencanaPembayaran[0]?.itemRencanaPembayarans?.length === 0 ? (
-            ""
+          {allDataRencanaPembayaran[0]?.itemRencanaPembayarans?.some(
+            (item) => item.hutangs.length > 0
+          ) ? (
+            <>
+              <Typography style={{ color: "#0F607D", fontSize: "2vw" }}>
+                Hutang
+              </Typography>
+              <TableContainer component={Paper} sx={{ overflowX: "auto" }}>
+                <Table
+                  aria-label="simple table"
+                  sx={{
+                    overflowX: "auto",
+                    tableLayout: "fixed",
+                    minWidth: 650,
+                  }}
+                >
+                  <TableHead>
+                    <TableRow>
+                      <TableCell style={{ width: "25px" }}>No.</TableCell>
+                      <TableCell>Uraian</TableCell>
+                      <TableCell>Tanggal Jatuh Tempo</TableCell>
+                      <TableCell>Nominal</TableCell>
+                      {/* <TableCell>Keterangan</TableCell> */}
+                      <TableCell>Actions</TableCell>
+                    </TableRow>
+                  </TableHead>
+                  <TableBody>
+                    {allDataRencanaPembayaran[0]?.itemRencanaPembayarans
+                      ?.filter((item) => item.hutangs.length > 0)
+                      ?.map((result, index) => {
+                        return (
+                          <React.Fragment key={index}>
+                            <TableRow>
+                              <TableCell>{index + 1 + "."}</TableCell>
+                              <TableCell>{result.uraian}</TableCell>
+                              <TableCell>
+                                {dayjs(result.tanggalJatuhTempo).format(
+                                  "MM/DD/YYYY hh:mm A"
+                                )}
+                              </TableCell>
+                              <TableCell>{`Rp. ${result.nominal
+                                .toString()
+                                .replace(
+                                  /\B(?=(\d{3})+(?!\d))/g,
+                                  "."
+                                )},-`}</TableCell>
+                              {/* <TableCell>{result.keterangan}</TableCell> */}
+                              <TableCell>
+                                <IconButton
+                                  onClick={() => {
+                                    handleViewHutang(result.id);
+                                  }}
+                                >
+                                  <VisibilityIcon sx={{ color: "#0F607D" }} />
+                                </IconButton>
+                              </TableCell>
+                            </TableRow>
+                          </React.Fragment>
+                        );
+                      })}
+                  </TableBody>
+                </Table>
+              </TableContainer>
+            </>
           ) : (
-            <TableContainer component={Paper} sx={{ overflowX: "auto" }}>
-              <Table
-                aria-label="simple table"
-                sx={{ overflowX: "auto", tableLayout: "fixed", minWidth: 650 }}
-              >
-                <TableHead>
-                  <TableRow>
-                    <TableCell style={{ width: "25px" }}>No.</TableCell>
-                    <TableCell>Uraian</TableCell>
-                    <TableCell>Tanggal Jatuh Tempo</TableCell>
-                    <TableCell>Nominal</TableCell>
-                    {/* <TableCell>Keterangan</TableCell> */}
-                    <TableCell>Actions</TableCell>
-                  </TableRow>
-                </TableHead>
-                <TableBody>
-                  {allDataRencanaPembayaran[0]?.itemRencanaPembayarans
-                    ?.filter((item) => item.hutangs.length > 0)
-                    ?.map((result, index) => {
-                      return (
-                        <React.Fragment key={index}>
-                          <TableRow>
-                            <TableCell>{index + 1 + "."}</TableCell>
-                            <TableCell>{result.uraian}</TableCell>
-                            <TableCell>
-                              {dayjs(result.tanggalJatuhTempo).format(
-                                "MM/DD/YYYY hh:mm A"
-                              )}
-                            </TableCell>
-                            <TableCell>{`Rp. ${result.nominal
-                              .toString()
-                              .replace(
-                                /\B(?=(\d{3})+(?!\d))/g,
-                                "."
-                              )},-`}</TableCell>
-                            {/* <TableCell>{result.keterangan}</TableCell> */}
-                            <TableCell>
-                              <IconButton
-                                onClick={() => {
-                                  handleViewHutang(result.id);
-                                }}
-                              >
-                                <VisibilityIcon sx={{ color: "#0F607D" }} />
-                              </IconButton>
-                            </TableCell>
-                          </TableRow>
-                        </React.Fragment>
-                      );
-                    })}
-                </TableBody>
-              </Table>
-            </TableContainer>
+            <div
+              style={{
+                display: "flex",
+                justifyContent: "center",
+                marginTop: "64px",
+              }}
+            >
+              <Typography style={{ color: "#0F607D", fontSize: "2vw" }}>
+                Belum ada data pembayaran hutang
+              </Typography>
+            </div>
           )}
         </div>
       </div>
@@ -1378,20 +1526,38 @@ const RencanaPembayaran = (props) => {
                                             style={{
                                               backgroundColor: "#d3f8fd",
                                             }}
-                                          >{`Rp. ${cicilan.jumlahHa
-                                            .toString()
-                                            .replace(
-                                              /\B(?=(\d{3})+(?!\d))/g,
-                                              "."
-                                            )},-`}</TableCell>
+                                          >
+                                            {!cicilan.jumlahHa
+                                              ? `Rp. ${cicilan.jumlahHarga
+                                                  .toString()
+                                                  .replace(
+                                                    /\B(?=(\d{3})+(?!\d))/g,
+                                                    "."
+                                                  )},-`
+                                              : `Rp. ${cicilan.jumlahHa
+                                                  .toString()
+                                                  .replace(
+                                                    /\B(?=(\d{3})+(?!\d))/g,
+                                                    "."
+                                                  )},-`}
+                                          </TableCell>
                                           <TableCell
                                             style={{
                                               backgroundColor: "#d3f8fd",
                                             }}
                                           >
-                                            {dayjs(cicilan.tanggalJ).format(
-                                              "MM/DD/YYYY"
-                                            )}
+                                            {!cicilan.tanggalJ ||
+                                            !dayjs(
+                                              cicilan.tanggalJ,
+                                              "MM/DD/YYYY hh:mm A",
+                                              true
+                                            ).isValid()
+                                              ? dayjs(
+                                                  cicilan.tanggalJatuhTempo
+                                                ).format("MM/DD/YYYY")
+                                              : dayjs(cicilan.tanggalJa).format(
+                                                  "MM/DD/YYYY"
+                                                )}
                                           </TableCell>
                                           <TableCell
                                             style={{
@@ -1408,7 +1574,11 @@ const RencanaPembayaran = (props) => {
                                               }}
                                               id="statusCi"
                                               width={"200px"}
-                                              value={cicilan?.statusCi}
+                                              value={
+                                                !cicilan.statusCi
+                                                  ? cicilan?.statusCicilan
+                                                  : cicilan?.statusCi
+                                              }
                                               data={keterangan}
                                             />
                                           </TableCell>
@@ -1434,9 +1604,13 @@ const RencanaPembayaran = (props) => {
                 justifyContent: "center",
               }}
             >
-              <DefaultButton onClickFunction={() => {
-                handleEditCicilanPemLains()
-              }}>Edit Cicilan Pembayaran Lain-Lain</DefaultButton>
+              <DefaultButton
+                onClickFunction={() => {
+                  handleEditCicilanPemLains();
+                }}
+              >
+                Edit Cicilan Pembayaran Lain-Lain
+              </DefaultButton>
               <Button
                 style={{ marginLeft: "8px", textTransform: "none" }}
                 variant="outlined"

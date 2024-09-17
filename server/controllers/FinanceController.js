@@ -556,6 +556,7 @@ class FinanceController {
           })
         );
       }
+      res.json();
     } catch (error) {
       res.json(error);
     }
@@ -979,6 +980,22 @@ class FinanceController {
       res.json(error);
     }
   }
+  static async findPrevOngoingPembayaranLainLain(req, res) {
+    try {
+      let ongoingPembayaranLainLain = await itemRencanaPembayarans.findAll({
+        include: [
+          {
+            model: pembayaranLains,
+            where: { keterangan: "Belum Lunas" },
+            include: [{ model: cicilanPemLains }],
+          },
+        ],
+      });
+      res.json(ongoingPembayaranLainLain);
+    } catch (error) {
+      res.json(error);
+    }
+  }
   static async updateCicilanPemLains(req, res) {
     try {
       const { id } = req.params;
@@ -990,7 +1007,11 @@ class FinanceController {
         await Promise.all(
           dataCicilanPemLains.map(async (data) => {
             const allCicilanLunas = dataCicilanPemLains.every((data) =>
-              data.cicilanPemLains.every((item) => item.statusCi === "Lunas")
+              data.cicilanPemLains.every((item) =>
+                !item.statusCi
+                  ? item.statusCicilan === "Lunas"
+                  : item.statusCi === "Lunas"
+              )
             );
 
             if (allCicilanLunas) {
@@ -1005,7 +1026,7 @@ class FinanceController {
                 data.cicilanPemLains.map(async (value) => {
                   await cicilanPemLains.update(
                     {
-                      statusCicilan: value.statusCi,
+                      statusCicilan: !value.statusCi ? value.statusCicilan : value.statusCi,
                     },
                     { where: { id: value.id } }
                   );

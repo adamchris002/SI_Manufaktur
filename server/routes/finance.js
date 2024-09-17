@@ -37,6 +37,10 @@ financeRoutes.get(
   "/findPrevOngoingHutangs",
   FinanceController.findPrevOngoingHutangs
 );
+financeRoutes.get(
+  "/findPrevOngoingPembayaranLainLain",
+  FinanceController.findPrevOngoingPembayaranLainLain
+);
 //post
 financeRoutes.post("/addNamaBank/:id", FinanceController.addNamaBank);
 financeRoutes.post("/addItemBukuBank/:id", FinanceController.addNewBukuBank);

@@ -613,7 +613,7 @@ const MaindashboardFinance = (props) => {
           <div>
             <DefaultButton
               height="40px"
-              width="232px"
+              width="300px"
               borderRadius="16px"
               fontSize="14px"
               onClickFunction={() => {
