@@ -32,6 +32,9 @@ module.exports = {
       keterangan: {
         type: Sequelize.STRING,
       },
+      noRekening: {
+        type: Sequelize.STRING,
+      },
       createdAt: {
         allowNull: false,
         type: Sequelize.DATE,

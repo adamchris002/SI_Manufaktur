@@ -69,7 +69,6 @@ const RencanaPembayaran = (props) => {
       keterangan: "",
     },
   ]);
-  // console.log(dataHutang);
 
   const [dataPembayaranLainLain, setDataPembayaranLainLain] = useState([
     {
@@ -83,8 +82,8 @@ const RencanaPembayaran = (props) => {
     },
   ]);
 
-  // console.log(dataPembayaranLainLain);
-
+  const [dataInfoPembayaran, setDataInfoPembayaran] = useState({});
+  console.log(dataInfoPembayaran);
   const [historyRencanaPembayaran, setRencanaPembayaran] = useState([]);
   const [allDataPembelianBahanBaku, setAllDataPembelianBahanBaku] = useState(
     []
@@ -98,10 +97,9 @@ const RencanaPembayaran = (props) => {
   const [ongoingPembayaranLainLain, setongoingPembayaranLainLain] = useState(
     []
   );
-  // console.log(ongoingPembayaranLainLain);
+  const [listBank, setListBank] = useState([]);
   const [viewDataHutang, setViewDataHutang] = useState([]);
   const [viewDataPembayaranLain, setViewDataPembayaranLain] = useState([]);
-  console.log(viewDataPembayaranLain);
   const [openSnackbar, setOpenSnackBar] = useState(false);
   const [snackbarStatus, setSnackbarStatus] = useState(false);
   const [snackbarMessage, setSnackbarMessage] = useState("");
@@ -186,7 +184,11 @@ const RencanaPembayaran = (props) => {
           setRefreshRencanaPembayaran(false);
           setTriggerCheckRencanaPembayaran(true);
         } else {
-          setRefreshRencanaPembayaran(false);
+          setOpenSnackBar(true);
+          setSnackbarStatus(false);
+          setSnackbarMessage(
+            "Tidak berhasil memanggil data rencana pembayaran"
+          );
         }
       });
     }
@@ -316,6 +318,26 @@ const RencanaPembayaran = (props) => {
     }
   }, [triggerCheckRencanaPembayaran, dataHutang]);
 
+  useEffect(() => {
+    axios({
+      method: "GET",
+      url: "http://localhost:3000/finance/getOngoingBukuBank",
+    }).then((result) => {
+      if (result.status === 200) {
+        const tempData = result.data.map((result) => {
+          return { ...result, value: result.namaBank };
+        });
+        setListBank(tempData);
+      } else {
+        setOpenSnackBar(true);
+        setSnackbarStatus(false);
+        setSnackbarMessage(
+          "Tidak berhasil memanggil data buku bank untuk pembayaran"
+        );
+      }
+    });
+  }, []);
+
   const handleChangeSelectedPembelianBahanBaku = (event) => {
     const selectedItem = allDataPembelianBahanBaku.find(
       (item) => item.id === event.target.value
@@ -368,7 +390,10 @@ const RencanaPembayaran = (props) => {
     axios({
       method: "PUT",
       url: `http://localhost:3000/finance/updateCicilanPemLains/${userInformation?.data?.id}`,
-      data: { dataCicilanPemLains: viewDataPembayaranLain },
+      data: {
+        dataCicilanPemLains: viewDataPembayaranLain,
+        dataBank: dataInfoPembayaran,
+      },
     }).then((result) => {
       if (result.status === 200) {
         handleCloseModalViewPembayaranLainLain();
@@ -382,6 +407,14 @@ const RencanaPembayaran = (props) => {
         setSnackbarMessage("Tidak berhasil mengedit cicilan");
       }
     });
+  };
+
+  const handleChangeDataInformasiPembayaran = (event) => {
+    const value = event.target.value;
+
+    const selectedBukuBank = listBank.find((item) => item.namaBank === value);
+
+    setDataInfoPembayaran(selectedBukuBank);
   };
 
   const handleChangeInputCicilan = (event, index, indexCicilan) => {
@@ -534,6 +567,16 @@ const RencanaPembayaran = (props) => {
     });
   };
 
+  const handleCheckIfNamaBankIsEmpty = () => {
+    if (
+      Object.keys(dataInfoPembayaran).length === 0 &&
+      dataInfoPembayaran.constructor === Object
+    ) {
+      return false;
+    }
+    return true;
+  };
+
   const handleCheckIfDataHutangIsEmpty = () => {
     for (const item of dataHutang) {
       if (
@@ -661,8 +704,9 @@ const RencanaPembayaran = (props) => {
 
   const handleAddHutang = () => {
     const checkIfDataHutangEmpty = handleCheckIfDataHutangIsEmpty();
+    const checkIfDataBankIsEmpty = handleCheckIfNamaBankIsEmpty();
 
-    if (checkIfDataHutangEmpty === false) {
+    if (checkIfDataHutangEmpty === false || checkIfDataBankIsEmpty === false) {
       setOpenSnackBar(true);
       setSnackbarStatus(false);
       setSnackbarMessage("Mohon isi semua input");
@@ -670,7 +714,7 @@ const RencanaPembayaran = (props) => {
       axios({
         method: "POST",
         url: `http://localhost:3000/finance/addHutang/${userInformation?.data?.id}`,
-        data: { dataHutang: dataHutang },
+        data: { dataHutang: dataHutang, dataBank: dataInfoPembayaran },
       }).then((result) => {
         if (result.status === 200) {
           handleCloseModal();
@@ -1337,6 +1381,46 @@ const RencanaPembayaran = (props) => {
                 </Table>
               </TableContainer>
             )}
+            {selectedPembelianBahanBakuId !== "" && (
+              <div>
+                <div
+                  style={{
+                    display: "flex",
+                    marginTop: "32px",
+                    justifyContent: "flex-start",
+                    alignItems: "center",
+                  }}
+                >
+                  <Typography style={{ fontSize: "1.5vw", color: "#0F607D" }}>
+                    No Rekening:
+                  </Typography>
+                  <div style={{ marginLeft: "8px" }}>
+                    <MySelectTextField
+                      value={dataInfoPembayaran.namaBank}
+                      onChange={(event) => {
+                        handleChangeDataInformasiPembayaran(event);
+                      }}
+                      data={listBank}
+                      width="150px"
+                    />
+                  </div>
+                </div>
+                <div>
+                  {Object.keys(dataInfoPembayaran).length !== 0 &&
+                    dataInfoPembayaran.constructor === Object && (
+                      <Typography
+                        style={{
+                          fontSize: "1.5vw",
+                          color: "#0F607D",
+                          marginTop: "16px",
+                        }}
+                      >
+                        Nama Bank: {dataInfoPembayaran.namaBank}
+                      </Typography>
+                    )}
+                </div>
+              </div>
+            )}
             <div
               style={{
                 paddingTop: "32px",
@@ -1520,7 +1604,7 @@ const RencanaPembayaran = (props) => {
                                               backgroundColor: "#d3f8fd",
                                             }}
                                           >
-                                            {index + 1 + "."}
+                                            {cicilanIndex + 1 + "."}
                                           </TableCell>
                                           <TableCell
                                             style={{
@@ -1612,6 +1696,9 @@ const RencanaPembayaran = (props) => {
                 Edit Cicilan Pembayaran Lain-Lain
               </DefaultButton>
               <Button
+                onClick={() => {
+                  handleCloseModalViewPembayaranLainLain();
+                }}
                 style={{ marginLeft: "8px", textTransform: "none" }}
                 variant="outlined"
                 color="error"

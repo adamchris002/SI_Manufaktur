@@ -1,4 +1,4 @@
-const { Op } = require("sequelize");
+const { Op, DatabaseError } = require("sequelize");
 const {
   bukuBanks,
   itemBukuBanks,
@@ -565,7 +565,22 @@ class FinanceController {
   static async addHutang(req, res) {
     try {
       const { id } = req.params;
-      const { dataHutang } = req.body;
+      const { dataHutang, dataBank } = req.body;
+
+      const findBukuBank = await bukuBanks.findOne({
+        where: { namaBank: dataBank.namaBank },
+        include: [{ model: itemBukuBanks }],
+      });
+
+      let prevSaldo = 0;
+
+      if (findBukuBank && findBukuBank.itemBukuBanks.length > 0) {
+        const mostRecentSaldo = findBukuBank.itemBukuBanks.sort(
+          (a, b) => new Date(b.createdAt) - new Date(a.createdAt)
+        )[0].saldo;
+
+        prevSaldo = parseFloat(mostRecentSaldo);
+      }
 
       const latestTanggalJatuhTempo = dataHutang.reduce((maxDate, current) => {
         const currentDate = dayjs(current.tanggalJatuhTempo);
@@ -583,7 +598,7 @@ class FinanceController {
       let itemTempRencanaPembayarans = await itemRencanaPembayarans.create({
         rencanaPembayaranId: result.id,
         tanggal: dayjs().format("MM/DD/YYYY hh:mm A"),
-        uraian: `Hutang Pembelian ${dataHutang[0].id}`,
+        uraian: `Pembelian ${dataHutang[0].id}`,
         tanggalJatuhTempo: dayjs(latestTanggalJatuhTempo).format(
           "MM/DD/YYYY hh:mm A"
         ),
@@ -595,7 +610,6 @@ class FinanceController {
       if (dataHutang && Array.isArray(dataHutang)) {
         await Promise.all(
           dataHutang.map(async (data) => {
-            console.log(data.cicilan);
             let tempHutangs = await hutangs.create({
               itemRencanaPembayaranId: itemTempRencanaPembayarans.id,
               tanggal: data.tanggal,
@@ -606,7 +620,33 @@ class FinanceController {
               tanggalJatuhTempo: data.tanggalJatuhTempo,
               pembayaran: data.pembayaran,
               keterangan: data.keterangan,
+              noRekening: dataBank.namaBank,
             });
+            if (data.keterangan === "Lunas") {
+              if (data.pembayaran === "Hutang") {
+                prevSaldo -= parseFloat(data.jumlahHarga);
+                await itemBukuBanks.create({
+                  bukuBankId: findBukuBank.id,
+                  tanggal: dayjs().format("MM/DD/YYYY hh:mm A"),
+                  uraian: `Hutang ${dataHutang[0].id}`,
+                  debet: null,
+                  kredit: parseFloat(data.jumlahHarga),
+                  saldo: prevSaldo,
+                  keterangan: data.keterangan,
+                });
+              } else {
+                prevSaldo += parseFloat(data.jumlahHarga);
+                await itemBukuBanks.create({
+                  bukuBankId: findBukuBank.id,
+                  tanggal: dayjs().format("MM/DD/YYYY hh:mm A"),
+                  uraian: `Piutang ${dataHutang[0].id}`,
+                  debet: parseFloat(data.jumlahHarga),
+                  kredit: null,
+                  saldo: prevSaldo,
+                  keterangan: data.keterangan,
+                });
+              }
+            }
             if (data.cicilan && Array.isArray(data.cicilan)) {
               await Promise.all(
                 data.cicilan.map(async (value) => {
@@ -616,6 +656,7 @@ class FinanceController {
                     jumlahHarga: value.jumlah,
                     tanggalJatuhTempo: value.tanggal,
                     statusCicilan: "Belum Lunas",
+                    noRekening: dataBank.namaBank,
                   });
                 })
               );
@@ -928,6 +969,22 @@ class FinanceController {
       const { id } = req.params;
       const { dataCicilan } = req.body;
 
+      const dataHutangFromDb = await hutangs.findOne({
+        where: { id: dataCicilan[0].id },
+        include: [{ model: cicilans }],
+      });
+
+      const cicilanChanged = dataHutangFromDb.cicilans.filter((item) => {
+        let matchedCicilan;
+        for (const data of dataCicilan) {
+          matchedCicilan = data.cicilans.find((c) => c.id === item.id);
+          if (matchedCicilan) break;
+        }
+        return (
+          matchedCicilan && matchedCicilan.statusCicilan !== item.statusCicilan
+        );
+      });
+
       if (dataCicilan && Array.isArray(dataCicilan)) {
         await Promise.all(
           dataCicilan.map(async (data) => {
@@ -944,15 +1001,68 @@ class FinanceController {
               );
             }
 
-            if (data.cicilans && Array.isArray(data.cicilans)) {
+            if (cicilanChanged.length > 0) {
               await Promise.all(
-                data.cicilans.map(async (value) => {
-                  await cicilans.update(
-                    {
-                      statusCicilan: value.statusCicilan,
-                    },
-                    { where: { id: value.id } }
-                  );
+                cicilanChanged.map(async (changedCicilan) => {
+                  const matchedCicilan = dataCicilan
+                    .map((data) =>
+                      data.cicilans.find((c) => c.id === changedCicilan.id)
+                    )
+                    .find((cicilan) => cicilan !== undefined);
+
+                  if (matchedCicilan) {
+                    await cicilans.update(
+                      {
+                        statusCicilan: matchedCicilan.statusCicilan,
+                      },
+                      { where: { id: matchedCicilan.id } }
+                    );
+                    if (matchedCicilan.statusCicilan === "Lunas") {
+                      let namaBank = await bukuBanks.findOne({
+                        where: { namaBank: matchedCicilan.noRekening },
+                        include: [{ model: itemBukuBanks }],
+                      });
+
+                      let prevSaldo = 0;
+                      if (namaBank && namaBank.itemBukuBanks.length > 0) {
+                        const mostRecentSaldo = namaBank.itemBukuBanks.sort(
+                          (a, b) =>
+                            new Date(b.createdAt) - new Date(a.createdAt)
+                        )[0].saldo;
+
+                        prevSaldo = parseFloat(mostRecentSaldo);
+                      }
+
+                      if (matchedCicilan.pembayaran === "Hutang") {
+                        prevSaldo -= parseFloat(matchedCicilan.jumlahHarga);
+                        await itemBukuBanks.create({
+                          bukuBankId: namaBank.id,
+                          tanggal: dayjs().format("MM/DD/YYYY hh:mm A"),
+                          uraian: `Cicilan Hutang ${dataCicilan[0].id} ${dayjs(
+                            matchedCicilan.tanggalJatuhTempo
+                          ).format("MM/DD/YYYY")}`,
+                          debet: null,
+                          kredit: parseFloat(matchedCicilan.jumlahHarga),
+                          saldo: prevSaldo,
+                          keterangan: matchedCicilan.keterangan,
+                        });
+                      }
+                      else {
+                        prevSaldo += parseFloat(matchedCicilan.jumlahHarga);
+                        await itemBukuBanks.create({
+                          bukuBankId: namaBank.id,
+                          tanggal: dayjs().format("MM/DD/YYYY hh:mm A"),
+                          uraian: `Cicilan Piutang ${dataCicilan[0].id} ${dayjs(
+                            matchedCicilan.tanggalJatuhTempo
+                          ).format("MM/DD/YYYY")}`,
+                          debet: parseFloat(matchedCicilan.jumlahHarga),
+                          kredit: null,
+                          saldo: prevSaldo,
+                          keterangan: matchedCicilan.keterangan,
+                        });
+                      }
+                    }
+                  }
                 })
               );
             }
@@ -1002,8 +1112,6 @@ class FinanceController {
       const { id } = req.params;
       const { dataCicilanPemLains } = req.body;
 
-      console.log(dataCicilanPemLains);
-
       if (dataCicilanPemLains && Array.isArray(dataCicilanPemLains)) {
         await Promise.all(
           dataCicilanPemLains.map(async (data) => {
@@ -1049,8 +1157,6 @@ class FinanceController {
       const thisYearStart = dayjs().startOf("year").toDate();
       const thisYearEnd = dayjs().endOf("year").toDate();
 
-      console.log(thisYearStart);
-      console.log(thisYearEnd);
       let result = await rencanaPembayarans.findAll({
         where: {
           createdAt: {
