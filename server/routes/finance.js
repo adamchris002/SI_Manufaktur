@@ -41,6 +41,10 @@ financeRoutes.get(
   "/findPrevOngoingPembayaranLainLain",
   FinanceController.findPrevOngoingPembayaranLainLain
 );
+financeRoutes.get(
+  "/getActiveRencanaPembayaranOneYear",
+  FinanceController.getActiveRencanaPembayaranOneYear
+);
 //post
 financeRoutes.post("/addNamaBank/:id", FinanceController.addNamaBank);
 financeRoutes.post("/addItemBukuBank/:id", FinanceController.addNewBukuBank);

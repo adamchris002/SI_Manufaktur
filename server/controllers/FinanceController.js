@@ -1,3 +1,4 @@
+const { Op } = require("sequelize");
 const {
   bukuBanks,
   itemBukuBanks,
@@ -1026,7 +1027,9 @@ class FinanceController {
                 data.cicilanPemLains.map(async (value) => {
                   await cicilanPemLains.update(
                     {
-                      statusCicilan: !value.statusCi ? value.statusCicilan : value.statusCi,
+                      statusCicilan: !value.statusCi
+                        ? value.statusCicilan
+                        : value.statusCi,
                     },
                     { where: { id: value.id } }
                   );
@@ -1037,6 +1040,25 @@ class FinanceController {
         );
       }
       res.json();
+    } catch (error) {
+      res.json(error);
+    }
+  }
+  static async getActiveRencanaPembayaranOneYear(req, res) {
+    try {
+      const thisYearStart = dayjs().startOf("year").toDate();
+      const thisYearEnd = dayjs().endOf("year").toDate();
+
+      console.log(thisYearStart);
+      console.log(thisYearEnd);
+      let result = await rencanaPembayarans.findAll({
+        where: {
+          createdAt: {
+            [Op.between]: [thisYearStart, thisYearEnd],
+          },
+        },
+      });
+      res.json(result);
     } catch (error) {
       res.json(error);
     }

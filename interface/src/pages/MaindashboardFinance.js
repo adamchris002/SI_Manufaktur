@@ -41,6 +41,7 @@ const MaindashboardFinance = (props) => {
     useState([]);
   const [daftarBank, setDaftarBank] = useState([]);
   const [kasHarian, setKasHarian] = useState([]);
+  const [daftarTagihanSatuTahun, setDaftarTagihanSatuTahun] = useState([]);
 
   const [openModal, setOpenModal] = useState(false);
   const [openSnackbar, setOpenSnackbar] = useState(false);
@@ -59,6 +60,23 @@ const MaindashboardFinance = (props) => {
       clearMessage();
     }
   }, [message, clearMessage]);
+
+  useEffect(() => {
+    axios({
+      method: "GET",
+      url: "http://localhost:3000/finance/getActiveRencanaPembayaranOneYear",
+    }).then((result) => {
+      if (result.status === 200) {
+        setDaftarTagihanSatuTahun(result.data);
+      } else {
+        setOpenSnackbar(true);
+        setSnackbarStatus(false);
+        setSnackbarMessage(
+          "Tidak berhasil memanggil data daftar tagihan 1 tahun"
+        );
+      }
+    });
+  }, []);
 
   useEffect(() => {
     if (refreshDataPermohonanPembelian) {
@@ -643,16 +661,58 @@ const MaindashboardFinance = (props) => {
           <div>
             <DefaultButton
               height="40px"
-              width="232px"
+              width="312px"
               borderRadius="16px"
               fontSize="14px"
               onClickFunction={() => {
                 navigate("/financeDashboard/rencanaPembayaran");
               }}
             >
-              
+              Pergi ke halaman daftar tagihan 1 tahun
             </DefaultButton>
           </div>
+        </div>
+        <div style={{ width: "60%" }}>
+          <TableContainer
+            component={Paper}
+            sx={{ overflowX: "auto", margin: "32px" }}
+          >
+            <Table
+              aria-label="simple table"
+              sx={{ tableLayout: "fixed", minWidth: 650, overflowX: "auto" }}
+            >
+              <TableHead>
+                <TableRow>
+                  <TableCell style={{ width: "25px" }}>No.</TableCell>
+                  <TableCell style={{ width: "200px" }}>
+                    Rencana Pembayaran
+                  </TableCell>
+                  <TableCell style={{ width: "200px" }}>
+                    Status Rencana Pembayaran
+                  </TableCell>
+                  {/* <TableCell style={{ width: "50px" }}>Actions</TableCell> */}
+                </TableRow>
+              </TableHead>
+              <TableBody>
+                {daftarTagihanSatuTahun.map((result, index) => {
+                  return (
+                    <React.Fragment key={index}>
+                      <TableRow>
+                        <TableCell>{index + 1 + "."}</TableCell>
+                        <TableCell>{result.judulRencanaPembayaran}</TableCell>
+                        <TableCell>{result.statusRencanaPembayaran}</TableCell>
+                        {/* <TableCell>
+                          <IconButton>
+                            <VisibilityIcon style={{ color: "#0F607D" }} />
+                          </IconButton>
+                        </TableCell> */}
+                      </TableRow>
+                    </React.Fragment>
+                  );
+                })}
+              </TableBody>
+            </Table>
+          </TableContainer>
         </div>
       </div>
       {openModal === true && (
