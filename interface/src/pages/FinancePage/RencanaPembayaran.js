@@ -392,7 +392,6 @@ const RencanaPembayaran = (props) => {
       url: `http://localhost:3000/finance/updateCicilanPemLains/${userInformation?.data?.id}`,
       data: {
         dataCicilanPemLains: viewDataPembayaranLain,
-        dataBank: dataInfoPembayaran,
       },
     }).then((result) => {
       if (result.status === 200) {
@@ -452,7 +451,11 @@ const RencanaPembayaran = (props) => {
           const updatedCicilans = item.cicilanPemLains.map(
             (data, cicilanIndex) => {
               if (cicilanIndex === indexCicilan) {
-                return { ...data, statusCi: value };
+                if (!data.statusCicilan) {
+                  return { ...data, statusCi: value };
+                } else {
+                  return { ...data, statusCicilan: value };
+                }
               }
               return data;
             }
@@ -677,8 +680,12 @@ const RencanaPembayaran = (props) => {
   const handleAddPembayaranLainLain = () => {
     const checkIfDataPembayaranLainLainEmpty =
       handleCheckifDataPembayaranLainLainIsEmpty();
+    const checkIfDataBankIsEmpty = handleCheckIfNamaBankIsEmpty();
 
-    if (checkIfDataPembayaranLainLainEmpty === false) {
+    if (
+      checkIfDataPembayaranLainLainEmpty === false ||
+      checkIfDataBankIsEmpty === false
+    ) {
       setOpenSnackBar(true);
       setSnackbarStatus(false);
       setSnackbarMessage("Mohon isi semua input");
@@ -686,11 +693,15 @@ const RencanaPembayaran = (props) => {
       axios({
         method: "POST",
         url: `http://localhost:3000/finance/addPembayaranLainLain/${userInformation?.data?.id}`,
-        data: { dataPembayaranLainLain: dataPembayaranLainLain },
+        data: {
+          dataPembayaranLainLain: dataPembayaranLainLain,
+          dataBank: dataInfoPembayaran,
+        },
       }).then((result) => {
         if (result.status === 200) {
           handleCloseModalPembayaranLainLain();
           setRefreshRencanaPembayaran(true);
+          setDataInfoPembayaran({});
         } else {
           setOpenSnackBar(true);
           setSnackbarStatus(false);
@@ -720,6 +731,7 @@ const RencanaPembayaran = (props) => {
           handleCloseModal();
           setRefreshRencanaPembayaran(true);
           setSelectedPembelianBahanBakuId("");
+          setDataInfoPembayaran({});
         } else {
           setOpenSnackBar(true);
           setSnackbarStatus(false);
@@ -2274,6 +2286,46 @@ const RencanaPembayaran = (props) => {
                 </TableBody>
               </Table>
             </TableContainer>
+
+            <div>
+              <div
+                style={{
+                  display: "flex",
+                  marginTop: "32px",
+                  justifyContent: "flex-start",
+                  alignItems: "center",
+                }}
+              >
+                <Typography style={{ fontSize: "1.5vw", color: "#0F607D" }}>
+                  No Rekening:
+                </Typography>
+                <div style={{ marginLeft: "8px" }}>
+                  <MySelectTextField
+                    value={dataInfoPembayaran.namaBank}
+                    onChange={(event) => {
+                      handleChangeDataInformasiPembayaran(event);
+                    }}
+                    data={listBank}
+                    width="150px"
+                  />
+                </div>
+              </div>
+              <div>
+                {Object.keys(dataInfoPembayaran).length !== 0 &&
+                  dataInfoPembayaran.constructor === Object && (
+                    <Typography
+                      style={{
+                        fontSize: "1.5vw",
+                        color: "#0F607D",
+                        marginTop: "16px",
+                      }}
+                    >
+                      Nama Bank: {dataInfoPembayaran.namaBank}
+                    </Typography>
+                  )}
+              </div>
+            </div>
+
             <div
               style={{
                 display: "flex",

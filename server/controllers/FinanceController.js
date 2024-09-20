@@ -499,7 +499,22 @@ class FinanceController {
   static async addPembayaranLainLain(req, res) {
     try {
       const { id } = req.params;
-      const { dataPembayaranLainLain } = req.body;
+      const { dataPembayaranLainLain, dataBank } = req.body;
+
+      const findBukuBank = await bukuBanks.findOne({
+        where: { namaBank: dataBank.namaBank },
+        include: [{ model: itemBukuBanks }],
+      });
+
+      let prevSaldo = 0;
+
+      if (findBukuBank && findBukuBank.itemBukuBanks.length > 0) {
+        const mostRecentSaldo = findBukuBank.itemBukuBanks.sort(
+          (a, b) => new Date(b.createdAt) - new Date(a.createdAt)
+        )[0].saldo;
+
+        prevSaldo = parseFloat(mostRecentSaldo);
+      }
 
       const totalNominal = dataPembayaranLainLain.reduce((sum, current) => {
         return parseFloat(sum) + parseFloat(current.jumlahHarga);
@@ -540,7 +555,33 @@ class FinanceController {
               tanggalJatuhTempo: data.tanggalJatuhTempo,
               pembayaran: data.pembayaran,
               keterangan: data.keterangan,
+              noRekening: dataBank.namaBank,
             });
+            if (data.keterangan === "Lunas") {
+              if (data.pembayaran === "Hutang") {
+                prevSaldo -= parseFloat(data.jumlahHarga);
+                await itemBukuBanks.create({
+                  bukuBankId: findBukuBank.id,
+                  tanggal: dayjs().format("MM/DD/YYYY hh:mm A"),
+                  uraian: `Hutang Pembayaran Lain-Lain ${dataPembayaranLainLain[0].id}`,
+                  debet: null,
+                  kredit: parseFloat(data.jumlahHarga),
+                  saldo: prevSaldo,
+                  keterangan: data.keterangan,
+                });
+              } else {
+                prevSaldo += parseFloat(data.jumlahHarga);
+                await itemBukuBanks.create({
+                  bukuBankId: findBukuBank.id,
+                  tanggal: dayjs().format("MM/DD/YYYY hh:mm A"),
+                  uraian: `Piutang Pembayaran Lain-Lain ${dataPembayaranLainLain[0].id}`,
+                  debet: parseFloat(data.jumlahHarga),
+                  kredit: null,
+                  saldo: prevSaldo,
+                  keterangan: data.keterangan,
+                });
+              }
+            }
             if (data.cicilan && Array.isArray(data.cicilan)) {
               await Promise.all(
                 data.cicilan.map(async (value) => {
@@ -550,6 +591,7 @@ class FinanceController {
                     jumlahHarga: value.jumlah,
                     tanggalJatuhTempo: value.tanggal,
                     statusCicilan: "Belum Lunas",
+                    noRekening: dataBank.namaBank,
                   });
                 })
               );
@@ -1033,7 +1075,7 @@ class FinanceController {
                         prevSaldo = parseFloat(mostRecentSaldo);
                       }
 
-                      if (matchedCicilan.pembayaran === "Hutang") {
+                      if (data.pembayaran === "Hutang") {
                         prevSaldo -= parseFloat(matchedCicilan.jumlahHarga);
                         await itemBukuBanks.create({
                           bukuBankId: namaBank.id,
@@ -1046,8 +1088,7 @@ class FinanceController {
                           saldo: prevSaldo,
                           keterangan: matchedCicilan.keterangan,
                         });
-                      }
-                      else {
+                      } else {
                         prevSaldo += parseFloat(matchedCicilan.jumlahHarga);
                         await itemBukuBanks.create({
                           bukuBankId: namaBank.id,
@@ -1112,6 +1153,32 @@ class FinanceController {
       const { id } = req.params;
       const { dataCicilanPemLains } = req.body;
 
+      const dataPemLainsFromDb = await pembayaranLains.findOne({
+        where: { id: dataCicilanPemLains[0].id },
+        include: [{ model: cicilanPemLains }],
+      });
+
+      console.log(dataCicilanPemLains[0].cicilanPemLains)
+
+      const cicilanPemLainsChanged = dataPemLainsFromDb.cicilanPemLains.filter(
+        (item) => {
+          let matchedCicilanPemLains;
+          for (const data of dataCicilanPemLains) {
+            matchedCicilanPemLains = data.cicilanPemLains.find(
+              (c) => c.id === item.id
+            );
+            if (matchedCicilanPemLains) break;
+          }
+          console.log(matchedCicilanPemLains)
+          return (
+            matchedCicilanPemLains &&
+            matchedCicilanPemLains.statusCicilan !== item.statusCicilan
+          );
+        }
+      );
+
+      console.log(cicilanPemLainsChanged)
+
       if (dataCicilanPemLains && Array.isArray(dataCicilanPemLains)) {
         await Promise.all(
           dataCicilanPemLains.map(async (data) => {
@@ -1130,17 +1197,102 @@ class FinanceController {
               );
             }
 
-            if (data.cicilanPemLains && Array.isArray(data.cicilanPemLains)) {
+            if (cicilanPemLainsChanged.length > 0) {
               await Promise.all(
-                data.cicilanPemLains.map(async (value) => {
-                  await cicilanPemLains.update(
-                    {
-                      statusCicilan: !value.statusCi
-                        ? value.statusCicilan
-                        : value.statusCi,
-                    },
-                    { where: { id: value.id } }
-                  );
+                cicilanPemLainsChanged.map(async (changedCicilan) => {
+                  const matchedCicilanPemLains = dataCicilanPemLains
+                    .map((data) =>
+                      data.cicilanPemLains.find(
+                        (c) => c.id === changedCicilan.id
+                      )
+                    )
+                    .find((cicilan) => cicilan !== undefined);
+
+                    console.log(matchedCicilanPemLains)
+
+                  if (matchedCicilanPemLains) {
+                    await cicilanPemLains.update(
+                      {
+                        statusCicilan: !matchedCicilanPemLains.statusCi
+                          ? matchedCicilanPemLains.statusCicilan
+                          : matchedCicilanPemLains.statusCi,
+                      },
+                      { where: { id: matchedCicilanPemLains.id } }
+                    );
+                    if (
+                      matchedCicilanPemLains.statusCi === "Lunas" ||
+                      matchedCicilanPemLains.statusCicilan === "Lunas"
+                    ) {
+                      console.log(matchedCicilanPemLains);
+                      let namaBank = await bukuBanks.findOne({
+                        where: {
+                          namaBank: !matchedCicilanPemLains.noRekeni
+                            ? matchedCicilanPemLains.noRekening
+                            : matchedCicilanPemLains.noRekeni,
+                        },
+                        include: [{ model: itemBukuBanks }],
+                      });
+
+                      let prevSaldo = 0;
+
+                      if (namaBank && namaBank.itemBukuBanks.length > 0) {
+                        const mostRecentSaldo = namaBank.itemBukuBanks.sort(
+                          (a, b) =>
+                            new Date(b.createdAt) - new Date(a.createdAt)
+                        )[0].saldo;
+
+                        prevSaldo = parseFloat(mostRecentSaldo);
+                      }
+
+                      if (data.pembayaran === "Hutang") {
+                        prevSaldo -= parseFloat(
+                          !matchedCicilanPemLains.jumlahHa
+                            ? matchedCicilanPemLains.jumlahHarga
+                            : matchedCicilanPemLains.jumlahHa
+                        );
+                        await itemBukuBanks.create({
+                          bukuBankId: namaBank.id,
+                          tanggal: dayjs().format("MM/DD/YYYY hh:mm A"),
+                          uraian: `Cicilan Hutang Pembayaran Lain-Lain ${
+                            dataCicilanPemLains[0].id
+                          } ${dayjs(
+                            matchedCicilanPemLains.tanggalJatuhTempo
+                          ).format("MM/DD/YYYY")}`,
+                          debet: null,
+                          kredit: parseFloat(
+                            !matchedCicilanPemLains.jumlahHa
+                              ? matchedCicilanPemLains.jumlahHarga
+                              : matchedCicilanPemLains.jumlahHa
+                          ),
+                          saldo: prevSaldo,
+                          keterangan: matchedCicilanPemLains.keterangan,
+                        });
+                      } else {
+                        prevSaldo += parseFloat(
+                          !matchedCicilanPemLains.jumlahHa
+                            ? matchedCicilanPemLains.jumlahHarga
+                            : matchedCicilanPemLains.jumlahHa
+                        );
+                        await itemBukuBanks.create({
+                          bukuBankId: namaBank.id,
+                          tanggal: dayjs().format("MM/DD/YYYY hh:mm A"),
+                          uraian: `Cicilan Piutang Pembayaran Lain-Lain ${
+                            dataCicilanPemLains[0].id
+                          } ${dayjs(
+                            matchedCicilanPemLains.tanggalJatuhTempo
+                          ).format("MM/DD/YYYY")}`,
+                          debet: parseFloat(
+                            !matchedCicilanPemLains.jumlahHa
+                              ? matchedCicilanPemLains.jumlahHarga
+                              : matchedCicilanPemLains.jumlahHa
+                          ),
+                          kredit: null,
+                          saldo: prevSaldo,
+                          keterangan: matchedCicilanPemLains.keterangan,
+                        });
+                      }
+                    }
+                  }
                 })
               );
             }

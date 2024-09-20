@@ -462,8 +462,8 @@ const BukuBank = (props) => {
                           Tanggal
                         </TableCell>
                         <TableCell style={{ width: "200px" }}>Uraian</TableCell>
-                        <TableCell style={{ width: "200px" }}>Debet</TableCell>
                         <TableCell style={{ width: "200px" }}>Kredit</TableCell>
+                        <TableCell style={{ width: "200px" }}>Debet</TableCell>
                         <TableCell style={{ width: "200px" }}>Saldo</TableCell>
                         <TableCell style={{ width: "200px" }}>
                           Keterangan

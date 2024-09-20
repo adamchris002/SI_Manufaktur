@@ -283,22 +283,6 @@ const MaindashboardFinance = (props) => {
             fontSize="16px"
             onClickFunction={() => {
               document
-                .getElementById("pembelianbahanbaku")
-                .scrollIntoView({ behavior: "smooth" });
-            }}
-          >
-            Pembelian Bahan Baku
-          </DefaultButton>
-        </div>
-        <div style={{ marginTop: "32px", fontSize: "24px" }}>
-          <DefaultButton
-            width="232px"
-            height="40px"
-            backgroundColor="#0F607D"
-            borderRadius="16px"
-            fontSize="16px"
-            onClickFunction={() => {
-              document
                 .getElementById("bukubank")
                 .scrollIntoView({ behavior: "smooth" });
             }}
@@ -461,31 +445,6 @@ const MaindashboardFinance = (props) => {
               </Table>
             </TableContainer>
           )}
-        </div>
-        <div
-          style={{
-            marginLeft: "32px",
-            marginTop: "64px",
-            display: "flex",
-            justifyContent: "space-between",
-            alignItems: "center",
-            width: "72vw",
-          }}
-        >
-          <Typography
-            id="pembelianbahanbaku"
-            style={{ fontSize: "36px", color: "#0F607D" }}
-          >
-            Pembelian Bahan Baku
-          </Typography>
-          <DefaultButton
-            height="40px"
-            width="232px"
-            borderRadius="16px"
-            fontSize="16px"
-          >
-            Add Waste Reports
-          </DefaultButton>
         </div>
         <div
           style={{
