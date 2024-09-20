@@ -83,7 +83,6 @@ const RencanaPembayaran = (props) => {
   ]);
 
   const [dataInfoPembayaran, setDataInfoPembayaran] = useState({});
-  console.log(dataInfoPembayaran);
   const [historyRencanaPembayaran, setRencanaPembayaran] = useState([]);
   const [allDataPembelianBahanBaku, setAllDataPembelianBahanBaku] = useState(
     []
@@ -174,12 +173,13 @@ const RencanaPembayaran = (props) => {
   }, []);
 
   useEffect(() => {
-    if (refreshRencanaPembayaran) {
+    if (refreshRencanaPembayaran === true) {
       axios({
         method: "GET",
         url: "http://localhost:3000/finance/getAllOngoingRencanaPembayaran",
       }).then((result) => {
         if (result.status === 200) {
+          console.log("refresh");
           setAllDataRencanaPembayaran(result.data);
           setRefreshRencanaPembayaran(false);
           setTriggerCheckRencanaPembayaran(true);
@@ -367,6 +367,7 @@ const RencanaPembayaran = (props) => {
   };
 
   const handleEditCicilan = () => {
+    setRefreshRencanaPembayaran(false);
     axios({
       method: "PUT",
       url: `http://localhost:3000/finance/updateCicilan/${userInformation?.data?.id}`,
@@ -387,6 +388,7 @@ const RencanaPembayaran = (props) => {
   };
 
   const handleEditCicilanPemLains = () => {
+    setRefreshRencanaPembayaran(false);
     axios({
       method: "PUT",
       url: `http://localhost:3000/finance/updateCicilanPemLains/${userInformation?.data?.id}`,
@@ -678,6 +680,7 @@ const RencanaPembayaran = (props) => {
   };
 
   const handleAddPembayaranLainLain = () => {
+    setRefreshRencanaPembayaran(false);
     const checkIfDataPembayaranLainLainEmpty =
       handleCheckifDataPembayaranLainLainIsEmpty();
     const checkIfDataBankIsEmpty = handleCheckIfNamaBankIsEmpty();
@@ -714,6 +717,7 @@ const RencanaPembayaran = (props) => {
   };
 
   const handleAddHutang = () => {
+    setRefreshRencanaPembayaran(false);
     const checkIfDataHutangEmpty = handleCheckIfDataHutangIsEmpty();
     const checkIfDataBankIsEmpty = handleCheckIfNamaBankIsEmpty();
 
