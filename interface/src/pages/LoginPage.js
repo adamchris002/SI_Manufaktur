@@ -204,7 +204,7 @@ const LoginPage = (props) => {
               },
               width: isMobile ? "72vw" : "32vw",
             }}
-            error={loginClicked && username === ""} // Show error only after clicking login
+            error={loginClicked && username === ""} 
             helperText={
               loginClicked && username === "" && "Please fill in your Username"
             }
@@ -235,7 +235,7 @@ const LoginPage = (props) => {
               },
               width: isMobile ? "72vw" : "32vw",
             }}
-            error={loginClicked && password === ""} // Show error only after clicking login
+            error={loginClicked && password === ""} 
             helperText={
               loginClicked && password === "" && "Please fill in your Password"
             }

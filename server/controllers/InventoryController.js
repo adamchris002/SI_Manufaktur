@@ -853,7 +853,6 @@ class InventoryController {
         if (unit === "Ton") {
           return value * 1000;
         }
-        // If the unit is Kg or any other unit, return the value as is
         return value;
       };
 
@@ -900,7 +899,6 @@ class InventoryController {
               );
               const newJumlah = separateValueAndUnit(data.jumlahYangDiambil);
 
-              // Convert to Kg if applicable, otherwise use the raw value
               const originalValue = convertToKgIfApplicable(
                 originalJumlah.value,
                 originalJumlah.unit
@@ -910,7 +908,6 @@ class InventoryController {
                 newJumlah.unit
               );
 
-              // Calculate the difference, same units or not
               const difference = newValue - originalValue;
 
               await itemPenyerahanBarangs.update(
@@ -938,17 +935,15 @@ class InventoryController {
                 inventoryJumlah.unit
               );
 
-              // Update the inventory value based on the difference
               const updatedValue = inventoryValue - difference;
 
-              // Determine the updated unit and value
               let updatedJumlah, updatedUnit;
               if (updatedValue >= 1000 && inventoryJumlah.unit === "Kg") {
                 updatedJumlah = updatedValue / 1000;
                 updatedUnit = "Ton";
               } else {
                 updatedJumlah = updatedValue;
-                updatedUnit = inventoryJumlah.unit; // Keep the original unit
+                updatedUnit = inventoryJumlah.unit;
               }
 
               await inventorys.update(

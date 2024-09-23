@@ -5,7 +5,7 @@ module.exports = (sequelize, DataTypes) => {
   class rencanaJadwalProduksis extends Model {
     static associate(models) {
       rencanaJadwalProduksis.belongsTo(models.estimasiJadwalProduksis, {
-        foreignKey: "estimasiJadwalProduksiId",  // Corrected foreign key name
+        foreignKey: "estimasiJadwalProduksiId",
         onDelete: "CASCADE"
       });
     }
@@ -20,7 +20,7 @@ module.exports = (sequelize, DataTypes) => {
   }, {
     sequelize,
     modelName: 'rencanaJadwalProduksis',
-    tableName: 'rencanaJadwalProduksis'  // Explicitly set the table name here
+    tableName: 'rencanaJadwalProduksis' 
   });
 
   return rencanaJadwalProduksis;

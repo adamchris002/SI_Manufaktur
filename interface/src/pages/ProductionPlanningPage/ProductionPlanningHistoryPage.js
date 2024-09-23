@@ -12,7 +12,6 @@ import {
   TableContainer,
   TableHead,
   TableRow,
-  TextField,
   Typography,
 } from "@mui/material";
 import axios from "axios";
@@ -25,11 +24,11 @@ import MyModal from "../../components/Modal";
 import jsPDF from "jspdf";
 import DefaultButton from "../../components/Button";
 
-const ProductionPlanningHistoryPage = () => {
+const ProductionPlanningHistoryPage = (props) => {
+  const { userInformation } = props;
   const { isMobile } = useContext(AppContext);
   const [dataPerencanaanProduksi, setDataPerencanaanProduksi] = useState([]);
   const [dataView, setDataView] = useState([]);
-  console.log(dataView);
 
   const [openSnackbar, setOpenSnackbar] = useState(false);
   const [snackbarStatus, setSnackbarStatus] = useState(false);
@@ -42,14 +41,16 @@ const ProductionPlanningHistoryPage = () => {
       url: "http://localhost:3000/productionPlanning/getAllProductionPlanning",
     }).then((result) => {
       if (result.status === 200) {
-        const tempData = result.data.map((data) => {
-          return {
-            ...data,
-            estimasiBahanBakus: groupBahanBakuAkanDigunakans(
-              data.estimasiBahanBakus
-            ),
-          };
-        });
+        const tempData = result.data
+          .filter((item) => item.statusProductionPlanning === "Done")
+          .map((data) => {
+            return {
+              ...data,
+              estimasiBahanBakus: groupBahanBakuAkanDigunakans(
+                data.estimasiBahanBakus
+              ),
+            };
+          });
         setDataPerencanaanProduksi(tempData);
       } else {
         setOpenSnackbar(true);
@@ -61,7 +62,6 @@ const ProductionPlanningHistoryPage = () => {
     });
   }, []);
 
-  // Function to group bahanBakuAkanDigunakans based on groupIndex
   const groupBahanBakuAkanDigunakans = (estimasiBahanBaku) => {
     return estimasiBahanBaku?.map((bahanBaku) => {
       const groupedData = bahanBaku.bahanBakuAkanDigunakans.reduce(
@@ -140,12 +140,20 @@ const ProductionPlanningHistoryPage = () => {
 
     pdf.text(`Laporan Perencanaan Produksi ${dataView.id}`, margin, y);
     y += 15;
+    pdf.setFontSize(12);
+    pdf.text(
+      `Tanggal Pembuatan Laporan: ${dayjs().format("MM/DD/YYYY hh:mm A")}`,
+      margin,
+      y
+    );
+    y += 10;
+    pdf.text(`PIC: ${userInformation?.data?.name}`, margin, y);
+    y += 15;
 
     if (y + 20 > pageHeight) {
       addNewPage();
     }
 
-    pdf.setFontSize(12);
     pdf.text(`Pemesan: ${dataView.pemesan}`, margin, y);
     pdf.text(
       `Tanggal Pengiriman: ${dayjs(dataView.tanggalPengirimanBarang).format(
@@ -198,6 +206,7 @@ const ProductionPlanningHistoryPage = () => {
     }
     pdf.text(`Plate: ${dataView.plate === true ? "V" : "X"}`, margin, y);
     y += 30;
+
     if (y + 20 > pageHeight) {
       addNewPage();
     }
@@ -395,65 +404,64 @@ const ProductionPlanningHistoryPage = () => {
     y += 10;
 
     const tableHeaders = [
-        [
-          {
-            content: "PERINCIAN REKANAN",
-            colSpan: 4,
-            styles: { halign: "center" },
-          },
-          {
-            content: "PERINCIAN HARGA CETAK",
-            colSpan: 3, // Adjusted to ensure the total is 8
-            styles: { halign: "center" },
-          },
-        ],
-        [
-          { content: "No.", colSpan: 1 },
-          { content: "Nama Rekanan", colSpan: 1 },
-          { content: "Keterangan", colSpan: 1 },
-          { content: "No.", colSpan: 1 },
-          { content: "Jenis Cetakan", colSpan: 1 },
-          { content: "Isi", colSpan: 1 }, // Adjusted to 1
-          { content: "Harga", colSpan: 1 }, // Adjusted to 1
-        ],
-      ];
-      
-      let tableRowPerincian = [];
-      
-      dataView.perincians.forEach((result, index) => {
-        tableRowPerincian.push({
-          no: index + 1,
-          namaRekanan: result.namaRekanan,
-          keterangan: result.keterangan,
-          noJc: index + 1,
-          jenisCetakan: result.jenisCetakan,
-          isi: result.isi,
-          harga: `Rp. ${result.harga
-            .toString()
-            .replace(/\B(?=(\d{3})+(?!\d))/g, ".")},-`,
-        });
+      [
+        {
+          content: "PERINCIAN REKANAN",
+          colSpan: 4,
+          styles: { halign: "center" },
+        },
+        {
+          content: "PERINCIAN HARGA CETAK",
+          colSpan: 3,
+          styles: { halign: "center" },
+        },
+      ],
+      [
+        { content: "No.", colSpan: 1 },
+        { content: "Nama Rekanan", colSpan: 1 },
+        { content: "Keterangan", colSpan: 1 },
+        { content: "No.", colSpan: 1 },
+        { content: "Jenis Cetakan", colSpan: 1 },
+        { content: "Isi", colSpan: 1 },
+        { content: "Harga", colSpan: 1 },
+      ],
+    ];
+
+    let tableRowPerincian = [];
+
+    dataView.perincians.forEach((result, index) => {
+      tableRowPerincian.push({
+        no: index + 1,
+        namaRekanan: result.namaRekanan,
+        keterangan: result.keterangan,
+        noJc: index + 1,
+        jenisCetakan: result.jenisCetakan,
+        isi: result.isi,
+        harga: `Rp. ${result.harga
+          .toString()
+          .replace(/\B(?=(\d{3})+(?!\d))/g, ".")},-`,
       });
-      
-      pdf.autoTable({
-        startY: y,
-        head: tableHeaders,
-        body: tableRowPerincian.map((row) => {
-          return [
-            `${row.no}.`,
-            row.namaRekanan,
-            row.keterangan,
-            `${row.noJc}.`,
-            row.jenisCetakan,
-            row.isi,
-            row.harga,
-          ];
-        }),
-        theme: "striped",
-        margin: { left: margin, right: margin },
-      });
-      
-      y = pdf.lastAutoTable.finalY + 15;
-      
+    });
+
+    pdf.autoTable({
+      startY: y,
+      head: tableHeaders,
+      body: tableRowPerincian.map((row) => {
+        return [
+          `${row.no}.`,
+          row.namaRekanan,
+          row.keterangan,
+          `${row.noJc}.`,
+          row.jenisCetakan,
+          row.isi,
+          row.harga,
+        ];
+      }),
+      theme: "striped",
+      margin: { left: margin, right: margin },
+    });
+
+    y = pdf.lastAutoTable.finalY + 15;
 
     pdf.save("laporan-perencanaan-produksi.pdf");
   };

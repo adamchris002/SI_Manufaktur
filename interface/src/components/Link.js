@@ -14,7 +14,7 @@ const MyLink = (props) => {
             cursor: "pointer",
             textDecoration: "none",
             "&:hover": {
-              textDecoration: "none", // Hide default underline on hover
+              textDecoration: "none", 
             },
             "&::after": {
               content: '""',
@@ -22,11 +22,11 @@ const MyLink = (props) => {
               left: 0,
               bottom: 0,
               width: "100%",
-              borderBottom: "2px solid transparent", // Initial underline style
-              transition: "border-color 0.3s ease-in-out", // Apply transition to border-color
+              borderBottom: "2px solid transparent", 
+              transition: "border-color 0.3s ease-in-out", 
             },
             "&:hover::after": {
-              borderBottomColor: "#0F607D", // Change border color on hover
+              borderBottomColor: "#0F607D", 
             },
           },
         },

@@ -3,7 +3,6 @@
 module.exports = {
   async up(queryInterface, Sequelize) {
     await queryInterface.createTable("rencanaJadwalProduksis", {
-      // Correct table name here
       id: {
         allowNull: false,
         autoIncrement: true,
@@ -41,6 +40,6 @@ module.exports = {
     });
   },
   async down(queryInterface, Sequelize) {
-    await queryInterface.dropTable("rencanaJadwalProduksis"); // Correct table name here
+    await queryInterface.dropTable("rencanaJadwalProduksis");
   },
 };

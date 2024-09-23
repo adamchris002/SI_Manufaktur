@@ -541,7 +541,6 @@ class ProductionPlanningController {
                 productionPlanningId: data.productionPlanningId,
               });
 
-              // Assign the newly created record's ID to data.id
               data.id = bahanBakuRecord.id;
             } else {
               bahanBakuRecord = await estimasiBahanBakus.findOne({

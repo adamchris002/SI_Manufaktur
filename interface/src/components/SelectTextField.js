@@ -25,13 +25,13 @@ const MySelectTextField = (props) => {
           fontSize: fontSize,
           borderRadius: borderRadius,
           "& fieldset": {
-            borderColor: "#0F607D", // Change the border color here
+            borderColor: "#0F607D", 
           },
           "&:hover fieldset": {
-            borderColor: "#0F607D", // Change the border color on hover here
+            borderColor: "#0F607D", 
           },
           "&.Mui-focused fieldset": {
-            borderColor: "#0F607D", // Change the border color when focused here
+            borderColor: "#0F607D", 
           },
         },
       }}
