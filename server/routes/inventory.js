@@ -99,6 +99,10 @@ inventoryRoutes.put(
   "/acceptPermohonanPembelian/:id",
   InventoryController.acceptPermohonanPembelian
 );
+inventoryRoutes.put(
+  "/denyPermohonanPembelian/:id",
+  InventoryController.denyPermohonanPembelian
+);
 
 //delete
 inventoryRoutes.delete(

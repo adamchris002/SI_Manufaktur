@@ -7,6 +7,7 @@ import companyLogo from "../assets/PT_Aridas_Karya_Satria_Logo.png";
 import DefaultButton from "../components/Button";
 import AccountCircleIcon from "@mui/icons-material/AccountCircle";
 import VisibilityIcon from "@mui/icons-material/Visibility";
+import CloseIcon from "@mui/icons-material/Close";
 import {
   Button,
   IconButton,
@@ -208,6 +209,26 @@ const MaindashboardFinance = (props) => {
   const handleOpenModalForConfirmationPermohonanPembelian = (data) => {
     setOpenModal(true);
     setSelectedPermohonanPembelian(data);
+  };
+
+  const handleDenyPermohonanPembelian = (id) => {
+    axios({
+      method: "PUT",
+      url: `http://localhost:3000/inventory/denyPermohonanPembelian/${id}`,
+    }).then((result) => {
+      if (result.status === 200) {
+        handleCloseModal();
+        setRefreshDataPermohonanPembelian(true);
+        setOpenSnackbar(true);
+        setSnackbarStatus(true);
+        setSnackbarMessage("Berhasil menolak permohonan pembelian");
+      } else {
+        handleCloseModal();
+        setOpenSnackbar(true);
+        setSnackbarStatus(false);
+        setSnackbarMessage("Tidak berhasil menolak permohonan pembelian");
+      }
+    });
   };
 
   const handleAcceptPermohonanPembelian = (id) => {
@@ -685,11 +706,19 @@ const MaindashboardFinance = (props) => {
               maxHeight: "80vh",
             }}
           >
-            <Typography
-              style={{ color: "#0F607D", fontSize: isMobile ? "7vw" : "2.5vw" }}
-            >
-              Permohonan Pembelian
-            </Typography>
+            <div style={{ display: "flex", justifyContent: "space-between" }}>
+              <Typography
+                style={{
+                  color: "#0F607D",
+                  fontSize: isMobile ? "7vw" : "2.5vw",
+                }}
+              >
+                Permohonan Pembelian
+              </Typography>
+              <IconButton style={{ height: "50%" }} onClick={handleCloseModal}>
+                <CloseIcon />
+              </IconButton>
+            </div>
             <div>
               <div>
                 <Typography
@@ -760,13 +789,18 @@ const MaindashboardFinance = (props) => {
                 >
                   Accept
                 </DefaultButton>
+
                 <Button
-                  onClick={handleCloseModal}
+                  onClick={() => {
+                    handleDenyPermohonanPembelian(
+                      selectedPermohonanPembelian.id
+                    );
+                  }}
                   style={{ marginLeft: "8px", textTransform: "none" }}
                   variant="outlined"
                   color="error"
                 >
-                  Cancel
+                  Deny
                 </Button>
               </div>
             </div>

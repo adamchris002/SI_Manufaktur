@@ -1158,8 +1158,6 @@ class FinanceController {
         include: [{ model: cicilanPemLains }],
       });
 
-      console.log(dataCicilanPemLains[0].cicilanPemLains)
-
       const cicilanPemLainsChanged = dataPemLainsFromDb.cicilanPemLains.filter(
         (item) => {
           let matchedCicilanPemLains;
@@ -1169,15 +1167,12 @@ class FinanceController {
             );
             if (matchedCicilanPemLains) break;
           }
-          console.log(matchedCicilanPemLains)
           return (
             matchedCicilanPemLains &&
             matchedCicilanPemLains.statusCicilan !== item.statusCicilan
           );
         }
       );
-
-      console.log(cicilanPemLainsChanged)
 
       if (dataCicilanPemLains && Array.isArray(dataCicilanPemLains)) {
         await Promise.all(
@@ -1208,8 +1203,6 @@ class FinanceController {
                     )
                     .find((cicilan) => cicilan !== undefined);
 
-                    console.log(matchedCicilanPemLains)
-
                   if (matchedCicilanPemLains) {
                     await cicilanPemLains.update(
                       {
@@ -1223,7 +1216,6 @@ class FinanceController {
                       matchedCicilanPemLains.statusCi === "Lunas" ||
                       matchedCicilanPemLains.statusCicilan === "Lunas"
                     ) {
-                      console.log(matchedCicilanPemLains);
                       let namaBank = await bukuBanks.findOne({
                         where: {
                           namaBank: !matchedCicilanPemLains.noRekeni

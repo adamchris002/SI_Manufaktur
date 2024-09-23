@@ -75,7 +75,6 @@ const KasHarian = (props) => {
     `Kas Harian ${dayjs().format("MM/DD/YYYY")}`
   );
   const [posPembayaran, setPosPembayaran] = useState([]);
-  console.log(posPembayaran)
   const [totalDebet, setTotalDebet] = useState(0);
   const [totalKredit, setTotalKredit] = useState(0);
   const [totalSisa, setTotalSisa] = useState(0);

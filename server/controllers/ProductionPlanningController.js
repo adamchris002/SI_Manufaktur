@@ -110,7 +110,7 @@ class ProductionPlanningController {
             if (jadwal.pekerjaan && Array.isArray(jadwal.pekerjaan)) {
               await Promise.all(
                 jadwal.pekerjaan.map(async (dataPekerjaan) => {
-                  const pekerjaanRecord = await rencanaJadwalProduksis.create({
+                  await rencanaJadwalProduksis.create({
                     estimasiJadwalProduksiId: jadwalRecord.id,
                     jenisPekerjaan: dataPekerjaan.jenisPekerjaan,
                     tanggalMulai: dataPekerjaan.tanggalMulai,
@@ -340,7 +340,6 @@ class ProductionPlanningController {
         id: deleteProductionPlan.id,
         activityLogsId: deleteProductionPlan.id,
       });
-
       let result = await productionPlannings.destroy({
         where: { id: productionPlanId },
       });
@@ -607,11 +606,13 @@ class ProductionPlanningController {
                 productionPlanningId: data.productionPlanningId,
                 bagian: data.bagian,
               });
-              data.id = dataJenisJadwal.id;
             } else {
-              jadwalProduksiRecord = await estimasiJadwalProduksis.findOne({
-                where: { id: data.id },
-              });
+              dataJenisJadwal = await estimasiJadwalProduksis.update(
+                {
+                  bagian: data.bagian,
+                },
+                { where: { id: data.id } }
+              );
             }
             await Promise.all(
               data.rencanaJadwalProdukses.map(async (daftarRencana) => {
@@ -620,7 +621,7 @@ class ProductionPlanningController {
                   dataPekerjaanRecord = await rencanaJadwalProduksis.findOne({
                     where: {
                       id: daftarRencana.id,
-                      estimasiJadwalProduksiId: data.id,
+                      estimasiJadwalProduksiId: daftarRencana.estimasiJadwalPr,
                     },
                   });
                 }
@@ -633,7 +634,7 @@ class ProductionPlanningController {
                   });
                 } else if (!daftarRencana.id) {
                   await rencanaJadwalProduksis.create({
-                    estimasiJadwalProduksiId: data.id,
+                    estimasiJadwalProduksiId: dataJenisJadwal .id,
                     jenisPekerjaan: daftarRencana.jenisPekerjaan,
                     tanggalMulai: daftarRencana.tanggalMulai,
                     tanggalSelesai: daftarRencana.tanggalSelesai,

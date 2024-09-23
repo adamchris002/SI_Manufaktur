@@ -117,8 +117,6 @@ const EstimationOrderPage = (props) => {
     },
   ]);
 
-  console.log(dataPerincian);
-
   const [jenisBahan, setJenisBahan] = useState("");
   const [informasiBahan, setInformasiBahan] = useState("");
 

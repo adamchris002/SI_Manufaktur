@@ -1143,7 +1143,7 @@ const EditProductionPlanPage = (props) => {
                               maxDateTime={dayjs(
                                 selectedOrder?.data?.orderDueDate
                               )}
-                              onChange={(e) => handleInputChange(e)}
+                              onChange={(e) => setTanggalPengiriman(e)}
                             />
                           </DemoItem>
                         </DemoContainer>
@@ -1687,7 +1687,6 @@ const EditProductionPlanPage = (props) => {
                                 </TableCell>
                                 <TableCell
                                   style={{ width: "200px" }}
-                                  l
                                   align="left"
                                 >
                                   Warna
@@ -2147,7 +2146,7 @@ const EditProductionPlanPage = (props) => {
                                               )}
                                               onChange={(e) =>
                                                 handleInputChange(
-                                                  dayjs(e),
+                                                  e,
                                                   index,
                                                   pekerjaanIndex,
                                                   "tanggalMulai"
@@ -2185,7 +2184,7 @@ const EditProductionPlanPage = (props) => {
                                               )}
                                               onChange={(e) =>
                                                 handleInputChange(
-                                                  dayjs(e),
+                                                  e,
                                                   index,
                                                   pekerjaanIndex,
                                                   "tanggalSelesai"

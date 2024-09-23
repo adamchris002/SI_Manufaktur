@@ -47,6 +47,7 @@ const KegiatanProduksi = (props) => {
   const [dataProduksi, setDataProduksi] = useState({
     tanggalProduksi: dayjs(""),
     noOrderProduksi: "",
+    idProductionPlanning: "",
     jenisCetakan: "",
     mesin: "",
     dibuatOleh: "",
@@ -125,6 +126,7 @@ const KegiatanProduksi = (props) => {
               return {
                 ...oldObject,
                 noOrderProduksi: result.data.noOrderProduksi,
+                idProductionPlanning: result.data.idProductionPlanning,
                 jenisCetakan: result.data.jenisCetakan,
 
                 tahapProduksi: "Produksi Cetak",
@@ -140,6 +142,7 @@ const KegiatanProduksi = (props) => {
               return {
                 ...oldObject,
                 noOrderProduksi: result.data.noOrderProduksi,
+                idProductionPlanning: result.data.idProductionPlanning,
                 jenisCetakan: result.data.jenisCetakan,
                 tanggalPengiriman: result.data.tanggalPengiriman,
 
@@ -207,33 +210,31 @@ const KegiatanProduksi = (props) => {
       }).then((result) => {
         if (result.status === 200) {
           // if (isNewTahapProduksi) {
-            const tempData = result?.data?.itemPenyerahanBarangs?.map(
-              (item) => {
-                const matchingItem = dataBahanProduksiPrev.find(
-                  (bahan) =>
-                    bahan.jenis === item.namaBarang &&
-                    bahan.kode === item.kodeBarang
-                );
-                if (matchingItem) {
-                  return {
-                    ...item,
-                    value: matchingItem.jenis,
-                    jumlahYangDiambil: matchingItem.beratAwal,
-                  };
-                }
-                return {
-                  ...item,
-                  value: item.namaBarang,
-                };
-              }
+          const tempData = result?.data?.itemPenyerahanBarangs?.map((item) => {
+            const matchingItem = dataBahanProduksiPrev.find(
+              (bahan) =>
+                bahan.jenis === item.namaBarang &&
+                bahan.kode === item.kodeBarang
             );
-            setAllInventoryItem(tempData);
+            if (matchingItem) {
+              return {
+                ...item,
+                value: matchingItem.jenis,
+                jumlahYangDiambil: matchingItem.beratAwal,
+              };
+            }
+            return {
+              ...item,
+              value: item.namaBarang,
+            };
+          });
+          setAllInventoryItem(tempData);
           // } else {
           //   let tempData = result?.data?.itemPenyerahanBarangs?.map((item) => ({
           //     value: item.namaBarang,
           //     ...item,
           //   }));
-            // setAllInventoryItem(tempData);
+          // setAllInventoryItem(tempData);
           // }
         } else {
           setOpenSnackbar(true);
@@ -322,7 +323,7 @@ const KegiatanProduksi = (props) => {
         }).then((result) => {
           if (result.status === 200) {
             setPersonil(result.data.personils);
-            setDataBahanProduksiPrev(result.data.bahanLaporanProdukses)
+            setDataBahanProduksiPrev(result.data.bahanLaporanProdukses);
             setDataProduksi({
               id: result.data.id,
               tanggalProduksi: dayjs(result.data.tanggalProduksi),
@@ -585,6 +586,7 @@ const KegiatanProduksi = (props) => {
           return {
             ...oldObject,
             noOrderProduksi: value,
+            idProductionPlanning: getSelectedOrder(value, "id"),
             jenisCetakan: getSelectedOrder(value, "jenisCetakan"),
           };
         }

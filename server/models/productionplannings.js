@@ -40,6 +40,7 @@ module.exports = (sequelize, DataTypes) => {
       plate: DataTypes.BOOLEAN,
       setting: DataTypes.BOOLEAN,
       orderId: DataTypes.INTEGER,
+      statusProductionPlanning: DataTypes.STRING
     },
     {
       sequelize,

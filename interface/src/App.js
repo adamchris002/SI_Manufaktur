@@ -34,6 +34,7 @@ import KasHarian from "./pages/FinancePage/KasHarian";
 import Pajak from "./pages/FinancePage/Pajak";
 import RencanaPembayaran from "./pages/FinancePage/RencanaPembayaran";
 import LaporanAktual from "./pages/ProductionPage/LaporanAktual";
+import ProductionPlanningHistoryPage from "./pages/ProductionPlanningPage/ProductionPlanningHistoryPage"
 
 export const AppContext = createContext({});
 
@@ -118,6 +119,19 @@ function App() {
                   <Navigate to="/unauthorized" replace />
                 ) : (
                   <MaindashboardProductionPlanning
+                    userInformation={userCredentials}
+                  />
+                )
+              }
+            />
+            <Route
+              path="/productionPlanningDashboard/productionPlanningHistoryPage"
+              element={
+                !userCredentials.data ||
+                userCredentials.data.department !== "Production Planning" ? (
+                  <Navigate to="/unauthorized" replace />
+                ) : (
+                  <ProductionPlanningHistoryPage
                     userInformation={userCredentials}
                   />
                 )
@@ -332,7 +346,7 @@ function App() {
                 )
               }
             />
-<Route
+            <Route
               path="/productionDashboard/laporanAktual"
               element={
                 !userCredentials.data ||

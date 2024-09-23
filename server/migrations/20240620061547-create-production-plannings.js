@@ -50,6 +50,9 @@ module.exports = {
       orderId: {
         type: Sequelize.INTEGER
       },
+      statusProductionPlanning: {
+        type: Sequelize.STRING
+      },
       createdAt: {
         allowNull: false,
         type: Sequelize.DATE

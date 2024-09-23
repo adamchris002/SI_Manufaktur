@@ -328,7 +328,10 @@ const MaindashboardProductionPlanning = (props) => {
             ""
           )}
         </div>
-        {allProductionPlan?.data?.length === 0 ? (
+        {allProductionPlan?.data?.length === 0 ||
+        allProductionPlan?.data?.every(
+          (data) => data.statusProductionPlanning === "Done"
+        ) ? (
           <div
             style={{
               margin: isMobile ? "0px 32px 0px 32px" : "1.667vw",
@@ -360,36 +363,38 @@ const MaindashboardProductionPlanning = (props) => {
                   </TableRow>
                 </TableHead>
                 <TableBody>
-                  {allProductionPlan?.data?.map((result, index) => (
-                    <TableRow key={index}>
-                      <TableCell>{result.id}</TableCell>
-                      <TableCell>{result.pemesan}</TableCell>
-                      <TableCell>{result.alamatKirimBarang}</TableCell>
-                      <TableCell>
-                        {dayjs(result.tanggalPengirimanBarang).format(
-                          "MM/DD/YYYY hh:mm A"
-                        )}
-                      </TableCell>
-                      <TableCell>
-                        <div>
-                          <IconButton
-                            onClick={() => {
-                              handleMoveToEditPage(result.id);
-                            }}
-                          >
-                            <EditIcon style={{ color: "#0F607D" }} />
-                          </IconButton>
-                          <IconButton
-                            onClick={() => {
-                              handleDeleteProductionPlan(result.id);
-                            }}
-                          >
-                            <DeleteIcon style={{ color: "red" }} />
-                          </IconButton>
-                        </div>
-                      </TableCell>
-                    </TableRow>
-                  ))}
+                  {allProductionPlan?.data
+                    ?.filter((item) => item.statusProductionPlanning !== "Done")
+                    .map((result, index) => (
+                      <TableRow key={index}>
+                        <TableCell>{result.id}</TableCell>
+                        <TableCell>{result.pemesan}</TableCell>
+                        <TableCell>{result.alamatKirimBarang}</TableCell>
+                        <TableCell>
+                          {dayjs(result.tanggalPengirimanBarang).format(
+                            "MM/DD/YYYY hh:mm A"
+                          )}
+                        </TableCell>
+                        <TableCell>
+                          <div>
+                            <IconButton
+                              onClick={() => {
+                                handleMoveToEditPage(result.id);
+                              }}
+                            >
+                              <EditIcon style={{ color: "#0F607D" }} />
+                            </IconButton>
+                            <IconButton
+                              onClick={() => {
+                                handleDeleteProductionPlan(result.id);
+                              }}
+                            >
+                              <DeleteIcon style={{ color: "red" }} />
+                            </IconButton>
+                          </div>
+                        </TableCell>
+                      </TableRow>
+                    ))}
                 </TableBody>
               </Table>
             </TableContainer>
@@ -918,7 +923,9 @@ const MaindashboardProductionPlanning = (props) => {
             Estimation Orders History
           </Typography>
           <div>
-            <DefaultButton onClickFunction={() => {}}>
+            <DefaultButton onClickFunction={() => {
+              navigate("/productionPlanningDashboard/productionPlanningHistoryPage")
+            }}>
               <Typography style={{ fontSize: isMobile ? "12px" : "1.042vw" }}>
                 Go to Estimation Orders History Page
               </Typography>

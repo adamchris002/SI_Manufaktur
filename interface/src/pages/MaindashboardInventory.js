@@ -866,13 +866,15 @@ const MaindashboardInventory = (props) => {
             }}
           >
             {!allPermohonanPembelian?.data?.some(
-              (permohonan) => permohonan.statusPermohonan === "Requested"
+              (permohonan) =>
+                permohonan.statusPermohonan === "Requested" ||
+                permohonan.statusPermohonan === "Denied"
             ) ? (
               <div>
                 <Typography>Belum ada Permohonan Pembelian</Typography>
               </div>
             ) : (
-              <div style={{ width: isMobile ? "100%" : "50%" }}>
+              <div style={{ width: isMobile ? "100%" : "60%" }}>
                 <TableContainer component={Paper}>
                   <Table sx={{ minWidth: 650 }} aria-label="simple table">
                     <TableHead>
@@ -888,26 +890,29 @@ const MaindashboardInventory = (props) => {
                       {allPermohonanPembelian?.data
                         ?.filter(
                           (permohonan) =>
-                            permohonan.statusPermohonan === "Requested"
+                            permohonan.statusPermohonan === "Requested" ||
+                            permohonan.statusPermohonan === "Denied"
                         )
                         .map((result, index) => {
                           return (
                             <TableRow key={index}>
-                              <TableCell>{index + 1 + "."}</TableCell>
-                              <TableCell>{result.nomor}</TableCell>
-                              <TableCell>{result.perihal}</TableCell>
-                              <TableCell>{result.statusPermohonan}</TableCell>
-                              <TableCell>
+                              <TableCell style={{width: "25px"}}>{index + 1 + "."}</TableCell>
+                              <TableCell style={{width: "100px"}}>{result.nomor}</TableCell>
+                              <TableCell style={{width: "100px"}}>{result.perihal}</TableCell>
+                              <TableCell style={{width: "120px"}}>{result.statusPermohonan}</TableCell>
+                              <TableCell style={{width: "50px"}}>
                                 <div>
-                                  <IconButton
-                                    onClick={() => {
-                                      handleOpenModalEditPermohonanPembelian(
-                                        result
-                                      );
-                                    }}
-                                  >
-                                    <EditIcon style={{ color: "#0F607D" }} />
-                                  </IconButton>
+                                  {result.statusPermohonan !== "Denied" && (
+                                    <IconButton
+                                      onClick={() => {
+                                        handleOpenModalEditPermohonanPembelian(
+                                          result
+                                        );
+                                      }}
+                                    >
+                                      <EditIcon style={{ color: "#0F607D" }} />
+                                    </IconButton>
+                                  )}
                                   <IconButton
                                     onClick={() => {
                                       handleDeletePermohonanPembelian(
@@ -1266,7 +1271,12 @@ const MaindashboardInventory = (props) => {
             </Typography>
           </div>
         ) : (
-          <div style={{ width: "70%", margin: isMobile ? "0px 32px 0px 32px" : "1.667vw" }}>
+          <div
+            style={{
+              width: "70%",
+              margin: isMobile ? "0px 32px 0px 32px" : "1.667vw",
+            }}
+          >
             <TableContainer component={Paper}>
               <Table sx={{ minWidth: 650 }} aria-label="simple table">
                 <TableHead>

@@ -179,7 +179,6 @@ const RencanaPembayaran = (props) => {
         url: "http://localhost:3000/finance/getAllOngoingRencanaPembayaran",
       }).then((result) => {
         if (result.status === 200) {
-          console.log("refresh");
           setAllDataRencanaPembayaran(result.data);
           setRefreshRencanaPembayaran(false);
           setTriggerCheckRencanaPembayaran(true);

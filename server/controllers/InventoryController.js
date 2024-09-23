@@ -238,7 +238,7 @@ class InventoryController {
               user: userInformation.name,
               activity: "Menambahkan permohonan pembelian",
               name: "Nomor: " + data.nomor,
-              division: "Production Planning",
+              division: "Inventory",
             });
 
             await UserActivityLogs.create({
@@ -1014,6 +1014,20 @@ class InventoryController {
         where: { orderId: id },
         include: [{ model: itemPenyerahanBarangs }],
       });
+      res.json(result);
+    } catch (error) {
+      res.json(error);
+    }
+  }
+  static async denyPermohonanPembelian(req, res) {
+    try {
+      const { id } = req.params;
+      let result = await permohonanPembelians.update(
+        {
+          statusPermohonan: "Denied",
+        },
+        { where: { id: id } }
+      );
       res.json(result);
     } catch (error) {
       res.json(error);

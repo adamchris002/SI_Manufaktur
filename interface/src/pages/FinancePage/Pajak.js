@@ -410,7 +410,6 @@ const Pajak = (props) => {
       setSnackbarMessage("Silahkan pilih buku bank yang ingin digunakan");
     } else {
       const transformedData = handleTransformDataPajak(dataPajakMasukan);
-      console.log(transformedData)
       axios({
         method: "POST",
         url: `http://localhost:3000/finance/addPajakMasukan/${userInformation?.data?.id}`,

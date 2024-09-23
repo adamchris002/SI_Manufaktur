@@ -12,6 +12,7 @@ const {
   itemLaporanLimbahProduksis,
   laporanSampahs,
   itemLaporanSampahs,
+  productionPlannings
 } = require("../models");
 const dayjs = require("dayjs");
 
@@ -61,6 +62,7 @@ class ProductionController {
       let result = await laporanProduksis.create({
         tanggalProduksi: dataProduksi.tanggalProduksi,
         noOrderProduksi: dataProduksi.noOrderProduksi,
+        idProductionPlanning: dataProduksi.idProductionPlanning,
         jenisCetakan: dataProduksi.jenisCetakan,
         mesin: dataProduksi.mesin,
         dibuatOleh: dataProduksi.dibuatOleh,
@@ -394,6 +396,7 @@ class ProductionController {
       let result = await laporanProduksis.create({
         tanggalProduksi: dataProduksi.tanggalProduksi,
         noOrderProduksi: dataProduksi.noOrderProduksi,
+        idProductionPlanning: dataProduksi.idProductionPlanning,
         jenisCetakan: dataProduksi.jenisCetakan,
         mesin: dataProduksi.mesin,
         dibuatOleh: dataProduksi.dibuatOleh,
@@ -508,6 +511,7 @@ class ProductionController {
 
       let result = await laporanProduksis.create({
         tanggalProduksi: dataProduksi.tanggalProduksi,
+        idProductionPlanning: dataProduksi.idProductionPlanning,
         noOrderProduksi: dataProduksi.noOrderProduksi,
         jenisCetakan: dataProduksi.jenisCetakan,
         mesin: dataProduksi.mesin,
@@ -874,12 +878,21 @@ class ProductionController {
   static async kegiatanProduksiSelesai(req, res) {
     try {
       const { id } = req.params;
-      let result = await laporanProduksis.update(
-        {
-          statusLaporan: "Done",
-        },
-        { where: { id: id } }
+      let findLaporanProduksi = await laporanProduksis.findOne({
+        where: { id: id },
+      });
+      let productionPlanningDone = await productionPlannings.update(
+        { statusProductionPlanning: "Done" },
+        { where: { id: findLaporanProduksi.idProductionPlanning } }
       );
+      let result = await findLaporanProduksi.update({
+        statusLaporan: "Done",
+      });
+
+      // let doneOrder = await orders.update(
+      //   {},
+      //   { where: { id: result.noOrderProduksi } }
+      // );
       res.json(result);
     } catch (error) {
       res.json(error);
