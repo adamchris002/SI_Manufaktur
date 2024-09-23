@@ -22,7 +22,9 @@ import CloseIcon from "@mui/icons-material/Close";
 import { AppContext } from "../../App";
 import MyModal from "../../components/Modal";
 import jsPDF from "jspdf";
+import ExcelJS from "exceljs";
 import DefaultButton from "../../components/Button";
+import { saveAs } from "file-saver";
 
 const ProductionPlanningHistoryPage = (props) => {
   const { userInformation } = props;
@@ -466,7 +468,487 @@ const ProductionPlanningHistoryPage = (props) => {
     pdf.save("laporan-perencanaan-produksi.pdf");
   };
 
-  const handleSaveAsExcel = () => {};
+  const handleSaveAsExcel = async () => {
+    const workbook = new ExcelJS.Workbook();
+    const worksheet = workbook.addWorksheet("Sheet1");
+
+    const startRow = 4;
+    const startCol = 2;
+
+    const dataHeader = [
+      ["", "", "", "", "", "", dayjs().format("MM/DD/YYYY hh:mm A")],
+      ["", "", "", "", "", "", ""],
+      ["", "", "", "", "", "", `No Order: ${dataView.orderId}`],
+      ["", "", "", "", "", "", ""],
+      ["", "", "", `LAPORAN PERENCANAAN PRODUKSI ${dataView.id}`, "", "", ""],
+    ];
+
+    const dataInformasi = [
+      [
+        `Pemesan: ${dataView.pemesan}`,
+        "",
+        "",
+        "",
+        `Alamat Kirim Barang: ${dataView.alamatKirimBarang}`,
+        "",
+        "",
+      ],
+      [
+        `Tanggal Pengiriman Barang: ${dayjs(
+          dataView.tanggalPengirimanBarang
+        ).format("MM/DD/YYYY hh:mm A")}`,
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+      ],
+    ];
+    const dataInformasiDetail = [
+      [
+        `Jenis Cetakan: ${dataView.jenisCetakan}`,
+        "",
+        "",
+        "",
+        `Ply: ${dataView.ply}`,
+        "",
+        "",
+      ],
+      [
+        `Ukuran: ${dataView.ukuran}`,
+        "",
+        "",
+        "",
+        `Seri: ${dataView.seri}`,
+        "",
+        "",
+      ],
+      [
+        `Kuantitas: ${dataView.kuantitas}`,
+        "",
+        "",
+        "",
+        `Nomorator: ${dataView.nomorator}`,
+        "",
+        "",
+      ],
+      [`Isi per box: ${dataView.isiPerBox}`, "", "", "", "", "", ""],
+    ];
+
+    let currentRow = startRow;
+
+    dataHeader.forEach((row, rowIndex) => {
+      const excelRow = worksheet.getRow(startRow + rowIndex);
+      row.forEach((cellValue, colIndex) => {
+        excelRow.getCell(startCol + colIndex).value = cellValue;
+      });
+    });
+
+    currentRow += dataHeader.length;
+
+    dataInformasi.forEach((row, rowIndex) => {
+      const excelRow = worksheet.getRow(currentRow + rowIndex);
+      row.forEach((cellValue, colIndex) => {
+        excelRow.getCell(startCol + colIndex).value = cellValue;
+      });
+    });
+
+    currentRow += dataInformasi.length;
+
+    dataInformasiDetail.forEach((row, rowIndex) => {
+      const excelRow = worksheet.getRow(currentRow + rowIndex);
+      row.forEach((cellValue, colIndex) => {
+        excelRow.getCell(startCol + colIndex).value = cellValue;
+      });
+    });
+
+    const borderStyle = {
+      top: { style: "thin" },
+      left: { style: "thin" },
+      bottom: { style: "thin" },
+      right: { style: "thin" },
+    };
+
+    const applyBorderToRange = (
+      rowNumber,
+      startCol,
+      endCol,
+      isFirstRow,
+      isLastRow
+    ) => {
+      for (let col = startCol; col <= endCol; col++) {
+        const cell = worksheet.getCell(rowNumber, col);
+        cell.border = {
+          top: isFirstRow ? borderStyle.top : undefined,
+          bottom: isLastRow ? borderStyle.bottom : undefined,
+          left: col === startCol ? borderStyle.left : undefined,
+          right: col === endCol ? borderStyle.right : undefined,
+        };
+      }
+    };
+
+    for (let rowIndex = 4; rowIndex < 8; rowIndex++) {
+      const isFirstRow = rowIndex === 4;
+      const isLastRow = rowIndex === 8;
+      applyBorderToRange(rowIndex, 2, 8, isFirstRow, isLastRow);
+    }
+
+    worksheet.mergeCells("B8:H8");
+    const titleCell = worksheet.getCell("B8");
+    titleCell.value = `LAPORAN PERENCANAAN PRODUKSI ${dataView.id}`;
+    titleCell.border = {
+      top: borderStyle.top,
+      bottom: borderStyle.bottom,
+      left: borderStyle.left,
+      right: borderStyle.right,
+    };
+    titleCell.alignment = { horizontal: "center", vertical: "middle" };
+    worksheet.getCell(`B8`).font = { bold: true };
+
+    for (let rowIndex = 9; rowIndex < 11; rowIndex++) {
+      const isFirstRow = rowIndex === 9;
+      const isLastRow = rowIndex === 11;
+      applyBorderToRange(rowIndex, 2, 8, isFirstRow, isLastRow);
+    }
+
+    for (let rowIndex = 11; rowIndex < 15; rowIndex++) {
+      const isFirstRow = rowIndex === 11;
+      const isLastRow = rowIndex === 15;
+      applyBorderToRange(rowIndex, 2, 8, isFirstRow, isLastRow);
+    }
+
+    worksheet.mergeCells("B15:H15");
+    const bahanBakuTitle = worksheet.getCell("B15");
+    bahanBakuTitle.value = `Bahan Baku & Bahan Pembantu`;
+    bahanBakuTitle.border = {
+      top: borderStyle.top,
+      bottom: borderStyle.bottom,
+      left: borderStyle.left,
+      right: borderStyle.right,
+    };
+    bahanBakuTitle.alignment = { horizontal: "center", vertical: "middle" };
+    worksheet.getCell(`B15`).font = { bold: true };
+
+    let tableColumnsBahanBaku = [];
+
+    tableColumnsBahanBaku = dataView.estimasiBahanBakus.map((result, index) => {
+      return [
+        "No.",
+        result.jenis,
+        result.informasi,
+        "Warna",
+        "Estimasi Kebutuhan",
+        "Waste",
+        "Jumlah Kebutuhan",
+      ];
+    });
+
+    let tableRow = [];
+    dataView.estimasiBahanBakus.forEach((estimasi, estimasiIndex) => {
+      estimasi.bahanBakuAkanDigunakans.forEach((bahanBaku) => {
+        bahanBaku.dataJenis.forEach((dataJenisItem) => {
+          tableRow.push({
+            count: estimasiIndex + 1,
+            jenis: dataJenisItem.namaJenis,
+            informasi: dataJenisItem.dataInformasi,
+            warna: dataJenisItem.warna,
+            estimasiKebutuhan: dataJenisItem.estimasiKebutuhan,
+            waste: dataJenisItem.waste,
+            jumlahKebutuhan: dataJenisItem.jumlahKebutuhan,
+          });
+        });
+      });
+    });
+
+    currentRow += dataInformasiDetail.length + 1;
+
+    tableColumnsBahanBaku.forEach((row, rowIndex) => {
+      const excelRow = worksheet.getRow(currentRow);
+      row.forEach((cellValue, colIndex) => {
+        const cell = excelRow.getCell(startCol + colIndex);
+        cell.value = cellValue;
+        cell.border = borderStyle;
+      });
+
+      currentRow += 1;
+      const filteredRows = tableRow.filter((row) => row.count === rowIndex + 1);
+
+      filteredRows.forEach((rowData, dataRowIndex) => {
+        const excelTableRow = worksheet.getRow(currentRow + dataRowIndex);
+        excelTableRow.getCell(startCol).value = dataRowIndex + 1 + ".";
+        excelTableRow.getCell(startCol + 1).value = rowData.jenis;
+        excelTableRow.getCell(startCol + 2).value = rowData.informasi;
+        excelTableRow.getCell(startCol + 3).value = rowData.warna;
+        excelTableRow.getCell(startCol + 4).value = rowData.estimasiKebutuhan;
+        excelTableRow.getCell(startCol + 5).value = rowData.waste;
+        excelTableRow.getCell(startCol + 6).value = rowData.jumlahKebutuhan;
+
+        for (let i = 0; i <= 6; i++) {
+          excelTableRow.getCell(startCol + i).border = borderStyle;
+        }
+      });
+      currentRow += filteredRows.length;
+    });
+
+    worksheet.mergeCells(`B${currentRow}:H${currentRow}`);
+    const jangkaWaktuTitle = worksheet.getCell(`B${currentRow}`);
+    jangkaWaktuTitle.value = `Jangka Waktu Produksi`;
+    jangkaWaktuTitle.border = {
+      top: borderStyle.top,
+      bottom: borderStyle.bottom,
+      left: borderStyle.left,
+      right: borderStyle.right,
+    };
+    jangkaWaktuTitle.alignment = { horizontal: "center", vertical: "middle" };
+    worksheet.getCell(`B${currentRow}`).font = { bold: true };
+
+    currentRow += 1;
+
+    let tableColumnsJangkaWaktu = [
+      [
+        "Bagian",
+        "Jenis Pekerjaan",
+        "Tanggal Mulai",
+        "",
+        "Tanggal Selesai",
+        "",
+        "Jumlah Hari",
+      ],
+    ];
+    let tableRowsJangkaWaktu = [];
+
+    dataView.estimasiJadwalProdukses.forEach((row, index) => {
+      row.rencanaJadwalProdukses.forEach((pekerjaan, pekerjaanIndex) => {
+        tableRowsJangkaWaktu.push({
+          bagian: pekerjaanIndex === 0 ? row.bagian : "",
+          jenisPekerjaan: pekerjaan.jenisPekerjaan,
+          tanggalMulai: dayjs(pekerjaan.tanggalMulai).format(
+            "MM/DD/YYYY hh:mm A"
+          ),
+          tanggalSelesai: dayjs(pekerjaan.tanggalSelesai).format(
+            "MM/DD/YYYY hh:mm A"
+          ),
+          jumlahHari: pekerjaan.jumlahHari,
+        });
+      });
+    });
+
+    tableColumnsJangkaWaktu.forEach((row, rowIndex) => {
+      const excelRow = worksheet.getRow(currentRow);
+      row.forEach((cellValue, colIndex) => {
+        const cell = excelRow.getCell(startCol + colIndex);
+        cell.value = cellValue;
+        cell.border = borderStyle;
+      });
+      worksheet.mergeCells(currentRow, startCol + 2, currentRow, startCol + 3);
+      worksheet.mergeCells(currentRow, startCol + 4, currentRow, startCol + 5);
+      currentRow += 1;
+    });
+
+    tableRowsJangkaWaktu.forEach((rowData, dataRowIndex) => {
+      const excelTableRow = worksheet.getRow(currentRow + dataRowIndex);
+
+      excelTableRow.getCell(startCol).value = rowData.bagian;
+      excelTableRow.getCell(startCol + 1).value = rowData.jenisPekerjaan;
+
+      excelTableRow.getCell(startCol + 2).value = rowData.tanggalMulai;
+      worksheet.mergeCells(
+        currentRow + dataRowIndex,
+        startCol + 2,
+        currentRow + dataRowIndex,
+        startCol + 3
+      );
+
+      excelTableRow.getCell(startCol + 4).value = rowData.tanggalSelesai;
+      worksheet.mergeCells(
+        currentRow + dataRowIndex,
+        startCol + 4,
+        currentRow + dataRowIndex,
+        startCol + 5
+      );
+
+      excelTableRow.getCell(startCol + 6).value = rowData.jumlahHari;
+
+      for (let i = 0; i <= 6; i++) {
+        excelTableRow.getCell(startCol + i).border = borderStyle;
+      }
+    });
+
+    currentRow += tableRowsJangkaWaktu.length;
+
+    worksheet.mergeCells(`B${currentRow}:H${currentRow}`);
+    const rincianCetakanTitle = worksheet.getCell(`B${currentRow}`);
+    rincianCetakanTitle.value = `Rincian Cetakan`;
+    rincianCetakanTitle.border = {
+      top: borderStyle.top,
+      bottom: borderStyle.bottom,
+      left: borderStyle.left,
+      right: borderStyle.right,
+    };
+    rincianCetakanTitle.alignment = {
+      horizontal: "center",
+      vertical: "middle",
+    };
+    worksheet.getCell(`B${currentRow}`).font = { bold: true };
+
+    currentRow += 1;
+
+    const tableColumnsRincianCetakan = [
+      [
+        "No.",
+        "Nama Cetakan",
+        "Ukuran",
+        "Jenis Kertas",
+        "Berat Kertas (Gram)",
+        "Warna",
+        "Kuantitas",
+        "Ply",
+        "Isi",
+        "Nomorator",
+        "Keterangan",
+      ],
+    ];
+
+    let tableRowsRincianCetakan = [];
+
+    dataView.rincianCetakans.forEach((result, index) => {
+      tableRowsRincianCetakan.push({
+        no: index + 1 + ".",
+        namaCetakan: result.namaCetakan,
+        ukuran: result.ukuran,
+        jenisKertas: result.jenisKertas,
+        beratKertas: result.beratKertas,
+        warna: result.warna,
+        kuantitas: result.kuantitas,
+        ply: result.ply,
+        isi: result.isi,
+        nomorator: result.nomorator,
+        keterangan: result.keterangan,
+      });
+    });
+
+    tableColumnsRincianCetakan.forEach((row, rowIndex) => {
+      const excelRow = worksheet.getRow(currentRow);
+      row.forEach((cellValue, colIndex) => {
+        const cell = excelRow.getCell(startCol + colIndex);
+        cell.value = cellValue;
+        cell.border = borderStyle;
+      });
+    });
+
+    currentRow += 1;
+
+    tableRowsRincianCetakan.forEach((rowData, dataRowIndex) => {
+      const excelTableRow = worksheet.getRow(currentRow + dataRowIndex);
+      excelTableRow.getCell(startCol).value = dataRowIndex + 1 + ".";
+      excelTableRow.getCell(startCol + 1).value = rowData.namaCetakan;
+      excelTableRow.getCell(startCol + 2).value = rowData.ukuran;
+      excelTableRow.getCell(startCol + 3).value = rowData.jenisKertas;
+      excelTableRow.getCell(startCol + 4).value = rowData.beratKertas;
+      excelTableRow.getCell(startCol + 5).value = rowData.warna;
+      excelTableRow.getCell(startCol + 6).value = rowData.kuantitas;
+      excelTableRow.getCell(startCol + 7).value = rowData.ply;
+      excelTableRow.getCell(startCol + 8).value = rowData.isi;
+      excelTableRow.getCell(startCol + 9).value = rowData.nomorator;
+      excelTableRow.getCell(startCol + 10).value = rowData.keterangan;
+      for (let i = 0; i <= 10; i++) {
+        excelTableRow.getCell(startCol + i).border = borderStyle;
+      }
+    });
+
+    currentRow += tableRowsRincianCetakan.length;
+
+    worksheet.mergeCells(`B${currentRow}:H${currentRow}`);
+    const perincianTitle = worksheet.getCell(`B${currentRow}`);
+    perincianTitle.value = `Perincian`;
+    perincianTitle.border = {
+      top: borderStyle.top,
+      bottom: borderStyle.bottom,
+      left: borderStyle.left,
+      right: borderStyle.right,
+    };
+    perincianTitle.alignment = {
+      horizontal: "center",
+      vertical: "middle",
+    };
+    worksheet.getCell(`B${currentRow}`).font = { bold: true };
+
+    currentRow += 1;
+
+    const tableColumnsPerincianHeader = [
+      ["Perincian Rekanan", "", "", "Perincian Harga Cetak", "", "", ""],
+    ];
+
+    const tableColumnsPerincian = [
+      [
+        "No.",
+        "Nama Rekanan",
+        "Keterangan",
+        "No.",
+        "Jenis Cetakan",
+        "Isi",
+        "Harga",
+      ],
+    ];
+
+    let tableRowPerincian = [];
+
+    dataView.perincians.forEach((result, index) => {
+      tableRowPerincian.push({
+        no: index + 1,
+        namaRekanan: result.namaRekanan,
+        keterangan: result.keterangan,
+        noJc: index + 1,
+        jenisCetakan: result.jenisCetakan,
+        isi: result.isi,
+        harga: `Rp. ${result.harga
+          .toString()
+          .replace(/\B(?=(\d{3})+(?!\d))/g, ".")},-`,
+      });
+    });
+
+    tableColumnsPerincianHeader.forEach((row, rowIndex) => {
+      const excelRow = worksheet.getRow(currentRow);
+      row.forEach((cellValue, colIndex) => {
+        const cell = excelRow.getCell(startCol + colIndex);
+        cell.value = cellValue;
+        cell.border = borderStyle;
+      });
+      worksheet.mergeCells(currentRow, startCol + 0, currentRow, startCol + 2);
+      worksheet.mergeCells(currentRow, startCol + 3, currentRow, startCol + 6);
+    });
+
+    currentRow += 1;
+
+    tableColumnsPerincian.forEach((row, rowIndex) => {
+      const excelRow = worksheet.getRow(currentRow);
+      row.forEach((cellValue, colIndex) => {
+        const cell = excelRow.getCell(startCol + colIndex);
+        cell.value = cellValue;
+        cell.border = borderStyle;
+      });
+    });
+
+    currentRow += 1;
+
+    tableRowPerincian.forEach((rowData, dataRowIndex) => {
+      const excelTableRow = worksheet.getRow(currentRow + dataRowIndex);
+      excelTableRow.getCell(startCol).value = dataRowIndex + 1 + ".";
+      excelTableRow.getCell(startCol + 1).value = rowData.namaRekanan;
+      excelTableRow.getCell(startCol + 2).value = rowData.keterangan;
+      excelTableRow.getCell(startCol + 3).value = dataRowIndex + 1 + ".";
+      excelTableRow.getCell(startCol + 4).value = rowData.jenisCetakan;
+      excelTableRow.getCell(startCol + 5).value = rowData.isi;
+      excelTableRow.getCell(startCol + 6).value = rowData.harga;
+      for (let i = 0; i <= 6; i++) {
+        excelTableRow.getCell(startCol + i).border = borderStyle;
+      }
+    });
+
+    const buffer = await workbook.xlsx.writeBuffer();
+    saveAs(new Blob([buffer]), "laporan-perencanaan-produksi.xlsx");
+  };
 
   return (
     <div
@@ -1072,7 +1554,11 @@ const ProductionPlanningHistoryPage = (props) => {
                 Simpan PDF
               </DefaultButton>
               <div style={{ marginLeft: "8px" }}>
-                <DefaultButton onClickFunction={() => {}}>
+                <DefaultButton
+                  onClickFunction={() => {
+                    handleSaveAsExcel();
+                  }}
+                >
                   Simpan Excel
                 </DefaultButton>
               </div>
