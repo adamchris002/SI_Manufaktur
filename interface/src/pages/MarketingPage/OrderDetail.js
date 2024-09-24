@@ -513,6 +513,13 @@ const OrderDetail = (props) => {
                         src={`http://localhost:3000/uploads/${result.filename}?w=248&fit=crop&auto=format`}
                         alt={result.filename}
                         loading="lazy"
+                        onClick={
+                          imageOption === true
+                            ? () => {
+                                handleOpenImage(index);
+                              }
+                            : ""
+                        }
                       />
                     ) : (
                       <img
@@ -525,6 +532,13 @@ const OrderDetail = (props) => {
                         src={`http://localhost:3000/uploads/${result.filename}?w=248&fit=crop&auto=format`}
                         alt={result.filename}
                         loading="lazy"
+                        onClick={
+                          imageOption === true
+                            ? () => {
+                                handleOpenImage(index);
+                              }
+                            : ""
+                        }
                       />
                     )}
                   </div>

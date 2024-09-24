@@ -465,7 +465,7 @@ const ProductionPlanningHistoryPage = (props) => {
 
     y = pdf.lastAutoTable.finalY + 15;
 
-    pdf.save("laporan-perencanaan-produksi.pdf");
+    pdf.save(`Laporan-Perencanaan-Produksi${dataView.id}.pdf`);
   };
 
   const handleSaveAsExcel = async () => {
@@ -476,11 +476,35 @@ const ProductionPlanningHistoryPage = (props) => {
     const startCol = 2;
 
     const dataHeader = [
-      ["", "", "", "", "", "", dayjs().format("MM/DD/YYYY hh:mm A")],
-      ["", "", "", "", "", "", ""],
-      ["", "", "", "", "", "", `No Order: ${dataView.orderId}`],
-      ["", "", "", "", "", "", ""],
-      ["", "", "", `LAPORAN PERENCANAAN PRODUKSI ${dataView.id}`, "", "", ""],
+      [
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        dayjs().format("MM/DD/YYYY hh:mm A"),
+      ],
+      ["", "", "", "", "", "", "", "", "", "", ""],
+      ["", "", "", "", "", "", "", "", "", "", `No Order: ${dataView.orderId}`],
+      ["", "", "", "", "", "", "", "", "", "", ""],
+      [
+        "",
+        "",
+        "",
+        "",
+        "",
+        `LAPORAN PERENCANAAN PRODUKSI ${dataView.id}`,
+        "",
+        "",
+        "",
+        "",
+        "",
+      ],
     ];
 
     const dataInformasi = [
@@ -489,7 +513,11 @@ const ProductionPlanningHistoryPage = (props) => {
         "",
         "",
         "",
+        "",
+        "",
         `Alamat Kirim Barang: ${dataView.alamatKirimBarang}`,
+        "",
+        "",
         "",
         "",
       ],
@@ -497,6 +525,10 @@ const ProductionPlanningHistoryPage = (props) => {
         `Tanggal Pengiriman Barang: ${dayjs(
           dataView.tanggalPengirimanBarang
         ).format("MM/DD/YYYY hh:mm A")}`,
+        "",
+        "",
+        "",
+        "",
         "",
         "",
         "",
@@ -511,7 +543,11 @@ const ProductionPlanningHistoryPage = (props) => {
         "",
         "",
         "",
+        "",
+        "",
         `Ply: ${dataView.ply}`,
+        "",
+        "",
         "",
         "",
       ],
@@ -520,7 +556,11 @@ const ProductionPlanningHistoryPage = (props) => {
         "",
         "",
         "",
+        "",
+        "",
         `Seri: ${dataView.seri}`,
+        "",
+        "",
         "",
         "",
       ],
@@ -529,11 +569,27 @@ const ProductionPlanningHistoryPage = (props) => {
         "",
         "",
         "",
+        "",
+        "",
         `Nomorator: ${dataView.nomorator}`,
         "",
         "",
+        "",
+        "",
       ],
-      [`Isi per box: ${dataView.isiPerBox}`, "", "", "", "", "", ""],
+      [
+        `Isi per box: ${dataView.isiPerBox}`,
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+      ],
     ];
 
     let currentRow = startRow;
@@ -591,10 +647,10 @@ const ProductionPlanningHistoryPage = (props) => {
     for (let rowIndex = 4; rowIndex < 8; rowIndex++) {
       const isFirstRow = rowIndex === 4;
       const isLastRow = rowIndex === 8;
-      applyBorderToRange(rowIndex, 2, 8, isFirstRow, isLastRow);
+      applyBorderToRange(rowIndex, 2, 12, isFirstRow, isLastRow);
     }
 
-    worksheet.mergeCells("B8:H8");
+    worksheet.mergeCells("B8:L8");
     const titleCell = worksheet.getCell("B8");
     titleCell.value = `LAPORAN PERENCANAAN PRODUKSI ${dataView.id}`;
     titleCell.border = {
@@ -609,16 +665,16 @@ const ProductionPlanningHistoryPage = (props) => {
     for (let rowIndex = 9; rowIndex < 11; rowIndex++) {
       const isFirstRow = rowIndex === 9;
       const isLastRow = rowIndex === 11;
-      applyBorderToRange(rowIndex, 2, 8, isFirstRow, isLastRow);
+      applyBorderToRange(rowIndex, 2, 12, isFirstRow, isLastRow);
     }
 
     for (let rowIndex = 11; rowIndex < 15; rowIndex++) {
       const isFirstRow = rowIndex === 11;
       const isLastRow = rowIndex === 15;
-      applyBorderToRange(rowIndex, 2, 8, isFirstRow, isLastRow);
+      applyBorderToRange(rowIndex, 2, 12, isFirstRow, isLastRow);
     }
 
-    worksheet.mergeCells("B15:H15");
+    worksheet.mergeCells("B15:L15");
     const bahanBakuTitle = worksheet.getCell("B15");
     bahanBakuTitle.value = `Bahan Baku & Bahan Pembantu`;
     bahanBakuTitle.border = {
@@ -636,11 +692,15 @@ const ProductionPlanningHistoryPage = (props) => {
       return [
         "No.",
         result.jenis,
+        "",
         result.informasi,
+        "",
         "Warna",
         "Estimasi Kebutuhan",
+        "",
         "Waste",
         "Jumlah Kebutuhan",
+        "",
       ];
     });
 
@@ -670,6 +730,10 @@ const ProductionPlanningHistoryPage = (props) => {
         cell.value = cellValue;
         cell.border = borderStyle;
       });
+      worksheet.mergeCells(currentRow, startCol + 1, currentRow, startCol + 2);
+      worksheet.mergeCells(currentRow, startCol + 3, currentRow, startCol + 4);
+      worksheet.mergeCells(currentRow, startCol + 6, currentRow, startCol + 7);
+      worksheet.mergeCells(currentRow, startCol + 9, currentRow, startCol + 10);
 
       currentRow += 1;
       const filteredRows = tableRow.filter((row) => row.count === rowIndex + 1);
@@ -678,20 +742,44 @@ const ProductionPlanningHistoryPage = (props) => {
         const excelTableRow = worksheet.getRow(currentRow + dataRowIndex);
         excelTableRow.getCell(startCol).value = dataRowIndex + 1 + ".";
         excelTableRow.getCell(startCol + 1).value = rowData.jenis;
-        excelTableRow.getCell(startCol + 2).value = rowData.informasi;
-        excelTableRow.getCell(startCol + 3).value = rowData.warna;
-        excelTableRow.getCell(startCol + 4).value = rowData.estimasiKebutuhan;
-        excelTableRow.getCell(startCol + 5).value = rowData.waste;
-        excelTableRow.getCell(startCol + 6).value = rowData.jumlahKebutuhan;
+        worksheet.mergeCells(
+          currentRow + dataRowIndex,
+          startCol + 1,
+          currentRow + dataRowIndex,
+          startCol + 2
+        );
+        excelTableRow.getCell(startCol + 3).value = rowData.informasi;
+        worksheet.mergeCells(
+          currentRow + dataRowIndex,
+          startCol + 3,
+          currentRow + dataRowIndex,
+          startCol + 4
+        );
+        excelTableRow.getCell(startCol + 5).value = rowData.warna;
+        excelTableRow.getCell(startCol + 6).value = rowData.estimasiKebutuhan;
+        worksheet.mergeCells(
+          currentRow + dataRowIndex,
+          startCol + 6,
+          currentRow + dataRowIndex,
+          startCol + 7
+        );
+        excelTableRow.getCell(startCol + 8).value = rowData.waste;
+        excelTableRow.getCell(startCol + 9).value = rowData.jumlahKebutuhan;
+        worksheet.mergeCells(
+          currentRow + dataRowIndex,
+          startCol + 9,
+          currentRow + dataRowIndex,
+          startCol + 10
+        );
 
-        for (let i = 0; i <= 6; i++) {
+        for (let i = 0; i <= 10; i++) {
           excelTableRow.getCell(startCol + i).border = borderStyle;
         }
       });
       currentRow += filteredRows.length;
     });
 
-    worksheet.mergeCells(`B${currentRow}:H${currentRow}`);
+    worksheet.mergeCells(`B${currentRow}:L${currentRow}`);
     const jangkaWaktuTitle = worksheet.getCell(`B${currentRow}`);
     jangkaWaktuTitle.value = `Jangka Waktu Produksi`;
     jangkaWaktuTitle.border = {
@@ -709,11 +797,15 @@ const ProductionPlanningHistoryPage = (props) => {
       [
         "Bagian",
         "Jenis Pekerjaan",
+        "",
         "Tanggal Mulai",
+        "",
         "",
         "Tanggal Selesai",
         "",
+        "",
         "Jumlah Hari",
+        "",
       ],
     ];
     let tableRowsJangkaWaktu = [];
@@ -741,8 +833,10 @@ const ProductionPlanningHistoryPage = (props) => {
         cell.value = cellValue;
         cell.border = borderStyle;
       });
-      worksheet.mergeCells(currentRow, startCol + 2, currentRow, startCol + 3);
-      worksheet.mergeCells(currentRow, startCol + 4, currentRow, startCol + 5);
+      worksheet.mergeCells(currentRow, startCol + 1, currentRow, startCol + 2);
+      worksheet.mergeCells(currentRow, startCol + 3, currentRow, startCol + 5);
+      worksheet.mergeCells(currentRow, startCol + 6, currentRow, startCol + 8);
+      worksheet.mergeCells(currentRow, startCol + 9, currentRow, startCol + 10);
       currentRow += 1;
     });
 
@@ -751,33 +845,44 @@ const ProductionPlanningHistoryPage = (props) => {
 
       excelTableRow.getCell(startCol).value = rowData.bagian;
       excelTableRow.getCell(startCol + 1).value = rowData.jenisPekerjaan;
-
-      excelTableRow.getCell(startCol + 2).value = rowData.tanggalMulai;
       worksheet.mergeCells(
         currentRow + dataRowIndex,
-        startCol + 2,
+        startCol + 1,
         currentRow + dataRowIndex,
-        startCol + 3
+        startCol + 2
       );
-
-      excelTableRow.getCell(startCol + 4).value = rowData.tanggalSelesai;
+      excelTableRow.getCell(startCol + 3).value = rowData.tanggalMulai;
       worksheet.mergeCells(
         currentRow + dataRowIndex,
-        startCol + 4,
+        startCol + 3,
         currentRow + dataRowIndex,
         startCol + 5
       );
 
-      excelTableRow.getCell(startCol + 6).value = rowData.jumlahHari;
+      excelTableRow.getCell(startCol + 6).value = rowData.tanggalSelesai;
+      worksheet.mergeCells(
+        currentRow + dataRowIndex,
+        startCol + 6,
+        currentRow + dataRowIndex,
+        startCol + 8
+      );
 
-      for (let i = 0; i <= 6; i++) {
+      excelTableRow.getCell(startCol + 9).value = rowData.jumlahHari;
+      worksheet.mergeCells(
+        currentRow + dataRowIndex,
+        startCol + 9,
+        currentRow + dataRowIndex,
+        startCol + 10
+      );
+
+      for (let i = 0; i <= 10; i++) {
         excelTableRow.getCell(startCol + i).border = borderStyle;
       }
     });
 
     currentRow += tableRowsJangkaWaktu.length;
 
-    worksheet.mergeCells(`B${currentRow}:H${currentRow}`);
+    worksheet.mergeCells(`B${currentRow}:L${currentRow}`);
     const rincianCetakanTitle = worksheet.getCell(`B${currentRow}`);
     rincianCetakanTitle.value = `Rincian Cetakan`;
     rincianCetakanTitle.border = {
@@ -859,7 +964,7 @@ const ProductionPlanningHistoryPage = (props) => {
 
     currentRow += tableRowsRincianCetakan.length;
 
-    worksheet.mergeCells(`B${currentRow}:H${currentRow}`);
+    worksheet.mergeCells(`B${currentRow}:L${currentRow}`);
     const perincianTitle = worksheet.getCell(`B${currentRow}`);
     perincianTitle.value = `Perincian`;
     perincianTitle.border = {
@@ -877,18 +982,34 @@ const ProductionPlanningHistoryPage = (props) => {
     currentRow += 1;
 
     const tableColumnsPerincianHeader = [
-      ["Perincian Rekanan", "", "", "Perincian Harga Cetak", "", "", ""],
+      [
+        "Perincian Rekanan",
+        "",
+        "",
+        "",
+        "",
+        "Perincian Harga Cetak",
+        "",
+        "",
+        "",
+        "",
+        "",
+      ],
     ];
 
     const tableColumnsPerincian = [
       [
         "No.",
         "Nama Rekanan",
+        "",
         "Keterangan",
+        "",
         "No.",
         "Jenis Cetakan",
+        "",
         "Isi",
         "Harga",
+        "",
       ],
     ];
 
@@ -915,8 +1036,8 @@ const ProductionPlanningHistoryPage = (props) => {
         cell.value = cellValue;
         cell.border = borderStyle;
       });
-      worksheet.mergeCells(currentRow, startCol + 0, currentRow, startCol + 2);
-      worksheet.mergeCells(currentRow, startCol + 3, currentRow, startCol + 6);
+      worksheet.mergeCells(currentRow, startCol + 0, currentRow, startCol + 4);
+      worksheet.mergeCells(currentRow, startCol + 5, currentRow, startCol + 10);
     });
 
     currentRow += 1;
@@ -928,6 +1049,10 @@ const ProductionPlanningHistoryPage = (props) => {
         cell.value = cellValue;
         cell.border = borderStyle;
       });
+      worksheet.mergeCells(currentRow, startCol + 1, currentRow, startCol + 2);
+      worksheet.mergeCells(currentRow, startCol + 3, currentRow, startCol + 4);
+      worksheet.mergeCells(currentRow, startCol + 6, currentRow, startCol + 7);
+      worksheet.mergeCells(currentRow, startCol + 9, currentRow, startCol + 10);
     });
 
     currentRow += 1;
@@ -936,25 +1061,52 @@ const ProductionPlanningHistoryPage = (props) => {
       const excelTableRow = worksheet.getRow(currentRow + dataRowIndex);
       excelTableRow.getCell(startCol).value = dataRowIndex + 1 + ".";
       excelTableRow.getCell(startCol + 1).value = rowData.namaRekanan;
-      excelTableRow.getCell(startCol + 2).value = rowData.keterangan;
-      excelTableRow.getCell(startCol + 3).value = dataRowIndex + 1 + ".";
-      excelTableRow.getCell(startCol + 4).value = rowData.jenisCetakan;
-      excelTableRow.getCell(startCol + 5).value = rowData.isi;
-      excelTableRow.getCell(startCol + 6).value = rowData.harga;
-      for (let i = 0; i <= 6; i++) {
+      worksheet.mergeCells(
+        currentRow + dataRowIndex,
+        startCol + 1,
+        currentRow + dataRowIndex,
+        startCol + 2
+      );
+      excelTableRow.getCell(startCol + 3).value = rowData.keterangan;
+      worksheet.mergeCells(
+        currentRow + dataRowIndex,
+        startCol + 3,
+        currentRow + dataRowIndex,
+        startCol + 4
+      );
+      excelTableRow.getCell(startCol + 5).value = dataRowIndex + 1 + ".";
+      excelTableRow.getCell(startCol + 6).value = rowData.jenisCetakan;
+      worksheet.mergeCells(
+        currentRow + dataRowIndex,
+        startCol + 6,
+        currentRow + dataRowIndex,
+        startCol + 7
+      );
+      excelTableRow.getCell(startCol + 8).value = rowData.isi;
+      excelTableRow.getCell(startCol + 9).value = rowData.harga;
+      worksheet.mergeCells(
+        currentRow + dataRowIndex,
+        startCol + 9,
+        currentRow + dataRowIndex,
+        startCol + 10
+      );
+      for (let i = 0; i <= 10; i++) {
         excelTableRow.getCell(startCol + i).border = borderStyle;
       }
     });
 
     const buffer = await workbook.xlsx.writeBuffer();
-    saveAs(new Blob([buffer]), "laporan-perencanaan-produksi.xlsx");
+    saveAs(
+      new Blob([buffer]),
+      `Laporan-Perencanaan-Produksi${dataView.id}.xlsx`
+    );
   };
 
   return (
     <div
       style={{
         width: "100%",
-        height: "100%",
+        height: "100vh",
         backgroundImage: `url(${factoryBackground})`,
         backgroundSize: "cover",
         backgroundAttachment: "fixed",

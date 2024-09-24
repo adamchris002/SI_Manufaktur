@@ -1,5 +1,6 @@
 import React, { useContext, useEffect, useState } from "react";
 import factoryBackground from "../../assets/factorybackground.png";
+import logoPerusahaan from "../../assets/PT_Aridas_Karya_Satria_Logo.png";
 import {
   Button,
   IconButton,
@@ -29,6 +30,11 @@ import MySnackbar from "../../components/Snackbar";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../components/AuthContext";
 import MyModal from "../../components/Modal";
+import PictureAsPdfIcon from "@mui/icons-material/PictureAsPdf";
+import TextSnippetIcon from "@mui/icons-material/TextSnippet";
+import jsPDF from "jspdf";
+import ExcelJS from "exceljs";
+import { saveAs } from "file-saver";
 
 const NumericFormatCustom = React.forwardRef((props, ref) => {
   const { onChange, ...other } = props;
@@ -86,6 +92,8 @@ const LaporanSampah = (props) => {
   const [openSnackbar, setOpenSnackbar] = useState(false);
   const [snackbarStatus, setSnackbarStatus] = useState(false);
   const [snackbarMessage, setSnackbarMessage] = useState("");
+
+  const [dataView, setDataView] = useState({});
 
   const [openModal, setOpenModal] = useState(false);
 
@@ -544,6 +552,244 @@ const LaporanSampah = (props) => {
       });
     }
   };
+
+  const handleSaveAsExcel = async (id) => {
+    const dataView = allLaporanSampah.find((item) => item.id === id);
+
+    const workbook = new ExcelJS.Workbook();
+    const worksheet = workbook.addWorksheet("Sheet1");
+
+    const startRow = 3;
+    const startCol = 2;
+
+    const borderStyle = {
+      top: { style: "thin" },
+      left: { style: "thin" },
+      bottom: { style: "thin" },
+      right: { style: "thin" },
+    };
+
+    worksheet.mergeCells("B2:I2");
+    const titleCell = worksheet.getCell("B2");
+    titleCell.value = `LAPORAN SAMPAH (${dataView.tahapProduksi})`;
+    titleCell.border = {
+      top: borderStyle.top,
+      bottom: borderStyle.bottom,
+      left: borderStyle.left,
+      right: borderStyle.right,
+    };
+    titleCell.alignment = { horizontal: "center", vertical: "middle" };
+    titleCell.font = { bold: true };
+
+    let currentRow = startRow;
+
+    const dataInformasiSampah = [
+      [`No Order: ${dataView.noOrderProduksi}`, "", "", "", "", "", "", ""],
+      [`Tanggal: ${dataView.createdAt}`, "", "", "", "", "", "", ""],
+      [`PIC: ${userInformation?.data?.name}`, "", "", "", "", "", "", ""],
+    ];
+
+    dataInformasiSampah.forEach((row, rowIndex) => {
+      const excelRow = worksheet.getRow(currentRow + rowIndex);
+      row.forEach((cellValue, colIndex) => {
+        excelRow.getCell(startCol + colIndex).value = cellValue;
+      });
+    });
+
+    const applyBorderToRange = (
+      rowNumber,
+      startCol,
+      endCol,
+      isFirstRow,
+      isLastRow
+    ) => {
+      for (let col = startCol; col <= endCol; col++) {
+        const cell = worksheet.getCell(rowNumber, col);
+        cell.border = {
+          top: isFirstRow ? borderStyle.top : undefined,
+          bottom: isLastRow ? borderStyle.bottom : undefined,
+          left: col === startCol ? borderStyle.left : undefined,
+          right: col === endCol ? borderStyle.right : undefined,
+        };
+      }
+    };
+
+    for (let rowIndex = 3; rowIndex < 7; rowIndex++) {
+      const isFirstRow = rowIndex === 3;
+      const isLastRow = rowIndex === 7;
+      applyBorderToRange(rowIndex, 2, 9, isFirstRow, isLastRow);
+    }
+
+    currentRow += dataInformasiSampah.length;
+
+    let tableColumns = [
+      [
+        "No.",
+        "Tanggal",
+        "Pembeli",
+        "Uraian",
+        "Jumlah",
+        "Harga Satuan",
+        "Pembayaran",
+        "Keterangan",
+      ],
+    ];
+
+    const tableRow = [];
+
+    dataView.itemLaporanSampahs.forEach((row, index) => {
+      tableRow.push({
+        no: index + 1 + ".",
+        tanggal: dayjs(row.createdAt).format("MM/DD/YYYY hh:mm A"),
+        pembeli: row.pembeli,
+        uraian: row.uraian,
+        jumlah: row.jumlah,
+        hargaSatuan: `Rp. ${row.hargaSatuan
+          .toString()
+          .replace(/\B(?=(\d{3})+(?!\d))/g, ".")},-`,
+        pembayaran: `Rp. ${row.pembayaran
+          .toString()
+          .replace(/\B(?=(\d{3})+(?!\d))/g, ".")},-`,
+        keterangan: row.keterangan,
+      });
+    });
+
+    tableColumns.forEach((row, rowIndex) => {
+      const excelRow = worksheet.getRow(currentRow);
+      row.forEach((cellValue, colIndex) => {
+        excelRow.getCell(startCol + colIndex).value = cellValue;
+      });
+      for (let i = 0; i <= 7; i++) {
+        excelRow.getCell(startCol + i).border = borderStyle;
+      }
+    });
+
+    currentRow += 1;
+
+    tableRow.forEach((rowData, dataRowIndex) => {
+      const excelTableRow = worksheet.getRow(currentRow + dataRowIndex);
+      excelTableRow.getCell(startCol).value = rowData.no;
+      excelTableRow.getCell(startCol + 1).value = rowData.tanggal;
+      excelTableRow.getCell(startCol + 2).value = rowData.pembeli;
+      excelTableRow.getCell(startCol + 3).value = rowData.uraian;
+      excelTableRow.getCell(startCol + 4).value = rowData.jumlah;
+      excelTableRow.getCell(startCol + 5).value = rowData.hargaSatuan;
+      excelTableRow.getCell(startCol + 6).value = rowData.pembayaran;
+      excelTableRow.getCell(startCol + 7).value = rowData.keterangan;
+      for (let i = 0; i <= 7; i++) {
+        excelTableRow.getCell(startCol + i).border = borderStyle;
+      }
+    });
+
+    currentRow += tableRow.length;
+
+    const buffer = await workbook.xlsx.writeBuffer();
+    saveAs(new Blob([buffer]), `Laporan-Sampah_${dataView.id}.xlsx`);
+  };
+
+  const handleSaveAsPDF = (id) => {
+    const dataView = allLaporanSampah.find((item) => item.id === id);
+    const pdf = new jsPDF("landscape", "mm", "a4");
+    const pageWidth = pdf.internal.pageSize.getWidth();
+    const pageHeight = pdf.internal.pageSize.getHeight();
+    const margin = 10;
+    let y = margin;
+
+    const addNewPage = () => {
+      pdf.addPage();
+      pdf.addImage(factoryBackground, "png", 0, 0, pageWidth, pageHeight);
+      y = margin;
+    };
+
+    pdf.addImage(factoryBackground, "png", 0, 0, pageWidth, pageHeight);
+    pdf.addImage(logoPerusahaan, "png", 10, 5, 30, 30);
+    pdf.setTextColor(15, 96, 125);
+    pdf.setFontSize(24);
+    pdf.text("PT. ARIDAS KARYA SATRIA", 45, 25);
+    pdf.setFontSize(10);
+    pdf.text(
+      "Security Printing | Hologram Security | Smart Card | General Printing & Packaging | Continous Form Printing | Web Offset Printing",
+      45,
+      30
+    );
+    pdf.setFontSize(24);
+    y = 40;
+    pdf.setLineWidth(0.5);
+    pdf.line(10, y, pageWidth - margin, y);
+
+    y += 15;
+
+    pdf.text(`Laporan Sampah (${dataView.tahapProduksi})`, margin, y);
+    y += 15;
+    pdf.setFontSize(12);
+
+    pdf.text(`No Order: ${dataView.noOrderProduksi}`, margin, y);
+    y += 10;
+    pdf.text(
+      `Tanggal Pembuatan Laporan: ${dayjs().format("MM/DD/YYYY hh:mm A")}`,
+      margin,
+      y
+    );
+    y += 10;
+    pdf.text(`PIC: ${userInformation?.data?.name}`, margin, y);
+    y += 15;
+
+    if (y + 50 > pageHeight) {
+      addNewPage();
+    }
+
+    const tableHeaderColumns = [
+      "No.",
+      "Tanggal",
+      "Pembeli",
+      "Uraian",
+      "Jumlah",
+      "Harga Satuan",
+      "Pembayaran",
+      "Keterangan",
+    ];
+
+    const tableRow = [];
+
+    dataView.itemLaporanSampahs.forEach((row, index) => {
+      tableRow.push({
+        no: index + 1 + ".",
+        tanggal: dayjs(row.createdAt).format("MM/DD/YYYY hh:mm A"),
+        pembeli: row.pembeli,
+        uraian: row.uraian,
+        jumlah: row.jumlah,
+        hargaSatuan: `Rp. ${row.hargaSatuan
+          .toString()
+          .replace(/\B(?=(\d{3})+(?!\d))/g, ".")},-`,
+        pembayaran: `Rp. ${row.pembayaran
+          .toString()
+          .replace(/\B(?=(\d{3})+(?!\d))/g, ".")},-`,
+        keterangan: row.keterangan,
+      });
+    });
+
+    pdf.autoTable({
+      startY: y,
+      head: [tableHeaderColumns],
+      body: tableRow.map((row) => {
+        return [
+          row.no,
+          row.tanggal,
+          row.pembeli,
+          row.uraian,
+          row.jumlah,
+          row.hargaSatuan,
+          row.pembayaran,
+          row.keterangan,
+        ];
+      }),
+      theme: "striped",
+      margin: { left: margin, right: margin },
+    });
+
+    pdf.save(`Laporan-Sampah${dataView.id}.pdf`);
+  };
+
   return (
     <div
       className="hideScrollbar"
@@ -917,6 +1163,7 @@ const LaporanSampah = (props) => {
                         Tahap Produksi
                       </TableCell>
                       <TableCell style={{ width: "20px" }}>Actions</TableCell>
+                      <TableCell style={{ width: "20px" }}>Download</TableCell>
                     </TableRow>
                   </TableHead>
                   <TableBody>
@@ -944,6 +1191,22 @@ const LaporanSampah = (props) => {
                                 }}
                               >
                                 <DeleteIcon style={{ color: "red" }} />
+                              </IconButton>
+                            </TableCell>
+                            <TableCell>
+                              <IconButton
+                                onClick={() => {
+                                  handleSaveAsPDF(result.id);
+                                }}
+                              >
+                                <PictureAsPdfIcon sx={{ color: "#0F607D" }} />
+                              </IconButton>
+                              <IconButton
+                                onClick={() => {
+                                  handleSaveAsExcel(result.id);
+                                }}
+                              >
+                                <TextSnippetIcon sx={{ color: "#0F607D" }} />
                               </IconButton>
                             </TableCell>
                           </TableRow>

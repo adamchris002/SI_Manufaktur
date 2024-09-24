@@ -1536,7 +1536,9 @@ const MaindashboardMarketing = (props) => {
             Orders History
           </Typography>
           <div>
-            <DefaultButton style={{ width: "4.375vw", height: "2.083vw" }}>
+            <DefaultButton onClickFunction={() => {
+              navigate("/marketingDashboard/orderHistoryPage")
+            }} style={{ width: "4.375vw", height: "2.083vw" }}>
               <Typography style={{ fontSize: isMobile ? "12px" : "1.042vw" }}>
                 Go to Orders History Page
               </Typography>

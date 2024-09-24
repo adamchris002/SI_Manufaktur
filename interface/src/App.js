@@ -34,7 +34,8 @@ import KasHarian from "./pages/FinancePage/KasHarian";
 import Pajak from "./pages/FinancePage/Pajak";
 import RencanaPembayaran from "./pages/FinancePage/RencanaPembayaran";
 import LaporanAktual from "./pages/ProductionPage/LaporanAktual";
-import ProductionPlanningHistoryPage from "./pages/ProductionPlanningPage/ProductionPlanningHistoryPage"
+import ProductionPlanningHistoryPage from "./pages/ProductionPlanningPage/ProductionPlanningHistoryPage";
+import OrderHistoryPage from "./pages/MarketingPage/OrderHistoryPage";
 
 export const AppContext = createContext({});
 
@@ -108,6 +109,17 @@ function App() {
                   <Navigate to="/unauthorized" replace />
                 ) : (
                   <MarketingActivityLog />
+                )
+              }
+            />
+            <Route
+              path="/marketingDashboard/orderHistoryPage"
+              element={
+                !userCredentials.data ||
+                userCredentials.data.department !== "Marketing" ? (
+                  <Navigate to="/unauthorized" replace />
+                ) : (
+                  <OrderHistoryPage userInformation={userCredentials} />
                 )
               }
             />
