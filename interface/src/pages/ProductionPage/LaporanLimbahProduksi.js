@@ -175,13 +175,13 @@ const LaporanLimbahProduksi = (props) => {
           namaBarang: "",
           jumlahBarang: { value: "", unit: "" },
           keterangan: "",
-          tahapProduksi: selectedTahapProduksi
+          tahapProduksi: selectedTahapProduksi,
         },
       ],
     }));
   };
 
-  const handleDeleteItemLimbah = (id, index) => {
+  const handleDeleteItemLimbah = (id, index, idLimbahProduksi) => {
     if (!id || id === undefined) {
       setDataLimbah((oldObject) => ({
         ...oldObject,
@@ -193,6 +193,10 @@ const LaporanLimbahProduksi = (props) => {
       axios({
         method: "DELETE",
         url: `http://localhost:3000/production/deleteItemLaporanLimbahProduksis/${id}`,
+        params: {
+          userId: userInformation?.data?.id,
+          idLimbahProduksi: idLimbahProduksi,
+        },
       }).then((result) => {
         if (result.status === 200) {
           setRefreshDataLimbahProduksi(true);
@@ -398,9 +402,9 @@ const LaporanLimbahProduksi = (props) => {
         data: { dataLimbah: transformedDataLimbah },
       }).then((result) => {
         if (result.status === 200) {
-          setSuccessMessage("Berhasil mengedit laporan limbah hasil produksi")
+          setSuccessMessage("Berhasil mengedit laporan limbah hasil produksi");
           setSnackbarStatus(true);
-          navigate(-1)
+          navigate(-1);
         } else {
           setOpenSnackbar(true);
           setSnackbarStatus(false);
@@ -1163,7 +1167,11 @@ const LaporanLimbahProduksi = (props) => {
                           <TableCell>
                             <IconButton
                               onClick={() => {
-                                handleDeleteItemLimbah(result?.id, index);
+                                handleDeleteItemLimbah(
+                                  result?.id,
+                                  index,
+                                  dataLimbah.id
+                                );
                               }}
                             >
                               <DeleteIcon style={{ color: "red" }} />

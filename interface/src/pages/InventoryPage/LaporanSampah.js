@@ -239,7 +239,7 @@ const LaporanSampah = (props) => {
       itemLaporanSampahs: laporanForEdit[0].itemLaporanSampahs.map((result) => {
         return {
           ...result,
-          tanggal: dayjs(result.tanggal).format("MM/DD/YYYY hh:mm A"),
+          tanggal: dayjs(result.tanggal),
           jumlah: separateValueAndUnit(result.jumlah),
         };
       }),
@@ -400,6 +400,7 @@ const LaporanSampah = (props) => {
     axios({
       method: "DELETE",
       url: `http://localhost:3000/production/deleteLaporanSampah/${id}`,
+      params: { userId: userInformation?.data?.id },
     }).then((result) => {
       if (result.status === 200) {
         setRefreshDataLaporanSampah(true);
@@ -413,10 +414,14 @@ const LaporanSampah = (props) => {
       }
     });
   };
-  const handleDeleteItemLaporanSampahFromDB = (id) => {
+  const handleDeleteItemLaporanSampahFromDB = (id, iDLaporanSampah) => {
     axios({
       method: "DELETE",
       url: `http://localhost:3000/production/deleteItemLaporanSampah/${id}`,
+      params: {
+        userId: userInformation?.data?.id,
+        iDLaporanSampah: iDLaporanSampah,
+      },
     }).then((result) => {
       if (result.status === 200) {
         setRefreshDataLaporanSampah(true);
@@ -1272,6 +1277,7 @@ const LaporanSampah = (props) => {
                 <TableBody>
                   {dataLaporanSampahForEdit.itemLaporanSampahs.map(
                     (result, index) => {
+                      console.log(result);
                       return (
                         <React.Fragment key={index}>
                           <TableRow>
@@ -1452,7 +1458,8 @@ const LaporanSampah = (props) => {
                               <IconButton
                                 onClick={() => {
                                   handleDeleteItemLaporanSampahFromDB(
-                                    result.id
+                                    result.id,
+                                    dataLaporanSampahForEdit.id
                                   );
                                 }}
                               >

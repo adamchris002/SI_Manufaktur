@@ -152,6 +152,7 @@ const MaindashboardProduction = (props) => {
     axios({
       method: "DELETE",
       url: `http://localhost:3000/production/deleteKegiatanProduksi/${id}`,
+      params: { userId: userInformation?.data?.id },
     }).then((result) => {
       if (result.status === 200) {
         setRefreshDataKegiatanProduksi(true);
@@ -174,7 +175,11 @@ const MaindashboardProduction = (props) => {
     axios({
       method: "DELETE",
       url: `http://localhost:3000/production/deleteItemLimbahProduksi/${id}`,
-      params: { tahapProduksi: tahapProduksi, noOrderProduksi },
+      params: {
+        tahapProduksi: tahapProduksi,
+        noOrderProduksi: noOrderProduksi,
+        userId: userInformation?.data?.id,
+      },
     }).then((result) => {
       if (result.status === 200) {
         setOpenSnackbar(true);

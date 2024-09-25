@@ -44,6 +44,7 @@ const KegiatanProduksi = (props) => {
   const [allProductionPlan, setAllProductionPlan] = useState([]);
   const [dataBahanProduksiPrev, setDataBahanProduksiPrev] = useState([]);
   const [allInventoryItem, setAllInventoryItem] = useState([]);
+  console.log(allInventoryItem);
   const [dataProduksi, setDataProduksi] = useState({
     tanggalProduksi: dayjs(""),
     noOrderProduksi: "",
@@ -62,6 +63,8 @@ const KegiatanProduksi = (props) => {
       },
     ],
   });
+
+  console.log(dataProduksi);
 
   const [jadwalProduksiPracetak, setJadwalProduksiPracetak] = useState([
     {
@@ -210,6 +213,7 @@ const KegiatanProduksi = (props) => {
       }).then((result) => {
         if (result.status === 200) {
           // if (isNewTahapProduksi) {
+          console.log(result.data);
           const tempData = result?.data?.itemPenyerahanBarangs?.map((item) => {
             const matchingItem = dataBahanProduksiPrev.find(
               (bahan) =>
@@ -733,6 +737,7 @@ const KegiatanProduksi = (props) => {
     axios({
       method: "PUT",
       url: `http://localhost:3000/production/kegiatanProduksiSelesai/${id}`,
+      params: { userId: userInformation?.data?.id },
     }).then((result) => {
       if (result.status === 200) {
         setSuccessMessage("Kegiatan produksi selesai");
@@ -757,7 +762,7 @@ const KegiatanProduksi = (props) => {
           jenisCetakan: dataProduksi.jenisCetakan,
           perolehanCetakan: { value: "", unit: "" },
           waste: { value: "", unit: "" },
-          ketarangan: "",
+          keterangan: "",
         },
       ];
     });
@@ -781,7 +786,7 @@ const KegiatanProduksi = (props) => {
           sampah: { value: "", unit: "" },
           rollHabis: "",
           rollSisa: "",
-          ketarangan: "",
+          keterangan: "",
         },
       ];
     });
@@ -799,7 +804,7 @@ const KegiatanProduksi = (props) => {
           nomoratorAkhir: "",
           perolehanCetakan: { value: "", unit: "" },
           waste: { value: "", unit: "" },
-          ketarangan: "",
+          keterangan: "",
         },
       ];
     });
@@ -814,20 +819,20 @@ const KegiatanProduksi = (props) => {
       axios({
         method: "DELETE",
         url: `http://localhost:3000/production/deleteJadwalProduksiPracetak/${id}`,
+        params: {
+          userId: userInformation?.data?.id,
+          noOrderProduksi: dataProduksi.noOrderProduksi,
+        },
       }).then((result) => {
         if (result.status === 200) {
           setRefreshDataKegiatanProduksi(true);
           setOpenSnackbar(true);
           setSnackbarStatus(true);
-          setSnackbarMessage(
-            "Berhasil Menghapus data jadwal produksi pracetak"
-          );
+          setSnackbarMessage("Berhasil Menghapus data jadwal produksi");
         } else {
           setOpenSnackbar(true);
           setSnackbarStatus(false);
-          setSnackbarMessage(
-            "Tidak berhasil menghapus data jadwal produksi pracetak"
-          );
+          setSnackbarMessage("Tidak berhasil menghapus data jadwal produksi");
         }
       });
     }
@@ -837,6 +842,26 @@ const KegiatanProduksi = (props) => {
       setJadwalProduksiCetak((oldArray) =>
         oldArray.filter((_, j) => j !== index)
       );
+    } else {
+      axios({
+        method: "DELETE",
+        url: `http://localhost:3000/production/deleteJadwalProduksiPracetak/${id}`,
+        params: {
+          userId: userInformation?.data?.id,
+          noOrderProduksi: dataProduksi.noOrderProduksi,
+        },
+      }).then((result) => {
+        if (result.status === 200) {
+          setRefreshDataKegiatanProduksi(true);
+          setOpenSnackbar(true);
+          setSnackbarStatus(true);
+          setSnackbarMessage("Berhasil Menghapus data jadwal produksi");
+        } else {
+          setOpenSnackbar(true);
+          setSnackbarStatus(false);
+          setSnackbarMessage("Tidak berhasil menghapus data jadwal produksi");
+        }
+      });
     }
   };
   const handleDeleteDataJadwalProduksiFitur = (id, index) => {
@@ -844,6 +869,26 @@ const KegiatanProduksi = (props) => {
       setJadwalProduksiFitur((oldArray) =>
         oldArray.filter((_, j) => j !== index)
       );
+    } else {
+      axios({
+        method: "DELETE",
+        url: `http://localhost:3000/production/deleteJadwalProduksiPracetak/${id}`,
+        params: {
+          userId: userInformation?.data?.id,
+          noOrderProduksi: dataProduksi.noOrderProduksi,
+        },
+      }).then((result) => {
+        if (result.status === 200) {
+          setRefreshDataKegiatanProduksi(true);
+          setOpenSnackbar(true);
+          setSnackbarStatus(true);
+          setSnackbarMessage("Berhasil Menghapus data jadwal produksi");
+        } else {
+          setOpenSnackbar(true);
+          setSnackbarStatus(false);
+          setSnackbarMessage("Tidak berhasil menghapus data jadwal produksi");
+        }
+      });
     }
   };
 
@@ -898,6 +943,11 @@ const KegiatanProduksi = (props) => {
       axios({
         method: "DELETE",
         url: `http://localhost:3000/production/deletePersonils/${id}`,
+        params: {
+          userId: userInformation?.data?.id,
+          tahapProduksi: dataProduksi.tahapProduksi,
+          noOrderProduksi: dataProduksi.noOrderProduksi,
+        },
       }).then((result) => {
         if (result.status === 200) {
           setRefreshDataKegiatanProduksi(true);
@@ -927,6 +977,10 @@ const KegiatanProduksi = (props) => {
       axios({
         method: "DELETE",
         url: `http://localhost:3000/production/deleteBahanProduksiPracetak/${id}`,
+        params: {
+          userId: userInformation?.data?.id,
+          noOrderProduksi: dataProduksi.noOrderProduksi,
+        },
       }).then((result) => {
         if (result.status === 200) {
           setRefreshDataKegiatanProduksi(true);

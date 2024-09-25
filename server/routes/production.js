@@ -38,83 +38,83 @@ productionRoutes.get(
 //post
 productionRoutes.post(
   "/addKegiatanProduksi/:id",
-  ProductionController.addKegiatanProduksi
+  ProductionController.addKegiatanProduksi //udah
 );
 productionRoutes.post(
   "/addKegiatanProduksiCetak/:id",
-  ProductionController.addKegiatanProduksiCetak
+  ProductionController.addKegiatanProduksiCetak //udah
 );
 productionRoutes.post(
   "/addKegiatanProduksiFitur/:id",
-  ProductionController.addKegiatanProduksiFitur
+  ProductionController.addKegiatanProduksiFitur //udah
 );
 productionRoutes.post(
   "/addLaporanLimbahProduksi/:id",
-  ProductionController.addLaporanLimbahProduksi
+  ProductionController.addLaporanLimbahProduksi //udah
 );
 productionRoutes.post(
   "/addLaporanSampah/:id",
-  ProductionController.addLaporanSampah
+  ProductionController.addLaporanSampah //udah
 );
 
 //put
 productionRoutes.put(
   "/updateKegiatanProduksiPracetak/:id",
-  ProductionController.editKegiatanProduksiPracetak
+  ProductionController.editKegiatanProduksiPracetak //udah
 );
 productionRoutes.put(
   "/updateKegiatanProduksiCetak/:id",
-  ProductionController.editKegiatanProduksiCetak
+  ProductionController.editKegiatanProduksiCetak //udah
 );
 productionRoutes.put(
   "/updateKegiatanProduksiFitur/:id",
-  ProductionController.editKegiatanProduksiFitur
+  ProductionController.editKegiatanProduksiFitur //udah
 );
 productionRoutes.put(
   "/kegiatanProduksiSelesai/:id",
-  ProductionController.kegiatanProduksiSelesai
+  ProductionController.kegiatanProduksiSelesai //udah
 );
 productionRoutes.put(
   "/updateDataLimbahProduksi/:id",
-  ProductionController.updateDataLimbahProduksi
+  ProductionController.updateDataLimbahProduksi //udah
 );
 productionRoutes.put(
   "/updateLaporanSampah/:id",
-  ProductionController.updateLaporanSampah
+  ProductionController.updateLaporanSampah //udah
 );
 
 //delete
 productionRoutes.delete(
   "/deletePersonils/:id",
-  ProductionController.deletePersonil
+  ProductionController.deletePersonil //udah
 );
 productionRoutes.delete(
   "/deleteBahanProduksiPracetak/:id",
-  ProductionController.deleteBahanProduksiPracetak
+  ProductionController.deleteBahanProduksiPracetak //udah
 );
 productionRoutes.delete(
   "/deleteJadwalProduksiPracetak/:id",
-  ProductionController.deleteJadwalProduksiPracetak
+  ProductionController.deleteJadwalProduksiPracetak //udah
 );
 productionRoutes.delete(
   "/deleteKegiatanProduksi/:id",
-  ProductionController.deleteKegiatanProduksi
+  ProductionController.deleteKegiatanProduksi //udah
 );
 productionRoutes.delete(
   "/deleteItemLimbahProduksi/:id",
-  ProductionController.deleteItemLimbahProduksi
+  ProductionController.deleteItemLimbahProduksi //udah
 );
 productionRoutes.delete(
   "/deleteItemLaporanLimbahProduksis/:id",
-  ProductionController.deleteItemLaporanLimbahProduksis
+  ProductionController.deleteItemLaporanLimbahProduksis //udah
 );
 productionRoutes.delete(
   "/deleteLaporanSampah/:id",
-  ProductionController.deleteLaporanSampah
+  ProductionController.deleteLaporanSampah //udah
 );
 productionRoutes.delete(
   "/deleteItemLaporanSampah/:id",
-  ProductionController.deleteItemLaporanSampah
+  ProductionController.deleteItemLaporanSampah //
 );
 
 module.exports = productionRoutes;

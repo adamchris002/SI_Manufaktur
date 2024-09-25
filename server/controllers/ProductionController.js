@@ -12,7 +12,10 @@ const {
   itemLaporanLimbahProduksis,
   laporanSampahs,
   itemLaporanSampahs,
-  productionPlannings
+  productionPlannings,
+  activitylogs,
+  UserActivityLogs,
+  users,
 } = require("../models");
 const dayjs = require("dayjs");
 
@@ -133,7 +136,22 @@ class ProductionController {
         { where: { id: dataProduksi.noOrderProduksi } }
       );
 
-      
+      const findUser = await users.findOne({
+        where: { id: id },
+      });
+
+      let createActivityLog = await activitylogs.create({
+        user: findUser.name,
+        activity: `Menambahkan kegiatan produksi pracetak dengan id ${result.id}`,
+        name: `No Order: ${dataProduksi.noOrderProduksi}`,
+        division: "Production",
+      });
+
+      await UserActivityLogs.create({
+        userId: findUser.id,
+        activityLogId: createActivityLog.id,
+        id: createActivityLog.id,
+      });
 
       await UserLaporanProduksis.create({
         userId: parseInt(id),
@@ -305,6 +323,23 @@ class ProductionController {
           })
         );
       }
+
+      let findUser = await users.findOne({
+        where: { id: id },
+      });
+
+      let createActivityLog = await activitylogs.create({
+        user: findUser.name,
+        activity: `Mengedit kegiatan produksi pracetak dengan id ${dataProduksi.id}`,
+        name: `ID Pesanan: ${dataProduksi.noOrderProduksi}`,
+        division: "Production",
+      });
+
+      await UserActivityLogs.create({
+        userId: findUser.id,
+        activityLogId: createActivityLog.id,
+        id: createActivityLog.id,
+      });
       res.json(result);
     } catch (error) {
       res.json(error);
@@ -313,9 +348,32 @@ class ProductionController {
   static async deletePersonil(req, res) {
     try {
       const { id } = req.params;
+      const { userId, tahapProduksi, noOrderProduksi } = req.query;
+
+      let findOnePersonil = await personils.findOne({
+        where: { id: id },
+      });
       let result = await personils.destroy({
         where: { id: id },
       });
+
+      let findUser = await users.findOne({
+        where: { id: userId },
+      });
+
+      let createActivityLog = await activitylogs.create({
+        user: findUser.name,
+        activity: `Menghapus personil ${findOnePersonil.nama} dari kegiatan produksi (${tahapProduksi}) dengan ID Pesanan ${noOrderProduksi}`,
+        name: `ID Pesanan: ${noOrderProduksi}`,
+        division: "Production",
+      });
+
+      await UserActivityLogs.create({
+        userId: findUser.id,
+        activityLogId: createActivityLog.id,
+        id: createActivityLog.id,
+      });
+
       res.json(result);
     } catch (error) {
       res.json(error);
@@ -324,9 +382,33 @@ class ProductionController {
   static async deleteBahanProduksiPracetak(req, res) {
     try {
       const { id } = req.params;
+      const { userId, noOrderProduksi } = req.query;
+
+      const findOneBahanLaporanProduksi = await bahanLaporanProduksis.findOne({
+        where: { id: id },
+      });
+
       let result = await bahanLaporanProduksis.destroy({
         where: { id: id },
       });
+
+      let findUser = await users.findOne({
+        where: { id: userId },
+      });
+
+      let createActivityLog = await activitylogs.create({
+        user: findUser.name,
+        activity: `Menghapus item bahan jenis ${findOneBahanLaporanProduksi.jenis} dari bahan laporan produksi dari ${findOneBahanLaporanProduksi.tahapProduksi}`,
+        name: `No Pesanan: ${noOrderProduksi}`,
+        division: "Prodduction",
+      });
+
+      await UserActivityLogs.create({
+        userId: findUser.id,
+        activityLogId: createActivityLog.id,
+        id: createActivityLog.id,
+      });
+
       res.json(result);
     } catch (error) {
       res.json(error);
@@ -335,8 +417,30 @@ class ProductionController {
   static async deleteJadwalProduksiPracetak(req, res) {
     try {
       const { id } = req.params;
+      const { userId, noOrderProduksi } = req.query;
+
+      let findOneJadwalProduksi = await jadwalProduksis.findOne({
+        where: { id: id },
+      });
+
       let result = await jadwalProduksis.destroy({
         where: { id: id },
+      });
+      let findUser = await users.findOne({
+        where: { id: userId },
+      });
+
+      let createActivityLog = await activitylogs.create({
+        user: findUser.name,
+        activity: `Menghapus jadwal produksi dari ${findOneJadwalProduksi.tahapProduksi} dengan ID Pesanan ${noOrderProduksi}`,
+        name: `No Pesanan: ${noOrderProduksi}`,
+        division: "Production",
+      });
+
+      await UserActivityLogs.create({
+        userId: findUser.id,
+        activityLogId: createActivityLog.id,
+        id: createActivityLog.id,
       });
       res.json(result);
     } catch (error) {
@@ -346,12 +450,36 @@ class ProductionController {
   static async deleteKegiatanProduksi(req, res) {
     try {
       const { id } = req.params;
+      const { userId } = req.query;
+
+      let findOneLaporanProduksi = await laporanProduksis.findOne({
+        where: { id: id },
+      });
+
       let result = await laporanProduksis.destroy({
         where: { id: id },
       });
+
+      let findUser = await users.findOne({
+        where: { id: userId },
+      });
+
+      let createActivityLog = await activitylogs.create({
+        user: findUser.name,
+        activity: `Menghapus Laporan Produksi tahap ${findOneLaporanProduksi.tahapProduksi} dengan ID Pesanan ${findOneLaporanProduksi.noOrderProduksi}`,
+        name: `ID Pesanan: ${findOneLaporanProduksi.noOrderProduksi}`,
+        division: "Production",
+      });
+
+      await UserActivityLogs.create({
+        userId: findUser.id,
+        activityLogId: createActivityLog.id,
+        id: createActivityLog.id,
+      });
+
       res.json(result);
     } catch (error) {
-      res.json(result);
+      res.json(error);
     }
   }
   static async addKegiatanProduksiFitur(req, res) {
@@ -464,6 +592,24 @@ class ProductionController {
         userId: parseInt(id),
         laporanProduksiId: parseInt(result.id),
       });
+
+      const findUser = await users.findOne({
+        where: { id: id },
+      });
+
+      let createActivityLog = await activitylogs.create({
+        user: findUser.name,
+        activity: `Menambahkan kegiatan produksi fitur dengan id ${result.id}`,
+        name: `No Order: ${dataProduksi.noOrderProduksi}`,
+        division: "Production",
+      });
+
+      await UserActivityLogs.create({
+        userId: findUser.id,
+        activityLogId: createActivityLog.id,
+        id: createActivityLog.id,
+      });
+
       res.json(result);
     } catch (error) {
       res.json(error);
@@ -587,6 +733,28 @@ class ProductionController {
         laporanProduksiId: parseInt(result.id),
       });
 
+      const findUser = await users.findOne({
+        where: { id: id },
+      });
+
+      let createActivityLog = await activitylogs.create({
+        user: findUser.name,
+        activity: `Menambahkan kegiatan produksi Cetak dengan id ${result.id}`,
+        name: `No Order: ${dataProduksi.noOrderProduksi}`,
+        division: "Production",
+      });
+
+      await UserActivityLogs.create({
+        userId: findUser.id,
+        activityLogId: createActivityLog.id,
+        id: createActivityLog.id,
+      });
+
+      await UserLaporanProduksis.create({
+        userId: parseInt(id),
+        laporanProduksiId: parseInt(result.id),
+      });
+
       res.json(result);
     } catch (error) {
       res.json(error);
@@ -693,13 +861,14 @@ class ProductionController {
       if (jadwalCetak && Array.isArray(jadwalCetak)) {
         await Promise.all(
           jadwalCetak.map(async (data) => {
+            console.log(data);
             if (!data.id) {
               await jadwalProduksis.create({
                 laporanProduksiId: dataProduksi.id,
                 tahapProduksi: dataProduksi.tahapProduksi,
                 jamAwalProduksi: data.jamAwalProduksi,
                 jamAkhirProduksi: data.jamAkhirProduksi,
-                noOrderProduksi: data.noOrderProduksi,
+                noOrderProduksi: parseFloat(data.noOrderProduksi),
                 jenisCetakan: data.jenisCetakan,
                 perolehanCetak: data.perolehanCetakan,
                 sobek: data.sobek,
@@ -732,7 +901,22 @@ class ProductionController {
           })
         );
       }
+      let findUser = await users.findOne({
+        where: { id: id },
+      });
 
+      let createActivityLog = await activitylogs.create({
+        user: findUser.name,
+        activity: `Mengedit kegiatan produksi cetak dengan id ${dataProduksi.id}`,
+        name: `ID Pesanan: ${dataProduksi.noOrderProduksi}`,
+        division: "Production",
+      });
+
+      await UserActivityLogs.create({
+        userId: findUser.id,
+        activityLogId: createActivityLog.id,
+        id: createActivityLog.id,
+      });
       res.json(result);
     } catch (error) {
       res.json(error);
@@ -872,6 +1056,22 @@ class ProductionController {
           })
         );
       }
+      let findUser = await users.findOne({
+        where: { id: id },
+      });
+
+      let createActivityLog = await activitylogs.create({
+        user: findUser.name,
+        activity: `Mengedit kegiatan produksi fitur dengan id ${dataProduksi.id}`,
+        name: `ID Pesanan: ${dataProduksi.noOrderProduksi}`,
+        division: "Production",
+      });
+
+      await UserActivityLogs.create({
+        userId: findUser.id,
+        activityLogId: createActivityLog.id,
+        id: createActivityLog.id,
+      });
       res.json(result);
     } catch (error) {
       res.json(error);
@@ -880,6 +1080,11 @@ class ProductionController {
   static async kegiatanProduksiSelesai(req, res) {
     try {
       const { id } = req.params;
+      const { userId } = req.query;
+
+      let findKegiatanProduksi = await laporanProduksis.findOne({
+        where: { id: id },
+      });
       let findLaporanProduksi = await laporanProduksis.findOne({
         where: { id: id },
       });
@@ -889,6 +1094,23 @@ class ProductionController {
       );
       let result = await findLaporanProduksi.update({
         statusLaporan: "Done",
+      });
+
+      const findUser = await users.findOne({
+        where: { id: userId },
+      });
+
+      let createActivityLog = await activitylogs.create({
+        user: findUser.name,
+        activity: `Menyelesaikan kegiatan produksi dengan No Pesanan ${findKegiatanProduksi.noOrderProduksi}`,
+        name: `No Pesanan: ${findKegiatanProduksi.noOrderProduksi}`,
+        division: "Production",
+      });
+
+      await UserActivityLogs.create({
+        userId: findUser.id,
+        activityLogId: createActivityLog.id,
+        id: createActivityLog.id,
       });
 
       // let doneOrder = await orders.update(
@@ -972,6 +1194,23 @@ class ProductionController {
         }
       );
 
+      const findUser = await users.findOne({
+        where: { id: id },
+      });
+
+      let createActivityLog = await activitylogs.create({
+        user: findUser.name,
+        activity: `Menambahkan Item Limbah Produksi dari ${dataLimbah.tahapProduksi}`,
+        name: `ID Pesanan: ${parseInt(dataLimbah.noOrderProduksi)}`,
+        division: "Production",
+      });
+
+      await UserActivityLogs.create({
+        userId: findUser.id,
+        activityLogId: createActivityLog.id,
+        id: createActivityLog.id,
+      });
+
       res
         .status(200)
         .json({ message: "Laporan limbah produksi added successfully" });
@@ -1021,6 +1260,23 @@ class ProductionController {
           })
         );
       }
+
+      let findUser = await users.findOne({
+        where: { id: id },
+      });
+
+      let createActivityLog = await activitylogs.create({
+        user: findUser.name,
+        activity: `Mengedit item limbah produksi dengan id ${dataLimbah.id}`,
+        name: `ID Pesanan: ${dataLimbah.noOrderProduksi}`,
+        division: "Production",
+      });
+
+      await UserActivityLogs.create({
+        userId: findUser.id,
+        activityLogId: createActivityLog.id,
+        id: createActivityLog.id,
+      });
       res.json(result);
     } catch (error) {
       res.json(error);
@@ -1044,7 +1300,7 @@ class ProductionController {
   static async deleteItemLimbahProduksi(req, res) {
     try {
       const { id } = req.params;
-      const { tahapProduksi, noOrderProduksi } = req.query;
+      const { tahapProduksi, noOrderProduksi, userId } = req.query;
 
       const searchForItem = await laporanLimbahProduksis.findOne({
         where: { id: id },
@@ -1063,11 +1319,30 @@ class ProductionController {
         });
       }
 
-      await searchForItem.destroy();
+      let result = await laporanLimbahProduksis.destroy({
+        where: { id: id },
+      });
 
-      res.json({ message: "Item successfully deleted", data: searchForItem });
+      let findUser = await users.findOne({
+        where: { id: userId },
+      });
+
+      let createActivityLog = await activitylogs.create({
+        user: findUser.name,
+        activity: `Menghapus limbah hasil produksi dengan id ${id}`,
+        name: `No Pesanan: ${noOrderProduksi}`,
+        division: "Production",
+      });
+
+      await UserActivityLogs.create({
+        userId: findUser.id,
+        activityLogId: createActivityLog.id,
+        id: createActivityLog.id,
+      });
+
+      res.json(result);
     } catch (error) {
-      res.status(500).json({ error: error.message });
+      res.json(error);
     }
   }
 
@@ -1097,9 +1372,34 @@ class ProductionController {
   static async deleteItemLaporanLimbahProduksis(req, res) {
     try {
       const { id } = req.params;
+      const { userId, idLimbahProduksi } = req.query;
+
+      let findOneItemLaporanLimbahProduksi =
+        await itemLaporanLimbahProduksis.findOne({
+          where: { id: id },
+        });
+
+      let findUser = await users.findOne({
+        where: { id: userId },
+      });
+
       let result = await itemLaporanLimbahProduksis.destroy({
         where: { id: id },
       });
+
+      let createActivityLog = await activitylogs.create({
+        user: findUser.name,
+        activity: `Menghapus item hasil limbah produksi dari id ${idLimbahProduksi} dari ID Pesanan ${findOneItemLaporanLimbahProduksi.noOrderProduksiId}`,
+        name: `ID Pesanan: ${findOneItemLaporanLimbahProduksi.noOrderProduksiId}`,
+        division: "Production",
+      });
+
+      await UserActivityLogs.create({
+        userId: findUser.id,
+        activityLogId: createActivityLog.id,
+        id: createActivityLog.id,
+      });
+
       res.json(result);
     } catch (error) {
       res.json(error);
@@ -1137,6 +1437,23 @@ class ProductionController {
           })
         );
       }
+
+      let findUser = await users.findOne({
+        where: { id: id },
+      });
+
+      let createActivityLog = await activitylogs.create({
+        user: findUser.name,
+        activity: `Menambahkan Laporan Sampah dari ${dataLaporanSampah.tahapProduksi} dengan ID Pesanan ${dataLaporanSampah.noOrderProduksi}`,
+        name: `ID Pesanan: ${dataLaporanSampah.noOrderProduksi}`,
+        division: "Inventory",
+      });
+
+      await UserActivityLogs.create({
+        userId: findUser.id,
+        activityLogId: createActivityLog.id,
+        id: createActivityLog.id,
+      });
       res.json(result);
     } catch (error) {
       res.json(error);
@@ -1155,9 +1472,32 @@ class ProductionController {
   static async deleteLaporanSampah(req, res) {
     try {
       const { id } = req.params;
+      const { userId } = req.query;
+
+      const findOneLaporanSampah = await laporanSampahs.findOne({
+        where: { id: id },
+      });
+
+      const findUser = await users.findOne({
+        where: { id: userId },
+      });
       let result = await laporanSampahs.destroy({
         where: { id: id },
       });
+
+      let createActivityLog = await activitylogs.create({
+        user: findUser.name,
+        activity: `Menghapus laporan sampah dari ID Pesanan ${findOneLaporanSampah.noOrderProduksi}`,
+        name: `ID Pesanan: ${findOneLaporanSampah.noOrderProduksi}`,
+        division: "Inventory",
+      });
+
+      await UserActivityLogs.create({
+        userId: findUser.id,
+        activityLogId: createActivityLog.id,
+        id: createActivityLog.id,
+      });
+
       res.json(result);
     } catch (error) {
       res.json(error);
@@ -1166,9 +1506,32 @@ class ProductionController {
   static async deleteItemLaporanSampah(req, res) {
     try {
       const { id } = req.params;
+      const { userId, iDLaporanSampah } = req.query;
+
+      let findOneLaporanSampah = await laporanSampahs.findOne({
+        where: { id: iDLaporanSampah },
+      });
+
+      let findUser = await users.findOne({
+        where: { id: userId },
+      });
       let result = await itemLaporanSampahs.destroy({
         where: { id: id },
       });
+
+      let createActivityLog = await activitylogs.create({
+        user: findUser.name,
+        activity: `Menghapus item laporan sampah dari laporan sampah dengan ID ${iDLaporanSampah} dari ID Pesanan ${findOneLaporanSampah.noOrderProduksi}`,
+        name: `ID Pesanan: ${findOneLaporanSampah.noOrderProduksi}`,
+        division: "Production",
+      });
+
+      await UserActivityLogs.create({
+        userId: findUser.id,
+        activityLogId: createActivityLog.id,
+        id: createActivityLog.id,
+      });
+
       res.json(result);
     } catch (error) {
       res.json(error);
@@ -1225,6 +1588,23 @@ class ProductionController {
           })
         );
       }
+
+      let findUser = await users.findOne({
+        where: { id: id },
+      });
+
+      let createActivityLog = await activitylogs.create({
+        user: findUser.name,
+        activity: `Mengedit laporan sampah dengan id ${dataLaporanSampah.id}`,
+        name: `ID Pesanan: ${dataLaporanSampah.noOrderProduksi}`,
+        division: "Production",
+      });
+
+      await UserActivityLogs.create({
+        userId: findUser.id,
+        activityLogId: createActivityLog.id,
+        id: createActivityLog.id,
+      });
       res.json(result);
     } catch (error) {
       res.json(error);
