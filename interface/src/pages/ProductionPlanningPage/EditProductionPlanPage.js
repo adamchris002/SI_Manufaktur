@@ -146,10 +146,15 @@ const EditProductionPlanPage = (props) => {
     },
   ];
 
-  const removeJadwal = (id) => {
+  const removeJadwal = (id, idEstimasiJadwal) => {
     axios({
       method: "DELETE",
       url: `http://localhost:3000/productionPlanning/removeJadwal/${id}`,
+      params: {
+        userId: userInformation?.data?.id,
+        productionPlanId: productionPlanId,
+        estimasiJadwalProduksiId: idEstimasiJadwal,
+      },
     }).then((result) => {
       if (result.status === 200) {
         setOpenSnackbar(true);
@@ -181,6 +186,10 @@ const EditProductionPlanPage = (props) => {
     axios({
       method: "DELETE",
       url: `http://localhost:3000/productionPlanning/deleteJadwal/${id}`,
+      params: {
+        userId: userInformation?.data?.id,
+        productionPlanId: productionPlanId,
+      },
     }).then((result) => {
       if (result.status === 200) {
         setOpenSnackbar(true);
@@ -217,6 +226,10 @@ const EditProductionPlanPage = (props) => {
     axios({
       method: "DELETE",
       url: `http://localhost:3000/productionPlanning/deleteItemRincianCetakan/${id}`,
+      params: {
+        userId: userInformation?.data?.id,
+        productionPlanId: productionPlanId,
+      },
     }).then((result) => {
       if (result.status === 200) {
         setOpenSnackbar(true);
@@ -334,6 +347,10 @@ const EditProductionPlanPage = (props) => {
     axios({
       method: "DELETE",
       url: `http://localhost:3000/productionPlanning/deleteJenisBahanBaku/${index}`,
+      params: {
+        userId: userInformation?.data?.id,
+        productionPlanId: productionPlanId,
+      },
     }).then((result) => {
       if (result.status === 200) {
         setOpenSnackbar(true);
@@ -388,6 +405,8 @@ const EditProductionPlanPage = (props) => {
       method: "DELETE",
       url: "http://localhost:3000/productionPlanning/deleteGroupBahanBaku",
       params: {
+        userId: userInformation?.data?.id,
+        productionPlanId: productionPlanId,
         estimasiBahanBakuId: estimasiBahanBakuId,
         groupIndex: groupIndex,
       },
@@ -405,10 +424,14 @@ const EditProductionPlanPage = (props) => {
     });
   };
 
-  const handleRemoveJenisDataBahanBaku = (id) => {
+  const handleRemoveJenisDataBahanBaku = (id, productionPlanId) => {
     axios({
       method: "DELETE",
       url: `http://localhost:3000/productionPlanning/deleteBahanBakuId/${id}`,
+      params: {
+        userId: userInformation?.data?.id,
+        productionPlanId: productionPlanId,
+      },
     }).then((result) => {
       if (result.status === 200) {
         setOpenSnackbar(true);
@@ -1975,7 +1998,8 @@ const EditProductionPlanPage = (props) => {
                                                 <IconButton
                                                   onClick={() => {
                                                     handleRemoveJenisDataBahanBaku(
-                                                      dataJenis.id
+                                                      dataJenis.id,
+                                                      result.id
                                                     );
                                                   }}
                                                   style={{ height: "50%" }}
@@ -2222,7 +2246,10 @@ const EditProductionPlanPage = (props) => {
                                               height: "50%",
                                             }}
                                             onClick={() => {
-                                              removeJadwal(pekerjaan.id);
+                                              removeJadwal(
+                                                pekerjaan.id,
+                                                row.id
+                                              );
                                             }}
                                           >
                                             <RemoveIcon
@@ -2566,6 +2593,7 @@ const EditProductionPlanPage = (props) => {
                       sx={{
                         minWidth: 650,
                         overflowX: "auto",
+                        tableLayout: "fixed",
                       }}
                     >
                       <TableHead>
@@ -2654,7 +2682,9 @@ const EditProductionPlanPage = (props) => {
                                     <TextField
                                       disabled
                                       type="number"
-                                      sx={{width: isMobile ? "100px" : "auto"}}
+                                      sx={{
+                                        width: isMobile ? "100px" : "auto",
+                                      }}
                                       value={result.isi.value}
                                       // onChange={(event) => {
                                       //   handleChangeInputPerincian(

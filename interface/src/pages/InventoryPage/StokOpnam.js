@@ -378,6 +378,7 @@ const StokOpnam = (props) => {
       axios({
         method: "DELETE",
         url: `http://localhost:3000/inventory/deleteItemStokOpnam/${id}`,
+        params: { userId: userInformation?.data?.id, stokOpnamId: stokOpnamId },
       }).then((result) => {
         if (result.status === 200) {
           setRefreshStokOpnam(true);

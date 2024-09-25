@@ -171,7 +171,7 @@ class ProductionPlanningController {
 
       let addProductionPlanningActivity = await activitylogs.create({
         user: existingUser.name,
-        activity: "Add Production Plan",
+        activity: `Menambahkan perencanaan produksi dengan id ${productionPlanning.id}`,
         name: productionPlanning.pemesan,
         division: "Production Planning",
       });
@@ -330,7 +330,7 @@ class ProductionPlanningController {
 
       let deleteProductionPlan = await activitylogs.create({
         user: userInformation.name,
-        activity: "Delete a production plan",
+        activity: `Menghapus perencanaan produksi dengan id ${productionPlanId}`,
         name: oneOrder.customerDetail,
         division: "Production Planning",
       });
@@ -452,8 +452,8 @@ class ProductionPlanningController {
 
       let updateProductionPlanningActivity = await activitylogs.create({
         user: existingUser.name,
-        activity: "Update Production Plan",
-        name: pemesan,
+        activity: `Mengedit perencanaan produksi dengan id ${productionPlanId}`,
+        name: jenisCetakan,
         division: "Production Planning",
       });
 
@@ -633,7 +633,7 @@ class ProductionPlanningController {
                   });
                 } else if (!daftarRencana.id) {
                   await rencanaJadwalProduksis.create({
-                    estimasiJadwalProduksiId: dataJenisJadwal .id,
+                    estimasiJadwalProduksiId: data.id,
                     jenisPekerjaan: daftarRencana.jenisPekerjaan,
                     tanggalMulai: daftarRencana.tanggalMulai,
                     tanggalSelesai: daftarRencana.tanggalSelesai,
@@ -654,6 +654,34 @@ class ProductionPlanningController {
   static async removeJadwal(req, res) {
     try {
       const { id } = req.params;
+      const { userId, productionPlanId, estimasiJadwalProduksiId } = req.query;
+
+      const findOneEstimasiJadwalProduksi =
+        await estimasiJadwalProduksis.findOne({
+          where: { id: estimasiJadwalProduksiId },
+        });
+
+      let findOneRencanaJadwal = await rencanaJadwalProduksis.findOne({
+        where: { id: id },
+      });
+
+      let userInformation = await users.findOne({
+        where: { id: userId },
+      });
+
+      let deleteProductionPlan = await activitylogs.create({
+        user: userInformation.name,
+        activity: `Menghapus jadwal pekerjaan dari bagian ${findOneEstimasiJadwalProduksi.bagian}, dari perencanaan produksi dengan id ${productionPlanId}`,
+        name: findOneRencanaJadwal.jenisPekerjaan,
+        division: "Production Planning",
+      });
+
+      await UserActivityLogs.create({
+        userId: userId,
+        id: deleteProductionPlan.id,
+        activityLogsId: deleteProductionPlan.id,
+      });
+
       let result = await rencanaJadwalProduksis.destroy({
         where: { id: id },
       });
@@ -665,6 +693,31 @@ class ProductionPlanningController {
   static async deleteJadwal(req, res) {
     try {
       const { id } = req.params;
+      const { userId, productionPlanId } = req.query;
+
+      let findOneEstimasiJadwalProduksi = await estimasiJadwalProduksis.findOne(
+        {
+          where: { id: id },
+        }
+      );
+
+      let userInformation = await users.findOne({
+        where: { id: userId },
+      });
+
+      let deleteProductionPlan = await activitylogs.create({
+        user: userInformation.name,
+        activity: `Menghapus jadwal bagian ${findOneEstimasiJadwalProduksi.bagian}, dari perencanaan produksi dengan id ${productionPlanId}`,
+        name: findOneEstimasiJadwalProduksi.bagian,
+        division: "Production Planning",
+      });
+
+      await UserActivityLogs.create({
+        userId: userId,
+        id: deleteProductionPlan.id,
+        activityLogsId: deleteProductionPlan.id,
+      });
+
       let result = await estimasiJadwalProduksis.destroy({
         where: { id: id },
       });
@@ -676,6 +729,29 @@ class ProductionPlanningController {
   static async deleteJenisBahanBaku(req, res) {
     try {
       const { id } = req.params;
+      const { userId, productionPlanId } = req.query;
+
+      const findEstimasiBahanBakuData = await estimasiBahanBakus.findOne({
+        where: { id: id },
+      });
+
+      let userInformation = await users.findOne({
+        where: { id: userId },
+      });
+
+      let deleteProductionPlan = await activitylogs.create({
+        user: userInformation.name,
+        activity: `Menghapus group ${findEstimasiBahanBakuData.jenis}, dari perencanaan produksi dengan id ${productionPlanId}`,
+        name: findEstimasiBahanBakuData.jenis,
+        division: "Production Planning",
+      });
+
+      await UserActivityLogs.create({
+        userId: userId,
+        id: deleteProductionPlan.id,
+        activityLogsId: deleteProductionPlan.id,
+      });
+
       let removeEstimasiBahanBaku = await estimasiBahanBakus.destroy({
         where: { id: id },
       });
@@ -686,7 +762,36 @@ class ProductionPlanningController {
   }
   static async deleteGroupBahanBaku(req, res) {
     try {
-      const { estimasiBahanBakuId, groupIndex } = req.query;
+      const { userId, productionPlanId, estimasiBahanBakuId, groupIndex } =
+        req.query;
+      let oneGroupBahanBaku = await bahanBakuAkanDigunakans.findOne({
+        where: {
+          estimasiBahanBakuId: estimasiBahanBakuId,
+          groupIndex: groupIndex,
+        },
+      });
+
+      let findEstimasiBahanBakuData = await estimasiBahanBakus.findOne({
+        where: { id: estimasiBahanBakuId },
+      });
+
+      let userInformation = await users.findOne({
+        where: { id: userId },
+      });
+
+      let deleteProductionPlan = await activitylogs.create({
+        user: userInformation.name,
+        activity: `Menghapus item bahan baku dari group ${findEstimasiBahanBakuData.jenis}, dari perencanaan produksi dengan id ${productionPlanId}`,
+        name: oneGroupBahanBaku.namaJenis,
+        division: "Production Planning",
+      });
+
+      await UserActivityLogs.create({
+        userId: userId,
+        id: deleteProductionPlan.id,
+        activityLogsId: deleteProductionPlan.id,
+      });
+
       let removeGroupBahanBaku = await bahanBakuAkanDigunakans.destroy({
         where: {
           estimasiBahanBakuId: estimasiBahanBakuId,
@@ -701,6 +806,29 @@ class ProductionPlanningController {
   static async deleteBahanBakuID(req, res) {
     try {
       const { id } = req.params;
+      const { userId, productionPlanId } = req.query;
+
+      let oneBahanBakuAkanDigunakans = await bahanBakuAkanDigunakans.findOne({
+        where: { id: id },
+      });
+
+      let userInformation = await users.findOne({
+        where: { id: userId },
+      });
+
+      let deleteProductionPlan = await activitylogs.create({
+        user: userInformation.name,
+        activity: `Menghapus item bahan baku dari perencanaan produksi dengan id ${productionPlanId}`,
+        name: oneBahanBakuAkanDigunakans.namaJenis,
+        division: "Production Planning",
+      });
+
+      await UserActivityLogs.create({
+        userId: userId,
+        id: deleteProductionPlan.id,
+        activityLogsId: deleteProductionPlan.id,
+      });
+
       let deleteBahanBakuRow = await bahanBakuAkanDigunakans.destroy({
         where: { id: id },
       });
@@ -712,9 +840,43 @@ class ProductionPlanningController {
   static async deleteItemRincianCetakan(req, res) {
     try {
       const { id } = req.params;
+      const { userId, productionPlanId } = req.query;
+
+      let findOneRincianCetakan = await rincianCetakans.findOne({
+        where: { id: id },
+      });
+
+      let findOnePerincians = await perincians.findOne({
+        where: { id: id },
+      });
+
+      console.log(findOneRincianCetakan);
+
+      let userInformation = await users.findOne({
+        where: { id: userId },
+      });
+
+      let deleteProductionPlan = await activitylogs.create({
+        user: userInformation.name,
+        activity: `Menghapus item rincian cetakan ${findOneRincianCetakan.namaCetakan} dan perincian dengan perencanaan produksi dengan id ${productionPlanId}`,
+        name: findOneRincianCetakan.namaCetakan,
+        division: "Production Planning",
+      });
+
+      await UserActivityLogs.create({
+        userId: userId,
+        id: deleteProductionPlan.id,
+        activityLogsId: deleteProductionPlan.id,
+      });
+
       let result = await rincianCetakans.destroy({
         where: { id: id },
       });
+
+      await perincians.destroy({
+        where: { id: findOnePerincians.id },
+      });
+
       res.json(result);
     } catch (error) {
       res.json(error);

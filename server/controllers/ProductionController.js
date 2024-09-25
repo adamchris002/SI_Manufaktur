@@ -133,6 +133,8 @@ class ProductionController {
         { where: { id: dataProduksi.noOrderProduksi } }
       );
 
+      
+
       await UserLaporanProduksis.create({
         userId: parseInt(id),
         laporanProduksiId: parseInt(result.id),

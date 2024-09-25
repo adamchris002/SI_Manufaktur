@@ -4,11 +4,15 @@ const { OrderController } = require("../controllers");
 
 const upload = multer({ dest: "uploads/" });
 
-orderRoutes.post("/addOrder/:id", upload.any(), OrderController.addOrder);
+//Get
 orderRoutes.get("/getAllOrderInfo", OrderController.getAllOrders);
 orderRoutes.get("/getOrderInfo/:id", OrderController.getOrderInfo);
-orderRoutes.delete("/deleteOrder", OrderController.deleteOrder);
-orderRoutes.put("/updateOrder/:id", upload.any(), OrderController.updateOrder);
 orderRoutes.get("/getAllActivityLogs", OrderController.marketingActivityLog);
+//Post
+orderRoutes.post("/addOrder/:id", upload.any(), OrderController.addOrder); //udah
+//Put
+orderRoutes.put("/updateOrder/:id", upload.any(), OrderController.updateOrder); //udah
+//Delete
+orderRoutes.delete("/deleteOrder", OrderController.deleteOrder); //udah
 
 module.exports = orderRoutes;

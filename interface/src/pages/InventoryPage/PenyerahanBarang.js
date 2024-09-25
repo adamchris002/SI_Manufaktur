@@ -405,6 +405,10 @@ const PenyerahanBarang = (props) => {
       axios({
         method: "DELETE",
         url: `http://localhost:3000/inventory/deleteItemPenyerahanBarang/${id}`,
+        params: {
+          userId: userInformation?.data?.id,
+          penyerahanBarangId: penyerahanBarangId,
+        },
       }).then((result) => {
         if (result.status === 200) {
           setOpenSnackbar(true);

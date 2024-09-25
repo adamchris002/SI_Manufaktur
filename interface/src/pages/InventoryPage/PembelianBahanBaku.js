@@ -327,6 +327,10 @@ const PembelianBahanBaku = (props) => {
       axios({
         method: "DELETE",
         url: `http://localhost:3000/inventory/deleteItemPembelianBahanBaku/${id}`,
+        params: {
+          userId: userInformation?.data?.id,
+          pembelianBahanBakuId: pembelianBahanBakuId,
+        },
       }).then((result) => {
         if (result.status === 200) {
           setRefreshPembelianBahanbaku(true);

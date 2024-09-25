@@ -37,6 +37,10 @@ class InventoryController {
       const { id } = req.params;
       const { pembelianBahanBakuId, dataPembelianBahanBaku } = req.body;
 
+      const findPembelianBahanBaku = await pembelianBahanBakus.findOne({
+        where: { id: pembelianBahanBakuId },
+      });
+
       let result = await pembelianBahanBakus.update(
         {
           leveransir: dataPembelianBahanBaku.leveransir,
@@ -97,7 +101,22 @@ class InventoryController {
           })
         );
       }
+      let userInformation = await users.findOne({
+        where: { id: id },
+      });
 
+      let createActivityLog = await activitylogs.create({
+        user: userInformation.name,
+        activity: `Mengedit pembelian bahan baku dengan id ${findPembelianBahanBaku.id}`,
+        name: "Leveransir: " + findPembelianBahanBaku.leveransir,
+        division: "Inventory",
+      });
+
+      await UserActivityLogs.create({
+        userId: id,
+        id: createActivityLog.id,
+        activitylogsId: createActivityLog.id,
+      });
       res.json(result);
     } catch (error) {
       res.json(error);
@@ -164,6 +183,22 @@ class InventoryController {
           })
         );
       }
+      let userInformation = await users.findOne({
+        where: { id: id },
+      });
+
+      let createActivityLog = await activitylogs.create({
+        user: userInformation.name,
+        activity: `Mengedit permohonan pembelian dengan id ${permohonanPembelian[0].id}`,
+        name: "Nomor: " + permohonanPembelian[0].nomor,
+        division: "Inventory",
+      });
+
+      await UserActivityLogs.create({
+        userId: id,
+        id: createActivityLog.id,
+        activitylogsId: createActivityLog.id,
+      });
       res
         .status(200)
         .json(result, { message: "Berhasil Mengedit permohonan pembelian" });
@@ -174,8 +209,31 @@ class InventoryController {
   static async deletePermohonanPembelian(req, res) {
     try {
       const { id } = req.params;
+      const { userId } = req.query;
+
+      let userInformation = await users.findOne({
+        where: { id: userId },
+      });
+
+      const findOnePermohonanPembelian = await permohonanPembelians.findOne({
+        where: { id: id },
+      });
+
       let result = await permohonanPembelians.destroy({
         where: { id: id },
+      });
+
+      let createActivityLog = await activitylogs.create({
+        user: userInformation.name,
+        activity: `Menghapus permohonan pembelian dengan id ${findOnePermohonanPembelian.id}`,
+        name: "Nomor: " + findOnePermohonanPembelian.nomor,
+        division: "Inventory",
+      });
+
+      await UserActivityLogs.create({
+        userId: userId,
+        id: createActivityLog.id,
+        activitylogsId: createActivityLog.id,
       });
       res.json(result);
     } catch (error) {
@@ -185,9 +243,34 @@ class InventoryController {
   static async deleteItemsPermohonanPembelian(req, res) {
     try {
       const { id } = req.params;
+      const { userId, permohonanPembelianId } = req.query;
+
+      let userInformation = await users.findOne({
+        where: { id: userId },
+      });
+
+      let findOneItemPermohonanPembelian =
+        await itemPermohonanPembelians.findOne({
+          where: { id: id },
+        });
+
       let result = await itemPermohonanPembelians.destroy({
         where: { id: id },
       });
+
+      let createActivityLog = await activitylogs.create({
+        user: userInformation.name,
+        activity: `Menghapus item permohonan pembelian dengan id ${findOneItemPermohonanPembelian.id} dari permohonan pembelian ${permohonanPembelianId}`,
+        name: "Jenis Barang: " + findOneItemPermohonanPembelian.jenisBarang,
+        division: "Inventory",
+      });
+
+      await UserActivityLogs.create({
+        userId: userId,
+        id: createActivityLog.id,
+        activitylogsId: createActivityLog.id,
+      });
+
       res.json(result);
     } catch (error) {
       res.json(error);
@@ -198,10 +281,12 @@ class InventoryController {
       const { permohonanPembelian } = req.body;
       const { id } = req.params;
 
+      let createPermohonanPembelian;
+
       if (permohonanPembelian && Array.isArray(permohonanPembelian)) {
         await Promise.all(
           permohonanPembelian.map(async (data) => {
-            let createPermohonanPembelian = await permohonanPembelians.create({
+            createPermohonanPembelian = await permohonanPembelians.create({
               nomor: data.nomor,
               perihal: data.perihal,
               statusPermohonan: "Requested",
@@ -227,6 +312,7 @@ class InventoryController {
             }
             await UserPermohonanPembelians.create({
               userId: id,
+              activitylogsId: createPermohonanPembelian.id,
               permohonanPembelianId: createPermohonanPembelian.id,
             });
 
@@ -236,7 +322,7 @@ class InventoryController {
 
             let createActivityLog = await activitylogs.create({
               user: userInformation.name,
-              activity: "Menambahkan permohonan pembelian",
+              activity: `Menambahkan permohonan pembelian dengan id ${createPermohonanPembelian.id}`,
               name: "Nomor: " + data.nomor,
               division: "Inventory",
             });
@@ -340,6 +426,23 @@ class InventoryController {
         );
       }
 
+      let userInformation = await users.findOne({
+        where: { id: id },
+      });
+
+      let createActivityLog = await activitylogs.create({
+        user: userInformation.name,
+        activity: `Menambahkan pembelian bahan baku dengan id ${result.id}`,
+        name: "Leveransir: " + result.leveransir,
+        division: "Inventory",
+      });
+
+      await UserActivityLogs.create({
+        userId: id,
+        id: createActivityLog.id,
+        activitylogsId: createActivityLog.id,
+      });
+
       await permohonanPembelians.update(
         {
           statusPermohonan: "Processed",
@@ -365,6 +468,7 @@ class InventoryController {
   static async deletePembelianBahanBaku(req, res) {
     try {
       const { id } = req.params;
+      const { userId } = req.query;
 
       let findPembelianBahanBaku = await pembelianBahanBakus.findOne({
         where: { id: id },
@@ -379,6 +483,24 @@ class InventoryController {
       let result = await pembelianBahanBakus.destroy({
         where: { id: id },
       });
+
+      let findUser = await users.findOne({
+        where: { id: userId },
+      });
+
+      let createActivityLog = await activitylogs.create({
+        user: findUser.name,
+        activity: `Menghapus pembelian bahan baku dengan id ${id}`,
+        name: "Leveransir: " + findPembelianBahanBaku.leveransir,
+        division: "Inventory",
+      });
+
+      await UserActivityLogs.create({
+        userId: userId,
+        id: createActivityLog.id,
+        activitylogsId: createActivityLog.id,
+      });
+
       res.json(result);
     } catch (error) {
       res.json(error);
@@ -387,10 +509,29 @@ class InventoryController {
   static async deleteItemPembelianBahanBaku(req, res) {
     try {
       const { id } = req.params;
+      const { userId, pembelianBahanBakuId } = req.query;
+
+      let findUser = await users.findOne({
+        where: { id: userId },
+      });
 
       let result = await itemPembelianBahanBakus.destroy({
         where: { id: id },
       });
+
+      let createActivityLog = await activitylogs.create({
+        user: findUser.name,
+        activity: `Menghapus item pembelian bahan baku dengan id ${id} dari pembelian bahan baku dengan id ${pembelianBahanBakuId}`,
+        name: "Id Pembelian bahan baku: " + pembelianBahanBakuId,
+        division: "Inventory",
+      });
+
+      await UserActivityLogs.create({
+        userId: findUser.id,
+        id: createActivityLog.id,
+        activitylogsId: createActivityLog.id,
+      });
+
       res.json(result);
     } catch (error) {
       res.json(error);
@@ -431,8 +572,8 @@ class InventoryController {
 
       let createActivityLog = await activitylogs.create({
         user: userInformation.name,
-        activity: "Menambahkan item bahan baku",
-        name: dataInventory.namaItem,
+        activity: `Menambahkan item bahan baku dengan id ${createDataInventory.id}`,
+        name: "Nama Item: " + createDataInventory.namaItem,
         division: "Inventory",
       });
 
@@ -452,6 +593,10 @@ class InventoryController {
       const { id } = req.params;
       const { dataInventory } = req.body;
 
+      const findOneDataInventory = await inventorys.findOne({
+        where: { id: dataInventory.inventoryItemId },
+      });
+
       let result = await inventorys.update(
         {
           namaItem: dataInventory.namaItem,
@@ -469,8 +614,8 @@ class InventoryController {
 
       let updateActivityLog = await activitylogs.create({
         user: userInformation.name,
-        activity: "Update item bahan baku",
-        name: dataInventory.namaItem,
+        activity: `Update item bahan baku dengan id ${findOneDataInventory.id}`,
+        name: "Nama Item :" + dataInventory.namaItem,
         division: "Inventory",
       });
 
@@ -503,8 +648,8 @@ class InventoryController {
 
       let deleteActivityLogs = await activitylogs.create({
         user: userInformation.name,
-        activity: "Delete item bahan baku",
-        name: inventoryData.namaItem,
+        activity: `Delete item bahan baku dengan id ${inventoryItemId}`,
+        name: "Nama Item: " + inventoryData.namaItem,
         division: "Inventory",
       });
 
@@ -576,8 +721,8 @@ class InventoryController {
 
       let createActivityLog = await activitylogs.create({
         user: userInformation.name,
-        activity: "Menambahkan data stok opnam",
-        name: dataStokOpnam.judulStokOpnam,
+        activity: `Menambahkan data stok opnam dengan id ${result.id}`,
+        name: "Judul Stok Opnam: " + result.judulStokOpnam,
         division: "Inventory",
       });
 
@@ -630,6 +775,10 @@ class InventoryController {
     try {
       const { id } = req.params;
       const { dataStokOpnam } = req.body;
+
+      const findOneStokOpnam = await stokOpnams.findOne({
+        where: { id: dataStokOpnam.id },
+      });
       let result = await stokOpnams.update(
         {
           judulStokOpnam: dataStokOpnam.judulStokOpnam,
@@ -682,6 +831,23 @@ class InventoryController {
           })
         );
       }
+
+      let userInformation = await users.findOne({
+        where: { id: id },
+      });
+
+      let createActivityLog = await activitylogs.create({
+        user: userInformation.name,
+        activity: `Mengedit stok opnam dengan id ${findOneStokOpnam.id}`,
+        name: "Leveransir: " + dataStokOpnam.judulStokOpnam,
+        division: "Inventory",
+      });
+
+      await UserActivityLogs.create({
+        userId: id,
+        id: createActivityLog.id,
+        activitylogsId: createActivityLog.id,
+      });
       res.json(result);
     } catch (error) {
       res.json(error);
@@ -690,8 +856,27 @@ class InventoryController {
   static async deleteItemStokOpnam(req, res) {
     try {
       const { id } = req.params;
+      const { userId, stokOpnamId } = req.query;
+
+      const findUser = await users.findOne({
+        where: { id: userId },
+      });
+
       let result = await itemStokOpnams.destroy({
         where: { id: id },
+      });
+
+      let createActivityLog = await activitylogs.create({
+        user: findUser.name,
+        activity: `Menghapus item stok opnam dengan id ${id} dari stok opnam dengan id ${stokOpnamId}`,
+        name: "ID Stok Opnam: " + stokOpnamId,
+        division: "Inventory",
+      });
+
+      await UserActivityLogs.create({
+        userId: findUser.id,
+        id: createActivityLog.id,
+        activitylogsId: createActivityLog.id,
       });
       res.json(result);
     } catch (error) {
@@ -701,11 +886,29 @@ class InventoryController {
   static async deleteStokOpnam(req, res) {
     try {
       const { id } = req.params;
+      const { userId } = req.query;
       let findOneStokOpnam = await stokOpnams.findOne({
         where: { id: id },
       });
 
       let result = await findOneStokOpnam.destroy({});
+
+      let findUser = await users.findOne({
+        where: { id: userId },
+      });
+
+      let createActivityLog = await activitylogs.create({
+        user: findUser.name,
+        activity: `Menghapus stok opnam dengan id ${id}`,
+        name: "Judul Stok Opnam: " + findOneStokOpnam.judulStokOpnam,
+        division: "Inventory",
+      });
+
+      await UserActivityLogs.create({
+        userId: findUser.id,
+        id: createActivityLog.id,
+        activitylogsId: createActivityLog.id,
+      });
       res.json(result);
     } catch (error) {
       res.json(error);
@@ -752,6 +955,22 @@ class InventoryController {
           })
         );
       }
+      let userInformation = await users.findOne({
+        where: { id: id },
+      });
+
+      let createActivityLog = await activitylogs.create({
+        user: userInformation.name,
+        activity: `Menambahkan penyerahan bahan baku dengan id ${result.id}`,
+        name: "Order Id: " + dataPenyerahanBarang.orderId,
+        division: "Inventory",
+      });
+
+      await UserActivityLogs.create({
+        userId: id,
+        id: createActivityLog.id,
+        activitylogsId: createActivityLog.id,
+      });
       res.json(result);
     } catch (error) {
       res.json(error);
@@ -770,8 +989,30 @@ class InventoryController {
   static async deletePenyerahanBarang(req, res) {
     try {
       const { id } = req.params;
+      const { userId } = req.query;
+
+      let findUser = await users.findOne({
+        where: { id: userId },
+      });
+
+      const findPenyerahanBarang = await penyerahanBarangs.findOne({
+        where: { id: id },
+      });
       let result = penyerahanBarangs.destroy({
         where: { id: id },
+      });
+
+      let createActivityLog = await activitylogs.create({
+        user: findUser.name,
+        activity: `Menghapus penyerahan barang dengan id ${id}`,
+        name: "ID Pesanan: " + findPenyerahanBarang.orderId,
+        division: "Inventory",
+      });
+
+      await UserActivityLogs.create({
+        userId: findUser.id,
+        id: createActivityLog.id,
+        activitylogsId: createActivityLog.id,
       });
       res.json(result);
     } catch (error) {
@@ -793,6 +1034,11 @@ class InventoryController {
   static async deleteItemPenyerahanBarang(req, res) {
     try {
       const { id } = req.params;
+      const { userId, penyerahanBarangId } = req.query;
+
+      let findUser = await users.findOne({
+        where: { id: userId },
+      });
 
       const separateValueAndUnit = (str) => {
         const parts = str.split(" ");
@@ -831,6 +1077,20 @@ class InventoryController {
       );
 
       let result = await findPenyerahanBarangs.destroy({});
+
+      let createActivityLog = await activitylogs.create({
+        user: findUser.name,
+        activity: `Menghapus item penyerahan barang dengan id ${id} dari penyerahan barang dengan id ${penyerahanBarangId}`,
+        name: "ID Penyerahan Barang: " + penyerahanBarangId,
+        division: "Inventory",
+      });
+
+      await UserActivityLogs.create({
+        userId: findUser.id,
+        id: createActivityLog.id,
+        activitylogsId: createActivityLog.id,
+      });
+
       res.json(result);
     } catch (error) {
       res.json(error);
@@ -841,6 +1101,10 @@ class InventoryController {
     try {
       const { id } = req.params;
       const { dataPenyerahanBarang } = req.body;
+
+      const findOnePenyerahanBarang = await penyerahanBarangs.findOne({
+        where: { id: dataPenyerahanBarang.id },
+      });
 
       const separateValueAndUnit = (str) => {
         const parts = str.split(" ");
@@ -956,7 +1220,22 @@ class InventoryController {
           })
         );
       }
+      let userInformation = await users.findOne({
+        where: { id: id },
+      });
 
+      let createActivityLog = await activitylogs.create({
+        user: userInformation.name,
+        activity: `Mengedit penyerahan barang dengan id ${dataPenyerahanBarang.id}`,
+        name: "Order Id: " + findOnePenyerahanBarang.orderId,
+        division: "Inventory",
+      });
+
+      await UserActivityLogs.create({
+        userId: id,
+        id: createActivityLog.id,
+        activitylogsId: createActivityLog.id,
+      });
       res.json({ success: true });
     } catch (error) {
       res.json({ success: false, error });
@@ -1017,12 +1296,33 @@ class InventoryController {
   static async denyPermohonanPembelian(req, res) {
     try {
       const { id } = req.params;
+
+      const findOnePermohonanPembelian = await permohonanPembelians.findOne({
+        where: { id: id },
+      });
+
       let result = await permohonanPembelians.update(
         {
           statusPermohonan: "Denied",
         },
         { where: { id: id } }
       );
+      let userInformation = await users.findOne({
+        where: { id: id },
+      });
+
+      let createActivityLog = await activitylogs.create({
+        user: userInformation.name,
+        activity: `Menolak permohonan pembelian dengan id ${findOnePermohonanPembelian.id}`,
+        name: "Nomor: " + findOnePermohonanPembelian.nomor,
+        division: "Finance",
+      });
+
+      await UserActivityLogs.create({
+        userId: id,
+        id: createActivityLog.id,
+        activitylogsId: createActivityLog.id,
+      });
       res.json(result);
     } catch (error) {
       res.json(error);
@@ -1031,12 +1331,33 @@ class InventoryController {
   static async acceptPermohonanPembelian(req, res) {
     try {
       const { id } = req.params;
+
+      const findOnePermohonanPembelian = await permohonanPembelians.findOne({
+        where: { id: id },
+      });
+
       let result = await permohonanPembelians.update(
         {
           statusPermohonan: "Accepted",
         },
         { where: { id: id } }
       );
+      let userInformation = await users.findOne({
+        where: { id: id },
+      });
+
+      let createActivityLog = await activitylogs.create({
+        user: userInformation.name,
+        activity: `Menerima permohonan pembelian dengan id ${findOnePermohonanPembelian.id}`,
+        name: "Nomor: " + findOnePermohonanPembelian.nomor,
+        division: "Finance",
+      });
+
+      await UserActivityLogs.create({
+        userId: id,
+        id: createActivityLog.id,
+        activitylogsId: createActivityLog.id,
+      });
       res.json(result);
     } catch (error) {
       res.json(error);

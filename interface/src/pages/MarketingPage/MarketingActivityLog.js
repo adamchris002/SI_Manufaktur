@@ -32,6 +32,8 @@ const MarketingActivityLog = () => {
     });
   }, []);
 
+  console.log(activityLogs);
+
   return (
     <div
       style={{
@@ -84,7 +86,6 @@ const MarketingActivityLog = () => {
                   <TableRow>
                     <TableCell>User</TableCell>
                     <TableCell align="right">Activity</TableCell>
-                    <TableCell align="right">Order ID</TableCell>
                     <TableCell align="right">Order Name</TableCell>
                     <TableCell align="right">Division</TableCell>
                     <TableCell align="right">Created At</TableCell>
@@ -101,7 +102,6 @@ const MarketingActivityLog = () => {
                         {result.user}
                       </TableCell>
                       <TableCell align="right">{result.activity}</TableCell>
-                      <TableCell align="right">{""}</TableCell>
                       <TableCell align="right">{result.name}</TableCell>
                       <TableCell align="right">{result.division}</TableCell>
                       <TableCell align="right">

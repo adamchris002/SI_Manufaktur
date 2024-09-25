@@ -215,6 +215,7 @@ const MaindashboardFinance = (props) => {
     axios({
       method: "PUT",
       url: `http://localhost:3000/inventory/denyPermohonanPembelian/${id}`,
+      params: { userId: userInformation?.data?.id},
     }).then((result) => {
       if (result.status === 200) {
         handleCloseModal();
@@ -235,6 +236,7 @@ const MaindashboardFinance = (props) => {
     axios({
       method: "PUT",
       url: `http://localhost:3000/inventory/acceptPermohonanPembelian/${id}`,
+      params: { userId: userInformation?.data?.id},
     }).then((result) => {
       if (result.status === 200) {
         handleCloseModal();

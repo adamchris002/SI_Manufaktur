@@ -239,7 +239,7 @@ const LaporanSampah = (props) => {
       itemLaporanSampahs: laporanForEdit[0].itemLaporanSampahs.map((result) => {
         return {
           ...result,
-          tanggal: dayjs(result.tanggal),
+          tanggal: dayjs(result.tanggal).format("MM/DD/YYYY hh:mm A"),
           jumlah: separateValueAndUnit(result.jumlah),
         };
       }),

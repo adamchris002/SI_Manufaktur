@@ -219,6 +219,7 @@ const MaindashboardInventory = (props) => {
     axios({
       method: "DELETE",
       url: `http://localhost:3000/inventory/deletePermohonanPembelian/${id}`,
+      params: { userId: userInformation?.data?.id },
     }).then((result) => {
       if (result.status === 200) {
         setRefreshPermohonanPembelian(true);
@@ -241,6 +242,7 @@ const MaindashboardInventory = (props) => {
     axios({
       method: "DELETE",
       url: `http://localhost:3000/inventory/deletePenyerahanBarang/${id}`,
+      params: { userId: userInformation?.data?.id },
     }).then((result) => {
       if (result.status === 200) {
         setOpenSnackbar(true);
@@ -267,7 +269,11 @@ const MaindashboardInventory = (props) => {
     });
   };
 
-  const handleDeleteItemPermohonanPembelian = (id, index) => {
+  const handleDeleteItemPermohonanPembelian = (
+    id,
+    index,
+    permohonanPembelianId
+  ) => {
     if (!id || id === undefined) {
       setPermohonanPembelian((oldArray) => {
         return oldArray?.map((item, i) => {
@@ -283,6 +289,10 @@ const MaindashboardInventory = (props) => {
       axios({
         method: "DELETE",
         url: `http://localhost:3000/inventory/deleteItemsPermohonanPembelian/${id}`,
+        params: {
+          userId: userInformation?.data?.id,
+          permohonanPembelianId: permohonanPembelianId,
+        },
       }).then((result) => {
         setRefreshItemsPermohonanPembelian(true);
       });
@@ -522,6 +532,7 @@ const MaindashboardInventory = (props) => {
     axios({
       method: "DELETE",
       url: `http://localhost:3000/inventory/deletePembelianBahanBaku/${id}`,
+      params: { userId: userInformation?.data?.id },
     }).then((result) => {
       if (result.status === 200) {
         setOpenSnackbar(true);
@@ -541,6 +552,7 @@ const MaindashboardInventory = (props) => {
     axios({
       method: "DELETE",
       url: `http://localhost:3000/inventory/deleteStokOpnam/${id}`,
+      params: { userId: userInformation?.data?.id },
     }).then((result) => {
       if (result.status === 200) {
         setOpenSnackbar(true);
@@ -896,12 +908,25 @@ const MaindashboardInventory = (props) => {
                         .map((result, index) => {
                           return (
                             <TableRow key={index}>
-                              <TableCell style={{width: "25px"}}>{index + 1 + "."}</TableCell>
-                              <TableCell style={{width: "100px"}}>{result.nomor}</TableCell>
-                              <TableCell style={{width: "100px"}}>{result.perihal}</TableCell>
-                              <TableCell style={{width: "120px"}}>{result.statusPermohonan}</TableCell>
-                              <TableCell style={{width: "50px"}}>
-                                <div>
+                              <TableCell style={{ width: "25px" }}>
+                                {index + 1 + "."}
+                              </TableCell>
+                              <TableCell style={{ width: "100px" }}>
+                                {result.nomor}
+                              </TableCell>
+                              <TableCell style={{ width: "100px" }}>
+                                {result.perihal}
+                              </TableCell>
+                              <TableCell style={{ width: "120px" }}>
+                                {result.statusPermohonan}
+                              </TableCell>
+                              <TableCell style={{ width: "50px" }}>
+                                <div
+                                  style={{
+                                    display: "flex",
+                                    alignItems: "center",
+                                  }}
+                                >
                                   {result.statusPermohonan !== "Denied" && (
                                     <IconButton
                                       onClick={() => {
@@ -1727,7 +1752,8 @@ const MaindashboardInventory = (props) => {
                                     onClick={() => {
                                       handleDeleteItemPermohonanPembelian(
                                         dataPermohonan?.id,
-                                        indexPermohonan
+                                        indexPermohonan,
+                                        result.id
                                       );
                                     }}
                                   >

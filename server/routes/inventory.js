@@ -57,39 +57,39 @@ inventoryRoutes.get(
 //post
 inventoryRoutes.post(
   "/addPermohonanPembelian/:id",
-  InventoryController.addPermohonanPembelian
+  InventoryController.addPermohonanPembelian //udah
 );
 inventoryRoutes.post(
   "/addPembelianBahanBaku/:id",
-  InventoryController.addPembelianBahanBaku
+  InventoryController.addPembelianBahanBaku //udah
 );
 inventoryRoutes.post(
   "/addInventoryItem/:id",
-  InventoryController.addInventoryItem
+  InventoryController.addInventoryItem //udah
 );
-inventoryRoutes.post("/addStokOpnam/:id", InventoryController.addStokOpnam);
+inventoryRoutes.post("/addStokOpnam/:id", InventoryController.addStokOpnam); //udah
 inventoryRoutes.post(
   "/addPenyerahanBarang/:id",
-  InventoryController.addPenyerahanBarang
+  InventoryController.addPenyerahanBarang //udah
 );
 
 //put
 inventoryRoutes.put(
   "/editPermohonanPembelian/:id",
-  InventoryController.editPermohonanPembelian
+  InventoryController.editPermohonanPembelian //udah
 );
-inventoryRoutes.put(
+inventoryRoutes.put( 
   "/editPembelianBahanBaku/:id",
-  InventoryController.editPembelianBahanBaku
+  InventoryController.editPembelianBahanBaku //udah
 );
 inventoryRoutes.put(
   "/editInventoryItem/:id",
-  InventoryController.updateInventoryItem
+  InventoryController.updateInventoryItem //udah
 );
-inventoryRoutes.put("/editStokOpnam/:id", InventoryController.editStokOpnam);
+inventoryRoutes.put("/editStokOpnam/:id", InventoryController.editStokOpnam); //udah
 inventoryRoutes.put(
   "/editPenyerahanBarang/:id",
-  InventoryController.editPenyerahanBarang
+  InventoryController.editPenyerahanBarang //udah
 );
 inventoryRoutes.put(
   "/statusStokOpnamComplete/:id",
@@ -97,49 +97,49 @@ inventoryRoutes.put(
 );
 inventoryRoutes.put(
   "/acceptPermohonanPembelian/:id",
-  InventoryController.acceptPermohonanPembelian
+  InventoryController.acceptPermohonanPembelian //udah
 );
 inventoryRoutes.put(
   "/denyPermohonanPembelian/:id",
-  InventoryController.denyPermohonanPembelian
+  InventoryController.denyPermohonanPembelian //udah
 );
 
 //delete
 inventoryRoutes.delete(
   "/deletePermohonanPembelian/:id",
-  InventoryController.deletePermohonanPembelian
+  InventoryController.deletePermohonanPembelian //udah
 );
 inventoryRoutes.delete(
   "/deleteItemsPermohonanPembelian/:id",
-  InventoryController.deleteItemsPermohonanPembelian
+  InventoryController.deleteItemsPermohonanPembelian //udah
 );
 inventoryRoutes.delete(
   "/deletePembelianBahanBaku/:id",
-  InventoryController.deletePembelianBahanBaku
+  InventoryController.deletePembelianBahanBaku //udah
 );
 inventoryRoutes.delete(
   "/deleteItemPembelianBahanbaku/:id",
-  InventoryController.deleteItemPembelianBahanBaku
+  InventoryController.deleteItemPembelianBahanBaku //udah
 );
 inventoryRoutes.delete(
   "/deleteInventoryItem",
-  InventoryController.deleteInventoryItem
+  InventoryController.deleteInventoryItem //udah
 );
 inventoryRoutes.delete(
   "/deleteItemStokOpnam/:id",
-  InventoryController.deleteItemStokOpnam
+  InventoryController.deleteItemStokOpnam //udah
 );
 inventoryRoutes.delete(
   "/deleteStokOpnam/:id",
-  InventoryController.deleteStokOpnam
+  InventoryController.deleteStokOpnam //udah
 );
 inventoryRoutes.delete(
   "/deletePenyerahanBarang/:id",
-  InventoryController.deletePenyerahanBarang
+  InventoryController.deletePenyerahanBarang //udah
 );
 inventoryRoutes.delete(
   "/deleteItemPenyerahanBarang/:id",
-  InventoryController.deleteItemPenyerahanBarang
+  InventoryController.deleteItemPenyerahanBarang //udah
 );
 
 module.exports = inventoryRoutes;

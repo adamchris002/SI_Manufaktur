@@ -78,7 +78,7 @@ class OrderController {
 
       let updateActivityLog = await activitylogs.create({
         user: userInformation.name,
-        activity: "Update an Order",
+        activity: `Mengedit pesanan dengan id ${orderId}`,
         name: orderInformation.orderTitle,
         division: "Marketing",
       });
@@ -145,7 +145,7 @@ class OrderController {
 
       let deleteActivityLog = await activitylogs.create({
         user: userInformation.name,
-        activity: "Delete an Order",
+        activity: `Menghapus pesanan dengan id ${orderId}`,
         name: orderInformation.orderTitle,
         division: "Marketing",
       });
@@ -245,7 +245,7 @@ class OrderController {
 
       let activityLog = await activitylogs.create({
         user: existingUser.name,
-        activity: "Added an order",
+        activity: `Menambahkan pesanan dengan id ${order.id}`,
         name: orderTitle,
         division: "Marketing",
       });

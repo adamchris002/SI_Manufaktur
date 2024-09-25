@@ -1,6 +1,7 @@
 const productionPlanningRoutes = require("express").Router();
 const { ProductionPlanningController } = require("../controllers");
 
+//Get
 productionPlanningRoutes.get(
   "/getUnreviewedOrders",
   ProductionPlanningController.getUnreviewedOrders
@@ -12,10 +13,6 @@ productionPlanningRoutes.get(
 productionPlanningRoutes.get(
   "/getOneOrder",
   ProductionPlanningController.getOneOrder
-);
-productionPlanningRoutes.post(
-  "/addProductionPlanning/:id",
-  ProductionPlanningController.addNewProductionPlanning
 );
 productionPlanningRoutes.get(
   "/productionPlanningActivityLogs",
@@ -29,47 +26,52 @@ productionPlanningRoutes.get(
   "/getAllProductionPlanStatusEstimated",
   ProductionPlanningController.getAllProductionPlanStatusEstimated
 );
-productionPlanningRoutes.delete(
-  "/deleteProductionPlan/:id",
-  ProductionPlanningController.deleteProductionPlan
-);
 productionPlanningRoutes.get(
   "/getProductionPlanningWithData/:id",
   ProductionPlanningController.getProductionPlanWithData
 );
+//Post
+productionPlanningRoutes.post(
+  "/addProductionPlanning/:id",
+  ProductionPlanningController.addNewProductionPlanning //udah
+);
+//Put
 productionPlanningRoutes.put(
   "/updateProductionPlan/:id",
-  ProductionPlanningController.updateProductionPlan
+  ProductionPlanningController.updateProductionPlan //udah
 );
-
+//Delete
+productionPlanningRoutes.delete(
+  "/deleteProductionPlan/:id",
+  ProductionPlanningController.deleteProductionPlan //udah
+);
 productionPlanningRoutes.delete(
   "/deleteBahanBakuId/:id",
-  ProductionPlanningController.deleteBahanBakuID
+  ProductionPlanningController.deleteBahanBakuID //udah
 );
 productionPlanningRoutes.delete(
   "/deleteGroupBahanBaku",
-  ProductionPlanningController.deleteGroupBahanBaku
+  ProductionPlanningController.deleteGroupBahanBaku //udah
 );
 productionPlanningRoutes.delete(
   "/deleteJenisBahanBaku/:id",
-  ProductionPlanningController.deleteJenisBahanBaku
+  ProductionPlanningController.deleteJenisBahanBaku //udah
 );
-
 productionPlanningRoutes.delete(
   "/removeJadwal/:id",
-  ProductionPlanningController.removeJadwal
+  ProductionPlanningController.removeJadwal // udah
 );
 productionPlanningRoutes.delete(
   "/deleteJadwal/:id",
-  ProductionPlanningController.deleteJadwal
+  ProductionPlanningController.deleteJadwal // udah
 );
 productionPlanningRoutes.delete(
   "/deleteItemRincianCetakan/:id",
-  ProductionPlanningController.deleteItemRincianCetakan
+  ProductionPlanningController.deleteItemRincianCetakan // udah
 );
 productionPlanningRoutes.delete(
   "/deleteItemPerincian/:id",
-  ProductionPlanningController.deleteItemPerincian
+  ProductionPlanningController.deleteItemPerincian // ga kepake
 );
 
 module.exports = productionPlanningRoutes;
