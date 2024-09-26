@@ -45,20 +45,21 @@ financeRoutes.get(
   "/getActiveRencanaPembayaranOneYear",
   FinanceController.getActiveRencanaPembayaranOneYear
 );
+financeRoutes.get("/getActivityLog", FinanceController.financeActivityLog);
 //post
-financeRoutes.post("/addNamaBank/:id", FinanceController.addNamaBank);
-financeRoutes.post("/addItemBukuBank/:id", FinanceController.addNewBukuBank);
-financeRoutes.post("/addKasHarian/:id", FinanceController.addKasHarian);
+financeRoutes.post("/addNamaBank/:id", FinanceController.addNamaBank); //udah
+financeRoutes.post("/addItemBukuBank/:id", FinanceController.addNewBukuBank); //udah
+financeRoutes.post("/addKasHarian/:id", FinanceController.addKasHarian);  //udah
 financeRoutes.post(
   "/checkForDefaultPosPembayaran",
   FinanceController.checkForDefaultPosPembayaran
 );
-financeRoutes.post("/addHutang/:id", FinanceController.addHutang);
-financeRoutes.post("/addPajakMasukan/:id", FinanceController.addPajakMasukan);
-financeRoutes.post("/addPajakKeluaran/:id", FinanceController.addPajakKeluaran);
+financeRoutes.post("/addHutang/:id", FinanceController.addHutang); //udah
+financeRoutes.post("/addPajakMasukan/:id", FinanceController.addPajakMasukan); //udah
+financeRoutes.post("/addPajakKeluaran/:id", FinanceController.addPajakKeluaran); //udah
 financeRoutes.post(
   "/addPembayaranLainLain/:id",
-  FinanceController.addPembayaranLainLain
+  FinanceController.addPembayaranLainLain //udah
 );
 //put
 financeRoutes.put("/updateStatusDone/:id", FinanceController.updateStatusDone);
@@ -74,10 +75,10 @@ financeRoutes.put(
   "/updateDoneRencanaPembayaran/:id",
   FinanceController.updateDoneRencanaPembayaran
 );
-financeRoutes.put("/updateCicilan/:id", FinanceController.updateCicilan);
+financeRoutes.put("/updateCicilan/:id", FinanceController.updateCicilan); //udah
 financeRoutes.put(
   "/updateCicilanPemLains/:id",
-  FinanceController.updateCicilanPemLains
+  FinanceController.updateCicilanPemLains //
 );
 // delete
 

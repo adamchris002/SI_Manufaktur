@@ -262,11 +262,22 @@ const Pajak = (props) => {
     if (selectedItem) {
       const newItems = selectedItem.rincianCetakans.map((result) => {
         const tempQuantity = separateValueAndUnit(result.kuantitas);
+
+        const tempDpp =
+          (parseFloat(
+            selectedItem.perincians.find(
+              (item) => item.jenisCetakan === result.namaCetakan
+            ).harga
+          ) *
+            tempQuantity.value) * 100/111;
+        const tempPpn = tempDpp * 11/111;
+        const tempPph = tempPpn * 1.5/ 100;
+
         return {
           tanggal: dayjs(selectedItem.createdAt),
           pemberiPekerjaan: selectedItem.pemesan,
           jenisBarang: result.namaCetakan,
-          kuantitas: tempQuantity, // Use tempQuantity here
+          kuantitas: tempQuantity,
           hargaSatuan: selectedItem.perincians.find(
             (item) => item.jenisCetakan === result.namaCetakan
           ).harga,
@@ -278,9 +289,9 @@ const Pajak = (props) => {
             ) * tempQuantity.value,
           noTglSpk: "",
           noSeriTglFakturPajak: "",
-          dpp: "",
-          ppn: "",
-          pphPs22: "",
+          dpp: tempDpp.toFixed(2),
+          ppn: tempPpn.toFixed(2),
+          pphPs22: tempPph.toFixed(2),
           keterangan: "",
         };
       });
@@ -296,20 +307,25 @@ const Pajak = (props) => {
     setSelectedPembelianBahanBaku(selectedItem.id);
 
     if (selectedItem) {
-      const newItems = selectedItem.itemPembelianBahanBakus.map((result) => ({
-        tanggal: dayjs(result.tanggal),
-        leveransir: selectedItem.leveransir,
-        noTanggalOrder: result.noOrder,
-        jenisBarang: result.jenisBarang,
-        kuantitas: separateValueAndUnit(result.jumlahOrder),
-        hargaSatuan: result.hargaSatuan,
-        jumlahHarga: result.jumlahHarga,
-        noInvoiceKwitansiSj: "",
-        noSeriTglFakturPajak: "",
-        dpp: "",
-        ppn: "",
-        keterangan: "",
-      }));
+      const newItems = selectedItem.itemPembelianBahanBakus.map((result) => {
+        const tempDpp = parseFloat(result.jumlahHarga) * 100/ 111;
+        const tempPpn = tempDpp * 11/ 111;
+
+        return {
+          tanggal: dayjs(result.tanggal),
+          leveransir: selectedItem.leveransir,
+          noTanggalOrder: result.noOrder,
+          jenisBarang: result.jenisBarang,
+          kuantitas: separateValueAndUnit(result.jumlahOrder),
+          hargaSatuan: result.hargaSatuan,
+          jumlahHarga: result.jumlahHarga,
+          noInvoiceKwitansiSj: "",
+          noSeriTglFakturPajak: "",
+          dpp: tempDpp.toFixed(2),
+          ppn: tempPpn.toFixed(2),
+          keterangan: "",
+        };
+      });
 
       setDataPajakMasukan(newItems);
     }

@@ -34,7 +34,10 @@ productionRoutes.get(
   "/getLaporanSampah",
   ProductionController.getLaporanSampah
 );
-
+productionRoutes.get(
+  "/getActivityLog",
+  ProductionController.productionActivityLog
+);
 //post
 productionRoutes.post(
   "/addKegiatanProduksi/:id",

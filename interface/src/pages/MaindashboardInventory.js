@@ -42,6 +42,7 @@ const MaindashboardInventory = (props) => {
   const [allStokOpnam, setAllStokOpnam] = useState([]);
 
   const [allPenyerahanBarang, setAllPenyerahanBarang] = useState([]);
+  const [allInventoryItems, setAllInventoryItems] = useState([]);
 
   const [permohonanPembelian, setPermohonanPembelian] = useState([]);
   const [pembelianBahanBaku, setPembelianBahanBaku] = useState([]);
@@ -82,6 +83,26 @@ const MaindashboardInventory = (props) => {
       });
     }
   }, [refreshPenyerahanBarang]);
+
+  useEffect(() => {
+    axios({
+      method: "GET",
+      url: "http://localhost:3000/inventory/getAllInventoryItem",
+    }).then((result) => {
+      if (result.status === 200) {
+        const tempData = result.data.map((item) => ({
+          value: item.namaItem,
+          ...item,
+        }));
+        console.log(tempData);
+        setAllInventoryItems(tempData);
+      } else {
+        setOpenSnackbar(true);
+        setSnackbarStatus(false);
+        setSnackbarMessage("Tidak berhasil memanggil data item bahan baku");
+      }
+    });
+  }, []);
 
   useEffect(() => {
     if (refresDataStokOpnam) {
@@ -401,6 +422,17 @@ const MaindashboardInventory = (props) => {
                         },
                       };
                     } else {
+                      if (field === "jenisBarang") {
+                        let findItem = allInventoryItems.find(
+                          (item) => item.namaItem === value
+                        );
+                        let stok = separateValueAndUnit(findItem.jumlahItem);
+                        daftarPermohonan.stok = {
+                          value: stok.value,
+                          unit: stok.unit,
+                        };
+                        console.log(stok);
+                      }
                       return {
                         ...daftarPermohonan,
                         [field]: value,
@@ -1313,7 +1345,7 @@ const MaindashboardInventory = (props) => {
                   </TableRow>
                 </TableHead>
                 <TableBody>
-                  {allPenyerahanBarang?.map((result, index) => {
+                  {allPenyerahanBarang?.filter((item) => item.statusPenyerahan !== "Barang sudah diambil")?.map((result, index) => {
                     return (
                       <React.Fragment key={index}>
                         <TableRow>
@@ -1611,10 +1643,23 @@ const MaindashboardInventory = (props) => {
                                 <TableCell
                                   style={{ width: isMobile ? "100px" : "" }}
                                 >
-                                  <TextField
+                                  {/* <TextField
                                     type="text"
                                     style={{ width: isMobile ? "100px" : "" }}
                                     value={dataPermohonan.jenisBarang}
+                                    onChange={(event) => {
+                                      handleChangeInputPermohonanPembelian(
+                                        event,
+                                        index,
+                                        indexPermohonan,
+                                        "jenisBarang"
+                                      );
+                                    }}
+                                  /> */}
+                                  <MySelectTextField
+                                    data={allInventoryItems}
+                                    value={dataPermohonan.jenisBarang}
+                                    width={isMobile ? "100px" : "200px"}
                                     onChange={(event) => {
                                       handleChangeInputPermohonanPembelian(
                                         event,
@@ -1696,6 +1741,7 @@ const MaindashboardInventory = (props) => {
                                     }}
                                   >
                                     <TextField
+                                      disabled
                                       value={dataPermohonan.stok.value}
                                       style={{ width: isMobile ? "100px" : "" }}
                                       type="number"
@@ -1710,6 +1756,7 @@ const MaindashboardInventory = (props) => {
                                     />
                                     <div style={{ marginLeft: "8px" }}>
                                       <MySelectTextField
+                                        disabled
                                         type="text"
                                         onChange={(event) => {
                                           handleChangeInputPermohonanPembelian(

@@ -422,9 +422,62 @@ class InventoryController {
               jumlahTerimaPengiriman: data.jumlahTerimaPengiriman,
               sisaPengiriman: data.sisaPengiriman,
             });
+
+            const separateValueAndUnit = (str) => {
+              const parts = str.split(" ");
+              const value = parseFloat(parts[0]);
+              const unit = parts.slice(1).join(" ");
+              return { value, unit };
+            };
+
+            let findItem = await inventorys.findOne({
+              where: { namaItem: data.jenisBarang },
+            });
+
+            let tempJumlahItemDiGudang = separateValueAndUnit(
+              findItem.jumlahItem
+            );
+            let itemYangAkanDitambah = separateValueAndUnit(
+              data.jumlahTerimaPengiriman
+            );
+
+            let totalItemDiGudang = 0;
+
+            let amountToReturn = "";
+
+            if (itemYangAkanDitambah.unit === tempJumlahItemDiGudang.unit) {
+              totalItemDiGudang +=
+                tempJumlahItemDiGudang.value + itemYangAkanDitambah.value;
+              amountToReturn = `${totalItemDiGudang} ${tempJumlahItemDiGudang.unit}`;
+            } else if (
+              itemYangAkanDitambah.unit === "Kg" &&
+              tempJumlahItemDiGudang.unit === "Ton"
+            ) {
+              let tempItemGudangDalamTon = tempJumlahItemDiGudang.value * 1000;
+              totalItemDiGudang +=
+                tempItemGudangDalamTon + itemYangAkanDitambah.value;
+
+              if (totalItemDiGudang > 1000) {
+                totalItemDiGudang = totalItemDiGudang / 1000;
+                amountToReturn = `${totalItemDiGudang} ${tempJumlahItemDiGudang.unit}`;
+              } else {
+                amountToReturn = `${totalItemDiGudang} ${tempJumlahItemDiGudang.unit}`;
+              }
+            }
+
+            await inventorys.update(
+              {
+                jumlahItem: amountToReturn,
+              },
+              { where: { namaItem: data.jenisBarang } }
+            );
           })
         );
       }
+
+      await permohonanPembelians.update({
+         statusPermohonan: "Done"
+      }, {where: {id: permohonanPembelianId}})
 
       let userInformation = await users.findOne({
         where: { id: id },
@@ -1331,6 +1384,7 @@ class InventoryController {
   static async acceptPermohonanPembelian(req, res) {
     try {
       const { id } = req.params;
+      const {userId} = req.query;
 
       const findOnePermohonanPembelian = await permohonanPembelians.findOne({
         where: { id: id },
@@ -1343,7 +1397,7 @@ class InventoryController {
         { where: { id: id } }
       );
       let userInformation = await users.findOne({
-        where: { id: id },
+        where: { id: userId },
       });
 
       let createActivityLog = await activitylogs.create({
@@ -1354,7 +1408,7 @@ class InventoryController {
       });
 
       await UserActivityLogs.create({
-        userId: id,
+        userId: userId,
         id: createActivityLog.id,
         activitylogsId: createActivityLog.id,
       });

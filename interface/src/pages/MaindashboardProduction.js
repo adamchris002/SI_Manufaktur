@@ -320,6 +320,22 @@ const MaindashboardProduction = (props) => {
             Actual Reports History
           </DefaultButton>
         </div>
+        <div style={{ marginTop: "32px", fontSize: "24px" }}>
+          <DefaultButton
+            width="232px"
+            height="40px"
+            backgroundColor="#0F607D"
+            borderRadius="16px"
+            fontSize="12px"
+            onClickFunction={() => {
+              document
+                .getElementById("activitylog")
+                .scrollIntoView({ behavior: "smooth" });
+            }}
+          >
+            Activity Log
+          </DefaultButton>
+        </div>
       </div>
       <div
         id="test"
@@ -714,6 +730,32 @@ const MaindashboardProduction = (props) => {
               }}
             >
               Go to Actual Reports History Page
+            </DefaultButton>
+          </div>
+        </div>
+        <div
+          style={{
+            marginLeft: "32px",
+            marginTop: "64px",
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "center",
+            width: "72vw",
+          }}
+        >
+          <Typography
+            id="activitylog"
+            style={{ fontSize: "36px", color: "#0F607D" }}
+          >
+            Activity Log
+          </Typography>
+          <div>
+            <DefaultButton
+              onClickFunction={() => {
+                navigate("/productionDashboard/activitylog");
+              }}
+            >
+              Go to Activity Log Page
             </DefaultButton>
           </div>
         </div>

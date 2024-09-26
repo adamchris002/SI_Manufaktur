@@ -16,6 +16,9 @@ const {
   cicilans,
   pembayaranLains,
   cicilanPemLains,
+  users,
+  activitylogs,
+  UsersActivityLogs,
 } = require("../models");
 const dayjs = require("dayjs");
 
@@ -50,6 +53,24 @@ class FinanceController {
         namaBank: namaBank,
         statusBukuBank: "Ongoing",
       });
+
+      let findUser = await users.findOne({
+        where: { id: id },
+      });
+
+      let createActivityLog = await activitylogs.create({
+        user: findUser.name,
+        activity: `Menambahkan Buku Bank dengan nama ${namaBank}`,
+        name: `ID Buku Bank: ${result.id}`,
+        division: "Finance",
+      });
+
+      await UsersActivityLogs.create({
+        userId: findUser.id,
+        activityLogId: createActivityLog.id,
+        id: createActivityLog.id,
+      });
+
       res.json(result);
     } catch (error) {
       res.json(error);
@@ -89,6 +110,22 @@ class FinanceController {
               { where: { id: data.id } }
             );
           }
+          let findUser = await users.findOne({
+            where: { id: id },
+          });
+
+          let createActivitylog = await activitylogs.create({
+            user: findUser.name,
+            activity: `Menambahkan item debet/kredit pada buku bank ${namaBank}`,
+            name: `ID Buku Bank: ${findBank.id}`,
+            division: "Finance",
+          });
+
+          // await UsersActivityLogs.create({
+          //   userId: findUser.id,
+          //   activityLogId: createActivitylog.id,
+          //   id: createActivitylog.id,
+          // });
         })
       );
     }
@@ -186,6 +223,17 @@ class FinanceController {
                 { where: { id: data.id } }
               );
             }
+
+            let findUser = await users.findOne({
+              where: { id: id },
+            });
+
+            let createActivityLog = await activitylogs.create({
+              user: findUser.name,
+              activity: `Menambahkan item kas harian dari kas harian dengan id ${result.id}`,
+              name: `Judul Kas Harian: ${result.judulKasHarian}`,
+              division: "Finance",
+            });
           })
         );
       }
@@ -236,6 +284,7 @@ class FinanceController {
   }
   static async checkForDefaultPosPembayaran(req, res) {
     try {
+      console.log("test");
       let findDefaultData = await posPembayarans.findAll({});
       if (findDefaultData.length === 0) {
         const defaultPosPembayaranData = [
@@ -443,7 +492,7 @@ class FinanceController {
           await Promise.all(
             defaultPosPembayaranData.map(async (data) => {
               await posPembayarans.create({
-                kasHarianId: 1,
+                // kasHarianId: 1,
                 kode: data.kode,
                 uraian: data.uraian,
                 kataKunci: data.kataKunci,
@@ -599,6 +648,16 @@ class FinanceController {
           })
         );
       }
+      let finduser = await users.findOne({
+        where: { id: id },
+      });
+
+      let createActivityLog = await activitylogs.create({
+        user: finduser.name,
+        activity: `Menambahkan pembayaran lain-lain ke dalam buku bank ${dataBank.namaBank}`,
+        name: `Nama Buku Bank: ${dataBank.namaBank}`,
+        division: "Finance",
+      });
       res.json();
     } catch (error) {
       res.json(error);
@@ -666,6 +725,8 @@ class FinanceController {
             });
             if (data.keterangan === "Lunas") {
               if (data.pembayaran === "Hutang") {
+                console.log(prevSaldo);
+                console.log(data.jumlahHarga);
                 prevSaldo -= parseFloat(data.jumlahHarga);
                 await itemBukuBanks.create({
                   bukuBankId: findBukuBank.id,
@@ -706,6 +767,23 @@ class FinanceController {
           })
         );
       }
+
+      let findUser = await users.findOne({
+        where: { id: id },
+      });
+
+      let createActivityLog = await activitylogs.create({
+        user: findUser.name,
+        activity: `Menambahkan hutang pada buku bank ${dataBank.namaBank}`,
+        name: `ID Buku Bank: ${dataBank.id}`,
+        division: "Finance",
+      });
+
+      // await UsersActivityLogs.create({
+      //   userId: findUser.id,
+      //   activityLogId: createActivityLog.id,
+      //   id: createActivityLog.id,
+      // });
 
       res.json(result);
     } catch (error) {
@@ -933,9 +1011,20 @@ class FinanceController {
         );
       }
 
-      res.status(200).json({ message: "Pajak Masukan added successfully" });
+      let finduser = await users.findOne({
+        where: { id: id },
+      });
+
+      let createActivityLog = await activitylogs.create({
+        user: finduser.name,
+        activity: `Menambahkan pajak masukan ke dalam buku bank ${dataBank.namaBank}`,
+        name: `Nama Buku Bank: ${dataBank.namaBank}`,
+        division: "Finance",
+      });
+
+      res.json(findPrevItemBukuBanks);
     } catch (error) {
-      res.status(500).json({ error: error.message });
+      res.json(error);
     }
   }
 
@@ -1001,6 +1090,17 @@ class FinanceController {
           })
         );
       }
+
+      let finduser = await users.findOne({
+        where: { id: id },
+      });
+
+      let createActivityLog = await activitylogs.create({
+        user: finduser.name,
+        activity: `Menambahkan pajak keluaran ke dalam buku bank ${dataBank.namaBank}`,
+        name: `Nama Buku Bank: ${dataBank.namaBank}`,
+        division: "Finance",
+      });
       res.status(200).json({ message: "Pajak Keluaran added successfully" });
     } catch (error) {
       res.json(error);
@@ -1010,6 +1110,10 @@ class FinanceController {
     try {
       const { id } = req.params;
       const { dataCicilan } = req.body;
+
+      let findUser = await users.findOne({
+        where: { id: id },
+      });
 
       const dataHutangFromDb = await hutangs.findOne({
         where: { id: dataCicilan[0].id },
@@ -1103,6 +1207,13 @@ class FinanceController {
                         });
                       }
                     }
+
+                    let createActivityLog = await activitylogs.create({
+                      user: findUser.name,
+                      activity: `Mengedit cicilan dengan id ${matchedCicilan.id} dari hutang dengan id ${dataHutangFromDb.id}`,
+                      name: `ID Cicilan: ${matchedCicilan.id}`,
+                      division: "Finance",
+                    });
                   }
                 })
               );
@@ -1110,7 +1221,6 @@ class FinanceController {
           })
         );
       }
-
       res.json();
     } catch (error) {
       res.json(error);
@@ -1152,6 +1262,10 @@ class FinanceController {
     try {
       const { id } = req.params;
       const { dataCicilanPemLains } = req.body;
+
+      let findUser = await users.findOne({
+        where: { id: id },
+      });
 
       const dataPemLainsFromDb = await pembayaranLains.findOne({
         where: { id: dataCicilanPemLains[0].id },
@@ -1284,6 +1398,12 @@ class FinanceController {
                         });
                       }
                     }
+                    let createActivityLog = await activitylogs.create({
+                      user: findUser.name,
+                      activity: `Mengedit cicilan pembayaran lain dengan id ${matchedCicilanPemLains.id} dari pembayaran lain-lain dengan id ${dataPemLainsFromDb.id}`,
+                      name: `ID Cicilan Pembayaran Lain: ${matchedCicilanPemLains.id}`,
+                      division: "Finance",
+                    });
                   }
                 })
               );
@@ -1307,6 +1427,16 @@ class FinanceController {
             [Op.between]: [thisYearStart, thisYearEnd],
           },
         },
+      });
+      res.json(result);
+    } catch (error) {
+      res.json(error);
+    }
+  }
+  static async financeActivityLog(req, res) {
+    try {
+      let result = await activitylogs.findAll({
+        where: { division: "Finance" },
       });
       res.json(result);
     } catch (error) {

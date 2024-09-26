@@ -424,8 +424,8 @@ const KasHarian = (props) => {
                   <TableCell style={{ width: "200px" }}>Uraian</TableCell>
                   <TableCell style={{ width: "200px" }}>Nomor BP</TableCell>
                   <TableCell style={{ width: "200px" }}>Pos</TableCell>
-                  <TableCell style={{ width: "200px" }}>Debet</TableCell>
                   <TableCell style={{ width: "200px" }}>Kredit</TableCell>
+                  <TableCell style={{ width: "200px" }}>Debet</TableCell>
                   <TableCell style={{ width: "200px" }}>Sisa</TableCell>
                   <TableCell style={{ width: "50px" }}>Actions</TableCell>
                 </TableRow>

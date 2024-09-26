@@ -1610,6 +1610,17 @@ class ProductionController {
       res.json(error);
     }
   }
+
+  static async productionActivityLog(req, res) {
+    try {
+      let result = await activitylogs.findAll({
+        where: { division: "Production" },
+      });
+      res.json(result);
+    } catch (error) {
+      res.json(error);
+    }
+  }
 }
 
 module.exports = ProductionController;

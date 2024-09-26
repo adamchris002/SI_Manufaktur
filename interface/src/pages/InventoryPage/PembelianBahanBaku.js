@@ -66,6 +66,7 @@ const PembelianBahanBaku = (props) => {
   const [allOrdersId, setAllOrdersId] = useState([]);
   const [allInventoryItems, setAllInventoryItems] = useState([]);
   const [permohonanPembelian, setPermohonanPembelian] = useState([]);
+  console.log(permohonanPembelian);
   const [pembelianBahanBaku, setPembelianBahanBaku] = useState({
     leveransir: "",
     alamat: "",
@@ -458,6 +459,21 @@ const PembelianBahanBaku = (props) => {
                   },
                 };
               } else {
+                if (field === "jenisBarang") {
+                  let findItemPermohonanPembelian =
+                    permohonanPembelian?.data?.itemPermohonanPembelians?.find(
+                      (item) => item.jenisBarang === value
+                    );
+
+                  let jumlah = separateValueAndUnit(
+                    findItemPermohonanPembelian?.jumlah
+                  );
+
+                  updatedResult.jumlahOrder = {
+                    value: jumlah.value,
+                    unit: jumlah.unit,
+                  };
+                }
                 updatedResult = { ...updatedResult, [field]: value };
               }
             }
@@ -830,6 +846,7 @@ const PembelianBahanBaku = (props) => {
                                     }}
                                   >
                                     <TextField
+                                      disabled
                                       type="number"
                                       value={result.jumlahOrder.value}
                                       onChange={(event) => {
@@ -842,6 +859,7 @@ const PembelianBahanBaku = (props) => {
                                     />
                                     <div style={{ marginLeft: "8px" }}>
                                       <MySelectTextField
+                                        disabled
                                         data={units}
                                         width={isMobile ? "75px" : "100px"}
                                         height={"55px"}

@@ -36,6 +36,8 @@ import RencanaPembayaran from "./pages/FinancePage/RencanaPembayaran";
 import LaporanAktual from "./pages/ProductionPage/LaporanAktual";
 import ProductionPlanningHistoryPage from "./pages/ProductionPlanningPage/ProductionPlanningHistoryPage";
 import OrderHistoryPage from "./pages/MarketingPage/OrderHistoryPage";
+import ProductionActivityLog from "./pages/ProductionPage/ProductionActivityLog";
+import FinanceActivityLog from "./pages/FinancePage/FinanceActivityLog";
 
 export const AppContext = createContext({});
 
@@ -355,6 +357,28 @@ function App() {
                   <Navigate to="/unauthorized" replace />
                 ) : (
                   <RencanaPembayaran userInformation={userCredentials} />
+                )
+              }
+            />
+            <Route
+              path="/financeDashboard/activitylog"
+              element={
+                !userCredentials.data ||
+                userCredentials.data.department !== "Finance" ? (
+                  <Navigate to="/unauthorized" replace />
+                ) : (
+                  <FinanceActivityLog userInformation={userCredentials} />
+                )
+              }
+            />
+            <Route
+              path="/productionDashboard/activitylog"
+              element={
+                !userCredentials.data ||
+                userCredentials.data.department !== "Production" ? (
+                  <Navigate to="/unauthorized" replace />
+                ) : (
+                  <ProductionActivityLog userInformation={userCredentials} />
                 )
               }
             />

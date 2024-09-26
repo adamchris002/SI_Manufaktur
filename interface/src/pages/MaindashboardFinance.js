@@ -215,7 +215,7 @@ const MaindashboardFinance = (props) => {
     axios({
       method: "PUT",
       url: `http://localhost:3000/inventory/denyPermohonanPembelian/${id}`,
-      params: { userId: userInformation?.data?.id},
+      params: { userId: userInformation?.data?.id },
     }).then((result) => {
       if (result.status === 200) {
         handleCloseModal();
@@ -236,7 +236,7 @@ const MaindashboardFinance = (props) => {
     axios({
       method: "PUT",
       url: `http://localhost:3000/inventory/acceptPermohonanPembelian/${id}`,
-      params: { userId: userInformation?.data?.id},
+      params: { userId: userInformation?.data?.id },
     }).then((result) => {
       if (result.status === 200) {
         handleCloseModal();
@@ -696,7 +696,38 @@ const MaindashboardFinance = (props) => {
             </Table>
           </TableContainer>
         </div>
+        <div
+          style={{
+            marginLeft: "32px",
+            marginTop: "64px",
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "center",
+            width: "72vw",
+          }}
+        >
+          <Typography
+            id="activitylog"
+            style={{ fontSize: "36px", color: "#0F607D" }}
+          >
+            Activity Log
+          </Typography>
+          <div>
+            <DefaultButton
+              height="40px"
+              width="300px"
+              borderRadius="16px"
+              fontSize="14px"
+              onClickFunction={() => {
+                navigate("/financeDashboard/activitylog");
+              }}
+            >
+              Pergi ke Halaman Activity Log
+            </DefaultButton>
+          </div>
+        </div>
       </div>
+
       {openModal === true && (
         <MyModal open={openModal} handleClose={handleCloseModal}>
           <div
