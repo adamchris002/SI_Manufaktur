@@ -12,7 +12,10 @@ module.exports = (sequelize, DataTypes) => {
         foreignKey: "permohonanPembelianId",
         onDelete: "CASCADE",
       });
-      pembelianBahanBakus.hasMany(models.itemPembelianBahanBakus, {foreignKey: "pembelianBahanBakuId", onDelete: "CASCADE"})
+      pembelianBahanBakus.hasMany(models.itemPembelianBahanBakus, {
+        foreignKey: "pembelianBahanBakuId",
+        onDelete: "CASCADE",
+      });
     }
   }
   pembelianBahanBakus.init(
@@ -20,6 +23,8 @@ module.exports = (sequelize, DataTypes) => {
       permohonanPembelianId: DataTypes.INTEGER,
       leveransir: DataTypes.STRING,
       alamat: DataTypes.STRING,
+      statusPajakMasukan: DataTypes.STRING,
+      statusHutang: DataTypes.STRING,
     },
     {
       sequelize,

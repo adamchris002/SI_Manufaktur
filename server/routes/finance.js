@@ -46,10 +46,22 @@ financeRoutes.get(
   FinanceController.getActiveRencanaPembayaranOneYear
 );
 financeRoutes.get("/getActivityLog", FinanceController.financeActivityLog);
+financeRoutes.get(
+  "/getAllProductionPlanningForPajakKeluaran",
+  FinanceController.getAllProductionPlanningForPajakKeluaran
+);
+financeRoutes.get(
+  "/getPembelianBahanBakuForPajakMasukan",
+  FinanceController.getPembelianBahanBakuForPajakMasukan
+);
+financeRoutes.get(
+  "/getPembelianBahanbakuForHutang",
+  FinanceController.getPembelianBahanbakuForHutang
+);
 //post
 financeRoutes.post("/addNamaBank/:id", FinanceController.addNamaBank); //udah
 financeRoutes.post("/addItemBukuBank/:id", FinanceController.addNewBukuBank); //udah
-financeRoutes.post("/addKasHarian/:id", FinanceController.addKasHarian);  //udah
+financeRoutes.post("/addKasHarian/:id", FinanceController.addKasHarian); //udah
 financeRoutes.post(
   "/checkForDefaultPosPembayaran",
   FinanceController.checkForDefaultPosPembayaran

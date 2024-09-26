@@ -57,7 +57,7 @@ const BukuBank = (props) => {
   const { userInformation } = props;
   const { isMobile } = useContext(AppContext);
   const navigate = useNavigate();
-  const {setSuccessMessage} = useAuth();
+  const { setSuccessMessage } = useAuth();
 
   const [dataBukuBank, setDataBukuBank] = useState([
     {
@@ -472,201 +472,206 @@ const BukuBank = (props) => {
                       </TableRow>
                     </TableHead>
                     <TableBody>
-                      {dataBukuBank?.map((result, index) => {
-                        return (
-                          <React.Fragment key={index}>
-                            <TableRow>
-                              <TableCell>{index + 1 + "."}</TableCell>
-                              <TableCell>
-                                <LocalizationProvider
-                                  dateAdapter={AdapterDayjs}
-                                >
-                                  <DemoContainer
-                                    components={["DateTimePicker"]}
+                      {dataBukuBank
+                        ?.sort((a, b) => a.id - b.id)
+                        .map((result, index) => {
+                          return (
+                            <React.Fragment key={index}>
+                              <TableRow>
+                                <TableCell>{index + 1 + "."}</TableCell>
+                                <TableCell>
+                                  <LocalizationProvider
+                                    dateAdapter={AdapterDayjs}
                                   >
-                                    <DemoItem>
-                                      <DateTimePicker
-                                        //   disablePast
-                                        disabled
-                                        value={
-                                          result.tanggal.isValid()
-                                            ? result.tanggal
-                                            : null
-                                        }
-                                        renderInput={(params) => (
-                                          <TextField
-                                            {...params}
-                                            error={
-                                              params.error || !params.value
-                                            }
-                                            helperText={
-                                              params.error
-                                                ? "Invalid date format"
-                                                : ""
-                                            }
-                                          />
-                                        )}
-                                      />
-                                    </DemoItem>
-                                  </DemoContainer>
-                                </LocalizationProvider>
-                              </TableCell>
-                              <TableCell>
-                                <TextField
-                                  value={result.uraian}
-                                  onChange={(event) => {
-                                    handleChangeInput(event, index, "uraian");
-                                  }}
-                                  type="text"
-                                  sx={{
-                                    "& .MuiOutlinedInput-root": {
-                                      height: isMobile ? "15px" : "3vw",
-                                      width: isMobile ? "120px" : "200px",
-                                      fontSize: isMobile ? "10px" : "1.5vw",
-                                      borderRadius: "10px",
-                                      "& fieldset": {
-                                        borderColor: "#0F607D",
+                                    <DemoContainer
+                                      components={["DateTimePicker"]}
+                                    >
+                                      <DemoItem>
+                                        <DateTimePicker
+                                          //   disablePast
+                                          disabled
+                                          value={
+                                            result.tanggal.isValid()
+                                              ? result.tanggal
+                                              : null
+                                          }
+                                          renderInput={(params) => (
+                                            <TextField
+                                              {...params}
+                                              error={
+                                                params.error || !params.value
+                                              }
+                                              helperText={
+                                                params.error
+                                                  ? "Invalid date format"
+                                                  : ""
+                                              }
+                                            />
+                                          )}
+                                        />
+                                      </DemoItem>
+                                    </DemoContainer>
+                                  </LocalizationProvider>
+                                </TableCell>
+                                <TableCell>
+                                  <TextField
+                                    value={result.uraian}
+                                    onChange={(event) => {
+                                      handleChangeInput(event, index, "uraian");
+                                    }}
+                                    type="text"
+                                    sx={{
+                                      "& .MuiOutlinedInput-root": {
+                                        height: isMobile ? "15px" : "3vw",
+                                        width: isMobile ? "120px" : "200px",
+                                        fontSize: isMobile ? "10px" : "1.5vw",
+                                        borderRadius: "10px",
+                                        "& fieldset": {
+                                          borderColor: "#0F607D",
+                                        },
+                                        "&:hover fieldset": {
+                                          borderColor: "#0F607D",
+                                        },
+                                        "&.Mui-focused fieldset": {
+                                          borderColor: "#0F607D",
+                                        },
                                       },
-                                      "&:hover fieldset": {
-                                        borderColor: "#0F607D",
+                                    }}
+                                  />
+                                </TableCell>
+                                <TableCell>
+                                  <TextField
+                                    value={result.debet}
+                                    disabled={Boolean(result.kredit)}
+                                    onChange={(event) => {
+                                      handleChangeInput(event, index, "debet");
+                                    }}
+                                    type="text"
+                                    sx={{
+                                      "& .MuiOutlinedInput-root": {
+                                        height: isMobile ? "15px" : "3vw",
+                                        width: isMobile ? "120px" : "200px",
+                                        fontSize: isMobile ? "10px" : "1.5vw",
+                                        borderRadius: "10px",
+                                        "& fieldset": {
+                                          borderColor: "#0F607D",
+                                        },
+                                        "&:hover fieldset": {
+                                          borderColor: "#0F607D",
+                                        },
+                                        "&.Mui-focused fieldset": {
+                                          borderColor: "#0F607D",
+                                        },
                                       },
-                                      "&.Mui-focused fieldset": {
-                                        borderColor: "#0F607D",
+                                    }}
+                                    InputProps={{
+                                      inputComponent: NumericFormatCustom,
+                                    }}
+                                  />
+                                </TableCell>
+                                <TableCell>
+                                  <TextField
+                                    value={result.kredit}
+                                    disabled={Boolean(result.debet)}
+                                    onChange={(event) => {
+                                      handleChangeInput(event, index, "kredit");
+                                    }}
+                                    type="text"
+                                    sx={{
+                                      "& .MuiOutlinedInput-root": {
+                                        height: isMobile ? "15px" : "3vw",
+                                        width: isMobile ? "120px" : "200px",
+                                        fontSize: isMobile ? "10px" : "1.5vw",
+                                        borderRadius: "10px",
+                                        "& fieldset": {
+                                          borderColor: "#0F607D",
+                                        },
+                                        "&:hover fieldset": {
+                                          borderColor: "#0F607D",
+                                        },
+                                        "&.Mui-focused fieldset": {
+                                          borderColor: "#0F607D",
+                                        },
                                       },
-                                    },
-                                  }}
-                                />
-                              </TableCell>
-                              <TableCell>
-                                <TextField
-                                  value={result.debet}
-                                  disabled={Boolean(result.kredit)}
-                                  onChange={(event) => {
-                                    handleChangeInput(event, index, "debet");
-                                  }}
-                                  type="text"
-                                  sx={{
-                                    "& .MuiOutlinedInput-root": {
-                                      height: isMobile ? "15px" : "3vw",
-                                      width: isMobile ? "120px" : "200px",
-                                      fontSize: isMobile ? "10px" : "1.5vw",
-                                      borderRadius: "10px",
-                                      "& fieldset": {
-                                        borderColor: "#0F607D",
+                                    }}
+                                    InputProps={{
+                                      inputComponent: NumericFormatCustom,
+                                    }}
+                                  />
+                                </TableCell>
+                                <TableCell>
+                                  <TextField
+                                    disabled
+                                    value={result.saldo}
+                                    type="text"
+                                    sx={{
+                                      "& .MuiOutlinedInput-root": {
+                                        height: isMobile ? "15px" : "3vw",
+                                        width: isMobile ? "120px" : "200px",
+                                        fontSize: isMobile ? "10px" : "1.5vw",
+                                        borderRadius: "10px",
+                                        "& fieldset": {
+                                          borderColor: "#0F607D",
+                                        },
+                                        "&:hover fieldset": {
+                                          borderColor: "#0F607D",
+                                        },
+                                        "&.Mui-focused fieldset": {
+                                          borderColor: "#0F607D",
+                                        },
                                       },
-                                      "&:hover fieldset": {
-                                        borderColor: "#0F607D",
+                                    }}
+                                    InputProps={{
+                                      inputComponent: NumericFormatCustom,
+                                    }}
+                                  />
+                                </TableCell>
+                                <TableCell>
+                                  <TextField
+                                    value={result.keterangan}
+                                    onChange={(event) => {
+                                      handleChangeInput(
+                                        event,
+                                        index,
+                                        "keterangan"
+                                      );
+                                    }}
+                                    type="text"
+                                    sx={{
+                                      "& .MuiOutlinedInput-root": {
+                                        height: isMobile ? "15px" : "3vw",
+                                        width: isMobile ? "120px" : "200px",
+                                        fontSize: isMobile ? "10px" : "1.5vw",
+                                        borderRadius: "10px",
+                                        "& fieldset": {
+                                          borderColor: "#0F607D",
+                                        },
+                                        "&:hover fieldset": {
+                                          borderColor: "#0F607D",
+                                        },
+                                        "&.Mui-focused fieldset": {
+                                          borderColor: "#0F607D",
+                                        },
                                       },
-                                      "&.Mui-focused fieldset": {
-                                        borderColor: "#0F607D",
-                                      },
-                                    },
-                                  }}
-                                  InputProps={{
-                                    inputComponent: NumericFormatCustom,
-                                  }}
-                                />
-                              </TableCell>
-                              <TableCell>
-                                <TextField
-                                  value={result.kredit}
-                                  disabled={Boolean(result.debet)}
-                                  onChange={(event) => {
-                                    handleChangeInput(event, index, "kredit");
-                                  }}
-                                  type="text"
-                                  sx={{
-                                    "& .MuiOutlinedInput-root": {
-                                      height: isMobile ? "15px" : "3vw",
-                                      width: isMobile ? "120px" : "200px",
-                                      fontSize: isMobile ? "10px" : "1.5vw",
-                                      borderRadius: "10px",
-                                      "& fieldset": {
-                                        borderColor: "#0F607D",
-                                      },
-                                      "&:hover fieldset": {
-                                        borderColor: "#0F607D",
-                                      },
-                                      "&.Mui-focused fieldset": {
-                                        borderColor: "#0F607D",
-                                      },
-                                    },
-                                  }}
-                                  InputProps={{
-                                    inputComponent: NumericFormatCustom,
-                                  }}
-                                />
-                              </TableCell>
-                              <TableCell>
-                                <TextField
-                                  disabled
-                                  value={result.saldo}
-                                  type="text"
-                                  sx={{
-                                    "& .MuiOutlinedInput-root": {
-                                      height: isMobile ? "15px" : "3vw",
-                                      width: isMobile ? "120px" : "200px",
-                                      fontSize: isMobile ? "10px" : "1.5vw",
-                                      borderRadius: "10px",
-                                      "& fieldset": {
-                                        borderColor: "#0F607D",
-                                      },
-                                      "&:hover fieldset": {
-                                        borderColor: "#0F607D",
-                                      },
-                                      "&.Mui-focused fieldset": {
-                                        borderColor: "#0F607D",
-                                      },
-                                    },
-                                  }}
-                                  InputProps={{
-                                    inputComponent: NumericFormatCustom,
-                                  }}
-                                />
-                              </TableCell>
-                              <TableCell>
-                                <TextField
-                                  value={result.keterangan}
-                                  onChange={(event) => {
-                                    handleChangeInput(
-                                      event,
-                                      index,
-                                      "keterangan"
-                                    );
-                                  }}
-                                  type="text"
-                                  sx={{
-                                    "& .MuiOutlinedInput-root": {
-                                      height: isMobile ? "15px" : "3vw",
-                                      width: isMobile ? "120px" : "200px",
-                                      fontSize: isMobile ? "10px" : "1.5vw",
-                                      borderRadius: "10px",
-                                      "& fieldset": {
-                                        borderColor: "#0F607D",
-                                      },
-                                      "&:hover fieldset": {
-                                        borderColor: "#0F607D",
-                                      },
-                                      "&.Mui-focused fieldset": {
-                                        borderColor: "#0F607D",
-                                      },
-                                    },
-                                  }}
-                                />
-                              </TableCell>
-                              <TableCell>
-                                <IconButton
-                                  onClick={() => {
-                                    handleDeleteItemBukuBank(result.id, index);
-                                  }}
-                                >
-                                  <DeleteIcon style={{ color: "red" }} />
-                                </IconButton>
-                              </TableCell>
-                            </TableRow>
-                          </React.Fragment>
-                        );
-                      })}
+                                    }}
+                                  />
+                                </TableCell>
+                                <TableCell>
+                                  <IconButton
+                                    onClick={() => {
+                                      handleDeleteItemBukuBank(
+                                        result.id,
+                                        index
+                                      );
+                                    }}
+                                  >
+                                    <DeleteIcon style={{ color: "red" }} />
+                                  </IconButton>
+                                </TableCell>
+                              </TableRow>
+                            </React.Fragment>
+                          );
+                        })}
                     </TableBody>
                   </Table>
                 </TableContainer>

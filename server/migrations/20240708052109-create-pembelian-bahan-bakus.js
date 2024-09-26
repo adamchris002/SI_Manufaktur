@@ -24,6 +24,10 @@ module.exports = {
       alamat: {
         type: Sequelize.STRING,
       },
+      statusPajakMasukan: {
+        type: Sequelize.STRING,
+      },
+      statusHutang: { type: Sequelize.STRING },
       createdAt: {
         allowNull: false,
         type: Sequelize.DATE,

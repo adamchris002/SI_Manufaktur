@@ -90,6 +90,7 @@ const RencanaPembayaran = (props) => {
   const [allDataRencanaPembayaran, setAllDataRencanaPembayaran] = useState([]);
   const [selectedPembelianBahanBakuId, setSelectedPembelianBahanBakuId] =
     useState("");
+    console.log(selectedPembelianBahanBakuId)
   const [ongoingHutangsAndCicilans, setOngoingHutangsAndCicilans] = useState(
     []
   );
@@ -249,7 +250,7 @@ const RencanaPembayaran = (props) => {
   useEffect(() => {
     axios({
       method: "GET",
-      url: "http://localhost:3000/inventory/getAllPembelianBahanBaku",
+      url: "http://localhost:3000/finance/getPembelianBahanbakuForHutang",
     }).then((result) => {
       if (result.status === 200) {
         const tempData = result?.data?.map((result) => {
@@ -728,7 +729,11 @@ const RencanaPembayaran = (props) => {
       axios({
         method: "POST",
         url: `http://localhost:3000/finance/addHutang/${userInformation?.data?.id}`,
-        data: { dataHutang: dataHutang, dataBank: dataInfoPembayaran },
+        data: {
+          dataHutang: dataHutang,
+          dataBank: dataInfoPembayaran,
+          pembelianBahanBakuId: selectedPembelianBahanBakuId,
+        },
       }).then((result) => {
         if (result.status === 200) {
           handleCloseModal();

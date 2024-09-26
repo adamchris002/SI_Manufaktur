@@ -431,207 +431,213 @@ const KasHarian = (props) => {
                 </TableRow>
               </TableHead>
               <TableBody>
-                {dataKasHarian.map((result, index) => {
-                  return (
-                    <React.Fragment key={index}>
-                      <TableRow>
-                        <TableCell>{index + 1 + "."}</TableCell>
-                        <TableCell>
-                          <LocalizationProvider dateAdapter={AdapterDayjs}>
-                            <DemoContainer components={["DateTimePicker"]}>
-                              <DemoItem>
-                                <DateTimePicker
-                                  //   disablePast
-                                  disabled
-                                  value={
-                                    result.tanggal.isValid()
-                                      ? result.tanggal
-                                      : null
-                                  }
-                                  renderInput={(params) => (
-                                    <TextField
-                                      {...params}
-                                      error={params.error || !params.value}
-                                      helperText={
-                                        params.error
-                                          ? "Invalid date format"
-                                          : ""
-                                      }
-                                    />
-                                  )}
-                                />
-                              </DemoItem>
-                            </DemoContainer>
-                          </LocalizationProvider>
-                        </TableCell>
-                        <TableCell>
-                          <TextField
-                            value={result.uraian}
-                            onChange={(event) => {
-                              handleChangeInputKasHarian(
-                                event,
-                                index,
-                                "uraian"
-                              );
-                            }}
-                            type="text"
-                            sx={{
-                              "& .MuiOutlinedInput-root": {
-                                height: isMobile ? "15px" : "3vw",
-                                width: isMobile ? "120px" : "200px",
-                                fontSize: isMobile ? "10px" : "1.5vw",
-                                borderRadius: "10px",
-                                "& fieldset": {
-                                  borderColor: "#0F607D",
+                {dataKasHarian
+                  ?.sort((a, b) => a.id - b.id)
+                  .map((result, index) => {
+                    return (
+                      <React.Fragment key={index}>
+                        <TableRow>
+                          <TableCell>{index + 1 + "."}</TableCell>
+                          <TableCell>
+                            <LocalizationProvider dateAdapter={AdapterDayjs}>
+                              <DemoContainer components={["DateTimePicker"]}>
+                                <DemoItem>
+                                  <DateTimePicker
+                                    //   disablePast
+                                    disabled
+                                    value={
+                                      result.tanggal.isValid()
+                                        ? result.tanggal
+                                        : null
+                                    }
+                                    renderInput={(params) => (
+                                      <TextField
+                                        {...params}
+                                        error={params.error || !params.value}
+                                        helperText={
+                                          params.error
+                                            ? "Invalid date format"
+                                            : ""
+                                        }
+                                      />
+                                    )}
+                                  />
+                                </DemoItem>
+                              </DemoContainer>
+                            </LocalizationProvider>
+                          </TableCell>
+                          <TableCell>
+                            <TextField
+                              value={result.uraian}
+                              onChange={(event) => {
+                                handleChangeInputKasHarian(
+                                  event,
+                                  index,
+                                  "uraian"
+                                );
+                              }}
+                              type="text"
+                              sx={{
+                                "& .MuiOutlinedInput-root": {
+                                  height: isMobile ? "15px" : "3vw",
+                                  width: isMobile ? "120px" : "200px",
+                                  fontSize: isMobile ? "10px" : "1.5vw",
+                                  borderRadius: "10px",
+                                  "& fieldset": {
+                                    borderColor: "#0F607D",
+                                  },
+                                  "&:hover fieldset": {
+                                    borderColor: "#0F607D",
+                                  },
+                                  "&.Mui-focused fieldset": {
+                                    borderColor: "#0F607D",
+                                  },
                                 },
-                                "&:hover fieldset": {
-                                  borderColor: "#0F607D",
+                              }}
+                            />
+                          </TableCell>
+                          <TableCell>
+                            <TextField
+                              disabled
+                              type="text"
+                              value={result.nomorBp}
+                              sx={{
+                                "& .MuiOutlinedInput-root": {
+                                  height: isMobile ? "15px" : "3vw",
+                                  width: isMobile ? "120px" : "200px",
+                                  fontSize: isMobile ? "10px" : "1.5vw",
+                                  borderRadius: "10px",
+                                  "& fieldset": {
+                                    borderColor: "#0F607D",
+                                  },
+                                  "&:hover fieldset": {
+                                    borderColor: "#0F607D",
+                                  },
+                                  "&.Mui-focused fieldset": {
+                                    borderColor: "#0F607D",
+                                  },
                                 },
-                                "&.Mui-focused fieldset": {
-                                  borderColor: "#0F607D",
+                              }}
+                            />
+                          </TableCell>
+                          <TableCell>
+                            <MySelectTextField
+                              width="200px"
+                              data={posPembayaran}
+                              value={result.pos}
+                              onChange={(event) => {
+                                handleChangeInputKasHarian(event, index, "pos");
+                              }}
+                            />
+                          </TableCell>
+                          <TableCell>
+                            <TextField
+                              value={result.debet}
+                              disabled={Boolean(result.kredit)}
+                              onChange={(event) => {
+                                handleChangeInputKasHarian(
+                                  event,
+                                  index,
+                                  "debet"
+                                );
+                              }}
+                              type="text"
+                              sx={{
+                                "& .MuiOutlinedInput-root": {
+                                  height: isMobile ? "15px" : "3vw",
+                                  width: isMobile ? "120px" : "200px",
+                                  fontSize: isMobile ? "10px" : "1.5vw",
+                                  borderRadius: "10px",
+                                  "& fieldset": {
+                                    borderColor: "#0F607D",
+                                  },
+                                  "&:hover fieldset": {
+                                    borderColor: "#0F607D",
+                                  },
+                                  "&.Mui-focused fieldset": {
+                                    borderColor: "#0F607D",
+                                  },
                                 },
-                              },
-                            }}
-                          />
-                        </TableCell>
-                        <TableCell>
-                          <TextField
-                            disabled
-                            type="text"
-                            value={result.nomorBp}
-                            sx={{
-                              "& .MuiOutlinedInput-root": {
-                                height: isMobile ? "15px" : "3vw",
-                                width: isMobile ? "120px" : "200px",
-                                fontSize: isMobile ? "10px" : "1.5vw",
-                                borderRadius: "10px",
-                                "& fieldset": {
-                                  borderColor: "#0F607D",
+                              }}
+                              InputProps={{
+                                inputComponent: NumericFormatCustom,
+                              }}
+                            />
+                          </TableCell>
+                          <TableCell>
+                            <TextField
+                              value={result.kredit}
+                              disabled={Boolean(result.debet)}
+                              onChange={(event) => {
+                                handleChangeInputKasHarian(
+                                  event,
+                                  index,
+                                  "kredit"
+                                );
+                              }}
+                              type="text"
+                              sx={{
+                                "& .MuiOutlinedInput-root": {
+                                  height: isMobile ? "15px" : "3vw",
+                                  width: isMobile ? "120px" : "200px",
+                                  fontSize: isMobile ? "10px" : "1.5vw",
+                                  borderRadius: "10px",
+                                  "& fieldset": {
+                                    borderColor: "#0F607D",
+                                  },
+                                  "&:hover fieldset": {
+                                    borderColor: "#0F607D",
+                                  },
+                                  "&.Mui-focused fieldset": {
+                                    borderColor: "#0F607D",
+                                  },
                                 },
-                                "&:hover fieldset": {
-                                  borderColor: "#0F607D",
+                              }}
+                              InputProps={{
+                                inputComponent: NumericFormatCustom,
+                              }}
+                            />
+                          </TableCell>
+                          <TableCell>
+                            <TextField
+                              value={result.sisa}
+                              type="text"
+                              disabled
+                              sx={{
+                                "& .MuiOutlinedInput-root": {
+                                  height: isMobile ? "15px" : "3vw",
+                                  width: isMobile ? "120px" : "200px",
+                                  fontSize: isMobile ? "10px" : "1.5vw",
+                                  borderRadius: "10px",
+                                  "& fieldset": {
+                                    borderColor: "#0F607D",
+                                  },
+                                  "&:hover fieldset": {
+                                    borderColor: "#0F607D",
+                                  },
+                                  "&.Mui-focused fieldset": {
+                                    borderColor: "#0F607D",
+                                  },
                                 },
-                                "&.Mui-focused fieldset": {
-                                  borderColor: "#0F607D",
-                                },
-                              },
-                            }}
-                          />
-                        </TableCell>
-                        <TableCell>
-                          <MySelectTextField
-                            width="200px"
-                            data={posPembayaran}
-                            value={result.pos}
-                            onChange={(event) => {
-                              handleChangeInputKasHarian(event, index, "pos");
-                            }}
-                          />
-                        </TableCell>
-                        <TableCell>
-                          <TextField
-                            value={result.debet}
-                            disabled={Boolean(result.kredit)}
-                            onChange={(event) => {
-                              handleChangeInputKasHarian(event, index, "debet");
-                            }}
-                            type="text"
-                            sx={{
-                              "& .MuiOutlinedInput-root": {
-                                height: isMobile ? "15px" : "3vw",
-                                width: isMobile ? "120px" : "200px",
-                                fontSize: isMobile ? "10px" : "1.5vw",
-                                borderRadius: "10px",
-                                "& fieldset": {
-                                  borderColor: "#0F607D",
-                                },
-                                "&:hover fieldset": {
-                                  borderColor: "#0F607D",
-                                },
-                                "&.Mui-focused fieldset": {
-                                  borderColor: "#0F607D",
-                                },
-                              },
-                            }}
-                            InputProps={{
-                              inputComponent: NumericFormatCustom,
-                            }}
-                          />
-                        </TableCell>
-                        <TableCell>
-                          <TextField
-                            value={result.kredit}
-                            disabled={Boolean(result.debet)}
-                            onChange={(event) => {
-                              handleChangeInputKasHarian(
-                                event,
-                                index,
-                                "kredit"
-                              );
-                            }}
-                            type="text"
-                            sx={{
-                              "& .MuiOutlinedInput-root": {
-                                height: isMobile ? "15px" : "3vw",
-                                width: isMobile ? "120px" : "200px",
-                                fontSize: isMobile ? "10px" : "1.5vw",
-                                borderRadius: "10px",
-                                "& fieldset": {
-                                  borderColor: "#0F607D",
-                                },
-                                "&:hover fieldset": {
-                                  borderColor: "#0F607D",
-                                },
-                                "&.Mui-focused fieldset": {
-                                  borderColor: "#0F607D",
-                                },
-                              },
-                            }}
-                            InputProps={{
-                              inputComponent: NumericFormatCustom,
-                            }}
-                          />
-                        </TableCell>
-                        <TableCell>
-                          <TextField
-                            value={result.sisa}
-                            type="text"
-                            disabled
-                            sx={{
-                              "& .MuiOutlinedInput-root": {
-                                height: isMobile ? "15px" : "3vw",
-                                width: isMobile ? "120px" : "200px",
-                                fontSize: isMobile ? "10px" : "1.5vw",
-                                borderRadius: "10px",
-                                "& fieldset": {
-                                  borderColor: "#0F607D",
-                                },
-                                "&:hover fieldset": {
-                                  borderColor: "#0F607D",
-                                },
-                                "&.Mui-focused fieldset": {
-                                  borderColor: "#0F607D",
-                                },
-                              },
-                            }}
-                            InputProps={{
-                              inputComponent: NumericFormatCustom,
-                            }}
-                          />
-                        </TableCell>
-                        <TableCell>
-                          <IconButton
-                            onClick={() => {
-                              handleDeleteItemKasHarian(result?.id, index);
-                            }}
-                          >
-                            <DeleteIcon style={{ color: "red" }} />
-                          </IconButton>
-                        </TableCell>
-                      </TableRow>
-                    </React.Fragment>
-                  );
-                })}
+                              }}
+                              InputProps={{
+                                inputComponent: NumericFormatCustom,
+                              }}
+                            />
+                          </TableCell>
+                          <TableCell>
+                            <IconButton
+                              onClick={() => {
+                                handleDeleteItemKasHarian(result?.id, index);
+                              }}
+                            >
+                              <DeleteIcon style={{ color: "red" }} />
+                            </IconButton>
+                          </TableCell>
+                        </TableRow>
+                      </React.Fragment>
+                    );
+                  })}
                 <TableRow>
                   <TableCell>Saldo</TableCell>
                   <TableCell></TableCell>
@@ -684,7 +690,7 @@ const KasHarian = (props) => {
           </div>
           <div style={{ width: "40%" }}>
             {kasHarianDone?.length === 0 ? (
-              <div style={{ display: "flex", justifyContent: "center" }}>
+              <div style={{ display: "flex", justifyContent: "flex-start" }}>
                 <Typography style={{ color: "#0F607D", fontSize: "1.5vw" }}>
                   Belum ada sejarah data kas harian
                 </Typography>

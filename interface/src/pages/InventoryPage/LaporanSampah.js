@@ -123,6 +123,7 @@ const LaporanSampah = (props) => {
 
   useEffect(() => {
     if (refreshDataLaporanSampah) {
+      console.log("Test")
       axios({
         method: "GET",
         url: "http://localhost:3000/production/getLaporanSampah",
@@ -415,6 +416,7 @@ const LaporanSampah = (props) => {
     });
   };
   const handleDeleteItemLaporanSampahFromDB = (id, iDLaporanSampah) => {
+    setRefreshDataLaporanSampah(false)
     axios({
       method: "DELETE",
       url: `http://localhost:3000/production/deleteItemLaporanSampah/${id}`,
@@ -428,6 +430,7 @@ const LaporanSampah = (props) => {
         setOpenSnackbar(true);
         setSnackbarStatus(true);
         setSnackbarMessage("Berhasil menghapus data item laporan sampah");
+        handleCloseModal();
       } else {
         setOpenSnackbar(true);
         setSnackbarStatus(false);
@@ -1277,7 +1280,6 @@ const LaporanSampah = (props) => {
                 <TableBody>
                   {dataLaporanSampahForEdit.itemLaporanSampahs.map(
                     (result, index) => {
-                      console.log(result);
                       return (
                         <React.Fragment key={index}>
                           <TableRow>

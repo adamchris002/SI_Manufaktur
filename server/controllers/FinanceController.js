@@ -19,6 +19,16 @@ const {
   users,
   activitylogs,
   UsersActivityLogs,
+  productionPlannings,
+  pembelianBahanBakus,
+  rincianCetakans,
+  perincians,
+  estimasiBahanBakus,
+  bahanBakuAkanDigunakans,
+  estimasiJadwalProduksis,
+  rencanaJadwalProduksis,
+  itemPembelianBahanBakus,
+  
 } = require("../models");
 const dayjs = require("dayjs");
 
@@ -284,7 +294,6 @@ class FinanceController {
   }
   static async checkForDefaultPosPembayaran(req, res) {
     try {
-      console.log("test");
       let findDefaultData = await posPembayarans.findAll({});
       if (findDefaultData.length === 0) {
         const defaultPosPembayaranData = [
@@ -616,7 +625,7 @@ class FinanceController {
                   debet: null,
                   kredit: parseFloat(data.jumlahHarga),
                   saldo: prevSaldo,
-                  keterangan: data.keterangan,
+                  keterangan: "Lunas",
                 });
               } else {
                 prevSaldo += parseFloat(data.jumlahHarga);
@@ -627,7 +636,7 @@ class FinanceController {
                   debet: parseFloat(data.jumlahHarga),
                   kredit: null,
                   saldo: prevSaldo,
-                  keterangan: data.keterangan,
+                  keterangan: "Lunas",
                 });
               }
             }
@@ -666,7 +675,15 @@ class FinanceController {
   static async addHutang(req, res) {
     try {
       const { id } = req.params;
-      const { dataHutang, dataBank } = req.body;
+      const { dataHutang, dataBank, pembelianBahanBakuId } = req.body;
+
+      let findOnePembelianBahanBaku = await pembelianBahanBakus.findOne({
+        where: { id: pembelianBahanBakuId },
+      });
+
+      await findOnePembelianBahanBaku.update({
+        statusHutang: "Done",
+      });
 
       const findBukuBank = await bukuBanks.findOne({
         where: { namaBank: dataBank.namaBank },
@@ -725,8 +742,6 @@ class FinanceController {
             });
             if (data.keterangan === "Lunas") {
               if (data.pembayaran === "Hutang") {
-                console.log(prevSaldo);
-                console.log(data.jumlahHarga);
                 prevSaldo -= parseFloat(data.jumlahHarga);
                 await itemBukuBanks.create({
                   bukuBankId: findBukuBank.id,
@@ -735,7 +750,7 @@ class FinanceController {
                   debet: null,
                   kredit: parseFloat(data.jumlahHarga),
                   saldo: prevSaldo,
-                  keterangan: data.keterangan,
+                  keterangan: "Lunas",
                 });
               } else {
                 prevSaldo += parseFloat(data.jumlahHarga);
@@ -746,7 +761,7 @@ class FinanceController {
                   debet: parseFloat(data.jumlahHarga),
                   kredit: null,
                   saldo: prevSaldo,
-                  keterangan: data.keterangan,
+                  keterangan: "Lunas",
                 });
               }
             }
@@ -957,7 +972,15 @@ class FinanceController {
   static async addPajakMasukan(req, res) {
     try {
       const { id } = req.params;
-      const { dataPajakMasukan, dataBank } = req.body;
+      const { dataPajakMasukan, dataBank, pembelianBahanBakuId } = req.body;
+
+      let findOnePembelianBahanBaku = await pembelianBahanBakus.findOne({
+        where: { id: pembelianBahanBakuId },
+      });
+
+      await findOnePembelianBahanBaku.update({
+        statusPajakMasukan: "Done",
+      });
 
       let findPrevItemBukuBanks = await bukuBanks.findOne({
         where: { namaBank: dataBank.namaBank },
@@ -1005,7 +1028,7 @@ class FinanceController {
               debet: null,
               kredit: parseFloat(data.jumlahHarga) + parseFloat(data.ppn),
               saldo: prevSaldo,
-              keterangan: data.keterangan,
+              keterangan: "Lunas",
             });
           })
         );
@@ -1031,7 +1054,13 @@ class FinanceController {
   static async addPajakKeluaran(req, res) {
     try {
       const { id } = req.params;
-      const { dataPajakKeluaran, dataBank } = req.body;
+      const { dataPajakKeluaran, dataBank, productionPlanningId } = req.body;
+
+      let findProductionPlanning = await productionPlannings.findOne({
+        where: { id: productionPlanningId },
+      });
+
+      await findProductionPlanning.update({ statusPajakKeluaran: "Done" });
 
       let findPrevItemBukuBanks = await bukuBanks.findOne({
         where: { namaBank: dataBank.namaBank },
@@ -1085,7 +1114,7 @@ class FinanceController {
                 parseFloat(data.ppn) +
                 parseFloat(data.pphPs22),
               saldo: prevSaldo,
-              keterangan: data.keterangan,
+              keterangan: "Lunas",
             });
           })
         );
@@ -1190,7 +1219,7 @@ class FinanceController {
                           debet: null,
                           kredit: parseFloat(matchedCicilan.jumlahHarga),
                           saldo: prevSaldo,
-                          keterangan: matchedCicilan.keterangan,
+                          keterangan: "Lunas",
                         });
                       } else {
                         prevSaldo += parseFloat(matchedCicilan.jumlahHarga);
@@ -1203,7 +1232,7 @@ class FinanceController {
                           debet: parseFloat(matchedCicilan.jumlahHarga),
                           kredit: null,
                           saldo: prevSaldo,
-                          keterangan: matchedCicilan.keterangan,
+                          keterangan: "Lunas",
                         });
                       }
                     }
@@ -1371,7 +1400,7 @@ class FinanceController {
                               : matchedCicilanPemLains.jumlahHa
                           ),
                           saldo: prevSaldo,
-                          keterangan: matchedCicilanPemLains.keterangan,
+                          keterangan: "Lunas",
                         });
                       } else {
                         prevSaldo += parseFloat(
@@ -1394,7 +1423,7 @@ class FinanceController {
                           ),
                           kredit: null,
                           saldo: prevSaldo,
-                          keterangan: matchedCicilanPemLains.keterangan,
+                          keterangan: "Lunas",
                         });
                       }
                     }
@@ -1437,6 +1466,59 @@ class FinanceController {
     try {
       let result = await activitylogs.findAll({
         where: { division: "Finance" },
+      });
+      res.json(result);
+    } catch (error) {
+      res.json(error);
+    }
+  }
+
+  static async getPembelianBahanBakuForPajakMasukan(req, res) {
+    try {
+      let result = await pembelianBahanBakus.findAll({
+        where: { statusPajakMasukan: null },
+        include: [{ model: itemPembelianBahanBakus }]
+      });
+      res.json(result);
+    } catch (error) {
+      res.json(error);
+    }
+  }
+  static async getPembelianBahanbakuForHutang(req, res) {
+    try {
+      let result = await pembelianBahanBakus.findAll({
+        where: { statusHutang: null },
+        include: [{ model: itemPembelianBahanBakus }]
+      });
+      res.json(result);
+    } catch (error) {
+      res.json(error);
+    }
+  }
+  static async getAllProductionPlanningForPajakKeluaran(req, res) {
+    try {
+      let result = await productionPlannings.findAll({
+        where: { statusPajakKeluaran: null },
+        include: [
+          { model: rincianCetakans },
+          { model: perincians },
+          {
+            model: estimasiBahanBakus,
+            include: [
+              {
+                model: bahanBakuAkanDigunakans,
+              },
+            ],
+          },
+          {
+            model: estimasiJadwalProduksis,
+            include: [
+              {
+                model: rencanaJadwalProduksis,
+              },
+            ],
+          },
+        ],
       });
       res.json(result);
     } catch (error) {

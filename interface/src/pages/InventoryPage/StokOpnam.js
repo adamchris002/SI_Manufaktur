@@ -59,6 +59,8 @@ const StokOpnam = (props) => {
     ],
   });
 
+  console.log(dataStokOpnam);
+
   const [allInventoryName, setAllInventoryName] = useState([]);
   const [allPermohonanPembelianId, setAllPermohonanPembelianId] = useState([]);
   const [refreshPermohonanPembelian, setRefreshPermohonanPembelian] =
@@ -848,13 +850,7 @@ const StokOpnam = (props) => {
                                   }}
                                 >
                                   <TextField
-                                    disabled={
-                                      stokOpnamId === undefined
-                                        ? result.stokOpnamAwal.id
-                                          ? true
-                                          : false
-                                        : true
-                                    }
+                                    disabled={result.id ? true : false}
                                     sx={{ width: "130px" }}
                                     type="number"
                                     value={result.stokOpnamAwal.value}
@@ -869,13 +865,7 @@ const StokOpnam = (props) => {
                                   <div style={{ marginLeft: "8px" }}>
                                     <MySelectTextField
                                       key={"unit"}
-                                      disabled={
-                                        stokOpnamId === undefined
-                                          ? result.stokOpnamAwal.id
-                                            ? true
-                                            : false
-                                          : true
-                                      }
+                                      disabled={result.id ? true : false}
                                       width={isMobile ? "75px" : "100px"}
                                       height={"55px"}
                                       data={units}

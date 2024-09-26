@@ -158,7 +158,7 @@ const Pajak = (props) => {
   useEffect(() => {
     axios({
       method: "GET",
-      url: "http://localhost:3000/productionPlanning/getAllProductionPlanning",
+      url: "http://localhost:3000/finance/getAllProductionPlanningForPajakKeluaran",
     }).then((result) => {
       if (result.status === 200) {
         const tempData = result?.data?.map((result) => {
@@ -181,7 +181,7 @@ const Pajak = (props) => {
   useEffect(() => {
     axios({
       method: "GET",
-      url: "http://localhost:3000/inventory/getAllPembelianBahanBaku",
+      url: "http://localhost:3000/finance/getPembelianBahanBakuForPajakMasukan",
     }).then((result) => {
       if (result.status === 200) {
         const tempData = result?.data?.map((result) => {
@@ -269,9 +269,11 @@ const Pajak = (props) => {
               (item) => item.jenisCetakan === result.namaCetakan
             ).harga
           ) *
-            tempQuantity.value) * 100/111;
-        const tempPpn = tempDpp * 11/111;
-        const tempPph = tempPpn * 1.5/ 100;
+            tempQuantity.value *
+            100) /
+          111;
+        const tempPpn = (tempDpp * 11) / 111;
+        const tempPph = (tempPpn * 1.5) / 100;
 
         return {
           tanggal: dayjs(selectedItem.createdAt),
@@ -308,8 +310,8 @@ const Pajak = (props) => {
 
     if (selectedItem) {
       const newItems = selectedItem.itemPembelianBahanBakus.map((result) => {
-        const tempDpp = parseFloat(result.jumlahHarga) * 100/ 111;
-        const tempPpn = tempDpp * 11/ 111;
+        const tempDpp = (parseFloat(result.jumlahHarga) * 100) / 111;
+        const tempPpn = (tempDpp * 11) / 111;
 
         return {
           tanggal: dayjs(result.tanggal),
@@ -429,7 +431,11 @@ const Pajak = (props) => {
       axios({
         method: "POST",
         url: `http://localhost:3000/finance/addPajakMasukan/${userInformation?.data?.id}`,
-        data: { dataPajakMasukan: transformedData, dataBank: selectedBukuBank },
+        data: {
+          dataPajakMasukan: transformedData,
+          dataBank: selectedBukuBank,
+          pembelianBahanBakuId: selectedPembelianBahanBaku,
+        },
       }).then((result) => {
         if (result.status === 200) {
           setSuccessMessage(
@@ -459,6 +465,7 @@ const Pajak = (props) => {
         data: {
           dataPajakKeluaran: transformedData,
           dataBank: selectedBukuBank,
+          productionPlanningId: selectedProductionPlanning,
         },
       }).then((result) => {
         if (result.status === 200) {

@@ -1,69 +1,70 @@
-'use strict';
+"use strict";
 module.exports = {
   async up(queryInterface, Sequelize) {
-    await queryInterface.createTable('productionPlannings', {
+    await queryInterface.createTable("productionPlannings", {
       id: {
         allowNull: false,
         autoIncrement: true,
         primaryKey: true,
-        type: Sequelize.INTEGER
+        type: Sequelize.INTEGER,
       },
       pemesan: {
-        type: Sequelize.STRING
+        type: Sequelize.STRING,
       },
       alamatKirimBarang: {
-        type: Sequelize.STRING
+        type: Sequelize.STRING,
       },
       tanggalPengirimanBarang: {
-        type: Sequelize.STRING
+        type: Sequelize.STRING,
       },
       jenisCetakan: {
-        type: Sequelize.STRING
+        type: Sequelize.STRING,
       },
       ukuran: {
-        type: Sequelize.STRING
+        type: Sequelize.STRING,
       },
       kuantitas: {
-        type: Sequelize.STRING
+        type: Sequelize.STRING,
       },
       isiPerBox: {
-        type: Sequelize.STRING
+        type: Sequelize.STRING,
       },
       ply: {
-        type: Sequelize.STRING
+        type: Sequelize.STRING,
       },
       seri: {
-        type: Sequelize.STRING
+        type: Sequelize.STRING,
       },
       nomorator: {
-        type: Sequelize.STRING
+        type: Sequelize.STRING,
       },
       contoh: {
-        type: Sequelize.BOOLEAN
+        type: Sequelize.BOOLEAN,
       },
       plate: {
-        type: Sequelize.BOOLEAN
+        type: Sequelize.BOOLEAN,
       },
       setting: {
-        type: Sequelize.BOOLEAN
+        type: Sequelize.BOOLEAN,
       },
       orderId: {
-        type: Sequelize.INTEGER
+        type: Sequelize.INTEGER,
       },
       statusProductionPlanning: {
-        type: Sequelize.STRING
+        type: Sequelize.STRING,
       },
+      statusPajakKeluaran: { type: Sequelize.STRING },
       createdAt: {
         allowNull: false,
-        type: Sequelize.DATE
+        type: Sequelize.DATE,
       },
       updatedAt: {
         allowNull: false,
-        type: Sequelize.DATE
-      }
+        type: Sequelize.DATE,
+      },
     });
   },
   async down(queryInterface, Sequelize) {
-    await queryInterface.dropTable('productionPlannings');
-  }
+    await queryInterface.dropTable("productionPlannings");
+  },
 };
