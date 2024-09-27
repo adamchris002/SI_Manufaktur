@@ -460,10 +460,15 @@ const PembelianBahanBaku = (props) => {
                 };
               } else {
                 if (field === "jenisBarang") {
+
+                  console.log(permohonanPembelian?.data?.itemPermohonanPembelians)
+                  console.log(value)
                   let findItemPermohonanPembelian =
                     permohonanPembelian?.data?.itemPermohonanPembelians?.find(
                       (item) => item.jenisBarang === value
                     );
+
+                    // console.log(findItemPermohonanPembelian)
 
                   let jumlah = separateValueAndUnit(
                     findItemPermohonanPembelian?.jumlah

@@ -580,19 +580,21 @@ const MaindashboardFinance = (props) => {
           <Typography id="pajak" style={{ fontSize: "36px", color: "#0F607D" }}>
             Pajak
           </Typography>
-          <div>
-            <DefaultButton
-              height="40px"
-              width="232px"
-              borderRadius="16px"
-              fontSize="14px"
-              onClickFunction={() => {
-                navigate("/financeDashboard/pajak");
-              }}
-            >
-              Pergi ke Halaman Pajak
-            </DefaultButton>
-          </div>
+          {userInformation?.data?.role === "Admin" && (
+            <div>
+              <DefaultButton
+                height="40px"
+                width="232px"
+                borderRadius="16px"
+                fontSize="14px"
+                onClickFunction={() => {
+                  navigate("/financeDashboard/pajak");
+                }}
+              >
+                Pergi ke Halaman Pajak
+              </DefaultButton>
+            </div>
+          )}
         </div>
         <div
           style={{
@@ -640,7 +642,7 @@ const MaindashboardFinance = (props) => {
           >
             Daftar Tagihan 1 Tahun
           </Typography>
-          <div>
+          {/* <div>
             <DefaultButton
               height="40px"
               width="312px"
@@ -652,7 +654,7 @@ const MaindashboardFinance = (props) => {
             >
               Pergi ke halaman daftar tagihan 1 tahun
             </DefaultButton>
-          </div>
+          </div> */}
         </div>
         <div style={{ width: "60%" }}>
           <TableContainer

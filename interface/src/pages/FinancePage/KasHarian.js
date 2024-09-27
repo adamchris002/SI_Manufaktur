@@ -397,15 +397,17 @@ const KasHarian = (props) => {
               >
                 Pos Pembayaran
               </DefaultButton>
-              <div style={{ marginLeft: "8px" }}>
-                <DefaultButton
-                  onClickFunction={() => {
-                    handleTambahBaris();
-                  }}
-                >
-                  Tambah Baris
-                </DefaultButton>
-              </div>
+              {userInformation?.data?.role === "Admin" && (
+                <div style={{ marginLeft: "8px" }}>
+                  <DefaultButton
+                    onClickFunction={() => {
+                      handleTambahBaris();
+                    }}
+                  >
+                    Tambah Baris
+                  </DefaultButton>
+                </div>
+              )}
             </div>
           </div>
           <TableContainer component={Paper} sx={{ overflowX: "auto" }}>
@@ -665,13 +667,15 @@ const KasHarian = (props) => {
               alignItems: "center",
             }}
           >
-            <DefaultButton
-              onClickFunction={() => {
-                handleSavedataKasHarian();
-              }}
-            >
-              Simpan Data Kas Harian
-            </DefaultButton>
+            {userInformation?.data?.role === "Admin" && (
+              <DefaultButton
+                onClickFunction={() => {
+                  handleSavedataKasHarian();
+                }}
+              >
+                Simpan Data Kas Harian
+              </DefaultButton>
+            )}
             <Button
               onClick={() => {
                 navigate(-1);
@@ -913,7 +917,9 @@ const KasHarian = (props) => {
                     <TableCell style={{ width: "70px" }}>Kode</TableCell>
                     <TableCell>Uraian</TableCell>
                     <TableCell>Kata Kunci</TableCell>
-                    <TableCell>Actions</TableCell>
+                    {userInformation?.data?.role === "Admin" && (
+                      <TableCell>Actions</TableCell>
+                    )}
                   </TableRow>
                 </TableHead>
                 <TableBody>
@@ -958,11 +964,13 @@ const KasHarian = (props) => {
                               value={result.kataKunci}
                             />
                           </TableCell>
-                          <TableCell>
-                            <IconButton>
-                              <DeleteIcon style={{ color: "red" }} />
-                            </IconButton>
-                          </TableCell>
+                          {userInformation?.data?.role === "Admin" && (
+                            <TableCell>
+                              <IconButton>
+                                <DeleteIcon style={{ color: "red" }} />
+                              </IconButton>
+                            </TableCell>
+                          )}
                         </TableRow>
                       </React.Fragment>
                     );
@@ -978,17 +986,23 @@ const KasHarian = (props) => {
                 alignItems: "center",
               }}
             >
-              <DefaultButton
-                onClickFunction={() => {
-                  simpanDataPosPembayaran();
-                }}
-              >
-                Simpan Data Pos Pembayaran
-              </DefaultButton>
+              {userInformation?.data?.role === "Admin" && (
+                <DefaultButton
+                  onClickFunction={() => {
+                    simpanDataPosPembayaran();
+                  }}
+                >
+                  Simpan Data Pos Pembayaran
+                </DefaultButton>
+              )}
               <Button
                 variant="outlined"
                 color="error"
-                style={{ textTransform: "none", marginLeft: "8px" }}
+                style={{
+                  textTransform: "none",
+                  marginLeft:
+                    userInformation?.data?.role === "Admin" ? "" : "8px",
+                }}
                 onClick={() => {
                   handleCloseModalPosPembayaran();
                 }}

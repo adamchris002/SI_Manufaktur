@@ -425,12 +425,12 @@ const OrderDetail = (props) => {
                 <DefaultButton
                   height={isMobile ? "20px" : "4vw"}
                   width={isMobile ? "100px" : "12vw"}
-                  fontSize={isMobile ? "12px" : "1.5vw"}
+                  fontSize={isMobile ? "12px" : "1.2vw"}
                   onClickFunction={() => {
                     handleOpenModal(orderDetailInfo);
                   }}
                 >
-                  Edit Order
+                  Edit Pesanan
                 </DefaultButton>
 
                 <Button
@@ -446,8 +446,8 @@ const OrderDetail = (props) => {
                     handleDeleteModal();
                   }}
                 >
-                  <Typography style={{ fontSize: isMobile ? "12px" : "1.5vw" }}>
-                    Delete Order
+                  <Typography style={{ fontSize: isMobile ? "12px" : "1.2vw" }}>
+                    Delete Pesanan
                   </Typography>
                 </Button>
               </div>
@@ -469,7 +469,7 @@ const OrderDetail = (props) => {
             <Typography
               style={{ fontSize: isMobile ? "5vw" : "2vw", color: "#0F607D" }}
             >
-              Documents:
+              Dokumen:
             </Typography>
           </div>
           {orderDetailInfo?.data?.documents.length === 0 ? (
@@ -559,7 +559,7 @@ const OrderDetail = (props) => {
             <Typography
               sx={{ fontSize: isMobile ? "5vw" : "2vw", color: "#0F607D" }}
             >
-              Order Details:{" "}
+              Detail Pesanan:{" "}
             </Typography>
           </div>
           <div style={{ display: "flex" }}>
@@ -577,7 +577,7 @@ const OrderDetail = (props) => {
                     fontSize: isMobile ? "3vw" : "1.8vw",
                     color: "#0F607D",
                   }}
-                >{`Order Quantity: ${orderDetailInfo?.data?.orderQuantity}`}</Typography>
+                >{`Jumlah Pesanan: ${orderDetailInfo?.data?.orderQuantity}`}</Typography>
               </div>
               <div style={{ marginLeft: "16px", width: "50%" }}>
                 <Typography
@@ -585,7 +585,7 @@ const OrderDetail = (props) => {
                     fontSize: isMobile ? "3vw" : "1.8vw",
                     color: "#0F607D",
                   }}
-                >{`Order Status: ${orderDetailInfo?.data?.orderStatus}`}</Typography>
+                >{`Status Pesanan: ${orderDetailInfo?.data?.orderStatus}`}</Typography>
               </div>
             </div>
             <div style={{ display: "flex", marginTop: "16px" }}>
@@ -595,7 +595,7 @@ const OrderDetail = (props) => {
                     fontSize: isMobile ? "3vw" : "1.8vw",
                     color: "#0F607D",
                   }}
-                >{`Order Type: ${orderDetailInfo?.data?.orderType}`}</Typography>
+                >{`Jenis Cetakan: ${orderDetailInfo?.data?.orderType}`}</Typography>
               </div>
               <div style={{ marginLeft: "16px", width: "50%" }}>
                 <Typography
@@ -603,7 +603,7 @@ const OrderDetail = (props) => {
                     fontSize: isMobile ? "3vw" : "1.8vw",
                     color: "#0F607D",
                   }}
-                >{`Order No Series: ${orderDetailInfo?.data?.orderNoSeries}`}</Typography>
+                >{`No Seri Pesanan: ${orderDetailInfo?.data?.orderNoSeries}`}</Typography>
               </div>
             </div>
             <div style={{ display: "flex", marginTop: "16px" }}>
@@ -613,7 +613,7 @@ const OrderDetail = (props) => {
                     fontSize: isMobile ? "3vw" : "1.8vw",
                     color: "#0F607D",
                   }}
-                >{`Order Total Price: ${orderDetailInfo?.data?.orderTotalPrice}`}</Typography>
+                >{`Jumlah Harga Pesanan: ${orderDetailInfo?.data?.orderTotalPrice}`}</Typography>
               </div>
               <div style={{ marginLeft: "16px", width: "50%" }}>
                 <Typography
@@ -621,7 +621,7 @@ const OrderDetail = (props) => {
                     fontSize: isMobile ? "3vw" : "1.8vw",
                     color: "#0F607D",
                   }}
-                >{`Order Due Date: ${dayjs(
+                >{`Tanggal Jatuh Tempo Pesanan: ${dayjs(
                   orderDetailInfo?.data?.orderDueDate
                 ).format("MM/DD/YYYY hh:mm A")}`}</Typography>
               </div>
@@ -673,7 +673,7 @@ const OrderDetail = (props) => {
                   fontSize: isMobile ? "7vw" : "2.5vw",
                 }}
               >
-                Edit Order
+                Edit Pesanan
               </Typography>
             </div>
             <div style={{ marginBottom: "1.667vw" }}>
@@ -692,7 +692,7 @@ const OrderDetail = (props) => {
                       fontSize: isMobile ? "4vw" : "1.5vw",
                     }}
                   >
-                    Order Title:
+                    Judul Pesanan:
                   </Typography>
                 </div>
                 <TextField
@@ -737,7 +737,7 @@ const OrderDetail = (props) => {
                       fontSize: isMobile ? "4vw" : "1.5vw",
                     }}
                   >
-                    Order Quantity:
+                    Jumlah Pesanan:
                   </Typography>
                 </div>
                 <div
@@ -982,7 +982,7 @@ const OrderDetail = (props) => {
                       fontSize: isMobile ? "4vw " : "1.5vw",
                     }}
                   >
-                    Order Details:
+                    Detail Pesanan:
                   </Typography>
                 </div>
                 <TextField
@@ -1073,7 +1073,7 @@ const OrderDetail = (props) => {
                       fontSize: isMobile ? "4vw" : "1.5vw",
                     }}
                   >
-                    No Seri:
+                    No Seri Pesanan:
                   </Typography>
                 </div>
                 <TextField
@@ -1338,7 +1338,7 @@ const OrderDetail = (props) => {
                     handleUpdateOrder(orderId);
                   }}
                 >
-                  Edit Order
+                  Edit Pesanan
                 </DefaultButton>
                 <Button
                   variant="outlined"

@@ -390,13 +390,15 @@ const BukuBank = (props) => {
             <Typography style={{ color: "#0F607D", fontSize: "3vw" }}>
               Daftar Nama Bank
             </Typography>
-            <DefaultButton
-              onClickFunction={() => {
-                setOpenModal(true);
-              }}
-            >
-              Tambah Bank
-            </DefaultButton>
+            {userInformation?.data?.role === "Admin" && (
+              <DefaultButton
+                onClickFunction={() => {
+                  setOpenModal(true);
+                }}
+              >
+                Tambah Bank
+              </DefaultButton>
+            )}
           </div>
         </div>
         <div style={{ margin: "32px" }}>
@@ -422,15 +424,16 @@ const BukuBank = (props) => {
                 />
               </div>
             </div>
-            {selectedBank !== "" && (
-              <DefaultButton
-                onClickFunction={() => {
-                  handleTambahBaris();
-                }}
-              >
-                Tambah Baris
-              </DefaultButton>
-            )}
+            {selectedBank !== "" ||
+              (userInformation?.data?.role === "Admin" && (
+                <DefaultButton
+                  onClickFunction={() => {
+                    handleTambahBaris();
+                  }}
+                >
+                  Tambah Baris
+                </DefaultButton>
+              ))}
           </div>
           {selectedBank !== "" && (
             <div>
@@ -468,7 +471,11 @@ const BukuBank = (props) => {
                         <TableCell style={{ width: "200px" }}>
                           Keterangan
                         </TableCell>
-                        <TableCell style={{ width: "50px" }}>Actions</TableCell>
+                        {userInformation?.data?.role === "Admin" && (
+                          <TableCell style={{ width: "50px" }}>
+                            Actions
+                          </TableCell>
+                        )}
                       </TableRow>
                     </TableHead>
                     <TableBody>
@@ -656,18 +663,20 @@ const BukuBank = (props) => {
                                     }}
                                   />
                                 </TableCell>
-                                <TableCell>
-                                  <IconButton
-                                    onClick={() => {
-                                      handleDeleteItemBukuBank(
-                                        result.id,
-                                        index
-                                      );
-                                    }}
-                                  >
-                                    <DeleteIcon style={{ color: "red" }} />
-                                  </IconButton>
-                                </TableCell>
+                                {userInformation?.data?.role === "Admin" && (
+                                  <TableCell>
+                                    <IconButton
+                                      onClick={() => {
+                                        handleDeleteItemBukuBank(
+                                          result.id,
+                                          index
+                                        );
+                                      }}
+                                    >
+                                      <DeleteIcon style={{ color: "red" }} />
+                                    </IconButton>
+                                  </TableCell>
+                                )}
                               </TableRow>
                             </React.Fragment>
                           );
@@ -678,34 +687,35 @@ const BukuBank = (props) => {
               )}
             </div>
           )}
-          {selectedBank !== "" && dataBukuBank.length !== 0 && (
-            <div
-              style={{
-                display: "flex",
-                justifyContent: "center",
-                alignItems: "center",
-                padding: "32px",
-              }}
-            >
-              <DefaultButton
-                onClickFunction={() => {
-                  handleAddItemBukuBank();
+          {(selectedBank !== "" && dataBukuBank.length !== 0) ||
+            (userInformation?.data?.role === "Admin" && (
+              <div
+                style={{
+                  display: "flex",
+                  justifyContent: "center",
+                  alignItems: "center",
+                  padding: "32px",
                 }}
               >
-                Simpan Data Buku Bank
-              </DefaultButton>
-              <Button
-                variant="outlined"
-                color="error"
-                style={{ textTransform: "none", marginLeft: "8px" }}
-                onClick={() => {
-                  navigate(-1);
-                }}
-              >
-                Cancel
-              </Button>
-            </div>
-          )}
+                <DefaultButton
+                  onClickFunction={() => {
+                    handleAddItemBukuBank();
+                  }}
+                >
+                  Simpan Data Buku Bank
+                </DefaultButton>
+                <Button
+                  variant="outlined"
+                  color="error"
+                  style={{ textTransform: "none", marginLeft: "8px" }}
+                  onClick={() => {
+                    navigate(-1);
+                  }}
+                >
+                  Cancel
+                </Button>
+              </div>
+            ))}
           <div style={{ padding: "8px 0px", width: "40%" }}>
             <Typography style={{ fontSize: "3vw", color: "#0F607D" }}>
               Sejarah Buku Bank

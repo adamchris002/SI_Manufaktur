@@ -174,7 +174,7 @@ const MaindashboardProductionPlanning = (props) => {
                   .scrollIntoView({ behavior: "smooth" });
               }}
             >
-              Manage Production Plan
+              Kelola Rencana Produksi
             </DefaultButton>
           </div>
           <div style={{ marginTop: "1.667vw", fontSize: "1.25vw" }}>
@@ -190,7 +190,7 @@ const MaindashboardProductionPlanning = (props) => {
                   .scrollIntoView({ behavior: "smooth" });
               }}
             >
-              Unreviewed Orders
+              Pesanan Belum Diestimasi
             </DefaultButton>
           </div>
           <div style={{ marginTop: "1.667vw", fontSize: "1.25vw" }}>
@@ -206,7 +206,7 @@ const MaindashboardProductionPlanning = (props) => {
                   .scrollIntoView({ behavior: "smooth" });
               }}
             >
-              Estimated Orders
+              Pesanan Sudah Diestimasi
             </DefaultButton>
           </div>
           <div style={{ marginTop: "1.667vw", fontSize: "1.25vw" }}>
@@ -222,7 +222,7 @@ const MaindashboardProductionPlanning = (props) => {
                   .scrollIntoView({ behavior: "smooth" });
               }}
             >
-              Estimation Orders History
+              History Estimasi Pesanan
             </DefaultButton>
           </div>
           <div style={{ marginTop: "1.667vw", fontSize: "1.25vw" }}>
@@ -238,7 +238,7 @@ const MaindashboardProductionPlanning = (props) => {
                   .scrollIntoView({ behavior: "smooth" });
               }}
             >
-              View Activity Log
+              Catatan Aktivitas
             </DefaultButton>
           </div>
         </div>
@@ -309,7 +309,7 @@ const MaindashboardProductionPlanning = (props) => {
             id="manageestimationorders"
             style={{ fontSize: isMobile ? "4vw" : "2vw", color: "#0F607D" }}
           >
-            Manage Production Plan
+            Kelola Rencana Produksi
           </Typography>
           {userInformation?.data?.role === "Admin" ||
           userInformation?.data?.role === "Super Admin" ? (
@@ -322,7 +322,7 @@ const MaindashboardProductionPlanning = (props) => {
                 navigate("/productionPlanningDashboard/estimationOrder");
               }}
             >
-              Add Production Plan
+              Tambah Rencana Produksi
             </DefaultButton>
           ) : (
             ""
@@ -338,7 +338,7 @@ const MaindashboardProductionPlanning = (props) => {
               width: isMobile ? "" : "72vw",
             }}
           >
-            <Typography>Belum ada rencana produksi</Typography>
+            <Typography>Belum ada data rencana produksi</Typography>
           </div>
         ) : (
           <div
@@ -359,7 +359,9 @@ const MaindashboardProductionPlanning = (props) => {
                     <TableCell align="left">
                       Tanggal Pengiriman Produk
                     </TableCell>
-                    <TableCell align="left">Actions</TableCell>
+                    {userInformation?.data?.role === "Admin" && (
+                      <TableCell align="left">Actions</TableCell>
+                    )}
                   </TableRow>
                 </TableHead>
                 <TableBody>
@@ -375,24 +377,26 @@ const MaindashboardProductionPlanning = (props) => {
                             "MM/DD/YYYY hh:mm A"
                           )}
                         </TableCell>
-                        <TableCell>
-                          <div>
-                            <IconButton
-                              onClick={() => {
-                                handleMoveToEditPage(result.id);
-                              }}
-                            >
-                              <EditIcon style={{ color: "#0F607D" }} />
-                            </IconButton>
-                            <IconButton
-                              onClick={() => {
-                                handleDeleteProductionPlan(result.id);
-                              }}
-                            >
-                              <DeleteIcon style={{ color: "red" }} />
-                            </IconButton>
-                          </div>
-                        </TableCell>
+                        {userInformation?.data?.role === "Admin" && (
+                          <TableCell>
+                            <div>
+                              <IconButton
+                                onClick={() => {
+                                  handleMoveToEditPage(result.id);
+                                }}
+                              >
+                                <EditIcon style={{ color: "#0F607D" }} />
+                              </IconButton>
+                              <IconButton
+                                onClick={() => {
+                                  handleDeleteProductionPlan(result.id);
+                                }}
+                              >
+                                <DeleteIcon style={{ color: "red" }} />
+                              </IconButton>
+                            </div>
+                          </TableCell>
+                        )}
                       </TableRow>
                     ))}
                 </TableBody>
@@ -415,62 +419,8 @@ const MaindashboardProductionPlanning = (props) => {
             id="unreviewedorders"
             style={{ color: "#0F607D", fontSize: isMobile ? "4vw" : "2vw" }}
           >
-            Unreviewed Orders
+            Pesanan Belum Diestimasi
           </Typography>
-          <div
-            style={{
-              display: "flex",
-              alignContent: "center",
-              justifyContent: "space-evenly",
-              alignItems: "center",
-            }}
-          >
-            <Typography
-              style={{
-                marginRight: isMobile ? "4px" : "0.417vw",
-                color: "#0F607D",
-                fontSize: isMobile ? "2.5vw" : "1vw",
-              }}
-            >
-              Sort by:
-            </Typography>
-            <div
-              style={{
-                marginRight: "0.417vw",
-                display: "flex",
-                alignContent: "center",
-              }}
-            >
-              <CustomChip
-                fontSize={isMobile ? "8px" : ""}
-                width="auto"
-                height="15px"
-                text="date"
-              />
-            </div>
-            <div
-              style={{
-                marginRight: "0.417vw",
-                display: "flex",
-                alignContent: "center",
-              }}
-            >
-              <CustomChip
-                fontSize={isMobile ? "8px" : ""}
-                width="auto"
-                height="15px"
-                text="amount"
-              />
-            </div>
-            <div style={{ display: "flex", alignContent: "center" }}>
-              <CustomChip
-                fontSize={isMobile ? "8px" : ""}
-                width="auto"
-                height="15px"
-                text="name"
-              />
-            </div>
-          </div>
         </div>
         <div style={{ margin: isMobile ? "0px 32px 0px 32px" : "1.667vw" }}>
           <div
@@ -483,7 +433,9 @@ const MaindashboardProductionPlanning = (props) => {
           >
             {unreviewedOrders?.data?.length === 0 ||
             unreviewedOrders?.data === undefined ? (
-              <Typography>There are no unreviewed orders available</Typography>
+              <Typography>
+                Tidak ada data pesanan yang belum diestimasi
+              </Typography>
             ) : (
               unreviewedOrders?.data?.map((data, index, array) => (
                 <div
@@ -621,9 +573,9 @@ const MaindashboardProductionPlanning = (props) => {
                         fontWeight: "bold",
                         fontSize: isMobile ? "8px" : "0.625vw",
                       }}
-                    >{`Date Added: ${moment(data.createdAt).format(
-                      "DD/MM/YYYY"
-                    )}`}</Typography>
+                    >{`Tanggal Pembuatan Pesanan: ${moment(
+                      data.createdAt
+                    ).format("DD/MM/YYYY")}`}</Typography>
                   </div>
                   <div
                     style={{
@@ -642,7 +594,7 @@ const MaindashboardProductionPlanning = (props) => {
                         fontSize: isMobile ? "8px" : "0.625vw",
                       }}
                     >
-                      {`Order Status: ${data.orderStatus}`}
+                      {`Status Pesanan: ${data.orderStatus}`}
                     </Typography>
                   </div>
                 </div>
@@ -665,67 +617,8 @@ const MaindashboardProductionPlanning = (props) => {
             id="estimatedorders"
             style={{ fontSize: isMobile ? "4vw" : "2vw", color: "#0F607D" }}
           >
-            Estimated Orders
+            Pesanan Sudah Diestimasi
           </Typography>
-          <div
-            style={{
-              display: "flex",
-              alignContent: "center",
-              justifyContent: "space-evenly",
-              alignItems: "center",
-            }}
-          >
-            <Typography
-              style={{
-                marginRight: isMobile ? "4px" : "0.417vw",
-                color: "#0F607D",
-                fontSize: isMobile ? "2.5vw" : "1vw",
-              }}
-            >
-              Sort by:
-            </Typography>
-            <div
-              style={{
-                marginRight: "0.417vw",
-                display: "flex",
-                alignContent: "center",
-              }}
-            >
-              <CustomChip
-                fontSize={isMobile ? "8px" : ""}
-                width="auto"
-                height="15px"
-                text="date"
-              />
-            </div>
-            <div
-              style={{
-                marginRight: "0.417vw",
-                display: "flex",
-                alignContent: "center",
-              }}
-            >
-              <CustomChip
-                fontSize={isMobile ? "8px" : ""}
-                width="auto"
-                height="15px"
-                text="amount"
-              />
-            </div>
-            <div
-              style={{
-                display: "flex",
-                alignContent: "center",
-              }}
-            >
-              <CustomChip
-                fontSize={isMobile ? "8px" : ""}
-                width="auto"
-                height="15px"
-                text="name"
-              />
-            </div>
-          </div>
         </div>
         <div style={{ margin: isMobile ? "0px 32px 0px 32px" : "1.667vw" }}>
           <div
@@ -738,7 +631,9 @@ const MaindashboardProductionPlanning = (props) => {
           >
             {estimatedOrders?.data?.length === 0 ||
             estimatedOrders?.data === undefined ? (
-              <Typography>There are no Estimated orders available</Typography>
+              <Typography>
+                Tidak ada data pesanan yang sudah diestimasi
+              </Typography>
             ) : (
               estimatedOrders?.data?.map((data, index, array) => (
                 <div
@@ -876,9 +771,9 @@ const MaindashboardProductionPlanning = (props) => {
                         fontWeight: "bold",
                         fontSize: isMobile ? "8px" : "0.625vw",
                       }}
-                    >{`Date Added: ${moment(data.createdAt).format(
-                      "DD/MM/YYYY"
-                    )}`}</Typography>
+                    >{`Tanggal Pembuatan Pesanan: ${moment(
+                      data.createdAt
+                    ).format("DD/MM/YYYY")}`}</Typography>
                   </div>
                   <div
                     style={{
@@ -897,7 +792,7 @@ const MaindashboardProductionPlanning = (props) => {
                         fontSize: isMobile ? "8px" : "0.625vw",
                       }}
                     >
-                      {`Order Status: ${data.orderStatus}`}
+                      {`Status Pesanan: ${data.orderStatus}`}
                     </Typography>
                   </div>
                 </div>
@@ -920,14 +815,18 @@ const MaindashboardProductionPlanning = (props) => {
             id="estimationordershistory"
             style={{ fontSize: isMobile ? "4.5vw" : "2vw", color: "#0F607D" }}
           >
-            Estimation Orders History
+            History Estimasi Pesanan
           </Typography>
           <div>
-            <DefaultButton onClickFunction={() => {
-              navigate("/productionPlanningDashboard/productionPlanningHistoryPage")
-            }}>
+            <DefaultButton
+              onClickFunction={() => {
+                navigate(
+                  "/productionPlanningDashboard/productionPlanningHistoryPage"
+                );
+              }}
+            >
               <Typography style={{ fontSize: isMobile ? "12px" : "1.042vw" }}>
-                Go to Estimation Orders History Page
+                Pergi ke Halaman History Estimasi Pesanan
               </Typography>
             </DefaultButton>
           </div>
@@ -947,7 +846,7 @@ const MaindashboardProductionPlanning = (props) => {
             id="activitylog"
             style={{ fontSize: isMobile ? "4.5vw" : "2vw", color: "#0F607D" }}
           >
-            Activity Log
+            Catatan Aktivitas
           </Typography>
           <div>
             <DefaultButton
@@ -956,7 +855,7 @@ const MaindashboardProductionPlanning = (props) => {
               }}
             >
               <Typography style={{ fontSize: isMobile ? "12px" : "1.042vw" }}>
-                Go to Activity Logs
+                Pergi ke Halaman Catatan Aktivitas
               </Typography>
             </DefaultButton>
           </div>

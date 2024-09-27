@@ -1044,7 +1044,7 @@ const EditProductionPlanPage = (props) => {
           }}
         >
           <Typography style={{ fontSize: "3.5vw", color: "#0F607D" }}>
-            Edit Rencana Produksi
+            Edit Perencanaan Produksi
           </Typography>
         </div>
         <div
@@ -1063,7 +1063,7 @@ const EditProductionPlanPage = (props) => {
             >
               <div style={{ margin: "24px" }}>
                 <Typography style={{ fontSize: "2.5vw", color: "#0F607D" }}>
-                  Production Plan
+                  Perencanaan Produksi
                 </Typography>
                 <div
                   style={{

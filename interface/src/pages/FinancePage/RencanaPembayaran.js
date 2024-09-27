@@ -90,7 +90,7 @@ const RencanaPembayaran = (props) => {
   const [allDataRencanaPembayaran, setAllDataRencanaPembayaran] = useState([]);
   const [selectedPembelianBahanBakuId, setSelectedPembelianBahanBakuId] =
     useState("");
-    console.log(selectedPembelianBahanBakuId)
+  console.log(selectedPembelianBahanBakuId);
   const [ongoingHutangsAndCicilans, setOngoingHutangsAndCicilans] = useState(
     []
   );
@@ -790,24 +790,26 @@ const RencanaPembayaran = (props) => {
             <Typography style={{ color: "#0F607D", fontSize: "3vw" }}>
               Rencana Pembayaran
             </Typography>
-            <div style={{ display: "flex", alignItems: "center" }}>
-              <DefaultButton
-                onClickFunction={() => {
-                  setOpenModalPembayaranLainLain(true);
-                }}
-              >
-                Tambah Pembayaran Lain-Lain
-              </DefaultButton>
-              <div style={{ marginLeft: "8px" }}>
+            {userInformation?.data?.role === "Admin" && (
+              <div style={{ display: "flex", alignItems: "center" }}>
                 <DefaultButton
                   onClickFunction={() => {
-                    setOpenModal(true);
+                    setOpenModalPembayaranLainLain(true);
                   }}
                 >
-                  Tambah Hutang
+                  Tambah Pembayaran Lain-Lain
                 </DefaultButton>
+                <div style={{ marginLeft: "8px" }}>
+                  <DefaultButton
+                    onClickFunction={() => {
+                      setOpenModal(true);
+                    }}
+                  >
+                    Tambah Hutang
+                  </DefaultButton>
+                </div>
               </div>
-            </div>
+            )}
           </div>
           <div
             style={{
@@ -1669,6 +1671,10 @@ const RencanaPembayaran = (props) => {
                                             }}
                                           >
                                             <MySelectTextField
+                                              disabled={
+                                                userInformation?.data?.role !==
+                                                "Admin"
+                                              }
                                               onChange={(event) => {
                                                 handleChangeInputCicilanPembayaranLains(
                                                   event,
@@ -1701,31 +1707,33 @@ const RencanaPembayaran = (props) => {
                 </TableBody>
               </Table>
             </TableContainer>
-            <div
-              style={{
-                display: "flex",
-                marginTop: "32px",
-                justifyContent: "center",
-              }}
-            >
-              <DefaultButton
-                onClickFunction={() => {
-                  handleEditCicilanPemLains();
+            {userInformation?.data?.role === "Admin" && (
+              <div
+                style={{
+                  display: "flex",
+                  marginTop: "32px",
+                  justifyContent: "center",
                 }}
               >
-                Edit Cicilan Pembayaran Lain-Lain
-              </DefaultButton>
-              <Button
-                onClick={() => {
-                  handleCloseModalViewPembayaranLainLain();
-                }}
-                style={{ marginLeft: "8px", textTransform: "none" }}
-                variant="outlined"
-                color="error"
-              >
-                Cancel
-              </Button>
-            </div>
+                <DefaultButton
+                  onClickFunction={() => {
+                    handleEditCicilanPemLains();
+                  }}
+                >
+                  Edit Cicilan Pembayaran Lain-Lain
+                </DefaultButton>
+                <Button
+                  onClick={() => {
+                    handleCloseModalViewPembayaranLainLain();
+                  }}
+                  style={{ marginLeft: "8px", textTransform: "none" }}
+                  variant="outlined"
+                  color="error"
+                >
+                  Cancel
+                </Button>
+              </div>
+            )}
           </div>
         </MyModal>
       )}
@@ -1904,6 +1912,10 @@ const RencanaPembayaran = (props) => {
                                             }}
                                           >
                                             <MySelectTextField
+                                              disabled={
+                                                userInformation?.data?.role !==
+                                                "Admin"
+                                              }
                                               onChange={(event) => {
                                                 handleChangeInputCicilan(
                                                   event,
@@ -1932,31 +1944,33 @@ const RencanaPembayaran = (props) => {
                 </TableBody>
               </Table>
             </TableContainer>
-            <div
-              style={{
-                margin: "16px",
-                display: "flex",
-                justifyContent: "center",
-              }}
-            >
-              <DefaultButton
-                onClickFunction={() => {
-                  handleEditCicilan();
+            {userInformation?.data?.role === "Admin" && (
+              <div
+                style={{
+                  margin: "16px",
+                  display: "flex",
+                  justifyContent: "center",
                 }}
               >
-                Edit Cicilan
-              </DefaultButton>
-              <Button
-                onClick={() => {
-                  handleCloseModalView();
-                }}
-                variant="outlined"
-                color="error"
-                style={{ textTransform: "none", marginLeft: "8px" }}
-              >
-                Cancel
-              </Button>
-            </div>
+                <DefaultButton
+                  onClickFunction={() => {
+                    handleEditCicilan();
+                  }}
+                >
+                  Edit Cicilan
+                </DefaultButton>
+                <Button
+                  onClick={() => {
+                    handleCloseModalView();
+                  }}
+                  variant="outlined"
+                  color="error"
+                  style={{ textTransform: "none", marginLeft: "8px" }}
+                >
+                  Cancel
+                </Button>
+              </div>
+            )}
           </div>
         </MyModal>
       )}

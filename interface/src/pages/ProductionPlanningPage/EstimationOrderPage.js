@@ -858,7 +858,7 @@ const EstimationOrderPage = (props) => {
           <Typography
             style={{ fontSize: isMobile ? "18px" : "3.5vw", color: "#0F607D" }}
           >
-            Add Production Plan
+            Tambah Perencanaan Produksi
           </Typography>
           <div
             style={{
@@ -872,7 +872,7 @@ const EstimationOrderPage = (props) => {
                 color: "#0F607D",
               }}
             >
-              Select Order ID
+              Pilih ID Pesanan
             </Typography>
             <div style={{ marginLeft: "8px" }}>
               <MySelectTextField
@@ -900,7 +900,7 @@ const EstimationOrderPage = (props) => {
             >
               <div style={{ margin: "24px" }}>
                 <Typography style={{ fontSize: "2.5vw", color: "#0F607D" }}>
-                  Order Information
+                  Informasi Order
                 </Typography>
 
                 <div
@@ -925,12 +925,12 @@ const EstimationOrderPage = (props) => {
                         <div style={{ width: "30%  " }}>
                           <Typography
                             style={{ fontSize: "1.5vw", color: "#0F607D" }}
-                          >{`Order ID: ${selectedOrder?.data?.id}`}</Typography>
+                          >{`ID Pesanan: ${selectedOrder?.data?.id}`}</Typography>
                         </div>
                         <div style={{ width: "70%  " }}>
                           <Typography
                             style={{ fontSize: "1.5vw", color: "#0F607D" }}
-                          >{`Order Name: ${
+                          >{`Judul Pesanan: ${
                             selectedOrder?.data?.orderTitle.length < 16
                               ? selectedOrder?.data?.orderTitle
                               : selectedOrder?.data?.orderTitle.slice(0, 16) +
@@ -942,47 +942,57 @@ const EstimationOrderPage = (props) => {
                         <Typography
                           style={{ fontSize: "1.5vw", color: "#0F607D" }}
                         >
-                          Documents:
+                          Dokumen:
                         </Typography>
                       </div>
-                      <div style={{ display: "flex", overflowX: "auto" }}>
-                        {selectedOrder?.data?.documents.map((result, index) => {
-                          return (
-                            <div key={index}>
-                              {index ===
-                              selectedOrder.data.documents.length - 1 ? (
-                                <img
-                                  style={{
-                                    height: isMobile ? "100px" : "9vw",
-                                    width: isMobile ? "100px" : "9vw",
-                                  }}
-                                  srcSet={`http://localhost:3000/uploads/${result.filename}?w=248&fit=crop&auto=format&dpr=2 2x`}
-                                  src={`http://localhost:3000/uploads/${result.filename}?w=248&fit=crop&auto=format`}
-                                  alt={result.filename}
-                                  loading="lazy"
-                                />
-                              ) : (
-                                <img
-                                  style={{
-                                    height: isMobile ? "100px" : "9vw",
-                                    width: isMobile ? "100px" : "9vw",
-                                    marginRight: isMobile ? "" : "32px",
-                                  }}
-                                  srcSet={`http://localhost:3000/uploads/${result.filename}?w=248&fit=crop&auto=format&dpr=2 2x`}
-                                  src={`http://localhost:3000/uploads/${result.filename}?w=248&fit=crop&auto=format`}
-                                  alt={result.filename}
-                                  loading="lazy"
-                                />
-                              )}
-                            </div>
-                          );
-                        })}
-                      </div>
+                      {selectedOrder?.data?.documents.length === 0 ? (
+                        <Typography
+                          style={{ color: "#0F607D", fontSize: "16px" }}
+                        >
+                          Tidak ada data dokumen dari pesanan ini
+                        </Typography>
+                      ) : (
+                        <div style={{ display: "flex", overflowX: "auto" }}>
+                          {selectedOrder?.data?.documents.map(
+                            (result, index) => {
+                              return (
+                                <div key={index}>
+                                  {index ===
+                                  selectedOrder.data.documents.length - 1 ? (
+                                    <img
+                                      style={{
+                                        height: isMobile ? "100px" : "9vw",
+                                        width: isMobile ? "100px" : "9vw",
+                                      }}
+                                      srcSet={`http://localhost:3000/uploads/${result.filename}?w=248&fit=crop&auto=format&dpr=2 2x`}
+                                      src={`http://localhost:3000/uploads/${result.filename}?w=248&fit=crop&auto=format`}
+                                      alt={result.filename}
+                                      loading="lazy"
+                                    />
+                                  ) : (
+                                    <img
+                                      style={{
+                                        height: isMobile ? "100px" : "9vw",
+                                        width: isMobile ? "100px" : "9vw",
+                                        marginRight: isMobile ? "" : "32px",
+                                      }}
+                                      srcSet={`http://localhost:3000/uploads/${result.filename}?w=248&fit=crop&auto=format&dpr=2 2x`}
+                                      src={`http://localhost:3000/uploads/${result.filename}?w=248&fit=crop&auto=format`}
+                                      alt={result.filename}
+                                      loading="lazy"
+                                    />
+                                  )}
+                                </div>
+                              );
+                            }
+                          )}
+                        </div>
+                      )}
                       <div style={{ marginTop: "32px" }}>
                         <Typography
                           style={{ fontSize: "1.5vw", color: "#0F607D" }}
                         >
-                          Order Details:
+                          Detail Pesanan:
                         </Typography>
                         <div
                           style={{ width: "100%", overflowWrap: "break-word" }}
@@ -1008,12 +1018,12 @@ const EstimationOrderPage = (props) => {
                         <div style={{ width: "50%" }}>
                           <Typography
                             style={{ fontSize: "1.5vw", color: "#0F607D" }}
-                          >{`Order Quantity: ${selectedOrder?.data?.orderQuantity}`}</Typography>
+                          >{`Jumlah Pesanan: ${selectedOrder?.data?.orderQuantity}`}</Typography>
                         </div>
                         <div style={{ width: "50%" }}>
                           <Typography
                             style={{ fontSize: "1.5vw", color: "#0F607D" }}
-                          >{`Order Status: ${selectedOrder?.data?.orderStatus}`}</Typography>
+                          >{`Status Pesanan: ${selectedOrder?.data?.orderStatus}`}</Typography>
                         </div>
                       </div>
                       <div
@@ -1069,7 +1079,7 @@ const EstimationOrderPage = (props) => {
             >
               <div style={{ margin: "24px" }}>
                 <Typography style={{ fontSize: "2.5vw", color: "#0F607D" }}>
-                  Production Plan
+                  Perencanaan Produksi
                 </Typography>
                 <div
                   style={{
@@ -2678,7 +2688,9 @@ const EstimationOrderPage = (props) => {
                                       type="number"
                                       disabled
                                       value={result.isi.value}
-                                      sx={{width: isMobile ? "100px" : "auto"}}
+                                      sx={{
+                                        width: isMobile ? "100px" : "auto",
+                                      }}
                                       // onChange={(event) => {
                                       //   handleChangeInputPerincian(
                                       //     event,

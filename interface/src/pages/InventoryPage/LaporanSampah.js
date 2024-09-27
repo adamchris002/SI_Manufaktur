@@ -123,7 +123,7 @@ const LaporanSampah = (props) => {
 
   useEffect(() => {
     if (refreshDataLaporanSampah) {
-      console.log("Test")
+      console.log("Test");
       axios({
         method: "GET",
         url: "http://localhost:3000/production/getLaporanSampah",
@@ -416,7 +416,7 @@ const LaporanSampah = (props) => {
     });
   };
   const handleDeleteItemLaporanSampahFromDB = (id, iDLaporanSampah) => {
-    setRefreshDataLaporanSampah(false)
+    setRefreshDataLaporanSampah(false);
     axios({
       method: "DELETE",
       url: `http://localhost:3000/production/deleteItemLaporanSampah/${id}`,
@@ -819,34 +819,42 @@ const LaporanSampah = (props) => {
             Laporan Sampah
           </Typography>
         </div>
-        <div style={{ margin: "32px" }}>
-          <div style={{ display: "flex", alignItems: "center" }}>
-            <Typography style={{ width: "150px" }}>
-              No Order Produksi:
-            </Typography>
-            <MySelectTextField
-              data={allNoOrderProduksi}
-              value={dataLaporanSampah.noOrderProduksi}
-              onChange={(event) => {
-                handleChangeInputLaporanSampah(event, "noOrderProduksi");
+        {userInformation?.data?.role === "Admin" && (
+          <div style={{ margin: "32px" }}>
+            <div style={{ display: "flex", alignItems: "center" }}>
+              <Typography style={{ width: "150px" }}>
+                No Order Produksi:
+              </Typography>
+              <MySelectTextField
+                data={allNoOrderProduksi}
+                value={dataLaporanSampah.noOrderProduksi}
+                onChange={(event) => {
+                  handleChangeInputLaporanSampah(event, "noOrderProduksi");
+                }}
+                width="150px"
+              />
+            </div>
+            <div
+              style={{
+                display: "flex",
+                alignItems: "center",
+                marginTop: "16px",
               }}
-              width="150px"
-            />
+            >
+              <Typography style={{ width: "150px" }}>
+                Tahap Produksi:
+              </Typography>
+              <MySelectTextField
+                data={allTahapProduksi}
+                value={dataLaporanSampah.tahapProduksi}
+                onChange={(event) => {
+                  handleChangeInputLaporanSampah(event, "tahapProduksi");
+                }}
+                width="150px"
+              />
+            </div>
           </div>
-          <div
-            style={{ display: "flex", alignItems: "center", marginTop: "16px" }}
-          >
-            <Typography style={{ width: "150px" }}>Tahap Produksi:</Typography>
-            <MySelectTextField
-              data={allTahapProduksi}
-              value={dataLaporanSampah.tahapProduksi}
-              onChange={(event) => {
-                handleChangeInputLaporanSampah(event, "tahapProduksi");
-              }}
-              width="150px"
-            />
-          </div>
-        </div>
+        )}
         <div style={{ margin: "32px" }}>
           {selectedKegiatanProduksi.length !== 0 && (
             <div>
@@ -897,268 +905,284 @@ const LaporanSampah = (props) => {
             </div>
           )}
         </div>
-        <div style={{ margin: "32px" }}>
-          <div
-            style={{
-              marginBottom: "16px",
-              display: "flex",
-              justifyContent: "flex-end",
-            }}
-          >
-            <DefaultButton
-              onClickFunction={() => {
-                handleTambahItem();
+        {userInformation?.data?.role === "Admin" && (
+          <div style={{ margin: "32px" }}>
+            <div
+              style={{
+                marginBottom: "16px",
+                display: "flex",
+                justifyContent: "flex-end",
               }}
             >
-              Tambah Item
-            </DefaultButton>
-          </div>
-          <TableContainer component={Paper} style={{ overflowX: "auto" }}>
-            <Table
-              sx={{ minWidth: 650 }}
-              aria-label="simple table"
-              style={{ tableLayout: "fixed", overflowX: "auto" }}
-            >
-              <TableHead>
-                <TableRow>
-                  <TableCell style={{ width: "25px" }}>No.</TableCell>
-                  <TableCell style={{ width: "300px" }}>Tanggal</TableCell>
-                  <TableCell style={{ width: "200px" }}>Pembeli</TableCell>
-                  <TableCell style={{ width: "200px" }}>Uraian</TableCell>
-                  <TableCell style={{ width: "200px" }}>Jumlah</TableCell>
-                  <TableCell style={{ width: "200px" }}>Harga Satuan</TableCell>
-                  <TableCell style={{ width: "200px" }}>Pembayaran</TableCell>
-                  <TableCell style={{ width: "200px" }}>Keterangan</TableCell>
-                  <TableCell style={{ width: "50px" }}>Actions</TableCell>
-                </TableRow>
-              </TableHead>
-              <TableBody>
-                {dataLaporanSampah?.itemLaporanSampahs?.map((result, index) => {
-                  return (
-                    <React.Fragment key={index}>
-                      <TableRow>
-                        <TableCell>{index + 1 + "."}</TableCell>
-                        <TableCell>
-                          <LocalizationProvider dateAdapter={AdapterDayjs}>
-                            <DemoContainer components={["DateTimePicker"]}>
-                              <DemoItem>
-                                <DateTimePicker
-                                  disablePast
-                                  value={
-                                    result.tanggal.isValid()
-                                      ? result.tanggal
-                                      : null
-                                  }
-                                  onChange={(event) => {
-                                    handleChangeInputLaporanSampah(
-                                      event,
-                                      "tanggal",
-                                      index
-                                    );
-                                  }}
-                                  renderInput={(params) => (
-                                    <TextField
-                                      {...params}
-                                      error={params.error || !params.value}
-                                      helperText={
-                                        params.error
-                                          ? "Invalid date format"
-                                          : ""
+              <DefaultButton
+                onClickFunction={() => {
+                  handleTambahItem();
+                }}
+              >
+                Tambah Item
+              </DefaultButton>
+            </div>
+            <TableContainer component={Paper} style={{ overflowX: "auto" }}>
+              <Table
+                sx={{ minWidth: 650 }}
+                aria-label="simple table"
+                style={{ tableLayout: "fixed", overflowX: "auto" }}
+              >
+                <TableHead>
+                  <TableRow>
+                    <TableCell style={{ width: "25px" }}>No.</TableCell>
+                    <TableCell style={{ width: "300px" }}>Tanggal</TableCell>
+                    <TableCell style={{ width: "200px" }}>Pembeli</TableCell>
+                    <TableCell style={{ width: "200px" }}>Uraian</TableCell>
+                    <TableCell style={{ width: "200px" }}>Jumlah</TableCell>
+                    <TableCell style={{ width: "200px" }}>
+                      Harga Satuan
+                    </TableCell>
+                    <TableCell style={{ width: "200px" }}>Pembayaran</TableCell>
+                    <TableCell style={{ width: "200px" }}>Keterangan</TableCell>
+                    <TableCell style={{ width: "50px" }}>Actions</TableCell>
+                  </TableRow>
+                </TableHead>
+                <TableBody>
+                  {dataLaporanSampah?.itemLaporanSampahs?.map(
+                    (result, index) => {
+                      return (
+                        <React.Fragment key={index}>
+                          <TableRow>
+                            <TableCell>{index + 1 + "."}</TableCell>
+                            <TableCell>
+                              <LocalizationProvider dateAdapter={AdapterDayjs}>
+                                <DemoContainer components={["DateTimePicker"]}>
+                                  <DemoItem>
+                                    <DateTimePicker
+                                      disablePast
+                                      value={
+                                        result.tanggal.isValid()
+                                          ? result.tanggal
+                                          : null
                                       }
+                                      onChange={(event) => {
+                                        handleChangeInputLaporanSampah(
+                                          event,
+                                          "tanggal",
+                                          index
+                                        );
+                                      }}
+                                      renderInput={(params) => (
+                                        <TextField
+                                          {...params}
+                                          error={params.error || !params.value}
+                                          helperText={
+                                            params.error
+                                              ? "Invalid date format"
+                                              : ""
+                                          }
+                                        />
+                                      )}
                                     />
-                                  )}
-                                />
-                              </DemoItem>
-                            </DemoContainer>
-                          </LocalizationProvider>
-                        </TableCell>
-                        <TableCell>
-                          <TextField
-                            value={result.pembeli}
-                            onChange={(event) => {
-                              handleChangeInputLaporanSampah(
-                                event,
-                                "pembeli",
-                                index
-                              );
-                            }}
-                          />
-                        </TableCell>
-                        <TableCell>
-                          <TextField
-                            value={result.uraian}
-                            onChange={(event) => {
-                              handleChangeInputLaporanSampah(
-                                event,
-                                "uraian",
-                                index
-                              );
-                            }}
-                          />
-                        </TableCell>
-                        <TableCell>
-                          <div
-                            style={{ display: "flex", alignItems: "center" }}
-                          >
-                            <TextField
-                              type="number"
-                              value={result.jumlah.value}
-                              onChange={(event) => {
-                                handleChangeInputLaporanSampah(
-                                  event,
-                                  "jumlah",
-                                  index
-                                );
-                              }}
-                            />
-                            <div style={{ marginLeft: "8px" }}>
-                              <MySelectTextField
-                                data={units}
-                                value={result.jumlah.unit}
-                                height={"55px"}
-                                width={isMobile ? "75px" : "100px"}
+                                  </DemoItem>
+                                </DemoContainer>
+                              </LocalizationProvider>
+                            </TableCell>
+                            <TableCell>
+                              <TextField
+                                value={result.pembeli}
                                 onChange={(event) => {
                                   handleChangeInputLaporanSampah(
                                     event,
-                                    "jumlah",
-                                    index,
-                                    true
+                                    "pembeli",
+                                    index
                                   );
                                 }}
                               />
-                            </div>
-                          </div>
-                        </TableCell>
-                        <TableCell>
-                          <TextField
-                            type="text"
-                            sx={{
-                              "& .MuiOutlinedInput-root": {
-                                height: isMobile ? "50px" : "4vw",
-                                width: isMobile ? "200px" : "200px",
-                                fontSize: isMobile ? "10px" : "1.5vw",
-                                borderRadius: "10px",
-                                "& fieldset": {
-                                  borderColor: "#0F607D",
-                                },
-                                "&:hover fieldset": {
-                                  borderColor: "#0F607D",
-                                },
-                                "&.Mui-focused fieldset": {
-                                  borderColor: "#0F607D",
-                                },
-                              },
-                            }}
-                            InputProps={{ inputComponent: NumericFormatCustom }}
-                            value={result.hargaSatuan}
-                            onChange={(event) => {
-                              handleChangeInputLaporanSampah(
-                                event,
-                                "hargaSatuan",
-                                index
-                              );
-                            }}
-                          />
-                        </TableCell>
-                        <TableCell>
-                          <TextField
-                            type="text"
-                            sx={{
-                              "& .MuiOutlinedInput-root": {
-                                height: isMobile ? "50px" : "4vw",
-                                width: isMobile ? "200px" : "200px",
-                                fontSize: isMobile ? "10px" : "1.5vw",
-                                borderRadius: "10px",
-                                "& fieldset": {
-                                  borderColor: "#0F607D",
-                                },
-                                "&:hover fieldset": {
-                                  borderColor: "#0F607D",
-                                },
-                                "&.Mui-focused fieldset": {
-                                  borderColor: "#0F607D",
-                                },
-                              },
-                            }}
-                            InputProps={{ inputComponent: NumericFormatCustom }}
-                            value={result.pembayaran}
-                            onChange={(event) => {
-                              handleChangeInputLaporanSampah(
-                                event,
-                                "pembayaran",
-                                index
-                              );
-                            }}
-                          />
-                        </TableCell>
-                        <TableCell>
-                          <TextField
-                            value={result.keterangan}
-                            onChange={(event) => {
-                              handleChangeInputLaporanSampah(
-                                event,
-                                "keterangan",
-                                index
-                              );
-                            }}
-                          />
-                        </TableCell>
-                        <TableCell>
-                          <IconButton
-                            onClick={() => {
-                              handleDeleteItemLaporanSampah(result?.id, index);
-                            }}
-                          >
-                            <DeleteIcon style={{ color: "red" }} />
-                          </IconButton>
-                        </TableCell>
-                      </TableRow>
-                    </React.Fragment>
-                  );
-                })}
-              </TableBody>
-            </Table>
-          </TableContainer>
-          <div
-            style={{
-              padding: "32px",
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-            }}
-          >
-            <DefaultButton
-              onClickFunction={() => {
-                handleAddLaporanSampah();
+                            </TableCell>
+                            <TableCell>
+                              <TextField
+                                value={result.uraian}
+                                onChange={(event) => {
+                                  handleChangeInputLaporanSampah(
+                                    event,
+                                    "uraian",
+                                    index
+                                  );
+                                }}
+                              />
+                            </TableCell>
+                            <TableCell>
+                              <div
+                                style={{
+                                  display: "flex",
+                                  alignItems: "center",
+                                }}
+                              >
+                                <TextField
+                                  type="number"
+                                  value={result.jumlah.value}
+                                  onChange={(event) => {
+                                    handleChangeInputLaporanSampah(
+                                      event,
+                                      "jumlah",
+                                      index
+                                    );
+                                  }}
+                                />
+                                <div style={{ marginLeft: "8px" }}>
+                                  <MySelectTextField
+                                    data={units}
+                                    value={result.jumlah.unit}
+                                    height={"55px"}
+                                    width={isMobile ? "75px" : "100px"}
+                                    onChange={(event) => {
+                                      handleChangeInputLaporanSampah(
+                                        event,
+                                        "jumlah",
+                                        index,
+                                        true
+                                      );
+                                    }}
+                                  />
+                                </div>
+                              </div>
+                            </TableCell>
+                            <TableCell>
+                              <TextField
+                                type="text"
+                                sx={{
+                                  "& .MuiOutlinedInput-root": {
+                                    height: isMobile ? "50px" : "4vw",
+                                    width: isMobile ? "200px" : "200px",
+                                    fontSize: isMobile ? "10px" : "1.5vw",
+                                    borderRadius: "10px",
+                                    "& fieldset": {
+                                      borderColor: "#0F607D",
+                                    },
+                                    "&:hover fieldset": {
+                                      borderColor: "#0F607D",
+                                    },
+                                    "&.Mui-focused fieldset": {
+                                      borderColor: "#0F607D",
+                                    },
+                                  },
+                                }}
+                                InputProps={{
+                                  inputComponent: NumericFormatCustom,
+                                }}
+                                value={result.hargaSatuan}
+                                onChange={(event) => {
+                                  handleChangeInputLaporanSampah(
+                                    event,
+                                    "hargaSatuan",
+                                    index
+                                  );
+                                }}
+                              />
+                            </TableCell>
+                            <TableCell>
+                              <TextField
+                                type="text"
+                                sx={{
+                                  "& .MuiOutlinedInput-root": {
+                                    height: isMobile ? "50px" : "4vw",
+                                    width: isMobile ? "200px" : "200px",
+                                    fontSize: isMobile ? "10px" : "1.5vw",
+                                    borderRadius: "10px",
+                                    "& fieldset": {
+                                      borderColor: "#0F607D",
+                                    },
+                                    "&:hover fieldset": {
+                                      borderColor: "#0F607D",
+                                    },
+                                    "&.Mui-focused fieldset": {
+                                      borderColor: "#0F607D",
+                                    },
+                                  },
+                                }}
+                                InputProps={{
+                                  inputComponent: NumericFormatCustom,
+                                }}
+                                value={result.pembayaran}
+                                onChange={(event) => {
+                                  handleChangeInputLaporanSampah(
+                                    event,
+                                    "pembayaran",
+                                    index
+                                  );
+                                }}
+                              />
+                            </TableCell>
+                            <TableCell>
+                              <TextField
+                                value={result.keterangan}
+                                onChange={(event) => {
+                                  handleChangeInputLaporanSampah(
+                                    event,
+                                    "keterangan",
+                                    index
+                                  );
+                                }}
+                              />
+                            </TableCell>
+                            <TableCell>
+                              <IconButton
+                                onClick={() => {
+                                  handleDeleteItemLaporanSampah(
+                                    result?.id,
+                                    index
+                                  );
+                                }}
+                              >
+                                <DeleteIcon style={{ color: "red" }} />
+                              </IconButton>
+                            </TableCell>
+                          </TableRow>
+                        </React.Fragment>
+                      );
+                    }
+                  )}
+                </TableBody>
+              </Table>
+            </TableContainer>
+            <div
+              style={{
+                padding: "32px",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
               }}
             >
-              Tambah Laporan Sampah
-            </DefaultButton>
-            <Button
-              variant="outlined"
-              color="error"
-              style={{ textTransform: "none", marginLeft: "8px" }}
-            >
-              Cancel
-            </Button>
+              <DefaultButton
+                onClickFunction={() => {
+                  handleAddLaporanSampah();
+                }}
+              >
+                Tambah Laporan Sampah
+              </DefaultButton>
+              <Button
+                variant="outlined"
+                color="error"
+                style={{ textTransform: "none", marginLeft: "8px" }}
+              >
+                Cancel
+              </Button>
+            </div>
           </div>
-        </div>
+        )}
         <div
           style={{
             width: isMobile ? "100%" : "60%",
             padding: "0px 0px 32px 0px",
           }}
         >
-          {allLaporanSampah.length !== 0 && (
-            <div style={{ margin: "32px" }}>
-              <Typography
-                style={{
-                  fontSize: isMobile ? "20px" : "2vw",
-                  color: "#0F607D",
-                }}
-              >
-                Data-data laporan sampah
-              </Typography>
+          <div style={{ margin: "32px" }}>
+            <Typography
+              style={{
+                fontSize: isMobile ? "20px" : "2vw",
+                color: "#0F607D",
+              }}
+            >
+              Data-data laporan sampah
+            </Typography>
+            {allLaporanSampah.length !== 0 ? (
               <TableContainer sx={{}} component={Paper}>
                 <Table sx={{ minWidth: 650 }}>
                   <TableHead>
@@ -1170,7 +1194,9 @@ const LaporanSampah = (props) => {
                       <TableCell style={{ width: "50px" }}>
                         Tahap Produksi
                       </TableCell>
-                      <TableCell style={{ width: "20px" }}>Actions</TableCell>
+                      {userInformation?.data?.role === "Admin" && (
+                        <TableCell style={{ width: "20px" }}>Actions</TableCell>
+                      )}
                       <TableCell style={{ width: "20px" }}>Download</TableCell>
                     </TableRow>
                   </TableHead>
@@ -1182,25 +1208,27 @@ const LaporanSampah = (props) => {
                             <TableCell>{index + 1 + "."}</TableCell>
                             <TableCell>{result.noOrderProduksi}</TableCell>
                             <TableCell>{result.tahapProduksi}</TableCell>
-                            <TableCell>
-                              <IconButton
-                                onClick={() => {
-                                  handleOpenModalForEditLaporanSampah(
-                                    result.noOrderProduksi,
-                                    result.tahapProduksi
-                                  );
-                                }}
-                              >
-                                <EditIcon style={{ color: "#0F607D" }} />
-                              </IconButton>
-                              <IconButton
-                                onClick={() => {
-                                  handleDeleteLaporanSampah(result.id);
-                                }}
-                              >
-                                <DeleteIcon style={{ color: "red" }} />
-                              </IconButton>
-                            </TableCell>
+                            {userInformation?.data?.role === "Admin" && (
+                              <TableCell>
+                                <IconButton
+                                  onClick={() => {
+                                    handleOpenModalForEditLaporanSampah(
+                                      result.noOrderProduksi,
+                                      result.tahapProduksi
+                                    );
+                                  }}
+                                >
+                                  <EditIcon style={{ color: "#0F607D" }} />
+                                </IconButton>
+                                <IconButton
+                                  onClick={() => {
+                                    handleDeleteLaporanSampah(result.id);
+                                  }}
+                                >
+                                  <DeleteIcon style={{ color: "red" }} />
+                                </IconButton>
+                              </TableCell>
+                            )}
                             <TableCell>
                               <IconButton
                                 onClick={() => {
@@ -1224,8 +1252,10 @@ const LaporanSampah = (props) => {
                   </TableBody>
                 </Table>
               </TableContainer>
-            </div>
-          )}
+            ) : (
+              <Typography>Belum ada data laporan sampah</Typography>
+            )}
+          </div>
         </div>
       </div>
       {openModal === true && (

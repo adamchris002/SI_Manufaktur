@@ -85,7 +85,7 @@ const ProductionActivityLog = () => {
                     <TableCell>User</TableCell>
                     <TableCell align="right">Activity</TableCell>
                     {/* <TableCell align="right">Order ID</TableCell> */}
-                    <TableCell align="right">Element Name</TableCell>
+                    <TableCell align="right">Name</TableCell>
                     <TableCell align="right">Division</TableCell>
                     <TableCell align="right">Created At</TableCell>
                     <TableCell align="right">Modified At</TableCell>

@@ -297,22 +297,6 @@ const MaindashboardProduction = (props) => {
             fontSize="12px"
             onClickFunction={() => {
               document
-                .getElementById("productionreportshistory")
-                .scrollIntoView({ behavior: "smooth" });
-            }}
-          >
-            Production Reports History
-          </DefaultButton>
-        </div>
-        <div style={{ marginTop: "32px", fontSize: "24px" }}>
-          <DefaultButton
-            width="232px"
-            height="40px"
-            backgroundColor="#0F607D"
-            borderRadius="16px"
-            fontSize="12px"
-            onClickFunction={() => {
-              document
                 .getElementById("actualreportshistory")
                 .scrollIntoView({ behavior: "smooth" });
             }}
@@ -333,7 +317,7 @@ const MaindashboardProduction = (props) => {
                 .scrollIntoView({ behavior: "smooth" });
             }}
           >
-            Activity Log
+            Catatan Aktivitas
           </DefaultButton>
         </div>
       </div>
@@ -450,19 +434,21 @@ const MaindashboardProduction = (props) => {
           >
             Kegiatan Produksi
           </Typography>
-          <div>
-            <DefaultButton
-              height="40px"
-              width="232px"
-              borderRadius="16px"
-              fontSize="16px"
-              onClickFunction={() => {
-                navigate("/productionDashboard/kegiatanProduksi");
-              }}
-            >
-              Tambah Kegiatan Produksi
-            </DefaultButton>
-          </div>
+          {userInformation?.data?.role === "Admin" && (
+            <div>
+              <DefaultButton
+                height="40px"
+                width="232px"
+                borderRadius="16px"
+                fontSize="16px"
+                onClickFunction={() => {
+                  navigate("/productionDashboard/kegiatanProduksi");
+                }}
+              >
+                Tambah Kegiatan Produksi
+              </DefaultButton>
+            </div>
+          )}
         </div>
         <div style={{ marginLeft: "32px", marginTop: "32px" }}>
           <div
@@ -495,7 +481,9 @@ const MaindashboardProduction = (props) => {
                       <TableCell>No Order Produksi</TableCell>
                       <TableCell>Jenis Cetakan</TableCell>
                       <TableCell>Dibuat Oleh</TableCell>
-                      <TableCell>Actions</TableCell>
+                      {userInformation?.data?.role === "Admin" && (
+                        <TableCell>Actions</TableCell>
+                      )}
                     </TableRow>
                   </TableHead>
                   <TableBody>
@@ -514,41 +502,45 @@ const MaindashboardProduction = (props) => {
                               <TableCell>{result.noOrderProduksi}</TableCell>
                               <TableCell>{result.jenisCetakan}</TableCell>
                               <TableCell>{result.dibuatOleh}</TableCell>
-                              <TableCell>
-                                <div
-                                  style={{
-                                    display: "flex",
-                                    alignItems: "center",
-                                  }}
-                                >
-                                  <IconButton
-                                    onClick={() => {
-                                      handleGoToEditKegiatanProduksi(result.id);
+                              {userInformation?.data?.role === "Admin" && (
+                                <TableCell>
+                                  <div
+                                    style={{
+                                      display: "flex",
+                                      alignItems: "center",
                                     }}
                                   >
-                                    <EditIcon style={{ color: "#0F607D" }} />
-                                  </IconButton>
-                                  {result.tahapProduksi !==
-                                    "Produksi Fitur" && (
                                     <IconButton
                                       onClick={() => {
-                                        handleChangeTahapProduksi(result.id);
+                                        handleGoToEditKegiatanProduksi(
+                                          result.id
+                                        );
                                       }}
                                     >
-                                      <ArrowForwardIcon
-                                        style={{ color: "#0F607D" }}
-                                      />
+                                      <EditIcon style={{ color: "#0F607D" }} />
                                     </IconButton>
-                                  )}
-                                  <IconButton
-                                    onClick={() => {
-                                      handleDeleteKegiatanProduksi(result.id);
-                                    }}
-                                  >
-                                    <DeleteIcon style={{ color: "red" }} />
-                                  </IconButton>
-                                </div>
-                              </TableCell>
+                                    {result.tahapProduksi !==
+                                      "Produksi Fitur" && (
+                                      <IconButton
+                                        onClick={() => {
+                                          handleChangeTahapProduksi(result.id);
+                                        }}
+                                      >
+                                        <ArrowForwardIcon
+                                          style={{ color: "#0F607D" }}
+                                        />
+                                      </IconButton>
+                                    )}
+                                    <IconButton
+                                      onClick={() => {
+                                        handleDeleteKegiatanProduksi(result.id);
+                                      }}
+                                    >
+                                      <DeleteIcon style={{ color: "red" }} />
+                                    </IconButton>
+                                  </div>
+                                </TableCell>
+                              )}
                             </TableRow>
                           </React.Fragment>
                         );
@@ -603,21 +595,23 @@ const MaindashboardProduction = (props) => {
           >
             Kelola Item Limbah Produksi
           </Typography>
-          <div>
-            <DefaultButton
-              height="40px"
-              width="320px"
-              borderRadius="16px"
-              fontSize="16px"
-              onClickFunction={() => {
-                navigate("/productionDashboard/laporanLimbahProduksi");
-              }}
-            >
-              Kelola item laporan limbah produksi
-            </DefaultButton>
-          </div>
+          {userInformation?.data?.role === "Admin" && (
+            <div>
+              <DefaultButton
+                height="40px"
+                width="320px"
+                borderRadius="16px"
+                fontSize="16px"
+                onClickFunction={() => {
+                  navigate("/productionDashboard/laporanLimbahProduksi");
+                }}
+              >
+                Kelola item laporan limbah produksi
+              </DefaultButton>
+            </div>
+          )}
         </div>
-        <div style={{ marginLeft: "32px", marginTop: "32px" }}>
+        <div style={{ marginLeft: "32px", marginTop: "32px", marginRight: "32px" }}>
           {allDataLaporanLimbahProduksi?.length === 0 ? (
             <div style={{ display: "flex", justifyContent: "center" }}>
               <Typography style={{ color: "#0F607D", fontSize: "1.5vw" }}>
@@ -626,7 +620,7 @@ const MaindashboardProduction = (props) => {
             </div>
           ) : (
             <TableContainer component={Paper}>
-              <Table sx={{ minWidth: 650 }} aria-label="simple table">
+              <Table aria-label="simple table">
                 <TableHead>
                   <TableRow>
                     <TableCell>No.</TableCell>
@@ -634,7 +628,9 @@ const MaindashboardProduction = (props) => {
                     <TableCell>Tahap Produksi</TableCell>
                     <TableCell>Dibuat Oleh</TableCell>
                     <TableCell>Tanggal Pembuatan</TableCell>
-                    <TableCell>Actions</TableCell>
+                    {userInformation?.data?.role === "Admin" && (
+                      <TableCell>Actions</TableCell>
+                    )}
                   </TableRow>
                 </TableHead>
                 <TableBody>
@@ -651,33 +647,38 @@ const MaindashboardProduction = (props) => {
                               "MM/DD/YYYY hh:mm A"
                             )}
                           </TableCell>
-                          <TableCell>
-                            <div
-                              style={{ display: "flex", alignItems: "center" }}
-                            >
-                              <IconButton
-                                onClick={() => {
-                                  handleGoToEditLaporanLimbahProduksi(
-                                    result.id
-                                  );
+                          {userInformation?.data?.role === "Admin" && (
+                            <TableCell>
+                              <div
+                                style={{
+                                  display: "flex",
+                                  alignItems: "center",
                                 }}
                               >
-                                <EditIcon style={{ color: "#0F607D" }} />
-                              </IconButton>
-                              <IconButton
-                                onClick={() => {
-                                  handleDeleteLaporanLimbahProduksi(
-                                    result.id,
-                                    result.tahapProduksi,
-                                    result.noOrderProduksi
-                                  );
-                                }}
-                                style={{ marginLeft: "8px" }}
-                              >
-                                <DeleteIcon style={{ color: "red" }} />
-                              </IconButton>
-                            </div>
-                          </TableCell>
+                                <IconButton
+                                  onClick={() => {
+                                    handleGoToEditLaporanLimbahProduksi(
+                                      result.id
+                                    );
+                                  }}
+                                >
+                                  <EditIcon style={{ color: "#0F607D" }} />
+                                </IconButton>
+                                <IconButton
+                                  onClick={() => {
+                                    handleDeleteLaporanLimbahProduksi(
+                                      result.id,
+                                      result.tahapProduksi,
+                                      result.noOrderProduksi
+                                    );
+                                  }}
+                                  style={{ marginLeft: "8px" }}
+                                >
+                                  <DeleteIcon style={{ color: "red" }} />
+                                </IconButton>
+                              </div>
+                            </TableCell>
+                          )}
                         </TableRow>
                       </React.Fragment>
                     );
@@ -686,26 +687,6 @@ const MaindashboardProduction = (props) => {
               </Table>
             </TableContainer>
           )}
-        </div>
-        <div
-          style={{
-            marginLeft: "32px",
-            marginTop: "64px",
-            display: "flex",
-            justifyContent: "space-between",
-            alignItems: "center",
-            width: "72vw",
-          }}
-        >
-          <Typography
-            id="productionreportshistory"
-            style={{ fontSize: "36px", color: "#0F607D" }}
-          >
-            Production Reports History
-          </Typography>
-          <div>
-            <DefaultButton>Go to Production Reports History Page</DefaultButton>
-          </div>
         </div>
         <div
           style={{
@@ -747,7 +728,7 @@ const MaindashboardProduction = (props) => {
             id="activitylog"
             style={{ fontSize: "36px", color: "#0F607D" }}
           >
-            Activity Log
+            Catatan Aktivitas
           </Typography>
           <div>
             <DefaultButton
@@ -755,7 +736,7 @@ const MaindashboardProduction = (props) => {
                 navigate("/productionDashboard/activitylog");
               }}
             >
-              Go to Activity Log Page
+              Pergi ke Halaman Catatan Aktivitas
             </DefaultButton>
           </div>
         </div>

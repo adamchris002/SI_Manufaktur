@@ -392,7 +392,7 @@ const OrderHistoryPage = (props) => {
                 marginBottom: "16px",
               }}
             >
-              Document
+              Dokumen
             </Typography>
             {dataView.documents.length === 0 ? (
               <Typography style={{ color: "#0F607D" }}>

@@ -776,7 +776,7 @@ const MaindashboardInventory = (props) => {
                   .scrollIntoView({ behavior: "smooth" });
               }}
             >
-              View Activity Log
+              Catatan Aktivitas
             </DefaultButton>
           </div>
         </div>
@@ -927,7 +927,9 @@ const MaindashboardInventory = (props) => {
                         <TableCell>Nomor</TableCell>
                         <TableCell>Perihal</TableCell>
                         <TableCell>Status Permohonan</TableCell>
-                        <TableCell>Actions</TableCell>
+                        {userInformation?.data?.role === "Admin" && (
+                          <TableCell>Actions</TableCell>
+                        )}
                       </TableRow>
                     </TableHead>
                     <TableBody>
@@ -952,36 +954,40 @@ const MaindashboardInventory = (props) => {
                               <TableCell style={{ width: "120px" }}>
                                 {result.statusPermohonan}
                               </TableCell>
-                              <TableCell style={{ width: "50px" }}>
-                                <div
-                                  style={{
-                                    display: "flex",
-                                    alignItems: "center",
-                                  }}
-                                >
-                                  {result.statusPermohonan !== "Denied" && (
+                              {userInformation?.data?.role === "Admin" && (
+                                <TableCell style={{ width: "50px" }}>
+                                  <div
+                                    style={{
+                                      display: "flex",
+                                      alignItems: "center",
+                                    }}
+                                  >
+                                    {result.statusPermohonan !== "Denied" && (
+                                      <IconButton
+                                        onClick={() => {
+                                          handleOpenModalEditPermohonanPembelian(
+                                            result
+                                          );
+                                        }}
+                                      >
+                                        <EditIcon
+                                          style={{ color: "#0F607D" }}
+                                        />
+                                      </IconButton>
+                                    )}
                                     <IconButton
                                       onClick={() => {
-                                        handleOpenModalEditPermohonanPembelian(
-                                          result
+                                        handleDeletePermohonanPembelian(
+                                          result.id
                                         );
                                       }}
+                                      sx={{ marginLeft: "8px" }}
                                     >
-                                      <EditIcon style={{ color: "#0F607D" }} />
+                                      <DeleteIcon style={{ color: "red" }} />
                                     </IconButton>
-                                  )}
-                                  <IconButton
-                                    onClick={() => {
-                                      handleDeletePermohonanPembelian(
-                                        result.id
-                                      );
-                                    }}
-                                    sx={{ marginLeft: "8px" }}
-                                  >
-                                    <DeleteIcon style={{ color: "red" }} />
-                                  </IconButton>
-                                </div>
-                              </TableCell>
+                                  </div>
+                                </TableCell>
+                              )}
                             </TableRow>
                           );
                         })}
@@ -1013,15 +1019,17 @@ const MaindashboardInventory = (props) => {
           >
             Pembelian Bahan Baku
           </Typography>
-          <DefaultButton
-            onClickFunction={() => {
-              navigate("/inventoryDashboard/pembelianBahan");
-            }}
-          >
-            <Typography style={{ fontSize: isMobile ? "10px" : "1vw" }}>
-              Tambah Pembelian Bahan
-            </Typography>
-          </DefaultButton>
+          {userInformation?.data?.role === "Admin" && (
+            <DefaultButton
+              onClickFunction={() => {
+                navigate("/inventoryDashboard/pembelianBahan");
+              }}
+            >
+              <Typography style={{ fontSize: isMobile ? "10px" : "1vw" }}>
+                Tambah Pembelian Bahan
+              </Typography>
+            </DefaultButton>
+          )}
         </div>
         <div
           style={{
@@ -1061,7 +1069,9 @@ const MaindashboardInventory = (props) => {
                           <TableCell>Nomor</TableCell>
                           <TableCell>Perihal</TableCell>
                           <TableCell>Status Permohonan</TableCell>
-                          <TableCell>Actions</TableCell>
+                          {userInformation?.data?.role === "Admin" && (
+                            <TableCell>Actions</TableCell>
+                          )}
                         </TableRow>
                       </TableHead>
                       <TableBody>
@@ -1081,20 +1091,22 @@ const MaindashboardInventory = (props) => {
                                 <TableCell>{result.nomor}</TableCell>
                                 <TableCell>{result.perihal}</TableCell>
                                 <TableCell>{result.statusPermohonan}</TableCell>
-                                <TableCell>
-                                  <div>
-                                    <IconButton
-                                      onClick={() => {
-                                        handleDeletePermohonanPembelian(
-                                          result.id
-                                        );
-                                      }}
-                                      sx={{ marginLeft: "8px" }}
-                                    >
-                                      <DeleteIcon style={{ color: "red" }} />
-                                    </IconButton>
-                                  </div>
-                                </TableCell>
+                                {userInformation?.data?.role === "Admin" && (
+                                  <TableCell>
+                                    <div>
+                                      <IconButton
+                                        onClick={() => {
+                                          handleDeletePermohonanPembelian(
+                                            result.id
+                                          );
+                                        }}
+                                        sx={{ marginLeft: "8px" }}
+                                      >
+                                        <DeleteIcon style={{ color: "red" }} />
+                                      </IconButton>
+                                    </div>
+                                  </TableCell>
+                                )}
                               </TableRow>
                             );
                           })}
@@ -1128,7 +1140,9 @@ const MaindashboardInventory = (props) => {
                             <TableCell>Leveransir</TableCell>
                             <TableCell>Alamat</TableCell>
                             <TableCell>Tanggal Pembuatan</TableCell>
-                            <TableCell>Actions</TableCell>
+                            {userInformation?.data?.role === "Admin" && (
+                              <TableCell>Actions</TableCell>
+                            )}
                           </TableRow>
                         </TableHead>
                         <TableBody>
@@ -1146,34 +1160,38 @@ const MaindashboardInventory = (props) => {
                                     "MM/DD/YYYY hh:mm A"
                                   )}
                                 </TableCell>
-                                <TableCell>
-                                  <div
-                                    style={{
-                                      display: "flex",
-                                      alignItems: "center",
-                                    }}
-                                  >
-                                    <IconButton
-                                      onClick={() => {
-                                        handleMoveToEditPembelianBahanBaku(
-                                          result.id
-                                        );
+                                {userInformation?.data?.role === "Admin" && (
+                                  <TableCell>
+                                    <div
+                                      style={{
+                                        display: "flex",
+                                        alignItems: "center",
                                       }}
                                     >
-                                      <EditIcon style={{ color: "#0F606D" }} />
-                                    </IconButton>
-                                    <IconButton
-                                      onClick={() => {
-                                        handleDeletePembelianBahanBaku(
-                                          result.id
-                                        );
-                                      }}
-                                      sx={{ marginLeft: "8px" }}
-                                    >
-                                      <DeleteIcon style={{ color: "red" }} />
-                                    </IconButton>
-                                  </div>
-                                </TableCell>
+                                      <IconButton
+                                        onClick={() => {
+                                          handleMoveToEditPembelianBahanBaku(
+                                            result.id
+                                          );
+                                        }}
+                                      >
+                                        <EditIcon
+                                          style={{ color: "#0F606D" }}
+                                        />
+                                      </IconButton>
+                                      <IconButton
+                                        onClick={() => {
+                                          handleDeletePembelianBahanBaku(
+                                            result.id
+                                          );
+                                        }}
+                                        sx={{ marginLeft: "8px" }}
+                                      >
+                                        <DeleteIcon style={{ color: "red" }} />
+                                      </IconButton>
+                                    </div>
+                                  </TableCell>
+                                )}
                               </TableRow>
                             );
                           })}
@@ -1204,15 +1222,17 @@ const MaindashboardInventory = (props) => {
             Stok Opnam
           </Typography>
           <div>
-            <DefaultButton
-              onClickFunction={() => {
-                navigate("/inventoryDashboard/stokOpnam");
-              }}
-            >
-              <Typography style={{ fontSize: isMobile ? "12px" : "1.042vw" }}>
-                Tambah Stok Opnam
-              </Typography>
-            </DefaultButton>
+            {userInformation?.data?.role === "Admin" && (
+              <DefaultButton
+                onClickFunction={() => {
+                  navigate("/inventoryDashboard/stokOpnam");
+                }}
+              >
+                <Typography style={{ fontSize: isMobile ? "12px" : "1.042vw" }}>
+                  Tambah Stok Opnam
+                </Typography>
+              </DefaultButton>
+            )}
           </div>
         </div>
         {allStokOpnam.length === 0 ? (
@@ -1234,7 +1254,9 @@ const MaindashboardInventory = (props) => {
                     <TableCell>Judul Stok Opnam</TableCell>
                     <TableCell>Tanggal Pembuatan Stok Opnam</TableCell>
                     <TableCell>Tanggal Akhir Stok Opnam</TableCell>
-                    <TableCell>Actions</TableCell>
+                    {userInformation?.data?.role === "Admin" && (
+                      <TableCell>Actions</TableCell>
+                    )}
                   </TableRow>
                 </TableHead>
                 <TableBody>
@@ -1254,35 +1276,40 @@ const MaindashboardInventory = (props) => {
                               "MM/DD/YYYY hh:mm A"
                             )}
                           </TableCell>
-                          <TableCell>
-                            <div
-                              style={{ display: "flex", alignItems: "center" }}
-                            >
-                              {result.tanggalAkhirStokOpnam &&
-                              dayjs().isAfter(
-                                dayjs(result.tanggalAkhirStokOpnam)
-                              ) ? (
-                                ""
-                              ) : (
+                          {userInformation?.data?.role === "Admin" && (
+                            <TableCell>
+                              <div
+                                style={{
+                                  display: "flex",
+                                  alignItems: "center",
+                                }}
+                              >
+                                {result.tanggalAkhirStokOpnam &&
+                                dayjs().isAfter(
+                                  dayjs(result.tanggalAkhirStokOpnam)
+                                ) ? (
+                                  ""
+                                ) : (
+                                  <IconButton
+                                    onClick={() => {
+                                      handleMoveToEditStokOpnam(result.id);
+                                    }}
+                                  >
+                                    <EditIcon style={{ color: "#0F607D" }} />
+                                  </IconButton>
+                                )}
+
                                 <IconButton
                                   onClick={() => {
-                                    handleMoveToEditStokOpnam(result.id);
+                                    handleDeleteStokOpnam(result.id);
                                   }}
+                                  style={{ marginLeft: "8px" }}
                                 >
-                                  <EditIcon style={{ color: "#0F607D" }} />
+                                  <DeleteIcon style={{ color: "red" }} />
                                 </IconButton>
-                              )}
-
-                              <IconButton
-                                onClick={() => {
-                                  handleDeleteStokOpnam(result.id);
-                                }}
-                                style={{ marginLeft: "8px" }}
-                              >
-                                <DeleteIcon style={{ color: "red" }} />
-                              </IconButton>
-                            </div>
-                          </TableCell>
+                              </div>
+                            </TableCell>
+                          )}
                         </TableRow>
                       </React.Fragment>
                     );
@@ -1309,17 +1336,19 @@ const MaindashboardInventory = (props) => {
           >
             Pengambilan/Penyerahan Barang
           </Typography>
-          <div>
-            <DefaultButton
-              onClickFunction={() => {
-                navigate("/inventoryDashboard/penyerahanBarang");
-              }}
-            >
-              <Typography style={{ fontSize: isMobile ? "10px" : "1.042vw" }}>
-                Pergi ke halaman Pengambilan/Penyerahan Barang
-              </Typography>
-            </DefaultButton>
-          </div>
+          {userInformation?.data?.role === "Admin" && (
+            <div>
+              <DefaultButton
+                onClickFunction={() => {
+                  navigate("/inventoryDashboard/penyerahanBarang");
+                }}
+              >
+                <Typography style={{ fontSize: isMobile ? "10px" : "1.042vw" }}>
+                  Pergi ke Halaman Pengambilan/Penyerahan Barang
+                </Typography>
+              </DefaultButton>
+            </div>
+          )}
         </div>
         {allPenyerahanBarang?.length === 0 ? (
           <div style={{ margin: "32px" }}>
@@ -1341,49 +1370,62 @@ const MaindashboardInventory = (props) => {
                     <TableCell>Tanggal Pengambilan</TableCell>
                     <TableCell>Tanggal Penyerahan</TableCell>
                     <TableCell>Status Pengambilan/Penyerahan</TableCell>
-                    <TableCell>Actions</TableCell>
+                    {userInformation?.data?.role === "Admin" && (
+                      <TableCell>Actions</TableCell>
+                    )}
                   </TableRow>
                 </TableHead>
                 <TableBody>
-                  {allPenyerahanBarang?.filter((item) => item.statusPenyerahan !== "Barang sudah diambil")?.map((result, index) => {
-                    return (
-                      <React.Fragment key={index}>
-                        <TableRow>
-                          <TableCell>
-                            {dayjs(result.tanggalPengambilan).format(
-                              "MM/DD/YYYY hh:mm A"
+                  {allPenyerahanBarang
+                    ?.filter(
+                      (item) => item.statusPenyerahan !== "Barang sudah diambil"
+                    )
+                    ?.map((result, index) => {
+                      return (
+                        <React.Fragment key={index}>
+                          <TableRow>
+                            <TableCell>
+                              {dayjs(result.tanggalPengambilan).format(
+                                "MM/DD/YYYY hh:mm A"
+                              )}
+                            </TableCell>
+                            <TableCell>
+                              {dayjs(result.tanggalPenyerahan).format(
+                                "MM/DD/YYYY hh:mm A"
+                              )}
+                            </TableCell>
+                            <TableCell>{result.statusPenyerahan}</TableCell>
+                            {userInformation?.data?.role === "Admin" && (
+                              <TableCell>
+                                <div
+                                  style={{
+                                    display: "flex",
+                                    alignItems: "center",
+                                  }}
+                                >
+                                  <IconButton
+                                    onClick={() => {
+                                      handleMoveToEditPenyerahanBarang(
+                                        result.id
+                                      );
+                                    }}
+                                  >
+                                    <EditIcon style={{ color: "#0F607D" }} />
+                                  </IconButton>
+                                  <IconButton
+                                    onClick={() => {
+                                      handleDeletePenyerahanBarang(result.id);
+                                    }}
+                                  >
+                                    <DeleteIcon style={{ color: "red" }} />
+                                  </IconButton>
+                                </div>
+                              </TableCell>
                             )}
-                          </TableCell>
-                          <TableCell>
-                            {dayjs(result.tanggalPenyerahan).format(
-                              "MM/DD/YYYY hh:mm A"
-                            )}
-                          </TableCell>
-                          <TableCell>{result.statusPenyerahan}</TableCell>
-                          <TableCell>
-                            <div
-                              style={{ display: "flex", alignItems: "center" }}
-                            >
-                              <IconButton
-                                onClick={() => {
-                                  handleMoveToEditPenyerahanBarang(result.id);
-                                }}
-                              >
-                                <EditIcon style={{ color: "#0F607D" }} />
-                              </IconButton>
-                              <IconButton
-                                onClick={() => {
-                                  handleDeletePenyerahanBarang(result.id);
-                                }}
-                              >
-                                <DeleteIcon style={{ color: "red" }} />
-                              </IconButton>
-                            </div>
-                          </TableCell>
-                        </TableRow>
-                      </React.Fragment>
-                    );
-                  })}
+                          </TableRow>
+                        </React.Fragment>
+                      );
+                    })}
                 </TableBody>
               </Table>
             </TableContainer>
@@ -1411,7 +1453,9 @@ const MaindashboardInventory = (props) => {
               navigate("/inventoryDashboard/laporanSampah");
             }}
           >
-            Pergi ke halaman laporan sampah
+            <Typography style={{ fontSize: isMobile ? "12px" : "1.042vw" }}>
+              Pergi ke Halaman Laporan Sampah
+            </Typography>
           </DefaultButton>
         </div>
         <div
@@ -1429,7 +1473,7 @@ const MaindashboardInventory = (props) => {
             id="activitylog"
             style={{ fontSize: isMobile ? "4.5vw" : "2vw", color: "#0F607D" }}
           >
-            Activity Log
+            Catatan Aktivitas
           </Typography>
           <div>
             <DefaultButton
@@ -1438,7 +1482,7 @@ const MaindashboardInventory = (props) => {
               }}
             >
               <Typography style={{ fontSize: isMobile ? "12px" : "1.042vw" }}>
-                Go to Activity Logs
+                Pergi ke Halaman Catatan Aktivitas
               </Typography>
             </DefaultButton>
           </div>

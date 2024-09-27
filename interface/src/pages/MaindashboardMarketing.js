@@ -324,7 +324,7 @@ const MaindashboardMarketing = (props) => {
                   .scrollIntoView({ behavior: "smooth" });
               }}
             >
-              View All Orders
+              Kelola Pesanan
             </DefaultButton>
           </div>
           <div style={{ marginTop: "1.667vw", fontSize: "1.25vw" }}>
@@ -340,7 +340,7 @@ const MaindashboardMarketing = (props) => {
                   .scrollIntoView({ behavior: "smooth" });
               }}
             >
-              View Reviewed Orders
+              Pesanan Sudah Diestimasi
             </DefaultButton>
           </div>
           <div style={{ marginTop: "1.667vw", fontSize: "1.25vw" }}>
@@ -356,10 +356,10 @@ const MaindashboardMarketing = (props) => {
                   .scrollIntoView({ behavior: "smooth" });
               }}
             >
-              View Processed Orders
+              Pesanan Diproduksi
             </DefaultButton>
           </div>
-          <div style={{ marginTop: "1.667vw", fontSize: "1.25vw" }}>
+          {/* <div style={{ marginTop: "1.667vw", fontSize: "1.25vw" }}>
             <DefaultButton
               width="15vw"
               height="2.08vw"
@@ -374,7 +374,7 @@ const MaindashboardMarketing = (props) => {
             >
               View Delivered Orders
             </DefaultButton>
-          </div>
+          </div> */}
           <div style={{ marginTop: "1.667vw", fontSize: "1.25vw" }}>
             <DefaultButton
               width="15vw"
@@ -388,7 +388,7 @@ const MaindashboardMarketing = (props) => {
                   .scrollIntoView({ behavior: "smooth" });
               }}
             >
-              View Orders History
+              History Pesanan
             </DefaultButton>
           </div>
           <div style={{ marginTop: "1.667vw", fontSize: "1.25vw" }}>
@@ -404,7 +404,7 @@ const MaindashboardMarketing = (props) => {
                   .scrollIntoView({ behavior: "smooth" });
               }}
             >
-              View Activity Log
+              Catatan Aktivitas
             </DefaultButton>
           </div>
         </div>
@@ -475,62 +475,8 @@ const MaindashboardMarketing = (props) => {
             id="vieworders"
             style={{ color: "#0F607D", fontSize: isMobile ? "4.5vw" : "2vw" }}
           >
-            View All Orders
+            Kelola Pesanan
           </Typography>
-          <div
-            style={{
-              display: "flex",
-              alignContent: "center",
-              justifyContent: "space-evenly",
-              alignItems: "center",
-            }}
-          >
-            <Typography
-              style={{
-                marginRight: isMobile ? "4px" : "0.417vw",
-                color: "#0F607D",
-                fontSize: isMobile ? "2.5vw" : "1vw",
-              }}
-            >
-              Sort by:
-            </Typography>
-            <div
-              style={{
-                marginRight: "0.417vw",
-                display: "flex",
-                alignContent: "center",
-              }}
-            >
-              <CustomChip
-                fontSize={isMobile ? "8px" : ""}
-                width="auto"
-                height="15px"
-                text="date"
-              />
-            </div>
-            <div
-              style={{
-                marginRight: "0.417vw",
-                display: "flex",
-                alignContent: "center",
-              }}
-            >
-              <CustomChip
-                fontSize={isMobile ? "8px" : ""}
-                width="auto"
-                height="15px"
-                text="amount"
-              />
-            </div>
-            <div style={{ display: "flex", alignContent: "center" }}>
-              <CustomChip
-                fontSize={isMobile ? "8px" : ""}
-                width="auto"
-                height="15px"
-                text="name"
-              />
-            </div>
-          </div>
         </div>
         <div style={{ margin: isMobile ? "0px 32px 0px 32px" : "1.667vw" }}>
           <div
@@ -544,7 +490,7 @@ const MaindashboardMarketing = (props) => {
             {allOrderList?.data?.length === 0 ||
             allOrderList?.data === undefined ? (
               <Typography style={{ fontSize: isMobile ? "12px" : "1.25vw" }}>
-                There are no orders currently
+                Belum ada data pesanan
               </Typography>
             ) : (
               allOrderList?.data?.map((data, index, array) => (
@@ -686,9 +632,9 @@ const MaindashboardMarketing = (props) => {
                         fontWeight: "bold",
                         fontSize: isMobile ? "8px" : "0.625vw",
                       }}
-                    >{`Date Added: ${moment(data.createdAt).format(
-                      "DD/MM/YYYY"
-                    )}`}</Typography>
+                    >{`Tanggal Pembuatan Pesanan: ${moment(
+                      data.createdAt
+                    ).format("DD/MM/YYYY")}`}</Typography>
                   </div>
                   <div
                     style={{
@@ -707,7 +653,7 @@ const MaindashboardMarketing = (props) => {
                         fontSize: isMobile ? "8px" : "0.625vw",
                       }}
                     >
-                      {`Order Status: ${data.orderStatus}`}
+                      {`Status Pesanan: ${data.orderStatus}`}
                     </Typography>
                   </div>
                 </div>
@@ -726,7 +672,7 @@ const MaindashboardMarketing = (props) => {
                   setOpenModal(true);
                 }}
               >
-                Add Order
+                Tambah Pesanan
               </DefaultButton>
             ) : (
               ""
@@ -748,67 +694,8 @@ const MaindashboardMarketing = (props) => {
             id="reviewedorders"
             style={{ fontSize: isMobile ? "4.5vw" : "2vw", color: "#0F607D" }}
           >
-            Reviewed Orders
+            Pesanan Sudah Diestimasi
           </Typography>
-          <div
-            style={{
-              display: "flex",
-              alignContent: "center",
-              justifyContent: "space-evenly",
-              alignItems: "center",
-            }}
-          >
-            <Typography
-              style={{
-                marginRight: isMobile ? "4px" : "0.417vw",
-                color: "#0F607D",
-                fontSize: isMobile ? "2.5vw" : "1vw",
-              }}
-            >
-              Sort by:
-            </Typography>
-            <div
-              style={{
-                marginRight: "0.417vw",
-                display: "flex",
-                alignContent: "center",
-              }}
-            >
-              <CustomChip
-                fontSize={isMobile ? "8px" : ""}
-                width="auto"
-                height="15px"
-                text="date"
-              />
-            </div>
-            <div
-              style={{
-                marginRight: "0.417vw",
-                display: "flex",
-                alignContent: "center",
-              }}
-            >
-              <CustomChip
-                fontSize={isMobile ? "8px" : ""}
-                width="auto"
-                height="15px"
-                text="amount"
-              />
-            </div>
-            <div
-              style={{
-                display: "flex",
-                alignContent: "center",
-              }}
-            >
-              <CustomChip
-                fontSize={isMobile ? "8px" : ""}
-                width="auto"
-                height="15px"
-                text="name"
-              />
-            </div>
-          </div>
         </div>
         <div style={{ margin: isMobile ? "0px 32px 0px 32px" : "1.667vw" }}>
           <div
@@ -825,7 +712,7 @@ const MaindashboardMarketing = (props) => {
               (order) => order.orderStatus === "Estimated"
             ) ? (
               <Typography style={{ fontSize: isMobile ? "12px" : "1.25vw" }}>
-                There are no reviewed orders currently
+                Belum ada pesanan yang sudah diestimasi
               </Typography>
             ) : (
               allOrderList?.data
@@ -969,9 +856,9 @@ const MaindashboardMarketing = (props) => {
                           fontWeight: "bold",
                           fontSize: isMobile ? "8px" : "0.625vw",
                         }}
-                      >{`Date Added: ${moment(data.createdAt).format(
-                        "DD/MM/YYYY"
-                      )}`}</Typography>
+                      >{`Tanggal Pembuatan Pesanan: ${moment(
+                        data.createdAt
+                      ).format("DD/MM/YYYY")}`}</Typography>
                     </div>
                     <div
                       style={{
@@ -990,7 +877,7 @@ const MaindashboardMarketing = (props) => {
                           fontSize: isMobile ? "8px" : "0.625vw",
                         }}
                       >
-                        {`Order Status: ${data.orderStatus}`}
+                        {`Status Pesanan: ${data.orderStatus}`}
                       </Typography>
                     </div>
                   </div>
@@ -1013,62 +900,8 @@ const MaindashboardMarketing = (props) => {
             id="processedorders"
             style={{ fontSize: isMobile ? "4.5vw" : "2vw", color: "#0F607D" }}
           >
-            Processed Orders
+            Pesanan Diproduksi
           </Typography>
-          <div
-            style={{
-              display: "flex",
-              alignContent: "center",
-              justifyContent: "space-evenly",
-              alignItems: "center",
-            }}
-          >
-            <Typography
-              style={{
-                marginRight: isMobile ? "4px" : "0.417vw",
-                color: "#0F607D",
-                fontSize: isMobile ? "2.5vw" : "1vw",
-              }}
-            >
-              Sort by:
-            </Typography>
-            <div
-              style={{
-                marginRight: "0.417vw",
-                display: "flex",
-                alignItems: "center",
-              }}
-            >
-              <CustomChip
-                fontSize={isMobile ? "8px" : ""}
-                width="auto"
-                height="15px"
-                text="date"
-              />
-            </div>
-            <div
-              style={{
-                marginRight: "0.417vw",
-                display: "flex",
-                alignItems: "center",
-              }}
-            >
-              <CustomChip
-                fontSize={isMobile ? "8px" : ""}
-                width="auto"
-                height="15px"
-                text="amount"
-              />
-            </div>
-            <div style={{ display: "flex", alignItems: "center" }}>
-              <CustomChip
-                fontSize={isMobile ? "8px" : ""}
-                width="auto"
-                height="15px"
-                text="name"
-              />
-            </div>
-          </div>
         </div>
         <div style={{ margin: isMobile ? "0px 32px 0px 32px" : "1.667vw" }}>
           <div
@@ -1085,7 +918,7 @@ const MaindashboardMarketing = (props) => {
               (order) => order.orderStatus === "Processed"
             ) ? (
               <Typography style={{ fontSize: isMobile ? "12px" : "1.25vw" }}>
-                There are no processed orders currently
+                Belum ada data pesanan yang sedang diproduksi
               </Typography>
             ) : (
               allOrderList?.data
@@ -1229,9 +1062,9 @@ const MaindashboardMarketing = (props) => {
                           fontWeight: "bold",
                           fontSize: isMobile ? "8px" : "0.625vw",
                         }}
-                      >{`Date Added: ${moment(data.createdAt).format(
-                        "DD/MM/YYYY"
-                      )}`}</Typography>
+                      >{`Tanggal Pembuatan Pesanan: ${moment(
+                        data.createdAt
+                      ).format("DD/MM/YYYY")}`}</Typography>
                     </div>
                     <div
                       style={{
@@ -1250,7 +1083,7 @@ const MaindashboardMarketing = (props) => {
                           fontSize: isMobile ? "8px" : "0.625vw",
                         }}
                       >
-                        {`Order Status: ${data.orderStatus}`}
+                        {`Status Pesanan: ${data.orderStatus}`}
                       </Typography>
                     </div>
                   </div>
@@ -1258,7 +1091,7 @@ const MaindashboardMarketing = (props) => {
             )}
           </div>
         </div>
-        <div
+        {/* <div
           style={{
             margin: isMobile
               ? "32px 32px 12px 32px"
@@ -1275,60 +1108,6 @@ const MaindashboardMarketing = (props) => {
           >
             Delivered Orders
           </Typography>
-          <div
-            style={{
-              display: "flex",
-              alignContent: "center",
-              justifyContent: "space-evenly",
-              alignItems: "center",
-            }}
-          >
-            <Typography
-              style={{
-                marginRight: isMobile ? "4px" : "0.417vw",
-                color: "#0F607D",
-                fontSize: isMobile ? "2.5vw" : "1vw",
-              }}
-            >
-              Sort by:
-            </Typography>
-            <div
-              style={{
-                marginRight: "0.417vw",
-                display: "flex",
-                alignItems: "center",
-              }}
-            >
-              <CustomChip
-                fontSize={isMobile ? "8px" : ""}
-                width="auto"
-                height="15px"
-                text="date"
-              />
-            </div>
-            <div
-              style={{
-                marginRight: "0.417vw",
-                display: "flex",
-                alignItems: "center",
-              }}
-            >
-              <CustomChip
-                fontSize={isMobile ? "8px" : ""}
-                width="auto"
-                height="15px"
-                text="amount"
-              />
-            </div>
-            <div style={{ display: "flex", alignItems: "center" }}>
-              <CustomChip
-                fontSize={isMobile ? "8px" : ""}
-                width="auto"
-                height="15px"
-                text="name"
-              />
-            </div>
-          </div>
         </div>
         <div style={{ margin: isMobile ? "0px 0px 0px 32px" : "1.667vw" }}>
           <div
@@ -1517,7 +1296,7 @@ const MaindashboardMarketing = (props) => {
                 ))
             )}
           </div>
-        </div>
+        </div> */}
         <div
           style={{
             margin: isMobile
@@ -1533,14 +1312,17 @@ const MaindashboardMarketing = (props) => {
             id="ordershistory"
             style={{ fontSize: isMobile ? "4.5vw" : "2vw", color: "#0F607D" }}
           >
-            Orders History
+            History Pesanan
           </Typography>
           <div>
-            <DefaultButton onClickFunction={() => {
-              navigate("/marketingDashboard/orderHistoryPage")
-            }} style={{ width: "4.375vw", height: "2.083vw" }}>
+            <DefaultButton
+              onClickFunction={() => {
+                navigate("/marketingDashboard/orderHistoryPage");
+              }}
+              style={{ width: "4.375vw", height: "2.083vw" }}
+            >
               <Typography style={{ fontSize: isMobile ? "12px" : "1.042vw" }}>
-                Go to Orders History Page
+                Pergi ke Halaman History Pesanan
               </Typography>
             </DefaultButton>
           </div>
@@ -1560,7 +1342,7 @@ const MaindashboardMarketing = (props) => {
             id="activitylog"
             style={{ fontSize: isMobile ? "4.5vw" : "2vw", color: "#0F607D" }}
           >
-            Activity Log
+           Catatan Aktivitas
           </Typography>
           <div>
             <DefaultButton
@@ -1569,7 +1351,7 @@ const MaindashboardMarketing = (props) => {
               }}
             >
               <Typography style={{ fontSize: isMobile ? "12px" : "1.042vw" }}>
-                Go to Activity Logs
+              Pergi ke Halaman Catatan Aktivitas
               </Typography>
             </DefaultButton>
           </div>
@@ -1618,7 +1400,7 @@ const MaindashboardMarketing = (props) => {
                   fontSize: isMobile ? "7vw" : "2.5vw",
                 }}
               >
-                Add New Order
+                Tambah Pesanan
               </Typography>
             </div>
             <div style={{ marginBottom: "1.667vw" }}>
@@ -1637,7 +1419,7 @@ const MaindashboardMarketing = (props) => {
                       fontSize: isMobile ? "4vw" : "1.5vw",
                     }}
                   >
-                    Order Title:
+                    Judul Pesanan:
                   </Typography>
                 </div>
                 <TextField
@@ -1681,7 +1463,7 @@ const MaindashboardMarketing = (props) => {
                       fontSize: isMobile ? "4vw" : "1.5vw",
                     }}
                   >
-                    Order Quantity:
+                    Jumlah Pesanan:
                   </Typography>
                 </div>
                 <div
@@ -1920,7 +1702,7 @@ const MaindashboardMarketing = (props) => {
                       fontSize: isMobile ? "4vw " : "1.5vw",
                     }}
                   >
-                    Order Details:
+                    Detail Pesanan:
                   </Typography>
                 </div>
                 <TextField
@@ -2010,7 +1792,7 @@ const MaindashboardMarketing = (props) => {
                       fontSize: isMobile ? "4vw" : "1.5vw",
                     }}
                   >
-                    No Seri:
+                    No Seri Pesanan:
                   </Typography>
                 </div>
                 <TextField
