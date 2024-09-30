@@ -28,6 +28,7 @@ module.exports = (sequelize, DataTypes) => {
       orderNoSeries: DataTypes.STRING,
       orderDueDate: DataTypes.STRING,
       alamatPengiriman: DataTypes.STRING,
+      lokasi: DataTypes.STRING,
     },
     {
       sequelize,

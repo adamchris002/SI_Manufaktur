@@ -3,7 +3,7 @@ const { InventoryController } = require("../controllers");
 
 //get
 inventoryRoutes.get(
-  "/getAllPermohonanPembelian",
+  "/getAllPermohonanPembelian/:id",
   InventoryController.getAllPermohonanPembelian
 );
 inventoryRoutes.get(
@@ -113,39 +113,39 @@ inventoryRoutes.put(
 //delete
 inventoryRoutes.delete(
   "/deletePermohonanPembelian/:id",
-  InventoryController.deletePermohonanPembelian //udah
+  InventoryController.deletePermohonanPembelian //udah //lokasi udah
 );
 inventoryRoutes.delete(
   "/deleteItemsPermohonanPembelian/:id",
-  InventoryController.deleteItemsPermohonanPembelian //udah
+  InventoryController.deleteItemsPermohonanPembelian //udah //lokasi udah
 );
 inventoryRoutes.delete(
   "/deletePembelianBahanBaku/:id",
-  InventoryController.deletePembelianBahanBaku //udah
+  InventoryController.deletePembelianBahanBaku //udah //lokasi udah
 );
 inventoryRoutes.delete(
   "/deleteItemPembelianBahanbaku/:id",
-  InventoryController.deleteItemPembelianBahanBaku //udah
+  InventoryController.deleteItemPembelianBahanBaku //udah //lokasi udah
 );
 inventoryRoutes.delete(
   "/deleteInventoryItem",
-  InventoryController.deleteInventoryItem //udah
+  InventoryController.deleteInventoryItem //udah //lokasi udah
 );
 inventoryRoutes.delete(
   "/deleteItemStokOpnam/:id",
-  InventoryController.deleteItemStokOpnam //udah
+  InventoryController.deleteItemStokOpnam //udah //lokasi udah
 );
 inventoryRoutes.delete(
   "/deleteStokOpnam/:id",
-  InventoryController.deleteStokOpnam //udah
+  InventoryController.deleteStokOpnam //udah //lokasi udah
 );
 inventoryRoutes.delete(
   "/deletePenyerahanBarang/:id",
-  InventoryController.deletePenyerahanBarang //udah
+  InventoryController.deletePenyerahanBarang //udah //lokasi udah
 );
 inventoryRoutes.delete(
   "/deleteItemPenyerahanBarang/:id",
-  InventoryController.deleteItemPenyerahanBarang //udah
+  InventoryController.deleteItemPenyerahanBarang //udah //lokasi udah
 );
 
 module.exports = inventoryRoutes;

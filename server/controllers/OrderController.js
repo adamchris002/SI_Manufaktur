@@ -13,8 +13,17 @@ const { error } = require("console");
 class OrderController {
   static async marketingActivityLog(req, res) {
     try {
+      const { id } = req.params;
+
+      const findUser = await users.findOne({
+        where: { id: id },
+      });
+
       let result = await activitylogs.findAll({
-        where: { division: "Marketing" },
+        where: {
+          division: "Marketing",
+          lokasi: findUser.lokasi
+        },
       });
 
       res.json(result);
@@ -81,6 +90,7 @@ class OrderController {
         activity: `Mengedit pesanan dengan id ${orderId}`,
         name: orderInformation.orderTitle,
         division: "Marketing",
+        lokasi: userInformation.lokasi
       });
 
       await UserActivityLogs.create({
@@ -148,6 +158,7 @@ class OrderController {
         activity: `Menghapus pesanan dengan id ${orderId}`,
         name: orderInformation.orderTitle,
         division: "Marketing",
+        lokasi: userInformation.lokasi
       });
 
       await UserActivityLogs.create({
@@ -178,8 +189,14 @@ class OrderController {
   static async getOrderInfo(req, res) {
     try {
       const { id } = req.params;
+      const { userId } = req.query;
+
+      const findUser = await users.findOne({
+        where: { id: userId },
+      });
+
       let result = await orders.findOne({
-        where: { id },
+        where: { id: id, lokasi: findUser.lokasi },
         include: [{ model: documents }],
       });
       res.json(result);
@@ -241,6 +258,7 @@ class OrderController {
         orderNoSeries,
         orderDueDate,
         alamatPengiriman,
+        lokasi: existingUser.lokasi,
       });
 
       let activityLog = await activitylogs.create({
@@ -248,6 +266,7 @@ class OrderController {
         activity: `Menambahkan pesanan dengan id ${order.id}`,
         name: orderTitle,
         division: "Marketing",
+        lokasi: existingUser.lokasi
       });
 
       await UserOrders.create({
@@ -292,7 +311,13 @@ class OrderController {
 
   static async getAllOrders(req, res) {
     try {
+      const { id } = req.params;
+
+      const findUser = await users.findOne({
+        where: { id: id },
+      });
       let result = await orders.findAll({
+        where: { lokasi: findUser.lokasi },
         include: [{ model: documents }, { model: users }],
       });
       res.json(result);
@@ -354,6 +379,7 @@ class OrderController {
         activity: `Mengupdate kredensial user/menambahkan user ke dalam divisi marketing`,
         name: `Divisi: Marketing`,
         division: "Marketing",
+        lokasi: findUser.lokasi
       });
 
       await UserActivityLogs.create({
@@ -369,10 +395,9 @@ class OrderController {
   }
   static async updateDivisiOwner(req, res) {
     try {
-      const {namaDivisi} = req.body
-      
+      const { namaDivisi } = req.body;
     } catch (error) {
-      res.json(error)
+      res.json(error);
     }
   }
 }

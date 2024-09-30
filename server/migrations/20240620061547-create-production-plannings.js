@@ -54,6 +54,7 @@ module.exports = {
         type: Sequelize.STRING,
       },
       statusPajakKeluaran: { type: Sequelize.STRING },
+      lokasi: { type: Sequelize.STRING },
       createdAt: {
         allowNull: false,
         type: Sequelize.DATE,

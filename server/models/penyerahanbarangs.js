@@ -25,6 +25,7 @@ module.exports = (sequelize, DataTypes) => {
       tanggalPengambilan: DataTypes.STRING,
       tanggalPenyerahan: DataTypes.STRING,
       statusPenyerahan: DataTypes.STRING,
+      lokasi: DataTypes.STRING
     },
     {
       sequelize,

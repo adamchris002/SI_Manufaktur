@@ -5,18 +5,18 @@ const { OrderController } = require("../controllers");
 const upload = multer({ dest: "uploads/" });
 
 //Get
-orderRoutes.get("/getAllOrderInfo", OrderController.getAllOrders);
-orderRoutes.get("/getOrderInfo/:id", OrderController.getOrderInfo);
-orderRoutes.get("/getAllActivityLogs", OrderController.marketingActivityLog);
+orderRoutes.get("/getAllOrderInfo/:id", OrderController.getAllOrders); //lokasi udah
+orderRoutes.get("/getOrderInfo/:id", OrderController.getOrderInfo); ////lokasi udah
+orderRoutes.get("/getAllActivityLogs/:id", OrderController.marketingActivityLog); //lokasi udah
 orderRoutes.get("/getUserBaru", OrderController.getUserBaru);
 orderRoutes.get("/getUserLama", OrderController.getUserLama);
 //Post
-orderRoutes.post("/addOrder/:id", upload.any(), OrderController.addOrder); //udah
+orderRoutes.post("/addOrder/:id", upload.any(), OrderController.addOrder); //udah //lokasi udah
 //Put
 orderRoutes.put("/updateOrder/:id", upload.any(), OrderController.updateOrder); //udah
 orderRoutes.put(
   "/updateUserCredentials/:id",
-  OrderController.updateUserCredentials
+  OrderController.updateUserCredentials 
 );
 //Delete
 orderRoutes.delete("/deleteOrder", OrderController.deleteOrder); //udah

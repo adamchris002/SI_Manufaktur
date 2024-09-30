@@ -60,6 +60,7 @@ class ProductionPlanningController {
         plate,
         setting,
         orderId,
+        lokasi: existingUser.lokasi,
       });
 
       await UserProductionPlannings.create({
@@ -174,6 +175,7 @@ class ProductionPlanningController {
         activity: `Menambahkan perencanaan produksi dengan id ${productionPlanning.id}`,
         name: productionPlanning.pemesan,
         division: "Production Planning",
+        lokasi: existingUser.lokasi,
       });
 
       await UserActivityLogs.create({
@@ -188,8 +190,12 @@ class ProductionPlanningController {
   }
   static async getUnreviewedOrders(req, res) {
     try {
+      const { id } = req.params;
+      const findUser = await users.findOne({
+        where: { id: id },
+      });
       let result = await orders.findAll({
-        where: { orderStatus: "Ongoing" },
+        where: { orderStatus: "Ongoing", lokasi: findUser.lokasi },
         include: [
           {
             model: documents,
@@ -205,8 +211,14 @@ class ProductionPlanningController {
   }
   static async getEstimatedOrders(req, res) {
     try {
+      const { id } = req.params;
+
+      const findUser = await users.findOne({
+        where: { id: id },
+      });
+
       let result = await orders.findAll({
-        where: { orderStatus: "Estimated" },
+        where: { orderStatus: "Estimated", lokasi: findUser.lokasi },
         include: [
           {
             model: documents,
@@ -222,10 +234,15 @@ class ProductionPlanningController {
   }
   static async getOneOrder(req, res) {
     try {
-      const { orderId } = req.query;
+      const { orderId, userId } = req.query;
+
+      const findUser = await users.findOne({
+        where: { id: userId },
+      });
+
       const id = parseInt(orderId, 10);
       let result = await orders.findOne({
-        where: { id: id },
+        where: { id: id, lokasi: findUser.lokasi },
         include: [
           {
             model: documents,
@@ -240,8 +257,12 @@ class ProductionPlanningController {
   }
   static async productionPlanningActivityLog(req, res) {
     try {
+      const { id } = req.params;
+      const findUser = await users.findOne({
+        where: { id: id },
+      });
       let result = await activitylogs.findAll({
-        where: { division: "Production Planning" },
+        where: { division: "Production Planning", lokasi: findUser.lokasi },
       });
       res.json(result);
     } catch (error) {
@@ -251,8 +272,12 @@ class ProductionPlanningController {
 
   static async getAllProductionPlanStatusEstimated(req, res) {
     try {
+      const { id } = req.params;
+      const findUser = await users.findOne({
+        where: { id: id },
+      });
       let allEstimatedOrder = await orders.findAll({
-        where: { orderStatus: "Estimated" },
+        where: { orderStatus: "Estimated", lokasi: findUser.lokasi },
       });
       let estimatedOrderIds = allEstimatedOrder.map((order) => order.id);
       let result = await productionPlannings.findAll({
@@ -279,7 +304,13 @@ class ProductionPlanningController {
   }
   static async getAllProductionPlan(req, res) {
     try {
+      const { id } = req.params;
+
+      const findUser = await users.findOne({
+        where: { id: id },
+      });
       let result = await productionPlannings.findAll({
+        where: { lokasi: findUser.lokasi },
         include: [
           { model: rincianCetakans },
           { model: perincians },
@@ -333,6 +364,7 @@ class ProductionPlanningController {
         activity: `Menghapus perencanaan produksi dengan id ${productionPlanId}`,
         name: oneOrder.customerDetail,
         division: "Production Planning",
+        lokasi: userInformation.lokasi,
       });
 
       await UserActivityLogs.create({
@@ -351,8 +383,13 @@ class ProductionPlanningController {
   static async getProductionPlanWithData(req, res) {
     try {
       const { id } = req.params;
+      const { userId } = req.query;
+
+      const findUser = await users.findOne({
+        where: { id: userId },
+      });
       let result = await productionPlannings.findOne({
-        where: { id: id },
+        where: { id: id, lokasi: findUser.lokasi },
         include: [
           { model: rincianCetakans },
           { model: perincians },
@@ -455,6 +492,7 @@ class ProductionPlanningController {
         activity: `Mengedit perencanaan produksi dengan id ${productionPlanId}`,
         name: jenisCetakan,
         division: "Production Planning",
+        lokasi: existingUser.lokasi
       });
 
       await UserActivityLogs.create({
@@ -606,12 +644,16 @@ class ProductionPlanningController {
                 bagian: data.bagian,
               });
             } else {
-              dataJenisJadwal = await estimasiJadwalProduksis.update(
+              await estimasiJadwalProduksis.update(
                 {
                   bagian: data.bagian,
                 },
                 { where: { id: data.id } }
               );
+      
+              dataJenisJadwal = await estimasiJadwalProduksis.findOne({
+                where: { id: data.id },
+              });
             }
             await Promise.all(
               data.rencanaJadwalProdukses.map(async (daftarRencana) => {
@@ -633,7 +675,7 @@ class ProductionPlanningController {
                   });
                 } else if (!daftarRencana.id) {
                   await rencanaJadwalProduksis.create({
-                    estimasiJadwalProduksiId: data.id,
+                    estimasiJadwalProduksiId: dataJenisJadwal.id,
                     jenisPekerjaan: daftarRencana.jenisPekerjaan,
                     tanggalMulai: daftarRencana.tanggalMulai,
                     tanggalSelesai: daftarRencana.tanggalSelesai,
@@ -674,6 +716,7 @@ class ProductionPlanningController {
         activity: `Menghapus jadwal pekerjaan dari bagian ${findOneEstimasiJadwalProduksi.bagian}, dari perencanaan produksi dengan id ${productionPlanId}`,
         name: findOneRencanaJadwal.jenisPekerjaan,
         division: "Production Planning",
+        lokasi: userInformation.lokasi,
       });
 
       await UserActivityLogs.create({
@@ -710,6 +753,7 @@ class ProductionPlanningController {
         activity: `Menghapus jadwal bagian ${findOneEstimasiJadwalProduksi.bagian}, dari perencanaan produksi dengan id ${productionPlanId}`,
         name: findOneEstimasiJadwalProduksi.bagian,
         division: "Production Planning",
+        lokasi: userInformation.lokasi,
       });
 
       await UserActivityLogs.create({
@@ -744,6 +788,7 @@ class ProductionPlanningController {
         activity: `Menghapus group ${findEstimasiBahanBakuData.jenis}, dari perencanaan produksi dengan id ${productionPlanId}`,
         name: findEstimasiBahanBakuData.jenis,
         division: "Production Planning",
+        lokasi: userInformation.lokasi,
       });
 
       await UserActivityLogs.create({
@@ -784,6 +829,7 @@ class ProductionPlanningController {
         activity: `Menghapus item bahan baku dari group ${findEstimasiBahanBakuData.jenis}, dari perencanaan produksi dengan id ${productionPlanId}`,
         name: oneGroupBahanBaku.namaJenis,
         division: "Production Planning",
+        lokasi: userInformation.lokasi,
       });
 
       await UserActivityLogs.create({
@@ -821,6 +867,7 @@ class ProductionPlanningController {
         activity: `Menghapus item bahan baku dari perencanaan produksi dengan id ${productionPlanId}`,
         name: oneBahanBakuAkanDigunakans.namaJenis,
         division: "Production Planning",
+        lokasi: userInformation.lokasi,
       });
 
       await UserActivityLogs.create({
@@ -859,6 +906,7 @@ class ProductionPlanningController {
         activity: `Menghapus item rincian cetakan ${findOneRincianCetakan.namaCetakan} dan perincian dengan perencanaan produksi dengan id ${productionPlanId}`,
         name: findOneRincianCetakan.namaCetakan,
         division: "Production Planning",
+        lokasi: userInformation.lokasi,
       });
 
       await UserActivityLogs.create({
@@ -946,6 +994,7 @@ class ProductionPlanningController {
         activity: `Mengupdate kredensial user/menambahkan user ke dalam divisi production planning`,
         name: `Divisi: Production Planning`,
         division: "Production Planning",
+        lokasi: findUser.lokasi
       });
 
       await UserActivityLogs.create({

@@ -3,32 +3,32 @@ const { ProductionPlanningController } = require("../controllers");
 
 //Get
 productionPlanningRoutes.get(
-  "/getUnreviewedOrders",
-  ProductionPlanningController.getUnreviewedOrders
+  "/getUnreviewedOrders/:id",
+  ProductionPlanningController.getUnreviewedOrders //lokasi udah
 );
 productionPlanningRoutes.get(
-  "/getEstimatedOrders",
-  ProductionPlanningController.getEstimatedOrders
+  "/getEstimatedOrders/:id",
+  ProductionPlanningController.getEstimatedOrders //lokasi udah
 );
 productionPlanningRoutes.get(
   "/getOneOrder",
-  ProductionPlanningController.getOneOrder
+  ProductionPlanningController.getOneOrder //lokasi udah
 );
 productionPlanningRoutes.get(
-  "/productionPlanningActivityLogs",
-  ProductionPlanningController.productionPlanningActivityLog
+  "/productionPlanningActivityLogs/:id",
+  ProductionPlanningController.productionPlanningActivityLog //lokasi udah
 );
 productionPlanningRoutes.get(
-  "/getAllProductionPlanning",
-  ProductionPlanningController.getAllProductionPlan
+  "/getAllProductionPlanning/:id",
+  ProductionPlanningController.getAllProductionPlan //lokasi udah
 );
 productionPlanningRoutes.get(
-  "/getAllProductionPlanStatusEstimated",
-  ProductionPlanningController.getAllProductionPlanStatusEstimated
+  "/getAllProductionPlanStatusEstimated/:id",
+  ProductionPlanningController.getAllProductionPlanStatusEstimated //lokasi udah
 );
 productionPlanningRoutes.get(
   "/getProductionPlanningWithData/:id",
-  ProductionPlanningController.getProductionPlanWithData
+  ProductionPlanningController.getProductionPlanWithData //lokasi udah
 );
 productionPlanningRoutes.get(
   "/getUserLama",
@@ -41,7 +41,7 @@ productionPlanningRoutes.get(
 //Post
 productionPlanningRoutes.post(
   "/addProductionPlanning/:id",
-  ProductionPlanningController.addNewProductionPlanning //udah
+  ProductionPlanningController.addNewProductionPlanning //udah //lokasi udah
 );
 //Put
 productionPlanningRoutes.put(
@@ -55,31 +55,31 @@ productionPlanningRoutes.put(
 //Delete
 productionPlanningRoutes.delete(
   "/deleteProductionPlan/:id",
-  ProductionPlanningController.deleteProductionPlan //udah
+  ProductionPlanningController.deleteProductionPlan //udah //lokasi udah
 );
 productionPlanningRoutes.delete(
   "/deleteBahanBakuId/:id",
-  ProductionPlanningController.deleteBahanBakuID //udah
+  ProductionPlanningController.deleteBahanBakuID //udah //lokasi udah
 );
 productionPlanningRoutes.delete(
   "/deleteGroupBahanBaku",
-  ProductionPlanningController.deleteGroupBahanBaku //udah
+  ProductionPlanningController.deleteGroupBahanBaku //udah //lokasi udah
 );
 productionPlanningRoutes.delete(
   "/deleteJenisBahanBaku/:id",
-  ProductionPlanningController.deleteJenisBahanBaku //udah
+  ProductionPlanningController.deleteJenisBahanBaku //udah //lokasi udah
 );
 productionPlanningRoutes.delete(
   "/removeJadwal/:id",
-  ProductionPlanningController.removeJadwal // udah
+  ProductionPlanningController.removeJadwal // udah //lokasi udah
 );
 productionPlanningRoutes.delete(
   "/deleteJadwal/:id",
-  ProductionPlanningController.deleteJadwal // udah
+  ProductionPlanningController.deleteJadwal // udah //lokasi udah
 );
 productionPlanningRoutes.delete(
   "/deleteItemRincianCetakan/:id",
-  ProductionPlanningController.deleteItemRincianCetakan // udah
+  ProductionPlanningController.deleteItemRincianCetakan // udah //lokasi udah
 );
 productionPlanningRoutes.delete(
   "/deleteItemPerincian/:id",

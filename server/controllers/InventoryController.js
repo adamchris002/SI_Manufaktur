@@ -228,6 +228,7 @@ class InventoryController {
         activity: `Menghapus permohonan pembelian dengan id ${findOnePermohonanPembelian.id}`,
         name: "Nomor: " + findOnePermohonanPembelian.nomor,
         division: "Inventory",
+        lokasi: userInformation.lokasi,
       });
 
       await UserActivityLogs.create({
@@ -263,6 +264,7 @@ class InventoryController {
         activity: `Menghapus item permohonan pembelian dengan id ${findOneItemPermohonanPembelian.id} dari permohonan pembelian ${permohonanPembelianId}`,
         name: "Jenis Barang: " + findOneItemPermohonanPembelian.jenisBarang,
         division: "Inventory",
+        lokasi: userInformation.lokasi,
       });
 
       await UserActivityLogs.create({
@@ -345,7 +347,14 @@ class InventoryController {
   }
   static async getAllPermohonanPembelian(req, res) {
     try {
+      const { id } = req.params;
+
+      const findUser = await users.findOne({
+        where: { id: id },
+      });
+
       let result = await permohonanPembelians.findAll({
+        where: {lokasi: findUser.lokasi},
         include: [{ model: itemPermohonanPembelians }],
       });
       res.json(result);
@@ -549,6 +558,7 @@ class InventoryController {
         activity: `Menghapus pembelian bahan baku dengan id ${id}`,
         name: "Leveransir: " + findPembelianBahanBaku.leveransir,
         division: "Inventory",
+        lokasi: findUser.lokasi,
       });
 
       await UserActivityLogs.create({
@@ -580,6 +590,7 @@ class InventoryController {
         activity: `Menghapus item pembelian bahan baku dengan id ${id} dari pembelian bahan baku dengan id ${pembelianBahanBakuId}`,
         name: "Id Pembelian bahan baku: " + pembelianBahanBakuId,
         division: "Inventory",
+        lokasi: findUser.lokasi,
       });
 
       await UserActivityLogs.create({
@@ -609,21 +620,23 @@ class InventoryController {
       const { id } = req.params;
       const { dataInventory } = req.body;
 
+
+
+      let userInformation = await users.findOne({
+        where: { id: id },
+      });
+
       let createDataInventory = await inventorys.create({
         namaItem: dataInventory.namaItem,
         rincianItem: dataInventory.rincianItem,
         jumlahItem: dataInventory.jumlahItem,
-        lokasi: dataInventory.lokasiPenyimpanan,
+        lokasi: userInformation.lokasi,
         kodeBarang: dataInventory.kodeBarang,
       });
 
       await UserInventorys.create({
         userId: id,
         inventoryId: createDataInventory.id,
-      });
-
-      let userInformation = await users.findOne({
-        where: { id: id },
       });
 
       let createActivityLog = await activitylogs.create({
@@ -707,6 +720,7 @@ class InventoryController {
         activity: `Delete item bahan baku dengan id ${inventoryItemId}`,
         name: "Nama Item: " + inventoryData.namaItem,
         division: "Inventory",
+        lokasi: userInformation.lokasi,
       });
 
       await UserActivityLogs.create({
@@ -927,6 +941,7 @@ class InventoryController {
         activity: `Menghapus item stok opnam dengan id ${id} dari stok opnam dengan id ${stokOpnamId}`,
         name: "ID Stok Opnam: " + stokOpnamId,
         division: "Inventory",
+        lokasi: findUser.lokasi,
       });
 
       await UserActivityLogs.create({
@@ -958,6 +973,7 @@ class InventoryController {
         activity: `Menghapus stok opnam dengan id ${id}`,
         name: "Judul Stok Opnam: " + findOneStokOpnam.judulStokOpnam,
         division: "Inventory",
+        lokasi: findUser.lokasi,
       });
 
       await UserActivityLogs.create({
@@ -1063,6 +1079,7 @@ class InventoryController {
         activity: `Menghapus penyerahan barang dengan id ${id}`,
         name: "ID Pesanan: " + findPenyerahanBarang.orderId,
         division: "Inventory",
+        lokasi: findUser.lokasi,
       });
 
       await UserActivityLogs.create({
@@ -1139,6 +1156,7 @@ class InventoryController {
         activity: `Menghapus item penyerahan barang dengan id ${id} dari penyerahan barang dengan id ${penyerahanBarangId}`,
         name: "ID Penyerahan Barang: " + penyerahanBarangId,
         division: "Inventory",
+        lokasi: findUser.lokasi,
       });
 
       await UserActivityLogs.create({
