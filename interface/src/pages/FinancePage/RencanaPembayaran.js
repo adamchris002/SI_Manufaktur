@@ -90,7 +90,6 @@ const RencanaPembayaran = (props) => {
   const [allDataRencanaPembayaran, setAllDataRencanaPembayaran] = useState([]);
   const [selectedPembelianBahanBakuId, setSelectedPembelianBahanBakuId] =
     useState("");
-  console.log(selectedPembelianBahanBakuId);
   const [ongoingHutangsAndCicilans, setOngoingHutangsAndCicilans] = useState(
     []
   );
@@ -790,7 +789,9 @@ const RencanaPembayaran = (props) => {
             <Typography style={{ color: "#0F607D", fontSize: "3vw" }}>
               Rencana Pembayaran
             </Typography>
-            {userInformation?.data?.role === "Admin" && (
+            {(userInformation?.data?.role === "Admin" ||
+              userInformation?.data?.role === "Super Admin" ||
+              userInformation?.data?.role === "Owner") && (
               <div style={{ display: "flex", alignItems: "center" }}>
                 <DefaultButton
                   onClickFunction={() => {
@@ -1673,7 +1674,11 @@ const RencanaPembayaran = (props) => {
                                             <MySelectTextField
                                               disabled={
                                                 userInformation?.data?.role !==
-                                                "Admin"
+                                                  "Admin" ||
+                                                userInformation?.data?.role !==
+                                                  "Super Admin" ||
+                                                userInformation?.data?.role !==
+                                                  "Owner"
                                               }
                                               onChange={(event) => {
                                                 handleChangeInputCicilanPembayaranLains(
@@ -1707,7 +1712,9 @@ const RencanaPembayaran = (props) => {
                 </TableBody>
               </Table>
             </TableContainer>
-            {userInformation?.data?.role === "Admin" && (
+            {(userInformation?.data?.role === "Admin" ||
+              userInformation?.data?.role === "Super Admin" ||
+              userInformation?.data?.role === "Owner") && (
               <div
                 style={{
                   display: "flex",
@@ -1914,7 +1921,11 @@ const RencanaPembayaran = (props) => {
                                             <MySelectTextField
                                               disabled={
                                                 userInformation?.data?.role !==
-                                                "Admin"
+                                                  "Admin" ||
+                                                userInformation?.data?.role !==
+                                                  "Super Admin" ||
+                                                userInformation?.data?.role !==
+                                                  "Owner"
                                               }
                                               onChange={(event) => {
                                                 handleChangeInputCicilan(
@@ -1944,7 +1955,9 @@ const RencanaPembayaran = (props) => {
                 </TableBody>
               </Table>
             </TableContainer>
-            {userInformation?.data?.role === "Admin" && (
+            {(userInformation?.data?.role === "Admin" ||
+              userInformation?.data?.role === "Super Admin" ||
+              userInformation?.data?.role === "Owner") && (
               <div
                 style={{
                   margin: "16px",

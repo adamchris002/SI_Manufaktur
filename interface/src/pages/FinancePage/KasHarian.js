@@ -397,7 +397,9 @@ const KasHarian = (props) => {
               >
                 Pos Pembayaran
               </DefaultButton>
-              {userInformation?.data?.role === "Admin" && (
+              {(userInformation?.data?.role === "Admin" ||
+                userInformation?.data?.role === "Super Admin" ||
+                userInformation?.data?.role === "Owner") && (
                 <div style={{ marginLeft: "8px" }}>
                   <DefaultButton
                     onClickFunction={() => {
@@ -667,7 +669,9 @@ const KasHarian = (props) => {
               alignItems: "center",
             }}
           >
-            {userInformation?.data?.role === "Admin" && (
+            {(userInformation?.data?.role === "Admin" ||
+              userInformation?.data?.role === "Super Admin" ||
+              userInformation?.data?.role === "Owner") && (
               <DefaultButton
                 onClickFunction={() => {
                   handleSavedataKasHarian();
@@ -917,7 +921,9 @@ const KasHarian = (props) => {
                     <TableCell style={{ width: "70px" }}>Kode</TableCell>
                     <TableCell>Uraian</TableCell>
                     <TableCell>Kata Kunci</TableCell>
-                    {userInformation?.data?.role === "Admin" && (
+                    {(userInformation?.data?.role === "Admin" ||
+                      userInformation?.data?.role === "Super Admin" ||
+                      userInformation?.data?.role === "Owner") && (
                       <TableCell>Actions</TableCell>
                     )}
                   </TableRow>
@@ -964,7 +970,9 @@ const KasHarian = (props) => {
                               value={result.kataKunci}
                             />
                           </TableCell>
-                          {userInformation?.data?.role === "Admin" && (
+                          {(userInformation?.data?.role === "Admin" ||
+                            userInformation?.data?.role === "Super Admin" ||
+                            userInformation?.data?.role === "Owner") && (
                             <TableCell>
                               <IconButton>
                                 <DeleteIcon style={{ color: "red" }} />
@@ -986,7 +994,9 @@ const KasHarian = (props) => {
                 alignItems: "center",
               }}
             >
-              {userInformation?.data?.role === "Admin" && (
+              {(userInformation?.data?.role === "Admin" ||
+                userInformation?.data?.role === "Super Admin" ||
+                userInformation?.data?.role === "Owner") && (
                 <DefaultButton
                   onClickFunction={() => {
                     simpanDataPosPembayaran();
@@ -1001,7 +1011,11 @@ const KasHarian = (props) => {
                 style={{
                   textTransform: "none",
                   marginLeft:
-                    userInformation?.data?.role === "Admin" ? "" : "8px",
+                    userInformation?.data?.role === "Admin" ||
+                    userInformation?.data?.role === "Super Admin" ||
+                    userInformation?.data?.role === "Owner"
+                      ? ""
+                      : "8px",
                 }}
                 onClick={() => {
                   handleCloseModalPosPembayaran();

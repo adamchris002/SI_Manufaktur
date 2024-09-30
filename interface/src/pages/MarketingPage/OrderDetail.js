@@ -413,8 +413,9 @@ const OrderDetail = (props) => {
             </div>
           </div>
           <div style={{ display: "flex" }}>
-            {userInformation?.data?.role === "Admin" ||
-            userInformation?.data?.role === "Super Admin" ? (
+            {(userInformation?.data?.role === "Admin" ||
+            userInformation?.data?.role === "Super Admin" ||
+            userInformation?.data?.role === "Owner") ? (
               <div
                 style={{
                   display: "flex",

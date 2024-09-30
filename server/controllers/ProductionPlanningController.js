@@ -850,8 +850,6 @@ class ProductionPlanningController {
         where: { id: id },
       });
 
-      console.log(findOneRincianCetakan);
-
       let userInformation = await users.findOne({
         where: { id: userId },
       });
@@ -888,6 +886,74 @@ class ProductionPlanningController {
       let result = await perincians.destroy({
         where: { id: id },
       });
+      res.json(result);
+    } catch (error) {
+      res.json(error);
+    }
+  }
+
+  static async getUserLama(req, res) {
+    try {
+      let result = await users.findAll({
+        where: {
+          department: "Production Planning",
+        },
+      });
+      res.json(result);
+    } catch (error) {
+      res.json(error);
+    }
+  }
+  static async getUserBaru(req, res) {
+    try {
+      let result = await users.findAll({
+        where: {
+          department: null,
+        },
+      });
+
+      res.json(result);
+    } catch (error) {
+      res.json(error);
+    }
+  }
+  static async updateUserCredentials(req, res) {
+    try {
+      const { id } = req.params;
+      const { userData } = req.body;
+
+      if (userData && Array.isArray(userData)) {
+        await Promise.all(
+          userData.map(async (result) => {
+            await users.update(
+              {
+                department: result.department,
+                role: result.role,
+                lokasi: result.lokasi,
+              },
+              { where: { id: result.id } }
+            );
+          })
+        );
+      }
+
+      let findUser = await users.findOne({
+        where: { id: id },
+      });
+
+      let createActivityLog = await activitylogs.create({
+        user: findUser.name,
+        activity: `Mengupdate kredensial user/menambahkan user ke dalam divisi production planning`,
+        name: `Divisi: Production Planning`,
+        division: "Production Planning",
+      });
+
+      await UserActivityLogs.create({
+        userId: findUser.id,
+        activityLogsId: createActivityLog.id,
+        id: createActivityLog.id,
+      });
+
       res.json(result);
     } catch (error) {
       res.json(error);

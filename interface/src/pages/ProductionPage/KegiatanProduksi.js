@@ -44,7 +44,6 @@ const KegiatanProduksi = (props) => {
   const [allProductionPlan, setAllProductionPlan] = useState([]);
   const [dataBahanProduksiPrev, setDataBahanProduksiPrev] = useState([]);
   const [allInventoryItem, setAllInventoryItem] = useState([]);
-  console.log(allInventoryItem);
   const [dataProduksi, setDataProduksi] = useState({
     tanggalProduksi: dayjs(""),
     noOrderProduksi: "",
@@ -63,8 +62,6 @@ const KegiatanProduksi = (props) => {
       },
     ],
   });
-
-  console.log(dataProduksi);
 
   const [jadwalProduksiPracetak, setJadwalProduksiPracetak] = useState([
     {
@@ -213,7 +210,6 @@ const KegiatanProduksi = (props) => {
       }).then((result) => {
         if (result.status === 200) {
           // if (isNewTahapProduksi) {
-          console.log(result.data);
           const tempData = result?.data?.itemPenyerahanBarangs?.map((item) => {
             const matchingItem = dataBahanProduksiPrev.find(
               (bahan) =>

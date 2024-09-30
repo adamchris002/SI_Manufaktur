@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import dayjs from "dayjs";
@@ -22,10 +22,13 @@ import EditIcon from "@mui/icons-material/Edit";
 import ArrowForwardIcon from "@mui/icons-material/ArrowForward";
 import DeleteIcon from "@mui/icons-material/Delete";
 import { useAuth } from "../components/AuthContext";
+import { AppContext } from "../App";
+import MySelectTextField from "../components/SelectTextField";
 
 const MaindashboardProduction = (props) => {
-  const { userInformation } = props;
+  const { userInformation, setUserCredentials } = props;
   const navigate = useNavigate();
+  const { isMobile } = useContext(AppContext);
 
   const [allPenyerahanBarang, setAllPenyerahanBarang] = useState([]);
   const [dataKegiatanProduksi, setDataKegiatanProduksi] = useState([]);
@@ -42,6 +45,56 @@ const MaindashboardProduction = (props) => {
     refreshDataLaporanLimbahProduksi,
     setRefreshDataLaporanLimbahProduksi,
   ] = useState(true);
+
+  const handleChangeDivisiOwner = (event) => {
+    axios({
+      method: "PUT",
+      url: `http://localhost:3000/finance/updateDivisiOwner/${event.target.value}`,
+    }).then((result) => {
+      if (result.status === 200) {
+        setUserCredentials((oldObject) => {
+          return {
+            ...oldObject,
+            data: {
+              ...oldObject.data,
+              department: event.target.value,
+            },
+          };
+        });
+        switch (event.target.value) {
+          case "Marketing":
+            navigate("/marketingDashboard");
+            break;
+          case "Production Planning":
+            navigate("/productionPlanningDashboard");
+            break;
+          case "Inventory":
+            navigate("/inventoryDashboard");
+            break;
+          case "Finance":
+            navigate("/financeDashboard");
+            break;
+          default:
+          //snackbar
+        }
+      } else {
+        //snackbar
+      }
+    });
+  };
+
+  const lokasi = [
+    { value: "Jakarta" },
+    { value: "Semarang" },
+    { value: "Purwokerto" },
+  ];
+
+  const department = [
+    { value: "Marketing" },
+    { value: "Production Planning" },
+    { value: "Inventory" },
+    { value: "Finance" },
+  ];
 
   const { message, clearMessage, setSuccessMessage } = useAuth();
 
@@ -320,6 +373,25 @@ const MaindashboardProduction = (props) => {
             Catatan Aktivitas
           </DefaultButton>
         </div>
+        {(userInformation?.data?.role === "Super Admin" ||
+          userInformation?.data?.role === "Onwer") && (
+          <div style={{ marginTop: "1.667vw", fontSize: "1.25vw" }}>
+            <DefaultButton
+              width="15vw"
+              height="2.08vw"
+              backgroundColor="#0F607D"
+              borderRadius="0.83vw"
+              fontSize="1vw"
+              onClickFunction={() => {
+                document
+                  .getElementById("kelolaanggota")
+                  .scrollIntoView({ behavior: "smooth" });
+              }}
+            >
+              Kelola Anggota
+            </DefaultButton>
+          </div>
+        )}
       </div>
       <div
         id="test"
@@ -351,6 +423,34 @@ const MaindashboardProduction = (props) => {
             </Typography>
           </div>
         </div>
+        {userInformation?.data?.role === "Owner" && (
+          <div style={{ margin: "32px" }}>
+            <div style={{ display: "flex", alignItems: "center" }}>
+              <Typography
+                style={{ width: "150px", color: "#0F607D", fontSize: "1.5vw" }}
+              >
+                Ubah Divisi
+              </Typography>
+              <MySelectTextField onChange={(event) => {
+                handleChangeDivisiOwner(event);
+              }} data={department} width="150px" />
+            </div>
+            <div
+              style={{
+                display: "flex",
+                alignItems: "center",
+                marginTop: "16px",
+              }}
+            >
+              <Typography
+                style={{ width: "150px", color: "#0F607D", fontSize: "1.5vw" }}
+              >
+                Ubah Lokasi
+              </Typography>
+              <MySelectTextField data={lokasi} width="150px" />
+            </div>
+          </div>
+        )}
         <div
           style={{
             marginLeft: "32px",
@@ -434,7 +534,9 @@ const MaindashboardProduction = (props) => {
           >
             Kegiatan Produksi
           </Typography>
-          {userInformation?.data?.role === "Admin" && (
+          {(userInformation?.data?.role === "Admin" ||
+            userInformation?.data?.role === "Super Admin" ||
+            userInformation?.data?.role === "Owner") && (
             <div>
               <DefaultButton
                 height="40px"
@@ -481,7 +583,9 @@ const MaindashboardProduction = (props) => {
                       <TableCell>No Order Produksi</TableCell>
                       <TableCell>Jenis Cetakan</TableCell>
                       <TableCell>Dibuat Oleh</TableCell>
-                      {userInformation?.data?.role === "Admin" && (
+                      {(userInformation?.data?.role === "Admin" ||
+                        userInformation?.data?.role === "Super Admin" ||
+                        userInformation?.data?.role === "Owner") && (
                         <TableCell>Actions</TableCell>
                       )}
                     </TableRow>
@@ -502,7 +606,9 @@ const MaindashboardProduction = (props) => {
                               <TableCell>{result.noOrderProduksi}</TableCell>
                               <TableCell>{result.jenisCetakan}</TableCell>
                               <TableCell>{result.dibuatOleh}</TableCell>
-                              {userInformation?.data?.role === "Admin" && (
+                              {(userInformation?.data?.role === "Admin" ||
+                                userInformation?.data?.role === "Super Admin" ||
+                                userInformation?.data?.role === "Owner") && (
                                 <TableCell>
                                   <div
                                     style={{
@@ -595,7 +701,9 @@ const MaindashboardProduction = (props) => {
           >
             Kelola Item Limbah Produksi
           </Typography>
-          {userInformation?.data?.role === "Admin" && (
+          {(userInformation?.data?.role === "Admin" ||
+            userInformation?.data?.role === "Super Admin" ||
+            userInformation?.data?.role === "Owner") && (
             <div>
               <DefaultButton
                 height="40px"
@@ -611,7 +719,9 @@ const MaindashboardProduction = (props) => {
             </div>
           )}
         </div>
-        <div style={{ marginLeft: "32px", marginTop: "32px", marginRight: "32px" }}>
+        <div
+          style={{ marginLeft: "32px", marginTop: "32px", marginRight: "32px" }}
+        >
           {allDataLaporanLimbahProduksi?.length === 0 ? (
             <div style={{ display: "flex", justifyContent: "center" }}>
               <Typography style={{ color: "#0F607D", fontSize: "1.5vw" }}>
@@ -628,7 +738,9 @@ const MaindashboardProduction = (props) => {
                     <TableCell>Tahap Produksi</TableCell>
                     <TableCell>Dibuat Oleh</TableCell>
                     <TableCell>Tanggal Pembuatan</TableCell>
-                    {userInformation?.data?.role === "Admin" && (
+                    {(userInformation?.data?.role === "Admin" ||
+                      userInformation?.data?.role === "Super Admin" ||
+                      userInformation?.data?.role === "Owner") && (
                       <TableCell>Actions</TableCell>
                     )}
                   </TableRow>
@@ -647,7 +759,9 @@ const MaindashboardProduction = (props) => {
                               "MM/DD/YYYY hh:mm A"
                             )}
                           </TableCell>
-                          {userInformation?.data?.role === "Admin" && (
+                          {(userInformation?.data?.role === "Admin" ||
+                            userInformation?.data?.role === "Super Admin" ||
+                            userInformation?.data?.role === "Owner") && (
                             <TableCell>
                               <div
                                 style={{
@@ -740,6 +854,41 @@ const MaindashboardProduction = (props) => {
             </DefaultButton>
           </div>
         </div>
+        {(userInformation?.data?.role === "Super Admin" ||
+          userInformation?.data?.role === "Owner") && (
+          <div
+            style={{
+              margin: isMobile
+                ? "32px 32px 12px 32px"
+                : "3.33vw 1.667vw 0vw 1.667vw",
+              display: "flex",
+              justifyContent: "space-between",
+              alignItems: "center",
+              width: isMobile ? "" : "72vw",
+            }}
+          >
+            <Typography
+              id="kelolaanggota"
+              style={{
+                fontSize: isMobile ? "4.5vw" : "2vw",
+                color: "#0F607D",
+              }}
+            >
+              Kelola Anggota
+            </Typography>
+            <div>
+              <DefaultButton
+                onClickFunction={() => {
+                  navigate("/productionDashboard/kelolaAnggota");
+                }}
+              >
+                <Typography style={{ fontSize: isMobile ? "12px" : "1.042vw" }}>
+                  Pergi ke Halaman Kelola Anggota
+                </Typography>
+              </DefaultButton>
+            </div>
+          </div>
+        )}
       </div>
       {snackbarMessage !== ("" || null) && (
         <MySnackbar

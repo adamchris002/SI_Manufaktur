@@ -32,8 +32,6 @@ const MarketingActivityLog = () => {
     });
   }, []);
 
-  console.log(activityLogs);
-
   return (
     <div
       style={{

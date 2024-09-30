@@ -53,6 +53,8 @@ inventoryRoutes.get(
   "/getAllPermohonanPembelianRequested",
   InventoryController.getAllPermohonanPembelianRequested
 );
+inventoryRoutes.get("/getUserBaru", InventoryController.getUserBaru);
+inventoryRoutes.get("/getUserLama", InventoryController.getUserLama);
 
 //post
 inventoryRoutes.post(
@@ -78,7 +80,7 @@ inventoryRoutes.put(
   "/editPermohonanPembelian/:id",
   InventoryController.editPermohonanPembelian //udah
 );
-inventoryRoutes.put( 
+inventoryRoutes.put(
   "/editPembelianBahanBaku/:id",
   InventoryController.editPembelianBahanBaku //udah
 );
@@ -102,6 +104,10 @@ inventoryRoutes.put(
 inventoryRoutes.put(
   "/denyPermohonanPembelian/:id",
   InventoryController.denyPermohonanPembelian //udah
+);
+inventoryRoutes.put(
+  "/updateUserCredentials/:id",
+  InventoryController.updateUserCredentials
 );
 
 //delete

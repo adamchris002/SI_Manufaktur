@@ -30,6 +30,14 @@ productionPlanningRoutes.get(
   "/getProductionPlanningWithData/:id",
   ProductionPlanningController.getProductionPlanWithData
 );
+productionPlanningRoutes.get(
+  "/getUserLama",
+  ProductionPlanningController.getUserLama
+);
+productionPlanningRoutes.get(
+  "/getUserBaru",
+  ProductionPlanningController.getUserBaru
+);
 //Post
 productionPlanningRoutes.post(
   "/addProductionPlanning/:id",
@@ -39,6 +47,10 @@ productionPlanningRoutes.post(
 productionPlanningRoutes.put(
   "/updateProductionPlan/:id",
   ProductionPlanningController.updateProductionPlan //udah
+);
+productionPlanningRoutes.put(
+  "/updateUserCredentials/:id",
+  ProductionPlanningController.updateUserCredentials
 );
 //Delete
 productionPlanningRoutes.delete(

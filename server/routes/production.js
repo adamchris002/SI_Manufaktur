@@ -38,6 +38,8 @@ productionRoutes.get(
   "/getActivityLog",
   ProductionController.productionActivityLog
 );
+productionRoutes.get("/getUserBaru", ProductionController.getUserBaru);
+productionRoutes.get("/getUserLama", ProductionController.getUserLama);
 //post
 productionRoutes.post(
   "/addKegiatanProduksi/:id",
@@ -85,7 +87,10 @@ productionRoutes.put(
   "/updateLaporanSampah/:id",
   ProductionController.updateLaporanSampah //udah
 );
-
+productionRoutes.put(
+  "/updateUserCredentials/:id",
+  ProductionController.updateUserCredentials
+);
 //delete
 productionRoutes.delete(
   "/deletePersonils/:id",

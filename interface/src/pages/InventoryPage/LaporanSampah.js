@@ -123,7 +123,6 @@ const LaporanSampah = (props) => {
 
   useEffect(() => {
     if (refreshDataLaporanSampah) {
-      console.log("Test");
       axios({
         method: "GET",
         url: "http://localhost:3000/production/getLaporanSampah",
@@ -819,7 +818,9 @@ const LaporanSampah = (props) => {
             Laporan Sampah
           </Typography>
         </div>
-        {userInformation?.data?.role === "Admin" && (
+        {(userInformation?.data?.role === "Admin" ||
+          userInformation?.data?.role === "Super Admin" ||
+          userInformation?.data?.role === "Owner") && (
           <div style={{ margin: "32px" }}>
             <div style={{ display: "flex", alignItems: "center" }}>
               <Typography style={{ width: "150px" }}>
@@ -905,7 +906,9 @@ const LaporanSampah = (props) => {
             </div>
           )}
         </div>
-        {userInformation?.data?.role === "Admin" && (
+        {(userInformation?.data?.role === "Admin" ||
+          userInformation?.data?.role === "Super Admin" ||
+          userInformation?.data?.role === "Owner") && (
           <div style={{ margin: "32px" }}>
             <div
               style={{
@@ -1194,7 +1197,9 @@ const LaporanSampah = (props) => {
                       <TableCell style={{ width: "50px" }}>
                         Tahap Produksi
                       </TableCell>
-                      {userInformation?.data?.role === "Admin" && (
+                      {(userInformation?.data?.role === "Admin" ||
+                        userInformation?.data?.role === "Super Admin" ||
+                        userInformation?.data?.role === "Owner") && (
                         <TableCell style={{ width: "20px" }}>Actions</TableCell>
                       )}
                       <TableCell style={{ width: "20px" }}>Download</TableCell>
@@ -1208,7 +1213,9 @@ const LaporanSampah = (props) => {
                             <TableCell>{index + 1 + "."}</TableCell>
                             <TableCell>{result.noOrderProduksi}</TableCell>
                             <TableCell>{result.tahapProduksi}</TableCell>
-                            {userInformation?.data?.role === "Admin" && (
+                            {(userInformation?.data?.role === "Admin" ||
+                              userInformation?.data?.role === "Super Admin" ||
+                              userInformation?.data?.role === "Owner") && (
                               <TableCell>
                                 <IconButton
                                   onClick={() => {

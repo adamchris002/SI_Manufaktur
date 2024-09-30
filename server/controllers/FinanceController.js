@@ -28,7 +28,7 @@ const {
   estimasiJadwalProduksis,
   rencanaJadwalProduksis,
   itemPembelianBahanBakus,
-  
+  UserActivityLogs,
 } = require("../models");
 const dayjs = require("dayjs");
 
@@ -1477,7 +1477,7 @@ class FinanceController {
     try {
       let result = await pembelianBahanBakus.findAll({
         where: { statusPajakMasukan: null },
-        include: [{ model: itemPembelianBahanBakus }]
+        include: [{ model: itemPembelianBahanBakus }],
       });
       res.json(result);
     } catch (error) {
@@ -1488,7 +1488,7 @@ class FinanceController {
     try {
       let result = await pembelianBahanBakus.findAll({
         where: { statusHutang: null },
-        include: [{ model: itemPembelianBahanBakus }]
+        include: [{ model: itemPembelianBahanBakus }],
       });
       res.json(result);
     } catch (error) {
@@ -1521,6 +1521,87 @@ class FinanceController {
         ],
       });
       res.json(result);
+    } catch (error) {
+      res.json(error);
+    }
+  }
+  static async getUserLama(req, res) {
+    try {
+      let result = await users.findAll({
+        where: {
+          department: "Finance",
+        },
+      });
+      res.json(result);
+    } catch (error) {
+      res.json(error);
+    }
+  }
+  static async getUserBaru(req, res) {
+    try {
+      let result = await users.findAll({
+        where: {
+          department: null,
+        },
+      });
+
+      res.json(result);
+    } catch (error) {
+      res.json(error);
+    }
+  }
+  static async updateUserCredentials(req, res) {
+    try {
+      const { id } = req.params;
+      const { userData } = req.body;
+
+      if (userData && Array.isArray(userData)) {
+        await Promise.all(
+          userData.map(async (result) => {
+            await users.update(
+              {
+                department: result.department,
+                role: result.role,
+                lokasi: result.lokasi,
+              },
+              { where: { id: result.id } }
+            );
+          })
+        );
+      }
+
+      let findUser = await users.findOne({
+        where: { id: id },
+      });
+
+      let createActivityLog = await activitylogs.create({
+        user: findUser.name,
+        activity: `Mengupdate kredensial user/menambahkan user ke dalam divisi keuangan`,
+        name: `Divisi: Finance`,
+        division: "Finance",
+      });
+
+      // await UserActivityLogs.create({
+      //   userId: findUser.id,
+      //   activityLogsId: createActivityLog.id,
+      //   id: createActivityLog.id,
+      // });
+
+      res.json(result);
+    } catch (error) {
+      res.json(error);
+    }
+  }
+  static async updateDivisiOwner(req, res) {
+    try {
+      const { namaDivisi } = req.params;
+      let updateOwnerDivision = await users.update(
+        {
+          department: namaDivisi,
+        },
+        { where: { role: "Owner" } }
+      );
+      res.json(updateOwnerDivision)
     } catch (error) {
       res.json(error);
     }

@@ -71,7 +71,7 @@ const MaindashboardMarketing = (props) => {
 
   const { isMobile } = useContext(AppContext);
 
-  const { userInformation } = props;
+  const { userInformation, setUserCredentials } = props;
   const { message, clearMessage, setSuccessMessage } = useAuth();
   const [snackbarMessage, setSnackbarMessage] = useState("");
   const [snackbarStatus, setSnackbarStatus] = useState(false);
@@ -136,6 +136,56 @@ const MaindashboardMarketing = (props) => {
     {
       value: "Social Media",
     },
+  ];
+
+  const handleChangeDivisiOwner = (event) => {
+    axios({
+      method: "PUT",
+      url: `http://localhost:3000/finance/updateDivisiOwner/${event.target.value}`,
+    }).then((result) => {
+      if (result.status === 200) {
+        setUserCredentials((oldObject) => {
+          return {
+            ...oldObject,
+            data: {
+              ...oldObject.data,
+              department: event.target.value,
+            },
+          };
+        });
+        switch (event.target.value) {
+          case "Production Planning":
+            navigate("/productionPlanningDashboard");
+            break;
+          case "Inventory":
+            navigate("/inventoryDashboard");
+            break;
+          case "Production":
+            navigate("/productionDashboard");
+            break;
+          case "Finance":
+            navigate("/financeDashboard");
+            break;
+          default:
+          //snackbar
+        }
+      } else {
+        //snackbar
+      }
+    });
+  };
+
+  const lokasi = [
+    { value: "Jakarta" },
+    { value: "Semarang" },
+    { value: "Purwokerto" },
+  ];
+
+  const department = [
+    { value: "Production Planning" },
+    { value: "Inventory" },
+    { value: "Production" },
+    { value: "Finance" },
   ];
 
   const handleAddNewOrder = () => {
@@ -407,6 +457,25 @@ const MaindashboardMarketing = (props) => {
               Catatan Aktivitas
             </DefaultButton>
           </div>
+          {(userInformation?.data?.role === "Super Admin" ||
+            userInformation?.data?.role === "Owner") && (
+            <div style={{ marginTop: "1.667vw", fontSize: "1.25vw" }}>
+              <DefaultButton
+                width="15vw"
+                height="2.08vw"
+                backgroundColor="#0F607D"
+                borderRadius="0.83vw"
+                fontSize="1vw"
+                onClickFunction={() => {
+                  document
+                    .getElementById("kelolaanggota")
+                    .scrollIntoView({ behavior: "smooth" });
+                }}
+              >
+                Kelola Anggota
+              </DefaultButton>
+            </div>
+          )}
         </div>
       )}
       {isMobile ? (
@@ -460,6 +529,42 @@ const MaindashboardMarketing = (props) => {
             </Typography>
           </div>
         </div>
+        {userInformation?.data?.role === "Owner" && (
+          <div style={{ margin: "32px" }}>
+            <div style={{ display: "flex", alignItems: "center" }}>
+              <Typography
+                style={{ width: "150px", color: "#0F607D", fontSize: "1.5vw" }}
+              >
+                Ubah Divisi
+              </Typography>
+              <MySelectTextField
+                onChange={(event) => {
+                  handleChangeDivisiOwner(event);
+                }}
+                data={department}
+                width="150px"
+              />
+            </div>
+            <div
+              style={{
+                display: "flex",
+                alignItems: "center",
+                marginTop: "16px",
+              }}
+            >
+              <Typography
+                style={{ width: "150px", color: "#0F607D", fontSize: "1.5vw" }}
+              >
+                Ubah Lokasi
+              </Typography>
+              <MySelectTextField
+                onChange={(event) => {}}
+                data={lokasi}
+                width="150px"
+              />
+            </div>
+          </div>
+        )}
         <div
           style={{
             margin: isMobile
@@ -662,7 +767,8 @@ const MaindashboardMarketing = (props) => {
           </div>
           <div style={{ display: "flex", marginTop: "1.667vw" }}>
             {userInformation?.data?.role === "Admin" ||
-            userInformation?.data?.role === "Super Admin" ? (
+            userInformation?.data?.role === "Super Admin" ||
+            userInformation?.data?.role === "Owner" ? (
               <DefaultButton
                 height={isMobile ? "" : "2.08vw"}
                 width={isMobile ? "" : "15vw"}
@@ -1342,7 +1448,7 @@ const MaindashboardMarketing = (props) => {
             id="activitylog"
             style={{ fontSize: isMobile ? "4.5vw" : "2vw", color: "#0F607D" }}
           >
-           Catatan Aktivitas
+            Catatan Aktivitas
           </Typography>
           <div>
             <DefaultButton
@@ -1351,11 +1457,46 @@ const MaindashboardMarketing = (props) => {
               }}
             >
               <Typography style={{ fontSize: isMobile ? "12px" : "1.042vw" }}>
-              Pergi ke Halaman Catatan Aktivitas
+                Pergi ke Halaman Catatan Aktivitas
               </Typography>
             </DefaultButton>
           </div>
         </div>
+        {(userInformation?.data?.role === "Super Admin" ||
+          userInformation?.data?.role === "Owner") && (
+          <div
+            style={{
+              margin: isMobile
+                ? "32px 32px 12px 32px"
+                : "3.33vw 1.667vw 0vw 1.667vw",
+              display: "flex",
+              justifyContent: "space-between",
+              alignItems: "center",
+              width: isMobile ? "" : "72vw",
+            }}
+          >
+            <Typography
+              id="kelolaanggota"
+              style={{
+                fontSize: isMobile ? "4.5vw" : "2vw",
+                color: "#0F607D",
+              }}
+            >
+              Kelola Anggota
+            </Typography>
+            <div>
+              <DefaultButton
+                onClickFunction={() => {
+                  navigate("/marketingDashboard/kelolaAnggota");
+                }}
+              >
+                <Typography style={{ fontSize: isMobile ? "12px" : "1.042vw" }}>
+                  Pergi ke Halaman Kelola Anggota
+                </Typography>
+              </DefaultButton>
+            </div>
+          </div>
+        )}
       </div>
       {openImage && (
         <Backdrop

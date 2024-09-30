@@ -78,7 +78,8 @@ const LaporanProduksi = (props) => {
           setNoOrderProduksiAvailable(tempNoOrderProduksiValue);
           setAllKegiatanProduksiDone(result.data);
         } else {
-          console.log(result);
+          // console.log(result);
+          //snackbar
         }
       });
     }

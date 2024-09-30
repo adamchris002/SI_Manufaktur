@@ -66,7 +66,6 @@ const PembelianBahanBaku = (props) => {
   const [allOrdersId, setAllOrdersId] = useState([]);
   const [allInventoryItems, setAllInventoryItems] = useState([]);
   const [permohonanPembelian, setPermohonanPembelian] = useState([]);
-  console.log(permohonanPembelian);
   const [pembelianBahanBaku, setPembelianBahanBaku] = useState({
     leveransir: "",
     alamat: "",
@@ -460,15 +459,10 @@ const PembelianBahanBaku = (props) => {
                 };
               } else {
                 if (field === "jenisBarang") {
-
-                  console.log(permohonanPembelian?.data?.itemPermohonanPembelians)
-                  console.log(value)
                   let findItemPermohonanPembelian =
                     permohonanPembelian?.data?.itemPermohonanPembelians?.find(
                       (item) => item.jenisBarang === value
                     );
-
-                    // console.log(findItemPermohonanPembelian)
 
                   let jumlah = separateValueAndUnit(
                     findItemPermohonanPembelian?.jumlah

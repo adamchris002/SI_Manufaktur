@@ -58,6 +58,8 @@ financeRoutes.get(
   "/getPembelianBahanbakuForHutang",
   FinanceController.getPembelianBahanbakuForHutang
 );
+financeRoutes.get("/getUserBaru", FinanceController.getUserBaru);
+financeRoutes.get("/getUserLama", FinanceController.getUserLama);
 //post
 financeRoutes.post("/addNamaBank/:id", FinanceController.addNamaBank); //udah
 financeRoutes.post("/addItemBukuBank/:id", FinanceController.addNewBukuBank); //udah
@@ -92,6 +94,11 @@ financeRoutes.put(
   "/updateCicilanPemLains/:id",
   FinanceController.updateCicilanPemLains //
 );
+financeRoutes.put(
+  "/updateUserCredentials/:id",
+  FinanceController.updateUserCredentials
+);
+financeRoutes.put("/updateDivisiOwner/:namaDivisi", FinanceController.updateDivisiOwner);
 // delete
 
 module.exports = financeRoutes;

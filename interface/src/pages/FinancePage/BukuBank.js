@@ -390,7 +390,9 @@ const BukuBank = (props) => {
             <Typography style={{ color: "#0F607D", fontSize: "3vw" }}>
               Daftar Nama Bank
             </Typography>
-            {userInformation?.data?.role === "Admin" && (
+            {(userInformation?.data?.role === "Admin" ||
+              userInformation?.data?.role === "Super Admin" ||
+              userInformation?.data?.role === "Owner") && (
               <DefaultButton
                 onClickFunction={() => {
                   setOpenModal(true);
@@ -425,7 +427,9 @@ const BukuBank = (props) => {
               </div>
             </div>
             {selectedBank !== "" ||
-              (userInformation?.data?.role === "Admin" && (
+              ((userInformation?.data?.role === "Admin" ||
+                userInformation?.data?.role === "Super Admin" ||
+                userInformation?.data?.role === "Owner") && (
                 <DefaultButton
                   onClickFunction={() => {
                     handleTambahBaris();
@@ -471,7 +475,9 @@ const BukuBank = (props) => {
                         <TableCell style={{ width: "200px" }}>
                           Keterangan
                         </TableCell>
-                        {userInformation?.data?.role === "Admin" && (
+                        {(userInformation?.data?.role === "Admin" ||
+                          userInformation?.data?.role === "Super Admin" ||
+                          userInformation?.data?.role === "Owner") && (
                           <TableCell style={{ width: "50px" }}>
                             Actions
                           </TableCell>
@@ -663,7 +669,10 @@ const BukuBank = (props) => {
                                     }}
                                   />
                                 </TableCell>
-                                {userInformation?.data?.role === "Admin" && (
+                                {(userInformation?.data?.role === "Admin" ||
+                                  userInformation?.data?.role ===
+                                    "Super Admin" ||
+                                  userInformation?.data?.role === "Owner") && (
                                   <TableCell>
                                     <IconButton
                                       onClick={() => {
@@ -688,7 +697,9 @@ const BukuBank = (props) => {
             </div>
           )}
           {(selectedBank !== "" && dataBukuBank.length !== 0) ||
-            (userInformation?.data?.role === "Admin" && (
+            ((userInformation?.data?.role === "Admin" ||
+              userInformation?.data?.role === "Super Admin" ||
+              userInformation?.data?.role === "Owner") && (
               <div
                 style={{
                   display: "flex",

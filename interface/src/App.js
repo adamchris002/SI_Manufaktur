@@ -38,6 +38,11 @@ import ProductionPlanningHistoryPage from "./pages/ProductionPlanningPage/Produc
 import OrderHistoryPage from "./pages/MarketingPage/OrderHistoryPage";
 import ProductionActivityLog from "./pages/ProductionPage/ProductionActivityLog";
 import FinanceActivityLog from "./pages/FinancePage/FinanceActivityLog";
+import KelolaAnggotaMarketing from "./pages/MarketingPage/KelolaAnggotaMarketing";
+import KelolaAnggotaProductionPlanning from "./pages/ProductionPlanningPage/KelolaAnggotaProductionPlanning";
+import KelolaAnggotaInventory from "./pages/InventoryPage/KelolaAnggotaInventory";
+import KelolaAnggotaProduksi from "./pages/ProductionPage/KelolaAnggotaProduksi";
+import KelolaAnggotaFinance from "./pages/FinancePage/KelolaAnggotaFinance";
 
 export const AppContext = createContext({});
 
@@ -88,7 +93,21 @@ function App() {
                 userCredentials.data.department !== "Marketing" ? (
                   <Navigate to="/unauthorized" replace />
                 ) : (
-                  <MaindashboardMarketing userInformation={userCredentials} />
+                  <MaindashboardMarketing
+                    setUserCredentials={setUserCredentials}
+                    userInformation={userCredentials}
+                  />
+                )
+              }
+            />
+            <Route
+              path="/marketingDashboard/kelolaAnggota"
+              element={
+                !userCredentials.data ||
+                userCredentials.data.department !== "Marketing" ? (
+                  <Navigate to="/unauthorized" replace />
+                ) : (
+                  <KelolaAnggotaMarketing userInformation={userCredentials} />
                 )
               }
             />
@@ -133,6 +152,20 @@ function App() {
                   <Navigate to="/unauthorized" replace />
                 ) : (
                   <MaindashboardProductionPlanning
+                    userInformation={userCredentials}
+                    setUserCredentials={setUserCredentials}
+                  />
+                )
+              }
+            />
+            <Route
+              path="/productionPlanningDashboard/kelolaAnggota"
+              element={
+                !userCredentials.data ||
+                userCredentials.data.department !== "Production Planning" ? (
+                  <Navigate to="/unauthorized" replace />
+                ) : (
+                  <KelolaAnggotaProductionPlanning
                     userInformation={userCredentials}
                   />
                 )
@@ -191,7 +224,21 @@ function App() {
                 userCredentials.data.department !== "Inventory" ? (
                   <Navigate to="/unauthorized" replace />
                 ) : (
-                  <MaindashboardInventory userInformation={userCredentials} />
+                  <MaindashboardInventory
+                    setUserCredentials={setUserCredentials}
+                    userInformation={userCredentials}
+                  />
+                )
+              }
+            />
+            <Route
+              path="/inventoryDashboard/kelolaAnggota"
+              element={
+                !userCredentials.data ||
+                userCredentials.data.department !== "Inventory" ? (
+                  <Navigate to="/unauthorized" replace />
+                ) : (
+                  <KelolaAnggotaInventory userInformation={userCredentials} />
                 )
               }
             />
@@ -268,7 +315,18 @@ function App() {
                 userCredentials.data.department !== "Production" ? (
                   <Navigate to="/unauthorized" replace />
                 ) : (
-                  <MaindashboardProduction userInformation={userCredentials} />
+                  <MaindashboardProduction setUserCredentials={setUserCredentials} userInformation={userCredentials} />
+                )
+              }
+            />
+            <Route
+              path="/productionDashboard/kelolaAnggota"
+              element={
+                !userCredentials.data ||
+                userCredentials.data.department !== "Production" ? (
+                  <Navigate to="/unauthorized" replace />
+                ) : (
+                  <KelolaAnggotaProduksi userInformation={userCredentials} />
                 )
               }
             />
@@ -312,7 +370,21 @@ function App() {
                 userCredentials.data.department !== "Finance" ? (
                   <Navigate to="/unauthorized" replace />
                 ) : (
-                  <MaindashboardFinance userInformation={userCredentials} />
+                  <MaindashboardFinance
+                    setUserCredentials={setUserCredentials}
+                    userInformation={userCredentials}
+                  />
+                )
+              }
+            />
+            <Route
+              path="/financeDashboard/kelolaAnggota"
+              element={
+                !userCredentials.data ||
+                userCredentials.data.department !== "Finance" ? (
+                  <Navigate to="/unauthorized" replace />
+                ) : (
+                  <KelolaAnggotaFinance userInformation={userCredentials} />
                 )
               }
             />
