@@ -17,7 +17,8 @@ import axios from "axios";
 import moment from "moment";
 import { AppContext } from "../../App";
 
-const FinanceActivityLog = () => {
+const FinanceActivityLog = (props) => {
+  const {userInformation} = props
   const { isMobile } = useContext(AppContext);
 
   const navigate = useNavigate();
@@ -26,7 +27,7 @@ const FinanceActivityLog = () => {
   useEffect(() => {
     axios({
       method: "GET",
-      url: "http://localhost:3000/finance/getActivityLog",
+      url: `http://localhost:3000/finance/getActivityLog/${userInformation?.data?.id}`,
     }).then((result) => {
       setActivityLogs(result);
     });

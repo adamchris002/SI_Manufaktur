@@ -196,12 +196,12 @@ const RencanaPembayaran = (props) => {
   useEffect(() => {
     axios({
       method: "GET",
-      url: "http://localhost:3000/finance/findPrevOngoingHutangs",
+      url: `http://localhost:3000/finance/findPrevOngoingHutangs/${userInformation?.data?.id}`,
     }).then((result) => {
       if (result.status === 200) {
         // const resultIds = result.data.map((item) => item.id);
         const existingIds =
-          allDataRencanaPembayaran[0]?.itemRencanaPembayarans.map(
+          allDataRencanaPembayaran[0]?.itemRencanaPembayarans?.map(
             (item) => item.id
           ) || [];
 
@@ -223,7 +223,7 @@ const RencanaPembayaran = (props) => {
   useEffect(() => {
     axios({
       method: "GET",
-      url: "http://localhost:3000/finance/findPrevOngoingPembayaranLainLain",
+      url: `http://localhost:3000/finance/findPrevOngoingPembayaranLainLain/${userInformation?.data?.id}`,
     }).then((result) => {
       if (result.status === 200) {
         const existingIds =
@@ -249,7 +249,7 @@ const RencanaPembayaran = (props) => {
   useEffect(() => {
     axios({
       method: "GET",
-      url: "http://localhost:3000/finance/getPembelianBahanbakuForHutang",
+      url: `http://localhost:3000/finance/getPembelianBahanbakuForHutang/${userInformation?.data?.id}`,
     }).then((result) => {
       if (result.status === 200) {
         const tempData = result?.data?.map((result) => {
@@ -1673,12 +1673,10 @@ const RencanaPembayaran = (props) => {
                                           >
                                             <MySelectTextField
                                               disabled={
-                                                userInformation?.data?.role !==
-                                                  "Admin" ||
-                                                userInformation?.data?.role !==
-                                                  "Super Admin" ||
-                                                userInformation?.data?.role !==
-                                                  "Owner"
+                                                userInformation?.data?.role ===
+                                                  null ||
+                                                userInformation?.data?.role ===
+                                                  "Anggota"
                                               }
                                               onChange={(event) => {
                                                 handleChangeInputCicilanPembayaranLains(
@@ -1920,12 +1918,10 @@ const RencanaPembayaran = (props) => {
                                           >
                                             <MySelectTextField
                                               disabled={
-                                                userInformation?.data?.role !==
-                                                  "Admin" ||
-                                                userInformation?.data?.role !==
-                                                  "Super Admin" ||
-                                                userInformation?.data?.role !==
-                                                  "Owner"
+                                                userInformation?.data?.role ===
+                                                  null ||
+                                                userInformation?.data?.role ===
+                                                  "Anggota"
                                               }
                                               onChange={(event) => {
                                                 handleChangeInputCicilan(

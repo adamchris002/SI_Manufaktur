@@ -158,7 +158,7 @@ const Pajak = (props) => {
   useEffect(() => {
     axios({
       method: "GET",
-      url: "http://localhost:3000/finance/getAllProductionPlanningForPajakKeluaran",
+      url: `http://localhost:3000/finance/getAllProductionPlanningForPajakKeluaran/${userInformation?.data?.id}`,
     }).then((result) => {
       if (result.status === 200) {
         const tempData = result?.data?.map((result) => {
@@ -181,7 +181,7 @@ const Pajak = (props) => {
   useEffect(() => {
     axios({
       method: "GET",
-      url: "http://localhost:3000/finance/getPembelianBahanBakuForPajakMasukan",
+      url: `http://localhost:3000/finance/getPembelianBahanBakuForPajakMasukan/${userInformation?.data?.id}`,
     }).then((result) => {
       if (result.status === 200) {
         const tempData = result?.data?.map((result) => {

@@ -116,7 +116,7 @@ const MaindashboardFinance = (props) => {
   useEffect(() => {
     axios({
       method: "GET",
-      url: "http://localhost:3000/finance/getActiveRencanaPembayaranOneYear",
+      url: `http://localhost:3000/finance/getActiveRencanaPembayaranOneYear/${userInformation?.data?.id}`,
     }).then((result) => {
       if (result.status === 200) {
         setDaftarTagihanSatuTahun(result.data);

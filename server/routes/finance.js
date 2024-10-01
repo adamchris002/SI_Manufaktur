@@ -37,46 +37,46 @@ financeRoutes.get(
   FinanceController.getDoneRencanaPembayaran //lokasi udah
 );
 financeRoutes.get(
-  "/findPrevOngoingHutangs",
-  FinanceController.findPrevOngoingHutangs //lokasi
+  "/findPrevOngoingHutangs/:id",
+  FinanceController.findPrevOngoingHutangs //lokasi udah
 );
 financeRoutes.get(
-  "/findPrevOngoingPembayaranLainLain",
-  FinanceController.findPrevOngoingPembayaranLainLain
+  "/findPrevOngoingPembayaranLainLain/:id",
+  FinanceController.findPrevOngoingPembayaranLainLain //lokasi udah
 );
 financeRoutes.get(
-  "/getActiveRencanaPembayaranOneYear",
-  FinanceController.getActiveRencanaPembayaranOneYear
+  "/getActiveRencanaPembayaranOneYear/:id",
+  FinanceController.getActiveRencanaPembayaranOneYear //lokasi udah
 );
-financeRoutes.get("/getActivityLog", FinanceController.financeActivityLog);
+financeRoutes.get("/getActivityLog/:id", FinanceController.financeActivityLog); //lokasi udah
 financeRoutes.get(
-  "/getAllProductionPlanningForPajakKeluaran",
-  FinanceController.getAllProductionPlanningForPajakKeluaran
-);
-financeRoutes.get(
-  "/getPembelianBahanBakuForPajakMasukan",
-  FinanceController.getPembelianBahanBakuForPajakMasukan
+  "/getAllProductionPlanningForPajakKeluaran/:id",
+  FinanceController.getAllProductionPlanningForPajakKeluaran //lokasi udah
 );
 financeRoutes.get(
-  "/getPembelianBahanbakuForHutang",
-  FinanceController.getPembelianBahanbakuForHutang
+  "/getPembelianBahanBakuForPajakMasukan/:id",
+  FinanceController.getPembelianBahanBakuForPajakMasukan //lokasi udah
+);
+financeRoutes.get(
+  "/getPembelianBahanbakuForHutang/:id",
+  FinanceController.getPembelianBahanbakuForHutang //lokasi udah
 );
 financeRoutes.get("/getUserBaru", FinanceController.getUserBaru);
 financeRoutes.get("/getUserLama", FinanceController.getUserLama);
 //post
-financeRoutes.post("/addNamaBank/:id", FinanceController.addNamaBank); //udah
-financeRoutes.post("/addItemBukuBank/:id", FinanceController.addNewBukuBank); //udah
-financeRoutes.post("/addKasHarian/:id", FinanceController.addKasHarian); //udah
+financeRoutes.post("/addNamaBank/:id", FinanceController.addNamaBank); //udah //lokasi udah
+financeRoutes.post("/addItemBukuBank/:id", FinanceController.addNewBukuBank); //udah //lokasi perlu ga?
+financeRoutes.post("/addKasHarian/:id", FinanceController.addKasHarian); //udah //lokasi udah?
 financeRoutes.post(
   "/checkForDefaultPosPembayaran",
   FinanceController.checkForDefaultPosPembayaran
-);
-financeRoutes.post("/addHutang/:id", FinanceController.addHutang); //udah
+); // ga usah kayaknya
+financeRoutes.post("/addHutang/:id", FinanceController.addHutang); //udah //lokasi udah?
 financeRoutes.post("/addPajakMasukan/:id", FinanceController.addPajakMasukan); //udah
 financeRoutes.post("/addPajakKeluaran/:id", FinanceController.addPajakKeluaran); //udah
 financeRoutes.post(
   "/addPembayaranLainLain/:id",
-  FinanceController.addPembayaranLainLain //udah
+  FinanceController.addPembayaranLainLain //udah //lokasi udah
 );
 //put
 financeRoutes.put("/updateStatusDone/:id", FinanceController.updateStatusDone);

@@ -72,6 +72,7 @@ const BukuBank = (props) => {
   const [namaBank, setNamaBank] = useState("");
   const [daftarBank, setDaftarBank] = useState([]);
   const [selectedBank, setSelectedBank] = useState("");
+  console.log(selectedBank);
   const [selectedBukuBankDone, setSelectedBukuBankDone] = useState([]);
   const [bukuBankDone, setBukuBankDone] = useState([]);
 
@@ -428,8 +429,8 @@ const BukuBank = (props) => {
                 />
               </div>
             </div>
-            {selectedBank !== "" ||
-              ((userInformation?.data?.role === "Admin" ||
+            {selectedBank !== "" &&
+              (userInformation?.data?.role === "Admin" ||
                 userInformation?.data?.role === "Super Admin" ||
                 userInformation?.data?.role === "Owner") && (
                 <DefaultButton
@@ -439,7 +440,7 @@ const BukuBank = (props) => {
                 >
                   Tambah Baris
                 </DefaultButton>
-              ))}
+              )}
           </div>
           {selectedBank !== "" && (
             <div>
@@ -698,8 +699,8 @@ const BukuBank = (props) => {
               )}
             </div>
           )}
-          {(selectedBank !== "" && dataBukuBank.length !== 0) ||
-            ((userInformation?.data?.role === "Admin" ||
+          {selectedBank !== "" &&
+            (userInformation?.data?.role === "Admin" ||
               userInformation?.data?.role === "Super Admin" ||
               userInformation?.data?.role === "Owner") && (
               <div
@@ -728,8 +729,8 @@ const BukuBank = (props) => {
                   Cancel
                 </Button>
               </div>
-            ))}
-          <div style={{ padding: "8px 0px", width: "40%" }}>
+            )}
+          <div style={{ padding: "32px 0px", width: "40%" }}>
             <Typography style={{ fontSize: "3vw", color: "#0F607D" }}>
               Sejarah Buku Bank
             </Typography>

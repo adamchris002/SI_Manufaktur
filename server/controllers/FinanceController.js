@@ -67,13 +67,15 @@ class FinanceController {
     try {
       const { id } = req.params;
       const { namaBank } = req.body;
-      let result = await bukuBanks.create({
-        namaBank: namaBank,
-        statusBukuBank: "Ongoing",
-      });
 
       let findUser = await users.findOne({
         where: { id: id },
+      });
+
+      let result = await bukuBanks.create({
+        namaBank: namaBank,
+        statusBukuBank: "Ongoing",
+        lokasi: findUser.lokasi,
       });
 
       let createActivityLog = await activitylogs.create({
@@ -98,6 +100,10 @@ class FinanceController {
   static async addNewBukuBank(req, res) {
     const { id } = req.params;
     const { namaBank, dataBukuBank } = req.body;
+
+    let findUser = await users.findOne({
+      where: { id: id },
+    });
 
     let findBank = await bukuBanks.findOne({
       where: { namaBank: namaBank, statusBukuBank: "Ongoing" },
@@ -129,9 +135,6 @@ class FinanceController {
               { where: { id: data.id } }
             );
           }
-          let findUser = await users.findOne({
-            where: { id: id },
-          });
 
           let createActivitylog = await activitylogs.create({
             user: findUser.name,
@@ -221,11 +224,16 @@ class FinanceController {
         where: { judulKasHarian },
       });
 
+      let findUser = await users.findOne({
+        where: { id: id },
+      });
+
       let result;
       if (!findKasHarian) {
         result = await kasHarians.create({
           judulKasHarian,
           statusKasHarian: "Ongoing",
+          lokasi: findUser.lokasi,
         });
       } else {
         result = findKasHarian;
@@ -257,10 +265,6 @@ class FinanceController {
                 { where: { id: data.id } }
               );
             }
-
-            let findUser = await users.findOne({
-              where: { id: id },
-            });
 
             let createActivityLog = await activitylogs.create({
               user: findUser.name,
@@ -598,6 +602,10 @@ class FinanceController {
         include: [{ model: itemBukuBanks }],
       });
 
+      let findUser = await users.findOne({
+        where: { id: id },
+      });
+
       let prevSaldo = 0;
 
       if (findBukuBank && findBukuBank.itemBukuBanks.length > 0) {
@@ -621,7 +629,7 @@ class FinanceController {
       );
 
       let result = await rencanaPembayarans.findOne({
-        where: { statusRencanaPembayaran: "Ongoing" },
+        where: { statusRencanaPembayaran: "Ongoing", lokasi: findUser.lokasi },
       });
 
       let itemTempRencanaPembayarans = await itemRencanaPembayarans.create({
@@ -634,6 +642,7 @@ class FinanceController {
         nominal: totalNominal,
         keterangan: "",
         statusRencanaPembayaran: "Ongoing",
+        lokasi: findUser.lokasi,
       });
       if (dataPembayaranLainLain && Array.isArray(dataPembayaranLainLain)) {
         await Promise.all(
@@ -691,9 +700,6 @@ class FinanceController {
           })
         );
       }
-      let findUser = await users.findOne({
-        where: { id: id },
-      });
 
       let createActivityLog = await activitylogs.create({
         user: findUser.name,
@@ -718,6 +724,10 @@ class FinanceController {
 
       await findOnePembelianBahanBaku.update({
         statusHutang: "Done",
+      });
+
+      let findUser = await users.findOne({
+        where: { id: id },
       });
 
       const findBukuBank = await bukuBanks.findOne({
@@ -745,7 +755,7 @@ class FinanceController {
       }, 0);
 
       let result = await rencanaPembayarans.findOne({
-        where: { statusRencanaPembayaran: "Ongoing" },
+        where: { statusRencanaPembayaran: "Ongoing", lokasi: findUser.lokasi },
       });
 
       let itemTempRencanaPembayarans = await itemRencanaPembayarans.create({
@@ -758,6 +768,7 @@ class FinanceController {
         nominal: totalNominal,
         keterangan: "",
         statusRencanaPembayaran: "Ongoing",
+        lokasi: findUser.lokasi,
       });
 
       if (dataHutang && Array.isArray(dataHutang)) {
@@ -817,10 +828,6 @@ class FinanceController {
           })
         );
       }
-
-      let findUser = await users.findOne({
-        where: { id: id },
-      });
 
       let createActivityLog = await activitylogs.create({
         user: findUser.name,
@@ -927,6 +934,7 @@ class FinanceController {
             "MM/DD/YYYY"
           )}`,
           statusRencanaPembayaran: "Ongoing",
+          lokasi: findUser.lokasi,
         });
         // if (ongoingHutangsAndCicilans.length !== 0) {
         //   if (
@@ -1311,15 +1319,15 @@ class FinanceController {
     try {
       const { id } = req.params;
 
-      //itemRencanaPembayarans perlu lokasi juga
       const findUser = await users.findOne({
         where: { id: id },
       });
       let ongoingHutangsAndCicilans = await itemRencanaPembayarans.findAll({
+        where: { lokasi: findUser.lokasi },
         include: [
           {
             model: hutangs,
-            where: { keterangan: "Belum Lunas", lokasi: findUser.lokasi },
+            where: { keterangan: "Belum Lunas" },
             include: [{ model: cicilans }],
           },
         ],
@@ -1331,7 +1339,13 @@ class FinanceController {
   }
   static async findPrevOngoingPembayaranLainLain(req, res) {
     try {
+      const { id } = req.params;
+
+      const findUser = await users.findOne({
+        where: { id: id },
+      });
       let ongoingPembayaranLainLain = await itemRencanaPembayarans.findAll({
+        where: { lokasi: findUser.lokasi },
         include: [
           {
             model: pembayaranLains,
@@ -1506,6 +1520,11 @@ class FinanceController {
   }
   static async getActiveRencanaPembayaranOneYear(req, res) {
     try {
+      const { id } = req.params;
+
+      const findUser = await users.findOne({
+        where: { id: id },
+      });
       const thisYearStart = dayjs().startOf("year").toDate();
       const thisYearEnd = dayjs().endOf("year").toDate();
 
@@ -1514,6 +1533,7 @@ class FinanceController {
           createdAt: {
             [Op.between]: [thisYearStart, thisYearEnd],
           },
+          lokasi: findUser.lokasi,
         },
       });
       res.json(result);
@@ -1523,8 +1543,13 @@ class FinanceController {
   }
   static async financeActivityLog(req, res) {
     try {
+      const { id } = req.params;
+
+      const findUser = await users.findOne({
+        where: { id: id },
+      });
       let result = await activitylogs.findAll({
-        where: { division: "Finance" },
+        where: { division: "Finance", lokasi: findUser.lokasi },
       });
       res.json(result);
     } catch (error) {
@@ -1534,8 +1559,12 @@ class FinanceController {
 
   static async getPembelianBahanBakuForPajakMasukan(req, res) {
     try {
+      const { id } = req.params;
+      const findUser = await users.findOne({
+        where: { id: id },
+      });
       let result = await pembelianBahanBakus.findAll({
-        where: { statusPajakMasukan: null },
+        where: { statusPajakMasukan: null, lokasi: findUser.lokasi },
         include: [{ model: itemPembelianBahanBakus }],
       });
       res.json(result);
@@ -1545,8 +1574,14 @@ class FinanceController {
   }
   static async getPembelianBahanbakuForHutang(req, res) {
     try {
+      const { id } = req.params;
+
+      const findUser = await users.findOne({
+        where: { id: id },
+      });
+
       let result = await pembelianBahanBakus.findAll({
-        where: { statusHutang: null },
+        where: { statusHutang: null, lokasi: findUser.lokasi },
         include: [{ model: itemPembelianBahanBakus }],
       });
       res.json(result);
@@ -1556,8 +1591,14 @@ class FinanceController {
   }
   static async getAllProductionPlanningForPajakKeluaran(req, res) {
     try {
+      const { id } = req.params;
+
+      const findUser = await users.findOne({
+        where: { id: id },
+      });
+
       let result = await productionPlannings.findAll({
-        where: { statusPajakKeluaran: null },
+        where: { statusPajakKeluaran: null, lokasi: findUser.lokasi },
         include: [
           { model: rincianCetakans },
           { model: perincians },

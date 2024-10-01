@@ -12,7 +12,7 @@ module.exports = {
       rencanaPembayaranId: {
         type: Sequelize.INTEGER,
         references: { model: "rencanaPembayarans", key: "id" },
-        onDelete: "CASCADE"
+        onDelete: "CASCADE",
       },
       uraian: {
         type: Sequelize.STRING,
@@ -26,6 +26,7 @@ module.exports = {
       keterangan: {
         type: Sequelize.STRING,
       },
+      lokasi: { type: Sequelize.STRING },
       createdAt: {
         allowNull: false,
         type: Sequelize.DATE,
