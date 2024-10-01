@@ -17,7 +17,8 @@ import axios from "axios";
 import moment from "moment";
 import { AppContext } from "../../App";
 
-const ProductionActivityLog = () => {
+const ProductionActivityLog = (props) => {
+  const {userInformation} = props
   const { isMobile } = useContext(AppContext);
 
   const navigate = useNavigate();
@@ -26,7 +27,7 @@ const ProductionActivityLog = () => {
   useEffect(() => {
     axios({
       method: "GET",
-      url: "http://localhost:3000/production/getActivityLog",
+      url: `http://localhost:3000/production/getActivityLog/${userInformation?.data?.id}`,
     }).then((result) => {
       setActivityLogs(result);
     });

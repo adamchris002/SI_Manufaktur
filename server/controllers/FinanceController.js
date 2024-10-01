@@ -35,8 +35,12 @@ const dayjs = require("dayjs");
 class FinanceController {
   static async getDoneBukuBank(req, res) {
     try {
+      const { id } = req.params;
+      const findUser = await users.findOne({
+        where: { id: id },
+      });
       let result = await bukuBanks.findAll({
-        where: { statusBukuBank: "Done" },
+        where: { statusBukuBank: "Done", lokasi: findUser.lokasi },
         include: [{ model: itemBukuBanks }],
       });
       res.json(result);
@@ -46,8 +50,12 @@ class FinanceController {
   }
   static async getOngoingBukuBank(req, res) {
     try {
+      const { id } = req.params;
+      const findUser = await users.findOne({
+        where: { id: id },
+      });
       let result = await bukuBanks.findAll({
-        where: { statusBukuBank: "Ongoing" },
+        where: { statusBukuBank: "Ongoing", lokasi: findUser.lokasi },
         include: [{ model: itemBukuBanks }],
       });
       res.json(result);
@@ -73,6 +81,7 @@ class FinanceController {
         activity: `Menambahkan Buku Bank dengan nama ${namaBank}`,
         name: `ID Buku Bank: ${result.id}`,
         division: "Finance",
+        lokasi: findUser.lokasi,
       });
 
       await UsersActivityLogs.create({
@@ -129,6 +138,7 @@ class FinanceController {
             activity: `Menambahkan item debet/kredit pada buku bank ${namaBank}`,
             name: `ID Buku Bank: ${findBank.id}`,
             division: "Finance",
+            lokasi: findUser.lokasi,
           });
 
           // await UsersActivityLogs.create({
@@ -162,8 +172,13 @@ class FinanceController {
   static async checkIfNamaBankAvailable(req, res) {
     try {
       const { name } = req.params;
+      const { userId } = req.query;
+
+      const findUser = await users.findOne({
+        where: { id: userId },
+      });
       let result = await bukuBanks.findAll({
-        where: { namaBank: name },
+        where: { namaBank: name, lokasi: findUser.lokasi },
       });
       if (result.length > 1) {
         return res.json({ available: false });
@@ -177,8 +192,17 @@ class FinanceController {
   static async getPreviousSaldoAkhir(req, res) {
     try {
       const { name } = req.params;
+      const { userId } = req.query;
+
+      const findUser = await users.findOne({
+        where: { id: userId },
+      });
       let latestBankData = await bukuBanks.findAll({
-        where: { namaBank: name, statusBukuBank: "Done" },
+        where: {
+          namaBank: name,
+          statusBukuBank: "Done",
+          lokasi: findUser.lokasi,
+        },
         order: [["updatedAt", "DESC"]],
         limit: 1,
         include: [{ model: itemBukuBanks }],
@@ -243,6 +267,7 @@ class FinanceController {
               activity: `Menambahkan item kas harian dari kas harian dengan id ${result.id}`,
               name: `Judul Kas Harian: ${result.judulKasHarian}`,
               division: "Finance",
+              lokasi: findUser.lokasi,
             });
           })
         );
@@ -258,8 +283,12 @@ class FinanceController {
   }
   static async getOngoingKasHarian(req, res) {
     try {
+      const { id } = req.params;
+      const findUser = await users.findOne({
+        where: { id: id },
+      });
       let result = await kasHarians.findOne({
-        where: { statusKasHarian: "Ongoing" },
+        where: { statusKasHarian: "Ongoing", lokasi: findUser.lokasi },
         include: [{ model: itemKasHarians }],
       });
       res.json(result);
@@ -283,8 +312,13 @@ class FinanceController {
   }
   static async getDoneKasHarian(req, res) {
     try {
+      const { id } = req.params;
+
+      const findUser = await users.findOne({
+        where: { id: id },
+      });
       let result = await kasHarians.findAll({
-        where: { statusKasHarian: "Done" },
+        where: { statusKasHarian: "Done", lokasi: findUser.lokasi },
         include: [{ model: itemKasHarians }],
       });
       res.json(result);
@@ -657,15 +691,16 @@ class FinanceController {
           })
         );
       }
-      let finduser = await users.findOne({
+      let findUser = await users.findOne({
         where: { id: id },
       });
 
       let createActivityLog = await activitylogs.create({
-        user: finduser.name,
+        user: findUser.name,
         activity: `Menambahkan pembayaran lain-lain ke dalam buku bank ${dataBank.namaBank}`,
         name: `Nama Buku Bank: ${dataBank.namaBank}`,
         division: "Finance",
+        lokasi: findUser.lokasi,
       });
       res.json();
     } catch (error) {
@@ -792,6 +827,7 @@ class FinanceController {
         activity: `Menambahkan hutang pada buku bank ${dataBank.namaBank}`,
         name: `ID Buku Bank: ${dataBank.id}`,
         division: "Finance",
+        lokasi: findUser.lokasi,
       });
 
       // await UsersActivityLogs.create({
@@ -807,8 +843,12 @@ class FinanceController {
   }
   static async getAllOngoingRencanaPembayaran(req, res) {
     try {
+      const { id } = req.params;
+      const findUser = await users.findOne({
+        where: { id: id },
+      });
       const result = await rencanaPembayarans.findAll({
-        where: { statusRencanaPembayaran: "Ongoing" },
+        where: { statusRencanaPembayaran: "Ongoing", lokasi: findUser.lokasi },
         include: [
           {
             model: itemRencanaPembayarans,
@@ -873,8 +913,12 @@ class FinanceController {
 
   static async checkIfRencanaPembayaranExists(req, res) {
     try {
+      const { id } = req.params;
+      const findUser = await users.findOne({
+        where: { id: id },
+      });
       let result = await rencanaPembayarans.findAll({
-        where: { statusRencanaPembayaran: "Ongoing" },
+        where: { statusRencanaPembayaran: "Ongoing", lokasi: findUser.lokasi },
       });
 
       if (result.length === 0) {
@@ -946,8 +990,13 @@ class FinanceController {
   }
   static async getDoneRencanaPembayaran(req, res) {
     try {
+      const { id } = req.params;
+
+      const findUser = await users.findOne({
+        where: { id: id },
+      });
       let result = await rencanaPembayarans.findAll({
-        where: { statusRencanaPembayaran: "Done" },
+        where: { statusRencanaPembayaran: "Done", lokasi: findUser.lokasi },
         include: [
           {
             model: itemRencanaPembayarans,
@@ -1034,15 +1083,16 @@ class FinanceController {
         );
       }
 
-      let finduser = await users.findOne({
+      let findUser = await users.findOne({
         where: { id: id },
       });
 
       let createActivityLog = await activitylogs.create({
-        user: finduser.name,
+        user: findUser.name,
         activity: `Menambahkan pajak masukan ke dalam buku bank ${dataBank.namaBank}`,
         name: `Nama Buku Bank: ${dataBank.namaBank}`,
         division: "Finance",
+        lokasi: findUser.lokasi,
       });
 
       res.json(findPrevItemBukuBanks);
@@ -1120,15 +1170,16 @@ class FinanceController {
         );
       }
 
-      let finduser = await users.findOne({
+      let findUser = await users.findOne({
         where: { id: id },
       });
 
       let createActivityLog = await activitylogs.create({
-        user: finduser.name,
+        user: findUser.name,
         activity: `Menambahkan pajak keluaran ke dalam buku bank ${dataBank.namaBank}`,
         name: `Nama Buku Bank: ${dataBank.namaBank}`,
         division: "Finance",
+        lokasi: findUser.lokasi,
       });
       res.status(200).json({ message: "Pajak Keluaran added successfully" });
     } catch (error) {
@@ -1242,6 +1293,7 @@ class FinanceController {
                       activity: `Mengedit cicilan dengan id ${matchedCicilan.id} dari hutang dengan id ${dataHutangFromDb.id}`,
                       name: `ID Cicilan: ${matchedCicilan.id}`,
                       division: "Finance",
+                      lokasi: findUser.lokasi,
                     });
                   }
                 })
@@ -1257,11 +1309,17 @@ class FinanceController {
   }
   static async findPrevOngoingHutangs(req, res) {
     try {
+      const { id } = req.params;
+
+      //itemRencanaPembayarans perlu lokasi juga
+      const findUser = await users.findOne({
+        where: { id: id },
+      });
       let ongoingHutangsAndCicilans = await itemRencanaPembayarans.findAll({
         include: [
           {
             model: hutangs,
-            where: { keterangan: "Belum Lunas" },
+            where: { keterangan: "Belum Lunas", lokasi: findUser.lokasi },
             include: [{ model: cicilans }],
           },
         ],
@@ -1432,6 +1490,7 @@ class FinanceController {
                       activity: `Mengedit cicilan pembayaran lain dengan id ${matchedCicilanPemLains.id} dari pembayaran lain-lain dengan id ${dataPemLainsFromDb.id}`,
                       name: `ID Cicilan Pembayaran Lain: ${matchedCicilanPemLains.id}`,
                       division: "Finance",
+                      lokasi: findUser.lokasi,
                     });
                   }
                 })
@@ -1579,6 +1638,7 @@ class FinanceController {
         activity: `Mengupdate kredensial user/menambahkan user ke dalam divisi keuangan`,
         name: `Divisi: Finance`,
         division: "Finance",
+        lokasi: findUser.lokasi,
       });
 
       // await UserActivityLogs.create({
@@ -1601,7 +1661,7 @@ class FinanceController {
         },
         { where: { role: "Owner" } }
       );
-      res.json(updateOwnerDivision)
+      res.json(updateOwnerDivision);
     } catch (error) {
       res.json(error);
     }

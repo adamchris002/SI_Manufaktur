@@ -301,7 +301,7 @@ const PenyerahanBarang = (props) => {
   useEffect(() => {
     axios({
       method: "GET",
-      url: "http://localhost:3000/inventory/getAllInventoryItem",
+      url: `http://localhost:3000/inventory/getAllInventoryItem/${userInformation?.data?.id}`,
     }).then((result) => {
       if (result.status === 200) {
         const tempName = result?.data?.map((data) => ({
@@ -321,7 +321,7 @@ const PenyerahanBarang = (props) => {
   useEffect(() => {
     axios({
       method: "GET",
-      url: "http://localhost:3000/productionPlanning/getAllProductionPlanStatusEstimated",
+      url: `http://localhost:3000/productionPlanning/getAllProductionPlanStatusEstimated/${userInformation?.data?.id}`,
     }).then((result) => {
       if (result.status === 200) {
         const tempName = result?.data?.map((data) => ({
@@ -343,6 +343,7 @@ const PenyerahanBarang = (props) => {
         axios({
           method: "GET",
           url: `http://localhost:3000/inventory/getPenyerahanBarang/${penyerahanBarangId}`,
+          params: { userId: userInformation?.data?.id },
         }).then((result) => {
           if (result.status === 200) {
             const modifiedPenyerahanBarang = modifyDataForEdit(result.data);
@@ -1152,7 +1153,7 @@ const PenyerahanBarang = (props) => {
                     : "Edit Form"}
                 </DefaultButton>
                 <Button
-                  style={{ marginLeft: "8px" }}
+                  style={{ marginLeft: "8px", textTransform: "none" }}
                   color="error"
                   variant="outlined"
                   onClick={() => {

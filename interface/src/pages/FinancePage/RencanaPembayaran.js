@@ -158,7 +158,7 @@ const RencanaPembayaran = (props) => {
   useEffect(() => {
     axios({
       method: "GET",
-      url: "http://localhost:3000/finance/getDoneRencanaPembayaran",
+      url: `http://localhost:3000/finance/getDoneRencanaPembayaran/${userInformation?.data?.id}`,
     }).then((result) => {
       if (result.status === 200) {
         setRencanaPembayaran(result.data);
@@ -176,7 +176,7 @@ const RencanaPembayaran = (props) => {
     if (refreshRencanaPembayaran === true) {
       axios({
         method: "GET",
-        url: "http://localhost:3000/finance/getAllOngoingRencanaPembayaran",
+        url: `http://localhost:3000/finance/getAllOngoingRencanaPembayaran/${userInformation?.data?.id}`,
       }).then((result) => {
         if (result.status === 200) {
           setAllDataRencanaPembayaran(result.data);
@@ -272,7 +272,7 @@ const RencanaPembayaran = (props) => {
   useEffect(() => {
     axios({
       method: "GET",
-      url: "http://localhost:3000/finance/checkIfRencanaPembayaranExists",
+      url: `http://localhost:3000/finance/checkIfRencanaPembayaranExists/${userInformation?.data?.id}`,
     }).then((result) => {
       if (result.status === 200) {
         setRefreshRencanaPembayaran(true);
@@ -320,7 +320,7 @@ const RencanaPembayaran = (props) => {
   useEffect(() => {
     axios({
       method: "GET",
-      url: "http://localhost:3000/finance/getOngoingBukuBank",
+      url: `http://localhost:3000/finance/getOngoingBukuBank/${userInformation?.data?.id}`,
     }).then((result) => {
       if (result.status === 200) {
         const tempData = result.data.map((result) => {

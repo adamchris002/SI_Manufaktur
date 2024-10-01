@@ -75,6 +75,7 @@ const OrderDetail = (props) => {
   const { userInformation } = props;
   const [checkUpdate, setCheckUpdate] = useState(false);
   const [orderDetailInfo, setOrderDetailInfo] = useState({});
+  console.log(orderDetailInfo)
   const [openModal, setOpenModal] = useState(false);
   const [orderTitle, setOrderTitle] = useState("");
   const [orderQuantityValue, setOrderQuantityValue] = useState(null);
@@ -136,6 +137,7 @@ const OrderDetail = (props) => {
     axios({
       method: "GET",
       url: `http://localhost:3000/order/getOrderInfo/${orderId}`,
+      params: {userId: userInformation?.data?.id}
     }).then((result) => {
       setOrderDetailInfo(result);
       setOrderTitle(result.data.orderTitle);
@@ -406,16 +408,16 @@ const OrderDetail = (props) => {
                   color: "#0F607D",
                 }}
               >
-                {orderDetailInfo?.data?.orderTitle.length < 8
+                {orderDetailInfo?.data?.orderTitle?.length < 8
                   ? orderDetailInfo?.data?.orderTitle
-                  : orderDetailInfo?.data?.orderTitle.slice(0, 8) + "..."}
+                  : orderDetailInfo?.data?.orderTitle?.slice(0, 8) + "..."}
               </Typography>
             </div>
           </div>
           <div style={{ display: "flex" }}>
-            {(userInformation?.data?.role === "Admin" ||
+            {userInformation?.data?.role === "Admin" ||
             userInformation?.data?.role === "Super Admin" ||
-            userInformation?.data?.role === "Owner") ? (
+            userInformation?.data?.role === "Owner" ? (
               <div
                 style={{
                   display: "flex",
@@ -473,7 +475,7 @@ const OrderDetail = (props) => {
               Dokumen:
             </Typography>
           </div>
-          {orderDetailInfo?.data?.documents.length === 0 ? (
+          {orderDetailInfo?.data?.documents?.length === 0 ? (
             <div
               style={{
                 marginTop: "16px",

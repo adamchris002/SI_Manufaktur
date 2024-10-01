@@ -43,7 +43,7 @@ const OrderHistoryPage = (props) => {
   useEffect(() => {
     axios({
       method: "GET",
-      url: "http://localhost:3000/order/getAllOrderInfo",
+      url: `http://localhost:3000/order/getAllOrderInfo/${userInformation?.data?.id}`,
     }).then((result) => {
       if (result.status === 200) {
         const tempData = result.data.filter(

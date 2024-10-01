@@ -63,42 +63,42 @@ const MaindashboardInventory = (props) => {
   const [isEditPermohonanPembelian, setIsEditPermohonanPembelian] =
     useState(false);
 
-    const handleChangeDivisiOwner = (event) => {
-      axios({
-        method: "PUT",
-        url: `http://localhost:3000/finance/updateDivisiOwner/${event.target.value}`,
-      }).then((result) => {
-        if (result.status === 200) {
-          setUserCredentials((oldObject) => {
-            return {
-              ...oldObject,
-              data: {
-                ...oldObject.data,
-                department: event.target.value,
-              },
-            };
-          });
-          switch (event.target.value) {
-            case "Marketing":
-              navigate("/marketingDashboard");
-              break;
-            case "Production Planning":
-              navigate("/productionPlanningDashboard");
-              break;
-            case "Production":
-              navigate("/productionDashboard");
-              break;
-            case "Finance":
-              navigate("/financeDashboard");
-              break;
-            default:
-            //snackbar
-          }
-        } else {
+  const handleChangeDivisiOwner = (event) => {
+    axios({
+      method: "PUT",
+      url: `http://localhost:3000/finance/updateDivisiOwner/${event.target.value}`,
+    }).then((result) => {
+      if (result.status === 200) {
+        setUserCredentials((oldObject) => {
+          return {
+            ...oldObject,
+            data: {
+              ...oldObject.data,
+              department: event.target.value,
+            },
+          };
+        });
+        switch (event.target.value) {
+          case "Marketing":
+            navigate("/marketingDashboard");
+            break;
+          case "Production Planning":
+            navigate("/productionPlanningDashboard");
+            break;
+          case "Production":
+            navigate("/productionDashboard");
+            break;
+          case "Finance":
+            navigate("/financeDashboard");
+            break;
+          default:
           //snackbar
         }
-      });
-    };
+      } else {
+        //snackbar
+      }
+    });
+  };
 
   const lokasi = [
     { value: "Jakarta" },
@@ -117,7 +117,7 @@ const MaindashboardInventory = (props) => {
     if (refreshPenyerahanBarang) {
       axios({
         method: "GET",
-        url: "http://localhost:3000/inventory/getAllPengambilanBarang",
+        url: `http://localhost:3000/inventory/getAllPengambilanBarang/${userInformation?.data?.id}`,
       }).then((result) => {
         if (result.status === 200) {
           setAllPenyerahanBarang(result.data);
@@ -137,7 +137,7 @@ const MaindashboardInventory = (props) => {
   useEffect(() => {
     axios({
       method: "GET",
-      url: "http://localhost:3000/inventory/getAllInventoryItem",
+      url: `http://localhost:3000/inventory/getAllInventoryItem/${userInformation?.data?.id}`,
     }).then((result) => {
       if (result.status === 200) {
         const tempData = result.data.map((item) => ({
@@ -157,7 +157,7 @@ const MaindashboardInventory = (props) => {
     if (refresDataStokOpnam) {
       axios({
         method: "GET",
-        url: "http://localhost:3000/inventory/getAllStokOpnam",
+        url: `http://localhost:3000/inventory/getAllStokOpnam/${userInformation?.data?.id}`,
       }).then((result) => {
         if (result.status === 200) {
           setAllStokOpnam(result.data);
@@ -230,7 +230,7 @@ const MaindashboardInventory = (props) => {
     if (refreshPembelianBahanBaku) {
       axios({
         method: "GET",
-        url: "http://localhost:3000/inventory/getAllPembelianBahanBaku",
+        url: `http://localhost:3000/inventory/getAllPembelianBahanBaku/${userInformation?.data?.id}`,
       }).then((result) => {
         if (result.status === 200) {
           setPembelianBahanBaku(result);
@@ -249,7 +249,7 @@ const MaindashboardInventory = (props) => {
     if (refreshPermohonanPembelian) {
       axios({
         method: "GET",
-        url: "http://localhost:3000/inventory/getAllPermohonanPembelian",
+        url: `http://localhost:3000/inventory/getAllPermohonanPembelian/${userInformation?.data?.id}`,
       }).then((result) => {
         try {
           if (result.status === 200) {
@@ -271,6 +271,7 @@ const MaindashboardInventory = (props) => {
       axios({
         method: "GET",
         url: `http://localhost:3000/inventory/getPermohonanPembelian/${permohonanPembelian[0].id}`,
+        params: { userId: userInformation?.data?.id },
       }).then((result) => {
         if (result.status === 200) {
           const transformedData = modifyDataPermohonanPembelian(result.data);
@@ -907,9 +908,13 @@ const MaindashboardInventory = (props) => {
               >
                 Ubah Divisi
               </Typography>
-              <MySelectTextField onChange={(event) => {
-                handleChangeDivisiOwner(event);
-              }} data={department} width="150px" />
+              <MySelectTextField
+                onChange={(event) => {
+                  handleChangeDivisiOwner(event);
+                }}
+                data={department}
+                width="150px"
+              />
             </div>
             <div
               style={{
@@ -923,7 +928,7 @@ const MaindashboardInventory = (props) => {
               >
                 Ubah Lokasi
               </Typography>
-              <MySelectTextField  data={lokasi} width="150px" />
+              <MySelectTextField data={lokasi} width="150px" />
             </div>
           </div>
         )}
@@ -1223,7 +1228,7 @@ const MaindashboardInventory = (props) => {
                     </Table>
                   </TableContainer>
                 </div>
-                {pembelianBahanBaku?.data?.length === 0 ? (
+                {/* {pembelianBahanBaku?.data?.length === 0 ? (
                   <div
                     style={{
                       display: "flex",
@@ -1313,7 +1318,7 @@ const MaindashboardInventory = (props) => {
                       </Table>
                     </TableContainer>
                   </div>
-                )}
+                )} */}
               </div>
             </div>
           )}

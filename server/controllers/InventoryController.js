@@ -22,9 +22,14 @@ class InventoryController {
   static async getPembelianBahanBaku(req, res) {
     try {
       const { id } = req.params;
+      const { userId } = req.query;
+
+      const findUser = await users.findOne({
+        where: { id: userId },
+      });
 
       let result = await pembelianBahanBakus.findOne({
-        where: { id: id },
+        where: { id: id, lokasi: findUser.lokasi },
         include: [{ model: itemPembelianBahanBakus }],
       });
       res.json(result);
@@ -110,6 +115,7 @@ class InventoryController {
         activity: `Mengedit pembelian bahan baku dengan id ${findPembelianBahanBaku.id}`,
         name: "Leveransir: " + findPembelianBahanBaku.leveransir,
         division: "Inventory",
+        lokasi: userInformation.lokasi
       });
 
       await UserActivityLogs.create({
@@ -192,6 +198,7 @@ class InventoryController {
         activity: `Mengedit permohonan pembelian dengan id ${permohonanPembelian[0].id}`,
         name: "Nomor: " + permohonanPembelian[0].nomor,
         division: "Inventory",
+        lokasi: userInformation.lokasi
       });
 
       await UserActivityLogs.create({
@@ -283,6 +290,10 @@ class InventoryController {
       const { permohonanPembelian } = req.body;
       const { id } = req.params;
 
+      const findUser = await users.findOne({
+        where: { id: id },
+      });
+
       let createPermohonanPembelian;
 
       if (permohonanPembelian && Array.isArray(permohonanPembelian)) {
@@ -292,6 +303,7 @@ class InventoryController {
               nomor: data.nomor,
               perihal: data.perihal,
               statusPermohonan: "Requested",
+              lokasi: findUser.lokasi,
             });
             if (
               data.daftarPermohonanPembelian &&
@@ -327,6 +339,7 @@ class InventoryController {
               activity: `Menambahkan permohonan pembelian dengan id ${createPermohonanPembelian.id}`,
               name: "Nomor: " + data.nomor,
               division: "Inventory",
+              lokasi: findUser.lokasi,
             });
 
             await UserActivityLogs.create({
@@ -354,7 +367,7 @@ class InventoryController {
       });
 
       let result = await permohonanPembelians.findAll({
-        where: {lokasi: findUser.lokasi},
+        where: { lokasi: findUser.lokasi },
         include: [{ model: itemPermohonanPembelians }],
       });
       res.json(result);
@@ -364,8 +377,12 @@ class InventoryController {
   }
   static async getAllPermohonanPembelianRequested(req, res) {
     try {
+      const { id } = req.params;
+      const findUser = await users.findOne({
+        where: { id: id },
+      });
       let result = await permohonanPembelians.findAll({
-        where: { statusPermohonan: "Requested" },
+        where: { statusPermohonan: "Requested", lokasi: findUser.lokasi },
         include: [{ model: itemPermohonanPembelians }],
       });
       res.json(result);
@@ -375,8 +392,14 @@ class InventoryController {
   }
   static async getAllAcceptedPermohonanPembelian(req, res) {
     try {
+      const { id } = req.params;
+
+      const findUser = await users.findOne({
+        where: { id: id },
+      });
+
       let result = await permohonanPembelians.findAll({
-        where: { statusPermohonan: "Accepted" },
+        where: { statusPermohonan: "Accepted", lokasi: findUser.lokasi },
         include: [{ model: itemPermohonanPembelians }],
       });
       res.json(result);
@@ -387,8 +410,14 @@ class InventoryController {
   static async getPermohonanPembelian(req, res) {
     try {
       const { id } = req.params;
+      const { userId } = req.query;
+
+      const findUser = await users.findOne({
+        where: { id: userId },
+      });
+
       let result = await permohonanPembelians.findOne({
-        where: { id: id },
+        where: { id: id, lokasi: findUser.lokasi },
         include: [{ model: itemPermohonanPembelians }],
       });
       res.json(result);
@@ -400,10 +429,16 @@ class InventoryController {
     try {
       const { id } = req.params;
       const { permohonanPembelianId, dataPembelianBahanBaku } = req.body;
+
+      let userInformation = await users.findOne({
+        where: { id: id },
+      });
+
       let result = await pembelianBahanBakus.create({
         permohonanPembelianId: permohonanPembelianId,
         leveransir: dataPembelianBahanBaku.leveransir,
         alamat: dataPembelianBahanBaku.alamat,
+        lokasi: userInformation.lokasi,
       });
 
       if (
@@ -491,15 +526,12 @@ class InventoryController {
         { where: { id: permohonanPembelianId } }
       );
 
-      let userInformation = await users.findOne({
-        where: { id: id },
-      });
-
       let createActivityLog = await activitylogs.create({
         user: userInformation.name,
         activity: `Menambahkan pembelian bahan baku dengan id ${result.id}`,
         name: "Leveransir: " + result.leveransir,
         division: "Inventory",
+        lokasi: userInformation.lokasi,
       });
 
       await UserActivityLogs.create({
@@ -522,7 +554,13 @@ class InventoryController {
   }
   static async getAllPembelianBahanBaku(req, res) {
     try {
+      const { id } = req.params;
+
+      const findUser = await users.findOne({
+        where: { id: id },
+      });
       let result = await pembelianBahanBakus.findAll({
+        where: { lokasi: findUser.lokasi },
         include: [{ model: itemPembelianBahanBakus }],
       });
       res.json(result);
@@ -606,7 +644,12 @@ class InventoryController {
   }
   static async getAllInventoryItem(req, res) {
     try {
+      const { id } = req.params;
+      const findUser = await users.findOne({
+        where: { id: id },
+      });
       let result = await inventorys.findAll({
+        where: { lokasi: findUser.lokasi },
         include: [{ model: inventoryHistorys }],
       });
 
@@ -619,8 +662,6 @@ class InventoryController {
     try {
       const { id } = req.params;
       const { dataInventory } = req.body;
-
-
 
       let userInformation = await users.findOne({
         where: { id: id },
@@ -644,6 +685,7 @@ class InventoryController {
         activity: `Menambahkan item bahan baku dengan id ${createDataInventory.id}`,
         name: "Nama Item: " + createDataInventory.namaItem,
         division: "Inventory",
+        lokasi: userInformation.lokasi,
       });
 
       await UserActivityLogs.create({
@@ -686,6 +728,7 @@ class InventoryController {
         activity: `Update item bahan baku dengan id ${findOneDataInventory.id}`,
         name: "Nama Item :" + dataInventory.namaItem,
         division: "Inventory",
+        lokasi: userInformation.lokasi
       });
 
       await UserActivityLogs.create({
@@ -735,8 +778,14 @@ class InventoryController {
   }
   static async inventoryActivityLog(req, res) {
     try {
+      const { id } = req.params;
+
+      const findUser = await users.findOne({
+        where: { id: id },
+      });
+
       let result = await activitylogs.findAll({
-        where: { division: "Inventory" },
+        where: { division: "Inventory", lokasi: findUser.lokasi },
       });
       res.json(result);
     } catch (error) {
@@ -757,6 +806,7 @@ class InventoryController {
         tanggalStokOpnam: dataStokOpnam.tanggalStokOpnam,
         tanggalAkhirStokOpnam: dataStokOpnam.tanggalAkhirStokOpnam,
         statusStokOpnam: "Ongoing",
+        lokasi: userInformation.lokasi,
       });
 
       await UserStokOpnams.create({
@@ -794,6 +844,7 @@ class InventoryController {
         activity: `Menambahkan data stok opnam dengan id ${result.id}`,
         name: "Judul Stok Opnam: " + result.judulStokOpnam,
         division: "Inventory",
+        lokasi: userInformation.lokasi,
       });
 
       await UserActivityLogs.create({
@@ -820,7 +871,14 @@ class InventoryController {
   }
   static async getAllStokOpnam(req, res) {
     try {
+      const { id } = req.params;
+
+      const findUser = await users.findOne({
+        where: { id: id },
+      });
+
       let result = await stokOpnams.findAll({
+        where: { lokasi: findUser.lokasi },
         include: [{ model: itemStokOpnams }],
       });
 
@@ -832,8 +890,14 @@ class InventoryController {
   static async getStokOpnam(req, res) {
     try {
       const { id } = req.params;
+      const { userId } = req.query;
+
+      const findUser = await users.findOne({
+        where: { id: userId },
+      });
+
       let result = await stokOpnams.findOne({
-        where: { id: id },
+        where: { id: id, lokasi: findUser.lokasi },
         include: [{ model: itemStokOpnams }],
       });
       res.json(result);
@@ -911,6 +975,7 @@ class InventoryController {
         activity: `Mengedit stok opnam dengan id ${findOneStokOpnam.id}`,
         name: "Leveransir: " + dataStokOpnam.judulStokOpnam,
         division: "Inventory",
+        lokasi: userInformation.lokasi
       });
 
       await UserActivityLogs.create({
@@ -990,6 +1055,11 @@ class InventoryController {
     try {
       const { id } = req.params;
       const { dataPenyerahanBarang } = req.body;
+
+      let userInformation = await users.findOne({
+        where: { id: id },
+      });
+
       let result = await penyerahanBarangs.create({
         orderId: dataPenyerahanBarang.orderId,
         productionPlanningId: dataPenyerahanBarang.productionPlanningId,
@@ -997,6 +1067,7 @@ class InventoryController {
         tanggalPenyerahan: dataPenyerahanBarang.tanggalPenyerahan,
         tanggalPengambilan: dataPenyerahanBarang.tanggalPengambilan,
         statusPenyerahan: dataPenyerahanBarang.statusPenyerahan,
+        lokasi: userInformation.lokasi
       });
       await UserPenyerahanBarangs.create({
         userId: id,
@@ -1027,15 +1098,13 @@ class InventoryController {
           })
         );
       }
-      let userInformation = await users.findOne({
-        where: { id: id },
-      });
 
       let createActivityLog = await activitylogs.create({
         user: userInformation.name,
         activity: `Menambahkan penyerahan bahan baku dengan id ${result.id}`,
         name: "Order Id: " + dataPenyerahanBarang.orderId,
         division: "Inventory",
+        lokasi: userInformation.lokasi
       });
 
       await UserActivityLogs.create({
@@ -1050,7 +1119,13 @@ class InventoryController {
   }
   static async getAllPengambilanBarang(req, res) {
     try {
+      const { id } = req.params;
+
+      const findUser = await users.findOne({
+        where: { id: id },
+      });
       let result = await penyerahanBarangs.findAll({
+        where: { lokasi: findUser.lokasi },
         include: [{ model: itemPenyerahanBarangs }],
       });
       res.json(result);
@@ -1095,8 +1170,13 @@ class InventoryController {
   static async getPenyerahanBarang(req, res) {
     try {
       const { id } = req.params;
+      const { userId } = req.query;
+
+      const findUser = await users.findOne({
+        where: { id: userId },
+      });
       let result = await penyerahanBarangs.findOne({
-        where: { id: id },
+        where: { id: id, lokasi: findUser.lokasi },
         include: [{ model: itemPenyerahanBarangs }],
       });
       res.json(result);
@@ -1303,6 +1383,7 @@ class InventoryController {
         activity: `Mengedit penyerahan barang dengan id ${dataPenyerahanBarang.id}`,
         name: "Order Id: " + findOnePenyerahanBarang.orderId,
         division: "Inventory",
+        lokasi: userInformation.lokasi
       });
 
       await UserActivityLogs.create({
@@ -1358,8 +1439,14 @@ class InventoryController {
   static async getPenyerahanBarangOrderId(req, res) {
     try {
       const { id } = req.params;
+      const { userId } = req.query;
+
+      const findUser = await users.findOne({
+        where: { id: userId },
+      });
+
       let result = await penyerahanBarangs.findOne({
-        where: { orderId: id },
+        where: { orderId: id, lokasi: findUser.lokasi },
         include: [{ model: itemPenyerahanBarangs }],
       });
       res.json(result);
@@ -1390,6 +1477,7 @@ class InventoryController {
         activity: `Menolak permohonan pembelian dengan id ${findOnePermohonanPembelian.id}`,
         name: "Nomor: " + findOnePermohonanPembelian.nomor,
         division: "Finance",
+        lokasi: userInformation.lokasi
       });
 
       await UserActivityLogs.create({
@@ -1426,6 +1514,7 @@ class InventoryController {
         activity: `Menerima permohonan pembelian dengan id ${findOnePermohonanPembelian.id}`,
         name: "Nomor: " + findOnePermohonanPembelian.nomor,
         division: "Finance",
+        lokasi: userInformation.lokasi
       });
 
       await UserActivityLogs.create({
@@ -1492,6 +1581,7 @@ class InventoryController {
         activity: `Mengupdate kredensial user/menambahkan user ke dalam divisi inventory`,
         name: `Divisi: Inventory`,
         division: "Inventory",
+        lokasi: findUser.lokasi
       });
 
       await UserActivityLogs.create({

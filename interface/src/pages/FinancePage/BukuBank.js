@@ -121,7 +121,7 @@ const BukuBank = (props) => {
   useEffect(() => {
     axios({
       method: "GET",
-      url: "http://localhost:3000/finance/getDoneBukuBank",
+      url: `http://localhost:3000/finance/getDoneBukuBank/${userInformation?.data?.id}`,
     }).then((result) => {
       if (result.status === 200) {
         setBukuBankDone(result.data);
@@ -136,7 +136,7 @@ const BukuBank = (props) => {
     if (refreshNamaBank) {
       axios({
         method: "GET",
-        url: "http://localhost:3000/finance/getOngoingBukuBank",
+        url: `http://localhost:3000/finance/getOngoingBukuBank/${userInformation?.data?.id}`,
       }).then((result) => {
         if (result.status === 200) {
           const tempData = result?.data?.map((result) => ({
@@ -269,6 +269,7 @@ const BukuBank = (props) => {
     axios({
       method: "GET",
       url: `http://localhost:3000/finance/checkIfNamaBankAvailable/${value}`,
+      params: { userId: userInformation?.data?.id },
     }).then((result) => {
       if (result.status === 200) {
         let isAvailable = result.data.available;
@@ -278,6 +279,7 @@ const BukuBank = (props) => {
             axios({
               method: "GET",
               url: `http://localhost:3000/finance/getPreviousSaldoAkhir/${value}`,
+              params: { userId: userInformation?.data?.id },
             }).then((result) => {
               if (result.status === 200) {
                 const latestItem =

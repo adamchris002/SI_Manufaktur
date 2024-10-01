@@ -97,7 +97,7 @@ const MaindashboardProductionPlanning = (props) => {
   useEffect(() => {
     axios({
       method: "GET",
-      url: "http://localhost:3000/productionPlanning/getUnreviewedOrders",
+      url: `http://localhost:3000/productionPlanning/getUnreviewedOrders/${userInformation?.data?.id}`,
     }).then((result) => {
       try {
         setUnreviewedOrders(result);
@@ -110,7 +110,7 @@ const MaindashboardProductionPlanning = (props) => {
   useEffect(() => {
     axios({
       method: "GET",
-      url: "http://localhost:3000/productionPlanning/getEstimatedOrders",
+      url: `http://localhost:3000/productionPlanning/getEstimatedOrders/${userInformation?.data?.id}`,
     }).then((result) => {
       try {
         setEstimatedOrders(result);
@@ -124,7 +124,7 @@ const MaindashboardProductionPlanning = (props) => {
     if (refreshProductionPlanData) {
       axios({
         method: "GET",
-        url: "http://localhost:3000/productionPlanning/getAllProductionPlanning",
+        url: `http://localhost:3000/productionPlanning/getAllProductionPlanning/${userInformation?.data?.id}`,
       }).then((result) => {
         try {
           setAllProductionPlan(result);
@@ -372,9 +372,13 @@ const MaindashboardProductionPlanning = (props) => {
               >
                 Ubah Divisi
               </Typography>
-              <MySelectTextField onChange={(event) => {
-                handleChangeDivisiOwner(event)
-              }} data={department} width="150px" />
+              <MySelectTextField
+                onChange={(event) => {
+                  handleChangeDivisiOwner(event);
+                }}
+                data={department}
+                width="150px"
+              />
             </div>
             <div
               style={{

@@ -119,6 +119,7 @@ const KegiatanProduksi = (props) => {
       axios({
         method: "GET",
         url: `http://localhost:3000/production/getOneProductionData/${isNewTahapProduksi.id}`,
+        params: {userId: userInformation?.data?.id}
       }).then((result) => {
         if (result.status === 200) {
           if (result.data.tahapProduksi === "Produksi Pracetak") {
@@ -165,7 +166,7 @@ const KegiatanProduksi = (props) => {
     if (laporanProduksiId === undefined && isNewTahapProduksi === undefined) {
       axios({
         method: "GET",
-        url: "http://localhost:3000/productionPlanning/getAllProductionPlanStatusEstimated",
+        url: `http://localhost:3000/productionPlanning/getAllProductionPlanStatusEstimated/${userInformation?.data?.id}`,
       }).then((result) => {
         if (result.status === 200) {
           const tempData = result.data.map((data) => ({
@@ -182,7 +183,7 @@ const KegiatanProduksi = (props) => {
     } else {
       axios({
         method: "GET",
-        url: "http://localhost:3000/productionPlanning/getAllProductionPlanning",
+        url: `http://localhost:3000/productionPlanning/getAllProductionPlanning/${userInformation?.data?.id}`,
       }).then((result) => {
         if (result.status === 200) {
           const tempData = result.data.map((data) => ({
@@ -207,6 +208,7 @@ const KegiatanProduksi = (props) => {
       axios({
         method: "GET",
         url: `http://localhost:3000/inventory/getPenyerahanBarangOrderId/${dataProduksi.noOrderProduksi}`,
+        params: { userId: userInformation?.data?.id },
       }).then((result) => {
         if (result.status === 200) {
           // if (isNewTahapProduksi) {
@@ -320,6 +322,7 @@ const KegiatanProduksi = (props) => {
         axios({
           method: "GET",
           url: `http://localhost:3000/production/getOneProductionData/${laporanProduksiId}`,
+          params: {userId: userInformation?.data?.id}
         }).then((result) => {
           if (result.status === 200) {
             setPersonil(result.data.personils);

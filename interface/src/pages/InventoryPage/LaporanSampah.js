@@ -125,7 +125,7 @@ const LaporanSampah = (props) => {
     if (refreshDataLaporanSampah) {
       axios({
         method: "GET",
-        url: "http://localhost:3000/production/getLaporanSampah",
+        url: `http://localhost:3000/production/getLaporanSampah/${userInformation?.data?.id}`,
       }).then((result) => {
         if (result.status === 200) {
           setAllLaporanSampah(result.data);
@@ -143,7 +143,7 @@ const LaporanSampah = (props) => {
   useEffect(() => {
     axios({
       method: "GET",
-      url: "http://localhost:3000/production/getAllLaporanLimbahProduksi",
+      url: `http://localhost:3000/production/getAllLaporanLimbahProduksi/${userInformation?.data?.id}`,
     }).then((result) => {
       if (result.status === 200) {
         if (result.status === 200) {

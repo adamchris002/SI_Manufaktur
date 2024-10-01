@@ -142,7 +142,7 @@ const StokOpnam = (props) => {
   useEffect(() => {
     axios({
       method: "GET",
-      url: "http://localhost:3000/inventory/getAllInventoryItem",
+      url: `http://localhost:3000/inventory/getAllInventoryItem/${userInformation?.data?.id}`,
     }).then((result) => {
       if (result.status === 200) {
         const tempName = result.data.map((data) => ({
@@ -164,6 +164,7 @@ const StokOpnam = (props) => {
         axios({
           method: "GET",
           url: `http://localhost:3000/inventory/getStokOpnam/${stokOpnamId}`,
+          params: { userId: userInformation?.data?.id },
         }).then((result) => {
           if (result.status === 200) {
             const modifiedData = transformDataStokOpnam(result.data);
@@ -185,7 +186,7 @@ const StokOpnam = (props) => {
     if (refreshPermohonanPembelian) {
       axios({
         method: "GET",
-        url: "http://localhost:3000/inventory/getAllPermohonanPembelian",
+        url: `http://localhost:3000/inventory/getAllPermohonanPembelian/${userInformation?.data?.id}`,
       }).then((result) => {
         if (result.status === 200) {
           const newPermohonanPembelianIds = result.data.map((data) => ({
@@ -1046,12 +1047,12 @@ const StokOpnam = (props) => {
                     : "Tambah Stok Opnam"}
                 </DefaultButton>
                 <Button
+                  sx={{ marginLeft: "8px", textTransform: "none" }}
+                  color="error"
+                  variant="outlined"
                   onClick={() => {
                     navigate(-1);
                   }}
-                  color="error"
-                  variant="outlined"
-                  style={{ textTransform: "none", marginLeft: "8px" }}
                 >
                   Cancel
                 </Button>

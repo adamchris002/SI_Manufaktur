@@ -2,40 +2,43 @@ const financeRoutes = require("express").Router();
 const { FinanceController } = require("../controllers");
 
 //get
-financeRoutes.get("/getOngoingBukuBank", FinanceController.getOngoingBukuBank);
-financeRoutes.get("/getDoneBukuBank", FinanceController.getDoneBukuBank);
+financeRoutes.get(
+  "/getOngoingBukuBank/:id",
+  FinanceController.getOngoingBukuBank
+); //lokasi udah
+financeRoutes.get("/getDoneBukuBank/:id", FinanceController.getDoneBukuBank); //lokasi udah
 financeRoutes.get(
   "/checkifNamaBankAvailable/:name",
-  FinanceController.checkIfNamaBankAvailable
+  FinanceController.checkIfNamaBankAvailable //lokasi udah
 );
 financeRoutes.get(
   "/getPreviousSaldoAkhir/:name",
-  FinanceController.getPreviousSaldoAkhir
+  FinanceController.getPreviousSaldoAkhir //lokasi udah
 );
 financeRoutes.get(
-  "/getOngoingKasHarian",
-  FinanceController.getOngoingKasHarian
+  "/getOngoingKasHarian/:id",
+  FinanceController.getOngoingKasHarian //lokasi udah
 );
-financeRoutes.get("/getDoneKasHarian", FinanceController.getDoneKasHarian);
+financeRoutes.get("/getDoneKasHarian/:id", FinanceController.getDoneKasHarian); //lokasi udah
 financeRoutes.get(
   "/getAllPosPembayaran",
-  FinanceController.getAllPosPembayaran
+  FinanceController.getAllPosPembayaran //ga usah?
 );
 financeRoutes.get(
-  "/getAllOngoingRencanaPembayaran",
-  FinanceController.getAllOngoingRencanaPembayaran
+  "/getAllOngoingRencanaPembayaran/:id",
+  FinanceController.getAllOngoingRencanaPembayaran //lokasi udah
 );
 financeRoutes.get(
-  "/checkIfRencanaPembayaranExists",
-  FinanceController.checkIfRencanaPembayaranExists
+  "/checkIfRencanaPembayaranExists/:id",
+  FinanceController.checkIfRencanaPembayaranExists //lokasi udah
 );
 financeRoutes.get(
-  "/getDoneRencanaPembayaran",
-  FinanceController.getDoneRencanaPembayaran
+  "/getDoneRencanaPembayaran/:id",
+  FinanceController.getDoneRencanaPembayaran //lokasi udah
 );
 financeRoutes.get(
   "/findPrevOngoingHutangs",
-  FinanceController.findPrevOngoingHutangs
+  FinanceController.findPrevOngoingHutangs //lokasi
 );
 financeRoutes.get(
   "/findPrevOngoingPembayaranLainLain",
@@ -98,7 +101,10 @@ financeRoutes.put(
   "/updateUserCredentials/:id",
   FinanceController.updateUserCredentials
 );
-financeRoutes.put("/updateDivisiOwner/:namaDivisi", FinanceController.updateDivisiOwner);
+financeRoutes.put(
+  "/updateDivisiOwner/:namaDivisi",
+  FinanceController.updateDivisiOwner
+);
 // delete
 
 module.exports = financeRoutes;

@@ -98,7 +98,7 @@ const MaindashboardMarketing = (props) => {
   useEffect(() => {
     axios({
       method: "GET",
-      url: "http://localhost:3000/order/getAllOrderInfo",
+      url: `http://localhost:3000/order/getAllOrderInfo/${userInformation?.data?.id}`,
     }).then((result) => {
       setAllOrderList(result);
       setUpdateNotification(false);

@@ -22,8 +22,15 @@ const dayjs = require("dayjs");
 class ProductionController {
   static async getPenyerahanBarang(req, res) {
     try {
+      const { id } = req.params;
+      const findUser = await users.findOne({
+        where: { id: id },
+      });
       let result = await penyerahanBarangs.findAll({
-        where: { statusPenyerahan: "Barang siap diambil" },
+        where: {
+          statusPenyerahan: "Barang siap diambil",
+          lokasi: findUser.lokasi,
+        },
         include: [{ model: itemPenyerahanBarangs }],
       });
       res.json(result);
@@ -36,6 +43,10 @@ class ProductionController {
       const { id } = req.params;
       const { dataProduksi, jadwalPracetak, personil, tanggalPengiriman } =
         req.body;
+
+      const findUser = await users.findOne({
+        where: { id: id },
+      });
 
       const separateValueAndUnit = (str) => {
         const parts = str.split(" ");
@@ -71,6 +82,7 @@ class ProductionController {
         dibuatOleh: dataProduksi.dibuatOleh,
         tahapProduksi: dataProduksi.tahapProduksi,
         tanggalPengiriman: tanggalPengiriman,
+        lokasi: findUser.lokasi,
       });
 
       if (
@@ -135,16 +147,13 @@ class ProductionController {
         },
         { where: { id: dataProduksi.noOrderProduksi } }
       );
-
-      const findUser = await users.findOne({
-        where: { id: id },
-      });
-
+[]
       let createActivityLog = await activitylogs.create({
         user: findUser.name,
         activity: `Menambahkan kegiatan produksi pracetak dengan id ${result.id}`,
         name: `No Order: ${dataProduksi.noOrderProduksi}`,
         division: "Production",
+        lokasi: findUser.lokasi,
       });
 
       await UserActivityLogs.create({
@@ -165,7 +174,12 @@ class ProductionController {
   }
   static async getProductionData(req, res) {
     try {
+      const { id } = req.params;
+      const findUser = await users.findOne({
+        where: { id: id },
+      });
       let result = await laporanProduksis.findAll({
+        where: { lokasi: findUser.lokasi },
         include: [
           { model: personils },
           { model: jadwalProduksis },
@@ -178,10 +192,16 @@ class ProductionController {
     }
   }
   static async getOneProductionData(req, res) {
-    const { id } = req.params;
     try {
+      const { id } = req.params;
+      const { userId } = req.query;
+
+      const findUser = await users.findOne({
+        where: { id: userId },
+      });
+
       let result = await laporanProduksis.findOne({
-        where: { id: id },
+        where: { id: id, lokasi: findUser.lokasi },
         include: [
           { model: personils },
           { model: jadwalProduksis },
@@ -333,6 +353,7 @@ class ProductionController {
         activity: `Mengedit kegiatan produksi pracetak dengan id ${dataProduksi.id}`,
         name: `ID Pesanan: ${dataProduksi.noOrderProduksi}`,
         division: "Production",
+        lokasi: findUser.lokasi,
       });
 
       await UserActivityLogs.create({
@@ -366,6 +387,7 @@ class ProductionController {
         activity: `Menghapus personil ${findOnePersonil.nama} dari kegiatan produksi (${tahapProduksi}) dengan ID Pesanan ${noOrderProduksi}`,
         name: `ID Pesanan: ${noOrderProduksi}`,
         division: "Production",
+        lokasi: findUser.lokasi,
       });
 
       await UserActivityLogs.create({
@@ -401,6 +423,7 @@ class ProductionController {
         activity: `Menghapus item bahan jenis ${findOneBahanLaporanProduksi.jenis} dari bahan laporan produksi dari ${findOneBahanLaporanProduksi.tahapProduksi}`,
         name: `No Pesanan: ${noOrderProduksi}`,
         division: "Prodduction",
+        lokasi: findUser.lokasi,
       });
 
       await UserActivityLogs.create({
@@ -435,6 +458,7 @@ class ProductionController {
         activity: `Menghapus jadwal produksi dari ${findOneJadwalProduksi.tahapProduksi} dengan ID Pesanan ${noOrderProduksi}`,
         name: `No Pesanan: ${noOrderProduksi}`,
         division: "Production",
+        lokasi: findUser.lokasi,
       });
 
       await UserActivityLogs.create({
@@ -469,6 +493,7 @@ class ProductionController {
         activity: `Menghapus Laporan Produksi tahap ${findOneLaporanProduksi.tahapProduksi} dengan ID Pesanan ${findOneLaporanProduksi.noOrderProduksi}`,
         name: `ID Pesanan: ${findOneLaporanProduksi.noOrderProduksi}`,
         division: "Production",
+        lokasi: findUser.lokasi,
       });
 
       await UserActivityLogs.create({
@@ -487,6 +512,10 @@ class ProductionController {
       const { id } = req.params;
       const { personil, dataProduksi, jadwalFitur, tanggalPengiriman } =
         req.body;
+
+      const findUser = await users.findOne({
+        where: { id: id },
+      });
 
       const separateValueAndUnit = (str) => {
         const parts = str.split(" ");
@@ -532,6 +561,7 @@ class ProductionController {
         dibuatOleh: dataProduksi.dibuatOleh,
         tahapProduksi: dataProduksi.tahapProduksi,
         tanggalPengiriman: tanggalPengiriman,
+        lokasi: findUser.lokasi,
       });
 
       if (
@@ -593,15 +623,12 @@ class ProductionController {
         laporanProduksiId: parseInt(result.id),
       });
 
-      const findUser = await users.findOne({
-        where: { id: id },
-      });
-
       let createActivityLog = await activitylogs.create({
         user: findUser.name,
         activity: `Menambahkan kegiatan produksi fitur dengan id ${result.id}`,
         name: `No Order: ${dataProduksi.noOrderProduksi}`,
         division: "Production",
+        lokasi: findUser.lokasi,
       });
 
       await UserActivityLogs.create({
@@ -620,6 +647,10 @@ class ProductionController {
       const { id } = req.params;
       const { personil, jadwalCetak, dataProduksi, tanggalPengiriman } =
         req.body;
+
+      const findUser = await users.findOne({
+        where: { id: id },
+      });
 
       const separateValueAndUnit = (str) => {
         const parts = str.split(" ");
@@ -666,6 +697,7 @@ class ProductionController {
         dibuatOleh: dataProduksi.dibuatOleh,
         tahapProduksi: dataProduksi.tahapProduksi,
         tanggalPengiriman: tanggalPengiriman,
+        lokasi: findUser.lokasi,
       });
 
       if (
@@ -733,15 +765,12 @@ class ProductionController {
         laporanProduksiId: parseInt(result.id),
       });
 
-      const findUser = await users.findOne({
-        where: { id: id },
-      });
-
       let createActivityLog = await activitylogs.create({
         user: findUser.name,
         activity: `Menambahkan kegiatan produksi Cetak dengan id ${result.id}`,
         name: `No Order: ${dataProduksi.noOrderProduksi}`,
         division: "Production",
+        lokasi: findUser.lokasi,
       });
 
       await UserActivityLogs.create({
@@ -909,6 +938,7 @@ class ProductionController {
         activity: `Mengedit kegiatan produksi cetak dengan id ${dataProduksi.id}`,
         name: `ID Pesanan: ${dataProduksi.noOrderProduksi}`,
         division: "Production",
+        lokasi: findUser.lokasi,
       });
 
       await UserActivityLogs.create({
@@ -1064,6 +1094,7 @@ class ProductionController {
         activity: `Mengedit kegiatan produksi fitur dengan id ${dataProduksi.id}`,
         name: `ID Pesanan: ${dataProduksi.noOrderProduksi}`,
         division: "Production",
+        lokasi: findUser.lokasi,
       });
 
       await UserActivityLogs.create({
@@ -1104,6 +1135,7 @@ class ProductionController {
         activity: `Menyelesaikan kegiatan produksi dengan No Pesanan ${findKegiatanProduksi.noOrderProduksi}`,
         name: `No Pesanan: ${findKegiatanProduksi.noOrderProduksi}`,
         division: "Production",
+        lokasi: findUser.lokasi,
       });
 
       await UserActivityLogs.create({
@@ -1123,10 +1155,15 @@ class ProductionController {
   }
   static async getKegiatanProduksiDone(req, res) {
     try {
+      const { id } = req.params;
       const { tanggalProduksiSelesai } = req.query;
 
+      const findUser = await users.findOne({
+        where: { id: id },
+      });
+
       let result = await laporanProduksis.findAll({
-        where: { statusLaporan: "Done" },
+        where: { statusLaporan: "Done", lokasi: findUser.lokasi },
         include: [
           { model: personils },
           { model: jadwalProduksis },
@@ -1152,11 +1189,16 @@ class ProductionController {
       const { id } = req.params;
       const { dataLimbah } = req.body;
 
+      const findUser = await users.findOne({
+        where: { id: id },
+      });
+
       let result = await laporanLimbahProduksis.create({
         noOrderProduksi: parseInt(dataLimbah.noOrderProduksi),
         dibuatOleh: dataLimbah.dibuatOleh,
         tanggalPembuatan: dataLimbah.tanggalPembuatan,
         tahapProduksi: dataLimbah.tahapProduksi,
+        lokasi: findUser.lokasi,
       });
 
       if (
@@ -1193,15 +1235,12 @@ class ProductionController {
         }
       );
 
-      const findUser = await users.findOne({
-        where: { id: id },
-      });
-
       let createActivityLog = await activitylogs.create({
         user: findUser.name,
         activity: `Menambahkan Item Limbah Produksi dari ${dataLimbah.tahapProduksi}`,
         name: `ID Pesanan: ${parseInt(dataLimbah.noOrderProduksi)}`,
         division: "Production",
+        lokasi: findUser.lokasi,
       });
 
       await UserActivityLogs.create({
@@ -1269,6 +1308,7 @@ class ProductionController {
         activity: `Mengedit item limbah produksi dengan id ${dataLimbah.id}`,
         name: `ID Pesanan: ${dataLimbah.noOrderProduksi}`,
         division: "Production",
+        lokasi: findUser.lokasi,
       });
 
       await UserActivityLogs.create({
@@ -1283,8 +1323,16 @@ class ProductionController {
   }
   static async getLaporanProduksiForLaporanLimbah(req, res) {
     try {
+      const { id } = req.params;
+      const findUser = await users.findOne({
+        where: { id: id },
+      });
       let result = await laporanProduksis.findAll({
-        where: { statusLaporan: "Done", statusLaporanLimbah: null },
+        where: {
+          statusLaporan: "Done",
+          statusLaporanLimbah: null,
+          lokasi: findUser.lokasi,
+        },
         include: [
           { model: personils },
           { model: jadwalProduksis },
@@ -1331,6 +1379,7 @@ class ProductionController {
         activity: `Menghapus limbah hasil produksi dengan id ${id}`,
         name: `No Pesanan: ${noOrderProduksi}`,
         division: "Production",
+        lokasi: findUser.lokasi,
       });
 
       await UserActivityLogs.create({
@@ -1347,7 +1396,13 @@ class ProductionController {
 
   static async getAllLaporanLimbahProduksi(req, res) {
     try {
+      const { id } = req.params;
+
+      const findUser = await users.findOne({
+        where: { id: id },
+      });
       let result = await laporanLimbahProduksis.findAll({
+        where: { lokasi: findUser.lokasi },
         include: [{ model: itemLaporanLimbahProduksis }],
       });
 
@@ -1359,8 +1414,12 @@ class ProductionController {
   static async getOneLaporanLimbahProduksi(req, res) {
     try {
       const { id } = req.params;
+      const { userId } = req.query;
+      const findUser = await users.findOne({
+        where: { id: userId },
+      });
       let result = await laporanLimbahProduksis.findOne({
-        where: { id: id },
+        where: { id: id, lokasi: findUser.lokasi },
         include: [{ model: itemLaporanLimbahProduksis }],
       });
       res.json(result);
@@ -1391,6 +1450,7 @@ class ProductionController {
         activity: `Menghapus item hasil limbah produksi dari id ${idLimbahProduksi} dari ID Pesanan ${findOneItemLaporanLimbahProduksi.noOrderProduksiId}`,
         name: `ID Pesanan: ${findOneItemLaporanLimbahProduksi.noOrderProduksiId}`,
         division: "Production",
+        lokasi: findUser.lokasi,
       });
 
       await UserActivityLogs.create({
@@ -1409,10 +1469,15 @@ class ProductionController {
       const { id } = req.params;
       const { dataLaporanSampah } = req.body;
 
+      let findUser = await users.findOne({
+        where: { id: id },
+      });
+
       let result = await laporanSampahs.create({
         laporanLimbahProduksiId: dataLaporanSampah.laporanLimbahProduksiId,
         noOrderProduksi: dataLaporanSampah.noOrderProduksi,
         tahapProduksi: dataLaporanSampah.tahapProduksi,
+        lokasi: findUser.lokasi,
       });
 
       if (
@@ -1437,15 +1502,12 @@ class ProductionController {
         );
       }
 
-      let findUser = await users.findOne({
-        where: { id: id },
-      });
-
       let createActivityLog = await activitylogs.create({
         user: findUser.name,
         activity: `Menambahkan Laporan Sampah dari ${dataLaporanSampah.tahapProduksi} dengan ID Pesanan ${dataLaporanSampah.noOrderProduksi}`,
         name: `ID Pesanan: ${dataLaporanSampah.noOrderProduksi}`,
         division: "Inventory",
+        lokasi: findUser.lokasi,
       });
 
       await UserActivityLogs.create({
@@ -1460,7 +1522,10 @@ class ProductionController {
   }
   static async getLaporanSampah(req, res) {
     try {
+      const { id } = req.params;
+      const findUser = await users.findOne({ where: { id: id } });
       let result = await laporanSampahs.findAll({
+        where: { lokasi: findUser.lokasi },
         include: [{ model: itemLaporanSampahs }],
       });
       res.json(result);
@@ -1489,6 +1554,7 @@ class ProductionController {
         activity: `Menghapus laporan sampah dari ID Pesanan ${findOneLaporanSampah.noOrderProduksi}`,
         name: `ID Pesanan: ${findOneLaporanSampah.noOrderProduksi}`,
         division: "Inventory",
+        lokasi: findUser.lokasi,
       });
 
       await UserActivityLogs.create({
@@ -1523,6 +1589,7 @@ class ProductionController {
         activity: `Menghapus item laporan sampah dari laporan sampah dengan ID ${iDLaporanSampah} dari ID Pesanan ${findOneLaporanSampah.noOrderProduksi}`,
         name: `ID Pesanan: ${findOneLaporanSampah.noOrderProduksi}`,
         division: "Production",
+        lokasi: findUser.lokasi,
       });
 
       await UserActivityLogs.create({
@@ -1597,6 +1664,7 @@ class ProductionController {
         activity: `Mengedit laporan sampah dengan id ${dataLaporanSampah.id}`,
         name: `ID Pesanan: ${dataLaporanSampah.noOrderProduksi}`,
         division: "Production",
+        lokasi: findUser.lokasi,
       });
 
       await UserActivityLogs.create({
@@ -1612,8 +1680,12 @@ class ProductionController {
 
   static async productionActivityLog(req, res) {
     try {
+      const { id } = req.params;
+      const findUser = await users.findOne({
+        where: { id: id },
+      });
       let result = await activitylogs.findAll({
-        where: { division: "Production" },
+        where: { division: "Production", lokasi: findUser.lokasi },
       });
       res.json(result);
     } catch (error) {
@@ -1674,6 +1746,7 @@ class ProductionController {
         activity: `Mengupdate kredensial user/menambahkan user ke dalam divisi production`,
         name: `Divisi: Production`,
         division: "Production",
+        lokasi: findUser.lokasi,
       });
 
       await UserActivityLogs.create({

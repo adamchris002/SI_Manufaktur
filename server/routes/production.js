@@ -3,63 +3,63 @@ const { ProductionController } = require("../controllers");
 
 //get
 productionRoutes.get(
-  "/penyerahanBarangSiap",
-  ProductionController.getPenyerahanBarang
+  "/penyerahanBarangSiap/:id",
+  ProductionController.getPenyerahanBarang //lokasi udah
 );
 productionRoutes.get(
-  "/getProductionData",
-  ProductionController.getProductionData
+  "/getProductionData/:id",
+  ProductionController.getProductionData //lokasi udah
 );
 productionRoutes.get(
   "/getOneProductionData/:id",
-  ProductionController.getOneProductionData
+  ProductionController.getOneProductionData //lokasi udah
 );
 productionRoutes.get(
-  "/getKegiatanProduksiDone",
-  ProductionController.getKegiatanProduksiDone
+  "/getKegiatanProduksiDone/:id",
+  ProductionController.getKegiatanProduksiDone //lokasi udah
 );
 productionRoutes.get(
-  "/getLaporanProduksiForLaporanLimbah",
-  ProductionController.getLaporanProduksiForLaporanLimbah
+  "/getLaporanProduksiForLaporanLimbah/:id",
+  ProductionController.getLaporanProduksiForLaporanLimbah //lokasi udah
 );
 productionRoutes.get(
-  "/getAllLaporanLimbahProduksi",
-  ProductionController.getAllLaporanLimbahProduksi
+  "/getAllLaporanLimbahProduksi/:id",
+  ProductionController.getAllLaporanLimbahProduksi //lokasi udah
 );
 productionRoutes.get(
   "/getOneLaporanLimbahProduksi/:id",
-  ProductionController.getOneLaporanLimbahProduksi
+  ProductionController.getOneLaporanLimbahProduksi //lokasi udah
 );
 productionRoutes.get(
-  "/getLaporanSampah",
-  ProductionController.getLaporanSampah
+  "/getLaporanSampah/:id",
+  ProductionController.getLaporanSampah //lokasi udah
 );
 productionRoutes.get(
-  "/getActivityLog",
-  ProductionController.productionActivityLog
+  "/getActivityLog/:id",
+  ProductionController.productionActivityLog //lokasi udah
 );
 productionRoutes.get("/getUserBaru", ProductionController.getUserBaru);
 productionRoutes.get("/getUserLama", ProductionController.getUserLama);
 //post
 productionRoutes.post(
   "/addKegiatanProduksi/:id",
-  ProductionController.addKegiatanProduksi //udah
+  ProductionController.addKegiatanProduksi //udah //lokasi udah
 );
 productionRoutes.post(
   "/addKegiatanProduksiCetak/:id",
-  ProductionController.addKegiatanProduksiCetak //udah
+  ProductionController.addKegiatanProduksiCetak //udah //lokasi udah
 );
 productionRoutes.post(
   "/addKegiatanProduksiFitur/:id",
-  ProductionController.addKegiatanProduksiFitur //udah
+  ProductionController.addKegiatanProduksiFitur //udah //lokasi udah
 );
 productionRoutes.post(
   "/addLaporanLimbahProduksi/:id",
-  ProductionController.addLaporanLimbahProduksi //udah
+  ProductionController.addLaporanLimbahProduksi //udah //lokasi udah
 );
 productionRoutes.post(
   "/addLaporanSampah/:id",
-  ProductionController.addLaporanSampah //udah
+  ProductionController.addLaporanSampah //udah //lokasi udah
 );
 
 //put
@@ -94,27 +94,27 @@ productionRoutes.put(
 //delete
 productionRoutes.delete(
   "/deletePersonils/:id",
-  ProductionController.deletePersonil //udah
+  ProductionController.deletePersonil //udah //lokasi udah
 );
 productionRoutes.delete(
   "/deleteBahanProduksiPracetak/:id",
-  ProductionController.deleteBahanProduksiPracetak //udah
+  ProductionController.deleteBahanProduksiPracetak //udah //lokasi udah
 );
 productionRoutes.delete(
   "/deleteJadwalProduksiPracetak/:id",
-  ProductionController.deleteJadwalProduksiPracetak //udah
+  ProductionController.deleteJadwalProduksiPracetak //udah //lokasi udah
 );
 productionRoutes.delete(
   "/deleteKegiatanProduksi/:id",
-  ProductionController.deleteKegiatanProduksi //udah
+  ProductionController.deleteKegiatanProduksi //udah //lokasi udah
 );
 productionRoutes.delete(
   "/deleteItemLimbahProduksi/:id",
-  ProductionController.deleteItemLimbahProduksi //udah
+  ProductionController.deleteItemLimbahProduksi //udah //lokasi udah
 );
 productionRoutes.delete(
   "/deleteItemLaporanLimbahProduksis/:id",
-  ProductionController.deleteItemLaporanLimbahProduksis //udah
+  ProductionController.deleteItemLaporanLimbahProduksis //udah //lokasi udah
 );
 productionRoutes.delete(
   "/deleteLaporanSampah/:id",

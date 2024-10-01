@@ -135,7 +135,7 @@ const Pajak = (props) => {
   useEffect(() => {
     axios({
       method: "GET",
-      url: "http://localhost:3000/finance/getOngoingBukuBank",
+      url: `http://localhost:3000/finance/getOngoingBukuBank/${userInformation?.data?.id}`,
     }).then((result) => {
       if (result.status === 200) {
         const tempData = result?.data?.map((result) => {

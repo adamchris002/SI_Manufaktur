@@ -303,6 +303,7 @@ const EditProductionPlanPage = (props) => {
       axios({
         method: "GET",
         url: `http://localhost:3000/productionPlanning/getProductionPlanningWithData/${productionPlanId}`,
+        params: { userId: userInformation?.data?.id },
       }).then((result) => {
         setProductionPlanWithData(result);
         setPemesan(result.data.pemesan);
@@ -1017,7 +1018,10 @@ const EditProductionPlanPage = (props) => {
       axios({
         method: "GET",
         url: "http://localhost:3000/productionPlanning/getOneOrder",
-        params: { orderId: productionPlanWithData?.data?.orderId },
+        params: {
+          orderId: productionPlanWithData?.data?.orderId,
+          userId: userInformation?.data?.id,
+        },
       }).then((result) => {
         setSelectedOrder(result);
         setCallSelectedOrder(false);

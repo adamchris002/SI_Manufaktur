@@ -144,7 +144,7 @@ const KasHarian = (props) => {
   useEffect(() => {
     axios({
       method: "GET",
-      url: "http://localhost:3000/finance/getDoneKasHarian",
+      url: `http://localhost:3000/finance/getDoneKasHarian/${userInformation?.data?.id}`,
     }).then((result) => {
       if (result.status === 200) {
         setKasHarianDone(result.data);
@@ -159,7 +159,7 @@ const KasHarian = (props) => {
   useEffect(() => {
     axios({
       method: "GET",
-      url: "http://localhost:3000/finance/getOngoingKasHarian",
+      url: `http://localhost:3000/finance/getOngoingKasHarian/${userInformation?.data?.id}`,
     }).then((result) => {
       if (result.status === 200) {
         if (result.data !== null) {

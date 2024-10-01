@@ -111,7 +111,7 @@ const MaindashboardProduction = (props) => {
     if (refreshDataLaporanLimbahProduksi) {
       axios({
         method: "GET",
-        url: "http://localhost:3000/production/getAllLaporanLimbahProduksi",
+        url: `http://localhost:3000/production/getAllLaporanLimbahProduksi/${userInformation?.data?.id}`,
       }).then((result) => {
         if (result.status === 200) {
           setAllDataLaporanLimbahProduksi(result?.data);
@@ -128,7 +128,7 @@ const MaindashboardProduction = (props) => {
   useEffect(() => {
     axios({
       method: "GET",
-      url: "http://localhost:3000/production/penyerahanBarangSiap",
+      url: `http://localhost:3000/production/penyerahanBarangSiap/${userInformation?.data?.id}`,
     }).then((result) => {
       if (result.status === 200) {
         setAllPenyerahanBarang(result.data);
@@ -144,7 +144,7 @@ const MaindashboardProduction = (props) => {
     if (refreshDataKegiatanProduksi) {
       axios({
         method: "GET",
-        url: "http://localhost:3000/production/getProductionData",
+        url: `http://localhost:3000/production/getProductionData/${userInformation?.data?.id}`,
       }).then((result) => {
         if (result.status === 200) {
           const data = result.data;
@@ -431,9 +431,13 @@ const MaindashboardProduction = (props) => {
               >
                 Ubah Divisi
               </Typography>
-              <MySelectTextField onChange={(event) => {
-                handleChangeDivisiOwner(event);
-              }} data={department} width="150px" />
+              <MySelectTextField
+                onChange={(event) => {
+                  handleChangeDivisiOwner(event);
+                }}
+                data={department}
+                width="150px"
+              />
             </div>
             <div
               style={{

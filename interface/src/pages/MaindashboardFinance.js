@@ -134,7 +134,7 @@ const MaindashboardFinance = (props) => {
     if (refreshDataPermohonanPembelian) {
       axios({
         method: "GET",
-        url: "http://localhost:3000/inventory/getAllPermohonanPembelianRequested",
+        url: `http://localhost:3000/inventory/getAllPermohonanPembelianRequested/${userInformation?.data?.id}`,
       }).then((result) => {
         if (result.status === 200) {
           setAllDataPermohonanPembelianRequested(result.data);
@@ -155,7 +155,7 @@ const MaindashboardFinance = (props) => {
     if (refreshNamaBank) {
       axios({
         method: "GET",
-        url: "http://localhost:3000/finance/getOngoingBukuBank",
+        url: `http://localhost:3000/finance/getOngoingBukuBank/${userInformation?.data?.id}`,
       }).then((result) => {
         if (result.status === 200) {
           setDaftarBank(result.data);
@@ -174,7 +174,7 @@ const MaindashboardFinance = (props) => {
     if (refreshKasHarian) {
       axios({
         method: "GET",
-        url: "http://localhost:3000/finance/getOngoingKasHarian",
+        url: `http://localhost:3000/finance/getOngoingKasHarian/${userInformation?.data?.id}`,
       }).then((result) => {
         if (result.status === 200) {
           setKasHarian(result.data);

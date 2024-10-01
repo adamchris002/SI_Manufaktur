@@ -87,7 +87,7 @@ const StockPage = (props) => {
     if (refreshInventoryItem) {
       axios({
         method: "GET",
-        url: "http://localhost:3000/inventory/getAllInventoryItem",
+        url: `http://localhost:3000/inventory/getAllInventoryItem/${userInformation?.data?.id}`,
       }).then((result) => {
         if (result.status === 200) {
           setRefreshInventoryItem(false);
@@ -421,7 +421,7 @@ const StockPage = (props) => {
                       <TableCell align="left">Kode Barang</TableCell>
                       <TableCell align="left">Rincian Item</TableCell>
                       <TableCell align="left">Jumlah Item</TableCell>
-                      <TableCell align="left">Lokasi Penyimpanan</TableCell>
+                      {/* <TableCell align="left">Lokasi Penyimpanan</TableCell> */}
                       <TableCell style={{ width: 60 }} align="left">
                         Actions
                       </TableCell>
@@ -446,7 +446,7 @@ const StockPage = (props) => {
                               <TableCell>{result.kodeBarang}</TableCell>
                               <TableCell>{result.rincianItem}</TableCell>
                               <TableCell>{result.jumlahItem}</TableCell>
-                              <TableCell>{result.lokasi}</TableCell>
+                              {/* <TableCell>{result.lokasi}</TableCell> */}
                               <TableCell>
                                 <div
                                   style={{
@@ -790,7 +790,7 @@ const StockPage = (props) => {
                   marginTop: "16px",
                 }}
               >
-                <div style={{ width: "150px" }}>
+                {/* <div style={{ width: "150px" }}>
                   <Typography
                     style={{
                       color: "#0F607D",
@@ -799,7 +799,7 @@ const StockPage = (props) => {
                   >
                     Lokasi Penyimpanan:
                   </Typography>
-                </div>
+                </div> */}
                 {/* <TextField
                   value={lokasiPenyimpanan}
                   onChange={(event) => {
@@ -824,14 +824,14 @@ const StockPage = (props) => {
                     },
                   }}
                 /> */}
-                <MySelectTextField
+                {/* <MySelectTextField
                   width={"200px"}
                   data={lokasi}
                   value={lokasiPenyimpanan}
                   onChange={(event) => {
                     setLokasiPenyimpanan(event.target.value);
                   }}
-                />
+                /> */}
               </div>
             </div>
             <div

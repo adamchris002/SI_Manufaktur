@@ -129,7 +129,7 @@ function App() {
                 userCredentials.data.department !== "Marketing" ? (
                   <Navigate to="/unauthorized" replace />
                 ) : (
-                  <MarketingActivityLog />
+                  <MarketingActivityLog userInformation={userCredentials} />
                 )
               }
             />
@@ -202,7 +202,7 @@ function App() {
                 userCredentials.data.department !== "Production Planning" ? (
                   <Navigate to="/unauthorized" replace />
                 ) : (
-                  <ProductionPlanningActivityLog />
+                  <ProductionPlanningActivityLog userInformation={userCredentials} />
                 )
               }
             />
@@ -271,7 +271,7 @@ function App() {
                 userCredentials.data.department !== "Inventory" ? (
                   <Navigate to="/unauthorized" replace />
                 ) : (
-                  <InventoryActivityLog />
+                  <InventoryActivityLog userInformation={userCredentials} />
                 )
               }
             />

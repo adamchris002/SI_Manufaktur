@@ -17,7 +17,8 @@ import axios from "axios";
 import moment from "moment";
 import { AppContext } from "../../App";
 
-const InventoryActivityLog = () => {
+const InventoryActivityLog = (props) => {
+  const { userInformation } = props;
   const { isMobile } = useContext(AppContext);
 
   const navigate = useNavigate();
@@ -26,7 +27,7 @@ const InventoryActivityLog = () => {
   useEffect(() => {
     axios({
       method: "GET",
-      url: "http://localhost:3000/inventory/inventoryActivityLog",
+      url: `http://localhost:3000/inventory/inventoryActivityLog/${userInformation?.data?.id}`,
     }).then((result) => {
       setActivityLogs(result);
     });

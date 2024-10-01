@@ -814,7 +814,7 @@ const EstimationOrderPage = (props) => {
     axios({
       method: "GET",
       url: "http://localhost:3000/productionPlanning/getOneOrder",
-      params: { orderId: orderId.target.value },
+      params: { orderId: orderId.target.value, userId: userInformation?.data?.id },
     }).then((result) => {
       setSelectedOrder(result);
       setPemesan(result?.data?.customerDetail);
@@ -825,7 +825,7 @@ const EstimationOrderPage = (props) => {
   useEffect(() => {
     axios({
       method: "GET",
-      url: "http://localhost:3000/productionPlanning/getUnreviewedOrders",
+      url: `http://localhost:3000/productionPlanning/getUnreviewedOrders/${userInformation?.data?.id}`,
     }).then((result) => {
       try {
         const allOrderIDs = result.data.map((data) => ({

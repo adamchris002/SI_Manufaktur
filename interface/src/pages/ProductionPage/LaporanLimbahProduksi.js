@@ -70,6 +70,7 @@ const LaporanLimbahProduksi = (props) => {
         axios({
           method: "GET",
           url: `http://localhost:3000/production/getOneLaporanLimbahProduksi/${laporanLimbahProduksiId}`,
+          params: { userId: userInformation?.data?.id },
         }).then((result) => {
           if (result.status === 200) {
             setDataLimbah((oldObject) => {
@@ -101,7 +102,7 @@ const LaporanLimbahProduksi = (props) => {
   useEffect(() => {
     axios({
       method: "GET",
-      url: "http://localhost:3000/production/getLaporanProduksiForLaporanLimbah",
+      url: `http://localhost:3000/production/getLaporanProduksiForLaporanLimbah/${userInformation?.data?.id}`,
     })
       .then((result) => {
         if (result.status === 200) {
