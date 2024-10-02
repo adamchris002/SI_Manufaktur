@@ -105,6 +105,10 @@ financeRoutes.put(
   "/updateDivisiOwner/:namaDivisi",
   FinanceController.updateDivisiOwner
 );
+financeRoutes.put(
+  "/updateLocationOwner/:namaLokasi",
+  FinanceController.updateLocationOwner
+);
 // delete
 
 module.exports = financeRoutes;

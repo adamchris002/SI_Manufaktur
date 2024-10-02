@@ -83,6 +83,29 @@ const MaindashboardProduction = (props) => {
     });
   };
 
+  const handleChangeLocationOwner = (event) => {
+    axios({
+      method: "PUT",
+      url: `http://localhost:3000/finance/updateLocationOwner/${event.target.value}`,
+    }).then((result) => {
+      if (result.status === 200) {
+        setUserCredentials((oldObject) => {
+          return {
+            ...oldObject,
+            data: {
+              ...oldObject.data,
+              lokasi: event.target.value,
+            },
+          };
+        });
+        setRefreshDataKegiatanProduksi(true);
+        setRefreshDataLaporanLimbahProduksi(true);
+      } else {
+        //snackbar
+      }
+    });
+  };
+
   const lokasi = [
     { value: "Jakarta" },
     { value: "Semarang" },
@@ -126,19 +149,21 @@ const MaindashboardProduction = (props) => {
   }, [refreshDataLaporanLimbahProduksi]);
 
   useEffect(() => {
-    axios({
-      method: "GET",
-      url: `http://localhost:3000/production/penyerahanBarangSiap/${userInformation?.data?.id}`,
-    }).then((result) => {
-      if (result.status === 200) {
-        setAllPenyerahanBarang(result.data);
-      } else {
-        setOpenSnackbar(true);
-        setSnackbarStatus(false);
-        setSnackbarMessage("Tidak dapat memanggil data penyerahan barang");
-      }
-    });
-  }, []);
+    if (refreshDataKegiatanProduksi) {
+      axios({
+        method: "GET",
+        url: `http://localhost:3000/production/penyerahanBarangSiap/${userInformation?.data?.id}`,
+      }).then((result) => {
+        if (result.status === 200) {
+          setAllPenyerahanBarang(result.data);
+        } else {
+          setOpenSnackbar(true);
+          setSnackbarStatus(false);
+          setSnackbarMessage("Tidak dapat memanggil data penyerahan barang");
+        }
+      });
+    }
+  }, [refreshDataKegiatanProduksi]);
 
   useEffect(() => {
     if (refreshDataKegiatanProduksi) {
@@ -451,7 +476,13 @@ const MaindashboardProduction = (props) => {
               >
                 Ubah Lokasi
               </Typography>
-              <MySelectTextField data={lokasi} width="150px" />
+              <MySelectTextField
+                onChange={(event) => {
+                  handleChangeLocationOwner(event);
+                }}
+                data={lokasi}
+                width="150px"
+              />
             </div>
           </div>
         )}

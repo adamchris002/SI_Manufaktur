@@ -100,6 +100,32 @@ const MaindashboardInventory = (props) => {
     });
   };
 
+  const handleChangeLocationOwner = (event) => {
+    axios({
+      method: "PUT",
+      url: `http://localhost:3000/finance/updateLocationOwner/${event.target.value}`,
+    }).then((result) => {
+      if (result.status === 200) {
+        setUserCredentials((oldObject) => {
+          return {
+            ...oldObject,
+            data: {
+              ...oldObject.data,
+              lokasi: event.target.value,
+            },
+          };
+        });
+        setRefreshItemsPermohonanPembelian(true);
+        setRefreshPembelianBahanBaku(true);
+        setRefereshDataStokOpnam(true);
+        setRefreshPenyerahanBarang(true);
+        setRefreshPermohonanPembelian(true);
+      } else {
+        //snackbar
+      }
+    });
+  };
+
   const lokasi = [
     { value: "Jakarta" },
     { value: "Semarang" },
@@ -135,23 +161,26 @@ const MaindashboardInventory = (props) => {
   }, [refreshPenyerahanBarang]);
 
   useEffect(() => {
-    axios({
-      method: "GET",
-      url: `http://localhost:3000/inventory/getAllInventoryItem/${userInformation?.data?.id}`,
-    }).then((result) => {
-      if (result.status === 200) {
-        const tempData = result.data.map((item) => ({
-          value: item.namaItem,
-          ...item,
-        }));
-        setAllInventoryItems(tempData);
-      } else {
-        setOpenSnackbar(true);
-        setSnackbarStatus(false);
-        setSnackbarMessage("Tidak berhasil memanggil data item bahan baku");
-      }
-    });
-  }, []);
+    if (refreshPermohonanPembelian) {
+      axios({
+        method: "GET",
+        url: `http://localhost:3000/inventory/getAllInventoryItem/${userInformation?.data?.id}`,
+      }).then((result) => {
+        if (result.status === 200) {
+          const tempData = result.data.map((item) => ({
+            value: item.namaItem,
+            ...item,
+          }));
+          setAllInventoryItems(tempData);
+          setRefreshPermohonanPembelian(false);
+        } else {
+          setOpenSnackbar(true);
+          setSnackbarStatus(false);
+          setSnackbarMessage("Tidak berhasil memanggil data item bahan baku");
+        }
+      });
+    }
+  }, [refreshPermohonanPembelian]);
 
   useEffect(() => {
     if (refresDataStokOpnam) {
@@ -270,7 +299,7 @@ const MaindashboardInventory = (props) => {
     if (refreshItemsPermohonanPembelian) {
       axios({
         method: "GET",
-        url: `http://localhost:3000/inventory/getPermohonanPembelian/${permohonanPembelian[0].id}`,
+        url: `http://localhost:3000/inventory/getPermohonanPembelian/${permohonanPembelian[0]?.id}`,
         params: { userId: userInformation?.data?.id },
       }).then((result) => {
         if (result.status === 200) {
@@ -510,7 +539,7 @@ const MaindashboardInventory = (props) => {
   const modifyDataPermohonanPembelian = (data) => {
     const newData = [data];
     return newData.map((item) => {
-      const daftarPermohonanPembelian = item.itemPermohonanPembelians.map(
+      const daftarPermohonanPembelian = item?.itemPermohonanPembelians?.map(
         (permohonan) => {
           const { jumlah, stok, ...rest } = permohonan;
           return {
@@ -928,7 +957,13 @@ const MaindashboardInventory = (props) => {
               >
                 Ubah Lokasi
               </Typography>
-              <MySelectTextField data={lokasi} width="150px" />
+              <MySelectTextField
+                onChange={(event) => {
+                  handleChangeLocationOwner(event);
+                }}
+                data={lokasi}
+                width="150px"
+              />
             </div>
           </div>
         )}

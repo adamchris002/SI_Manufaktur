@@ -91,6 +91,30 @@ const MaindashboardFinance = (props) => {
     });
   };
 
+  const handleChangeLocationOwner = (event) => {
+    axios({
+      method: "PUT",
+      url: `http://localhost:3000/finance/updateLocationOwner/${event.target.value}`,
+    }).then((result) => {
+      if (result.status === 200) {
+        setUserCredentials((oldObject) => {
+          return {
+            ...oldObject,
+            data: {
+              ...oldObject.data,
+              lokasi: event.target.value,
+            },
+          };
+        });
+        setRefreshDataPermohonanPembelian(true);
+        setRefreshKasHarian(true);
+        setRefreshNamaBank(true);
+      } else {
+        //snackbar
+      }
+    });
+  };
+
   const lokasi = [
     { value: "Jakarta" },
     { value: "Semarang" },
@@ -515,7 +539,9 @@ const MaindashboardFinance = (props) => {
                 Ubah Lokasi
               </Typography>
               <MySelectTextField
-                onChange={(event) => {}}
+                onChange={(event) => {
+                  handleChangeLocationOwner(event);
+                }}
                 data={lokasi}
                 width="150px"
               />

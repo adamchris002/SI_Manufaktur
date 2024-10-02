@@ -89,20 +89,22 @@ const MaindashboardMarketing = (props) => {
   const [alamatPengiriman, setAlamatPengirimanProduk] = useState("");
   const [orderCustomerChannel, setOrderCustomerChannel] = useState("");
   const [orderCustomerDetail, setOrderCustomerDetail] = useState("");
-  const [updateNotification, setUpdateNotification] = useState(false);
+  const [updateNotification, setUpdateNotification] = useState(true);
   const [allOrderList, setAllOrderList] = useState([]);
   const [openImage, setOpenImage] = useState(false);
   const [imageIndex, setImageIndex] = useState(null);
   const [imageOption, setImageOption] = useState(true);
 
   useEffect(() => {
-    axios({
-      method: "GET",
-      url: `http://localhost:3000/order/getAllOrderInfo/${userInformation?.data?.id}`,
-    }).then((result) => {
-      setAllOrderList(result);
-      setUpdateNotification(false);
-    });
+    if (updateNotification) {
+      axios({
+        method: "GET",
+        url: `http://localhost:3000/order/getAllOrderInfo/${userInformation?.data?.id}`,
+      }).then((result) => {
+        setAllOrderList(result);
+        setUpdateNotification(false);
+      });
+    }
   }, [updateNotification]);
 
   const units = [
@@ -169,6 +171,28 @@ const MaindashboardMarketing = (props) => {
           default:
           //snackbar
         }
+      } else {
+        //snackbar
+      }
+    });
+  };
+
+  const handleChangeLocationOwner = (event) => {
+    axios({
+      method: "PUT",
+      url: `http://localhost:3000/finance/updateLocationOwner/${event.target.value}`,
+    }).then((result) => {
+      if (result.status === 200) {
+        setUserCredentials((oldObject) => {
+          return {
+            ...oldObject,
+            data: {
+              ...oldObject.data,
+              lokasi: event.target.value,
+            },
+          };
+        });
+        setUpdateNotification(true);
       } else {
         //snackbar
       }
@@ -558,7 +582,9 @@ const MaindashboardMarketing = (props) => {
                 Ubah Lokasi
               </Typography>
               <MySelectTextField
-                onChange={(event) => {}}
+                onChange={(event) => {
+                  handleChangeLocationOwner(event);
+                }}
                 data={lokasi}
                 width="150px"
               />

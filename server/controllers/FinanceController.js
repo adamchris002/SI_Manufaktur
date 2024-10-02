@@ -1707,6 +1707,20 @@ class FinanceController {
       res.json(error);
     }
   }
+  static async updateLocationOwner(req, res) {
+    try {
+      const { namaLokasi } = req.params;
+      let updateOwnerLocation = await users.update(
+        {
+          lokasi: namaLokasi,
+        },
+        { where: { role: "Owner" } }
+      );
+      res.json(updateOwnerLocation);
+    } catch (error) {
+      res.json(error);
+    }
+  }
 }
 
 module.exports = FinanceController;

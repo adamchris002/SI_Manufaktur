@@ -81,6 +81,28 @@ const MaindashboardProductionPlanning = (props) => {
     });
   };
 
+  const handleChangeLocationOwner = (event) => {
+    axios({
+      method: "PUT",
+      url: `http://localhost:3000/finance/updateLocationOwner/${event.target.value}`,
+    }).then((result) => {
+      if (result.status === 200) {
+        setUserCredentials((oldObject) => {
+          return {
+            ...oldObject,
+            data: {
+              ...oldObject.data,
+              lokasi: event.target.value,
+            },
+          };
+        });
+        setRefreshProductionPlanData(true);
+      } else {
+        //snackbar
+      }
+    });
+  };
+
   const lokasi = [
     { value: "Jakarta" },
     { value: "Semarang" },
@@ -95,30 +117,34 @@ const MaindashboardProductionPlanning = (props) => {
   ];
 
   useEffect(() => {
-    axios({
-      method: "GET",
-      url: `http://localhost:3000/productionPlanning/getUnreviewedOrders/${userInformation?.data?.id}`,
-    }).then((result) => {
-      try {
-        setUnreviewedOrders(result);
-      } catch (error) {
-        console.log(error);
-      }
-    });
-  }, []);
+    if (refreshProductionPlanData) {
+      axios({
+        method: "GET",
+        url: `http://localhost:3000/productionPlanning/getUnreviewedOrders/${userInformation?.data?.id}`,
+      }).then((result) => {
+        try {
+          setUnreviewedOrders(result);
+        } catch (error) {
+          console.log(error);
+        }
+      });
+    }
+  }, [refreshProductionPlanData]);
 
   useEffect(() => {
-    axios({
-      method: "GET",
-      url: `http://localhost:3000/productionPlanning/getEstimatedOrders/${userInformation?.data?.id}`,
-    }).then((result) => {
-      try {
-        setEstimatedOrders(result);
-      } catch (error) {
-        console.log(error);
-      }
-    });
-  }, []);
+    if (refreshProductionPlanData) {
+      axios({
+        method: "GET",
+        url: `http://localhost:3000/productionPlanning/getEstimatedOrders/${userInformation?.data?.id}`,
+      }).then((result) => {
+        try {
+          setEstimatedOrders(result);
+        } catch (error) {
+          console.log(error);
+        }
+      });
+    }
+  }, [refreshProductionPlanData]);
 
   useEffect(() => {
     if (refreshProductionPlanData) {
@@ -392,7 +418,13 @@ const MaindashboardProductionPlanning = (props) => {
               >
                 Ubah Lokasi
               </Typography>
-              <MySelectTextField data={lokasi} width="150px" />
+              <MySelectTextField
+                onChange={(event) => {
+                  handleChangeLocationOwner(event);
+                }}
+                data={lokasi}
+                width="150px"
+              />
             </div>
           </div>
         )}
