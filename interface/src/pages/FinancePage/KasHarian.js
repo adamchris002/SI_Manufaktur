@@ -386,11 +386,17 @@ const KasHarian = (props) => {
               marginBottom: "16px",
             }}
           >
-            <Typography style={{ color: "#0F607D", fontSize: "3vw" }}>
+            <Typography
+              style={{ color: "#0F607D", fontSize: isMobile ? "6vw" : "3vw" }}
+            >
               Kas Harian
             </Typography>
             <div style={{ display: "flex", alignItems: "center" }}>
               <DefaultButton
+              height={isMobile ? "" : "2.08vw"}
+                width={isMobile ? "" : "15vw"}
+                borderRadius="0.83vw"
+                fontSize={isMobile ? "10px" : "1vw"}
                 onClickFunction={() => {
                   handleLihatDataPosPembayaran();
                 }}
@@ -402,6 +408,10 @@ const KasHarian = (props) => {
                 userInformation?.data?.role === "Owner") && (
                 <div style={{ marginLeft: "8px" }}>
                   <DefaultButton
+                  height={isMobile ? "" : "2.08vw"}
+                  width={isMobile ? "" : "15vw"}
+                  borderRadius="0.83vw"
+                  fontSize={isMobile ? "10px" : "1vw"}
                     onClickFunction={() => {
                       handleTambahBaris();
                     }}
@@ -483,9 +493,9 @@ const KasHarian = (props) => {
                               type="text"
                               sx={{
                                 "& .MuiOutlinedInput-root": {
-                                  height: isMobile ? "15px" : "3vw",
-                                  width: isMobile ? "120px" : "200px",
-                                  fontSize: isMobile ? "10px" : "1.5vw",
+                                  height: isMobile ? "50px" : "3vw",
+                                  width: isMobile ? "200px" : "200px",
+                                  fontSize: isMobile ? "14px" : "1.5vw",
                                   borderRadius: "10px",
                                   "& fieldset": {
                                     borderColor: "#0F607D",
@@ -507,9 +517,9 @@ const KasHarian = (props) => {
                               value={result.nomorBp}
                               sx={{
                                 "& .MuiOutlinedInput-root": {
-                                  height: isMobile ? "15px" : "3vw",
-                                  width: isMobile ? "120px" : "200px",
-                                  fontSize: isMobile ? "10px" : "1.5vw",
+                                  height: isMobile ? "50px" : "3vw",
+                                  width: isMobile ? "200px" : "200px",
+                                  fontSize: isMobile ? "14px" : "1.5vw",
                                   borderRadius: "10px",
                                   "& fieldset": {
                                     borderColor: "#0F607D",
@@ -548,9 +558,9 @@ const KasHarian = (props) => {
                               type="text"
                               sx={{
                                 "& .MuiOutlinedInput-root": {
-                                  height: isMobile ? "15px" : "3vw",
-                                  width: isMobile ? "120px" : "200px",
-                                  fontSize: isMobile ? "10px" : "1.5vw",
+                                  height: isMobile ? "50px" : "3vw",
+                                  width: isMobile ? "200px" : "200px",
+                                  fontSize: isMobile ? "14px" : "1.5vw",
                                   borderRadius: "10px",
                                   "& fieldset": {
                                     borderColor: "#0F607D",
@@ -582,9 +592,9 @@ const KasHarian = (props) => {
                               type="text"
                               sx={{
                                 "& .MuiOutlinedInput-root": {
-                                  height: isMobile ? "15px" : "3vw",
-                                  width: isMobile ? "120px" : "200px",
-                                  fontSize: isMobile ? "10px" : "1.5vw",
+                                  height: isMobile ? "50px" : "3vw",
+                                  width: isMobile ? "200px" : "200px",
+                                  fontSize: isMobile ? "14px" : "1.5vw",
                                   borderRadius: "10px",
                                   "& fieldset": {
                                     borderColor: "#0F607D",
@@ -609,9 +619,9 @@ const KasHarian = (props) => {
                               disabled
                               sx={{
                                 "& .MuiOutlinedInput-root": {
-                                  height: isMobile ? "15px" : "3vw",
-                                  width: isMobile ? "120px" : "200px",
-                                  fontSize: isMobile ? "10px" : "1.5vw",
+                                  height: isMobile ? "50px" : "3vw",
+                                  width: isMobile ? "200px" : "200px",
+                                  fontSize: isMobile ? "14px" : "1.5vw",
                                   borderRadius: "10px",
                                   "& fieldset": {
                                     borderColor: "#0F607D",
@@ -648,13 +658,13 @@ const KasHarian = (props) => {
                   <TableCell></TableCell>
                   <TableCell></TableCell>
                   <TableCell></TableCell>
-                  <TableCell>{`Rp. ${totalDebet
+                  <TableCell>{`Rp. ${parseFloat(totalDebet).toFixed(2)
                     .toString()
                     .replace(/\B(?=(\d{3})+(?!\d))/g, ".")},-`}</TableCell>
-                  <TableCell>{`Rp. ${totalKredit
+                  <TableCell>{`Rp. ${parseFloat(totalKredit).toFixed(2)
                     .toString()
                     .replace(/\B(?=(\d{3})+(?!\d))/g, ".")},-`}</TableCell>
-                  <TableCell>{`Rp. ${totalSisa
+                  <TableCell>{`Rp. ${parseFloat(totalSisa).toFixed(2)
                     .toString()
                     .replace(/\B(?=(\d{3})+(?!\d))/g, ".")},-`}</TableCell>
                 </TableRow>
@@ -692,14 +702,14 @@ const KasHarian = (props) => {
             </Button>
           </div>
           <div style={{ marginTop: "32px" }}>
-            <Typography style={{ fontSize: "3vw", color: "#0F607D" }}>
+            <Typography style={{ fontSize: isMobile ? "6vw" : "3vw", color: "#0F607D" }}>
               Sejarah Kas Harian
             </Typography>
           </div>
-          <div style={{ width: "40%" }}>
+          <div style={{ width: isMobile ? "100%" : "40%" }}>
             {kasHarianDone?.length === 0 ? (
               <div style={{ display: "flex", justifyContent: "flex-start" }}>
-                <Typography style={{ color: "#0F607D", fontSize: "1.5vw" }}>
+                <Typography style={{ color: "#0F607D", fontSize: isMobile ? "3.5vw" : "1.5vw" }}>
                   Belum ada sejarah data kas harian
                 </Typography>
               </div>
@@ -762,7 +772,7 @@ const KasHarian = (props) => {
                 justifyContent: "space-between",
               }}
             >
-              <Typography style={{ color: "#0F607D", fontSize: "3vw" }}>
+              <Typography style={{ color: "#0F607D", fontSize: isMobile ? "6vw" : "3vw" }}>
                 {selectedKasHarianDone.judulKasHarian}
               </Typography>
               <IconButton
@@ -811,21 +821,21 @@ const KasHarian = (props) => {
                             <TableCell>{result.pos}</TableCell>
                             <TableCell>
                               {result.debet
-                                ? `Rp. ${result.debet
+                                ? `Rp. ${parseFloat(result.debet).toFixed(2)
                                     .toString()
                                     .replace(/\B(?=(\d{3})+(?!\d))/g, ".")},-`
                                 : ""}
                             </TableCell>
                             <TableCell>
                               {result.kredit
-                                ? `Rp. ${result.kredit
+                                ? `Rp. ${parseFloat(result.kredit).toFixed(2)
                                     .toString()
                                     .replace(/\B(?=(\d{3})+(?!\d))/g, ".")},-`
                                 : ""}
                             </TableCell>
                             <TableCell>
                               Rp.
-                              {result.sisa
+                              {parseFloat(result.sisa).toFixed(2)
                                 .toString()
                                 .replace(/\B(?=(\d{3})+(?!\d))/g, ".")}
                               ,-
@@ -847,14 +857,14 @@ const KasHarian = (props) => {
                         ?.reduce((acc, result) => {
                           return acc + (parseFloat(result.debet) || 0);
                         }, 0)
-                        .toString()
+                        .toFixed(2).toString()
                         .replace(/\B(?=(\d{3})+(?!\d))/g, ".")},-`}
                     </TableCell>
                     <TableCell>{`Total Kredit: Rp. ${selectedKasHarianDone?.itemKasHarians
                       ?.reduce((acc, result) => {
                         return acc + (parseFloat(result.kredit) || 0);
                       }, 0)
-                      .toString()
+                      .toFixed(2).toString()
                       .replace(/\B(?=(\d{3})+(?!\d))/g, ".")},-`}</TableCell>
                     <TableCell>
                       {`Sisa: Rp. ${(
@@ -871,7 +881,7 @@ const KasHarian = (props) => {
                           0
                         )
                       )
-                        .toString()
+                        .toFixed(2).toString()
                         .replace(/\B(?=(\d{3})+(?!\d))/g, ".")},-`}
                     </TableCell>
                   </TableRow>

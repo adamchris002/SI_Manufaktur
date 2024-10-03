@@ -1,4 +1,4 @@
-import React, { useRef, useState } from "react";
+import React, { useContext, useRef, useState } from "react";
 import factoryBackground from "../../assets/factorybackground.png";
 import logoPerusahaan from "../../assets/PT_Aridas_Karya_Satria_Logo.png";
 import {
@@ -28,9 +28,11 @@ import MySelectTextField from "../../components/SelectTextField";
 import dayjs from "dayjs";
 import axios from "axios";
 import DefaultButton from "../../components/Button";
+import { AppContext } from "../../App";
 
 const LaporanProduksi = (props) => {
   const { userInformation } = props;
+  const { isMobile } = useContext(AppContext);
   const navigate = useNavigate();
 
   const pdfRef = useRef();
@@ -802,45 +804,82 @@ const LaporanProduksi = (props) => {
     >
       <div style={{ height: "100%", width: "100%" }} ref={pdfRef}>
         <div style={{ margin: "32px" }}>
-          <Typography style={{ color: "#0F607D", fontSize: "3vw" }}>
+          <Typography
+            style={{ color: "#0F607D", fontSize: isMobile ? "6vw" : "3vw" }}
+          >
             Cari Kegiatan Produksi
           </Typography>
         </div>
         <div style={{ margin: "32px" }}>
-          <div style={{ display: "flex", alignItems: "center" }}>
+          <div
+            style={{ display: isMobile ? "" : "flex", alignItems: "center" }}
+          >
             <Typography
-              style={{ color: "#0F607D", fontSize: "1.5vw", width: "350px" }}
+              style={{
+                color: "#0F607D",
+                fontSize: isMobile ? "4vw" : "1.5vw",
+                width: "350px",
+              }}
             >
               Tanggal Kegiatan Produksi:
             </Typography>
-            <div style={{ display: "flex", alignItems: "center" }}>
-              <LocalizationProvider dateAdapter={AdapterDayjs}>
-                <DemoContainer sx={{ padding: 0 }} components={["DatePicker"]}>
-                  <DemoItem sx={{ padding: 0 }}>
-                    <DatePicker
-                      valueType="date"
-                      value={
-                        tanggalProduksiSelesai.isValid()
-                          ? tanggalProduksiSelesai
-                          : null
-                      }
-                      onChange={(event) => {
-                        setTanggalProduksiSelesai(event);
-                      }}
-                      renderInput={(params) => (
-                        <TextField
-                          {...params}
-                          error={params.error || !params.value}
-                          helperText={params.error ? "Invalid date format" : ""}
-                        />
-                      )}
-                    />
-                  </DemoItem>
-                </DemoContainer>
-              </LocalizationProvider>
-              <div style={{ marginLeft: "8px", height: "100%" }}>
+            <div
+              style={{
+                marginTop: isMobile ? "8px" : "",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: isMobile ? "space-between" : "",
+              }}
+            >
+              <div style={{ width: isMobile ? "150px" : "" }}>
+                <LocalizationProvider dateAdapter={AdapterDayjs}>
+                  <DemoContainer
+                    sx={{ padding: 0, overflow: isMobile ? "hidden" : "" }}
+                    components={["DatePicker"]}
+                  >
+                    <DemoItem sx={{ padding: 0 }}>
+                      <DatePicker
+                        sx={{
+                          width: isMobile ? "150px" : "300px",
+                          height: isMobile ? "30px" : "50px",
+                          ".MuiInputBase-root": {
+                            height: isMobile ? "30px" : "50px",
+                            width: isMobile ? "150px" : "300px",
+                            fontSize: isMobile ? "12px" : "",
+                            minWidth: "",
+                          },
+                        }}
+                        valueType="date"
+                        value={
+                          tanggalProduksiSelesai.isValid()
+                            ? tanggalProduksiSelesai
+                            : null
+                        }
+                        onChange={(event) => {
+                          setTanggalProduksiSelesai(event);
+                        }}
+                        renderInput={(params) => (
+                          <TextField
+                            {...params}
+                            error={params.error || !params.value}
+                            helperText={
+                              params.error ? "Invalid date format" : ""
+                            }
+                          />
+                        )}
+                      />
+                    </DemoItem>
+                  </DemoContainer>
+                </LocalizationProvider>
+              </div>
+              <div
+                style={{ marginLeft: "8px", height: isMobile ? "" : "100%" }}
+              >
                 <DefaultButton
-                  height="56px"
+                  height={isMobile ? "" : ""}
+                  width={isMobile ? "150px" : "15vw"}
+                  borderRadius="0.83vw"
+                  fontSize={isMobile ? "10px" : "1vw"}
                   onClickFunction={() => {
                     handleGetKegiatanProduksi();
                   }}
@@ -851,10 +890,19 @@ const LaporanProduksi = (props) => {
             </div>
           </div>
           <div
-            style={{ display: "flex", alignItems: "center", marginTop: "16px" }}
+            style={{
+              display: "flex",
+              alignItems: "center",
+              marginTop: "16px",
+              justifyContent: isMobile ? "space-between" : "",
+            }}
           >
             <Typography
-              style={{ color: "#0F607D", fontSize: "1.5vw", width: "350px" }}
+              style={{
+                color: "#0F607D",
+                fontSize: isMobile ? "3.5vw" : "1.5vw",
+                width: isMobile ? "" : "350px",
+              }}
             >
               No Order Produksi:
             </Typography>
@@ -864,14 +912,23 @@ const LaporanProduksi = (props) => {
               onChange={(event) => {
                 handleChangeInputNoOrderProduksi(event);
               }}
-              width="200px"
+              width={isMobile ? "100px" : "200px"}
             />
           </div>
           <div
-            style={{ display: "flex", alignItems: "center", marginTop: "16px" }}
+            style={{
+              display: "flex",
+              alignItems: "center",
+              marginTop: "16px",
+              justifyContent: isMobile ? "space-between" : "",
+            }}
           >
             <Typography
-              style={{ color: "#0F607D", fontSize: "1.5vw", width: "350px" }}
+              style={{
+                color: "#0F607D",
+                fontSize: isMobile ? "3.5vw" : "1.5vw",
+                width: isMobile ? "" : "350px",
+              }}
             >
               Tahap Produksi:
             </Typography>
@@ -881,14 +938,14 @@ const LaporanProduksi = (props) => {
                 handleChangeInputTahapProduksi(event);
               }}
               data={allTahapProduksi}
-              width="200px"
+              width={isMobile ? "150px" : "200px"}
             />
           </div>
           {selectedKegiatanProduksi.length !== 0 && (
             <div style={{ marginTop: "32px" }}>
-              <div style={{ display: "flex", justifyContent: "space-between" }}>
-                <div style={{ width: "50%" }}>
-                  <Typography style={{ color: "#0F607D", fontSize: "3vw" }}>
+              <div style={{ display: isMobile ? "" : "flex", justifyContent: "space-between" }}>
+                <div style={{ width: isMobile ? "100%" : "55%" }}>
+                  <Typography style={{ color: "#0F607D", fontSize: isMobile ? "3.5VW" : "3vw" }}>
                     Informasi Kegiatan Produksi
                   </Typography>
                   {selectedKegiatanProduksi?.map((result, index) => {
@@ -905,12 +962,12 @@ const LaporanProduksi = (props) => {
                           <Typography
                             style={{
                               color: "#0F607D",
-                              fontSize: "1.5vw",
-                              width: "300px",
+                              fontSize: isMobile ? "12px" : "1.5vw",
+                              width: isMobile ? "132px" : "300px",
                             }}
                           >{`ID: ${result.id}`}</Typography>
                           <Typography
-                            style={{ color: "#0F607D", fontSize: "1.5vw" }}
+                            style={{ color: "#0F607D", fontSize: isMobile ? "12px" : "1.5vw" }}
                           >{`Tanggal Produksi: ${dayjs(
                             result.tanggalProduksi
                           ).format("MM/DD/YYYY hh:mm A")}`}</Typography>
@@ -926,12 +983,12 @@ const LaporanProduksi = (props) => {
                           <Typography
                             style={{
                               color: "#0F607D",
-                              fontSize: "1.5vw",
-                              width: "300px",
+                              fontSize: isMobile ? "12px" : "1.5vw",
+                              width: isMobile ? "132px" : "300px",
                             }}
                           >{`No Order Produksi: ${result.noOrderProduksi}`}</Typography>
                           <Typography
-                            style={{ color: "#0F607D", fontSize: "1.5vw" }}
+                            style={{ color: "#0F607D", fontSize: isMobile ? "12px" : "1.5vw" }}
                           >{`Mesin: ${result.mesin}`}</Typography>
                         </div>
                         <div
@@ -945,25 +1002,25 @@ const LaporanProduksi = (props) => {
                           <Typography
                             style={{
                               color: "#0F607D",
-                              fontSize: "1.5vw",
-                              width: "300px",
+                              fontSize: isMobile ? "12px" : "1.5vw",
+                              width: isMobile ? "132px" : "300px",
                             }}
                           >{`Dibuat Oleh: ${result.dibuatOleh}`}</Typography>
                           <Typography
-                            style={{ color: "#0F607D", fontSize: "1.5vw" }}
+                            style={{ color: "#0F607D", fontSize: isMobile ? "12px" : "1.5vw" }}
                           >{`Tahap Produksi: ${result.tahapProduksi}`}</Typography>
                         </div>
                         <div style={{ marginTop: "8px" }}>
                           <Typography
-                            style={{ color: "#0F607D", fontSize: "1.5vw" }}
+                            style={{ color: "#0F607D", fontSize: isMobile ? "12px" : "1.5vw" }}
                           >{`Jenis Cetakan: ${result.jenisCetakan}`}</Typography>
                         </div>
                       </div>
                     );
                   })}
                 </div>
-                <div style={{ width: "48%" }}>
-                  <Typography style={{ color: "#0F607D", fontSize: "3vw" }}>
+                <div style={{ width: isMobile ? "100%" : "42%" }}>
+                  <Typography style={{ color: "#0F607D", fontSize: isMobile ? "3.5vw" : "3vw", marginTop: isMobile ? "8px" : "" }}>
                     Personil
                   </Typography>
                   <TableContainer component={Paper}>
@@ -995,7 +1052,7 @@ const LaporanProduksi = (props) => {
                 </div>
               </div>
               <div style={{ marginTop: "32px" }}>
-                <Typography style={{ color: "#0F607D", fontSize: "3vw" }}>
+                <Typography style={{ color: "#0F607D", fontSize: isMobile ? "3.5vw" : "3vw" }}>
                   Bahan Kegiatan Produksi
                 </Typography>
                 <TableContainer component={Paper} sx={{ overflowX: "auto" }}>
@@ -1055,7 +1112,7 @@ const LaporanProduksi = (props) => {
                       {result.tahapProduksi === "Produksi Pracetak" && (
                         <>
                           <Typography
-                            style={{ color: "#0F607D", fontSize: "3vw" }}
+                            style={{ color: "#0F607D", fontSize: isMobile ? "3.5vw" : "3vw" }}
                           >
                             Jadwal Produksi Pracetak
                           </Typography>
@@ -1144,7 +1201,7 @@ const LaporanProduksi = (props) => {
                       {result.tahapProduksi === "Produksi Cetak" && (
                         <>
                           <Typography
-                            style={{ color: "#0F607D", fontSize: "3vw" }}
+                            style={{ color: "#0F607D", fontSize: isMobile ? "3.5vw" : "3vw" }}
                           >
                             Jadwal Produksi Cetak
                           </Typography>
@@ -1273,7 +1330,7 @@ const LaporanProduksi = (props) => {
                       {result.tahapProduksi === "Produksi Fitur" && (
                         <>
                           <Typography
-                            style={{ color: "#0F607D", fontSize: "3vw" }}
+                            style={{ color: "#0F607D", fontSize: isMobile ? "3.5vw" : "3vw" }}
                           >
                             Jadwal Produksi Fitur
                           </Typography>

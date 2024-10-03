@@ -1047,7 +1047,9 @@ const EditProductionPlanPage = (props) => {
             alignItems: "center",
           }}
         >
-          <Typography style={{ fontSize: "3.5vw", color: "#0F607D" }}>
+          <Typography
+            style={{ fontSize: isMobile ? "18px" : "3.5vw", color: "#0F607D" }}
+          >
             Edit Perencanaan Produksi
           </Typography>
         </div>
@@ -1066,7 +1068,7 @@ const EditProductionPlanPage = (props) => {
               }}
             >
               <div style={{ margin: "24px" }}>
-                <Typography style={{ fontSize: "2.5vw", color: "#0F607D" }}>
+                <Typography style={{ fontSize: isMobile ? "5vw" : "2.5vw", color: "#0F607D" }}>
                   Perencanaan Produksi
                 </Typography>
                 <div
@@ -1108,9 +1110,9 @@ const EditProductionPlanPage = (props) => {
                       value={pemesan}
                       sx={{
                         "& .MuiOutlinedInput-root": {
-                          height: isMobile ? "15px" : "3vw",
+                          height: isMobile ? "30px" : "3vw",
                           width: isMobile ? "90px" : "12vw",
-                          fontSize: isMobile ? "10px" : "1.5vw",
+                          fontSize: isMobile ? "12px" : "1.5vw",
                           borderRadius: "10px",
                           "& fieldset": {
                             borderColor: "#0F607D",
@@ -1205,9 +1207,9 @@ const EditProductionPlanPage = (props) => {
                     value={alamatPengirimanProduk}
                     sx={{
                       "& .MuiOutlinedInput-root": {
-                        height: isMobile ? "15px" : "3vw",
+                        height: isMobile ? "30px" : "3vw",
                         width: isMobile ? "150px" : "25vw",
-                        fontSize: isMobile ? "10px" : "1.5vw",
+                        fontSize: isMobile ? "12px" : "1.5vw",
                         borderRadius: "10px",
                         "& fieldset": {
                           borderColor: "#0F607D",
@@ -1237,7 +1239,7 @@ const EditProductionPlanPage = (props) => {
                     style={{
                       display: "flex",
                       alignItems: "center",
-                      width: "48%",
+                      width: "46%",
                     }}
                   >
                     <Typography
@@ -1254,9 +1256,9 @@ const EditProductionPlanPage = (props) => {
                       value={jenisCetakan}
                       sx={{
                         "& .MuiOutlinedInput-root": {
-                          height: isMobile ? "15px" : "3vw",
-                          width: isMobile ? "90px" : "10vw",
-                          fontSize: isMobile ? "10px" : "1.5vw",
+                          height: isMobile ? "30px" : "3vw",
+                          width: isMobile ? "80px" : "10vw",
+                          fontSize: isMobile ? "12px" : "1.5vw",
                           borderRadius: "10px",
                           "& fieldset": {
                             borderColor: "#0F607D",
@@ -1295,9 +1297,9 @@ const EditProductionPlanPage = (props) => {
                       value={ply}
                       sx={{
                         "& .MuiOutlinedInput-root": {
-                          height: isMobile ? "15px" : "3vw",
+                          height: isMobile ? "30px" : "3vw",
                           width: isMobile ? "90px" : "10vw",
-                          fontSize: isMobile ? "10px" : "1.5vw",
+                          fontSize: isMobile ? "12px" : "1.5vw",
                           borderRadius: "10px",
                           "& fieldset": {
                             borderColor: "#0F607D",
@@ -1345,9 +1347,9 @@ const EditProductionPlanPage = (props) => {
                       value={ukuran}
                       sx={{
                         "& .MuiOutlinedInput-root": {
-                          height: isMobile ? "15px" : "3vw",
+                          height: isMobile ? "30px" : "3vw",
                           width: isMobile ? "90px" : "10vw",
-                          fontSize: isMobile ? "10px" : "1.5vw",
+                          fontSize: isMobile ? "12px" : "1.5vw",
                           borderRadius: "10px",
                           "& fieldset": {
                             borderColor: "#0F607D",
@@ -1386,9 +1388,9 @@ const EditProductionPlanPage = (props) => {
                       value={seri}
                       sx={{
                         "& .MuiOutlinedInput-root": {
-                          height: isMobile ? "15px" : "3vw",
+                          height: isMobile ? "30px" : "3vw",
                           width: isMobile ? "90px" : "10vw",
-                          fontSize: isMobile ? "10px" : "1.5vw",
+                          fontSize: isMobile ? "12px" : "1.5vw",
                           borderRadius: "10px",
                           "& fieldset": {
                             borderColor: "#0F607D",
@@ -1436,9 +1438,9 @@ const EditProductionPlanPage = (props) => {
                       value={kuantitas}
                       sx={{
                         "& .MuiOutlinedInput-root": {
-                          height: isMobile ? "15px" : "3vw",
+                          height: isMobile ? "30px" : "3vw",
                           width: isMobile ? "90px" : "10vw",
-                          fontSize: isMobile ? "10px" : "1.5vw",
+                          fontSize: isMobile ? "12px" : "1.5vw",
                           borderRadius: "10px",
                           "& fieldset": {
                             borderColor: "#0F607D",
@@ -1477,9 +1479,9 @@ const EditProductionPlanPage = (props) => {
                       value={nomorator}
                       sx={{
                         "& .MuiOutlinedInput-root": {
-                          height: isMobile ? "15px" : "3vw",
+                          height: isMobile ? "30px" : "3vw",
                           width: isMobile ? "90px" : "10vw",
-                          fontSize: isMobile ? "10px" : "1.5vw",
+                          fontSize: isMobile ? "12px" : "1.5vw",
                           borderRadius: "10px",
                           "& fieldset": {
                             borderColor: "#0F607D",
@@ -1519,9 +1521,9 @@ const EditProductionPlanPage = (props) => {
                     value={isiPerBox}
                     sx={{
                       "& .MuiOutlinedInput-root": {
-                        height: isMobile ? "15px" : "3vw",
+                        height: isMobile ? "30px" : "3vw",
                         width: isMobile ? "90px" : "10vw",
-                        fontSize: isMobile ? "10px" : "1.5vw",
+                        fontSize: isMobile ? "12px" : "1.5vw",
                         borderRadius: "10px",
                         "& fieldset": {
                           borderColor: "#0F607D",
@@ -1660,7 +1662,7 @@ const EditProductionPlanPage = (props) => {
                     alignItems: "center",
                   }}
                 >
-                  <Typography style={{ color: "#0F607D", fontSize: "2vw" }}>
+                  <Typography style={{ color: "#0F607D", fontSize: isMobile ? "4vw" : "2vw" }}>
                     Bahan Baku dan Bahan Pembantu
                   </Typography>
                   <IconButton
@@ -2061,7 +2063,7 @@ const EditProductionPlanPage = (props) => {
                     <Typography
                       style={{
                         color: "#0F607D",
-                        fontSize: "2vw",
+                        fontSize: isMobile ? "4vw" : "2vw",
                         marginRight: "8px",
                       }}
                     >
@@ -2312,7 +2314,7 @@ const EditProductionPlanPage = (props) => {
                     <Typography
                       style={{
                         color: "#0F607D",
-                        fontSize: "2vw",
+                        fontSize: isMobile ? "4vw" : "2vw",
                         marginRight: "8px",
                       }}
                     >
@@ -2576,7 +2578,7 @@ const EditProductionPlanPage = (props) => {
                     <Typography
                       style={{
                         color: "#0F607D",
-                        fontSize: "2vw",
+                        fontSize: isMobile ? "4vw" : "2vw",
                         marginRight: "8px",
                       }}
                     >
@@ -2597,18 +2599,18 @@ const EditProductionPlanPage = (props) => {
                       sx={{
                         minWidth: 650,
                         overflowX: "auto",
-                        tableLayout: "fixed",
+                        // tableLayout: "fixed",
                       }}
                     >
                       <TableHead>
                         <TableRow>
                           <TableCell colSpan={3} style={{ width: "50%" }}>
-                            <Typography style={{ fontSize: "1.5vw" }}>
+                            <Typography style={{ fontSize: isMobile ? "3.5vw" : "1.5vw" }}>
                               Perincian Rekanan
                             </Typography>
                           </TableCell>
                           <TableCell colSpan={5} style={{ width: "50%" }}>
-                            <Typography style={{ fontSize: "1.5vw" }}>
+                            <Typography style={{ fontSize: isMobile ? "3.5vw" : "1.5vw" }}>
                               Perincian Harga Cetak
                             </Typography>
                           </TableCell>
@@ -2640,6 +2642,7 @@ const EditProductionPlanPage = (props) => {
                                 <TableCell>{index + 1 + "."}</TableCell>
                                 <TableCell>
                                   <TextField
+                                  sx={{width: "200px"}}
                                     value={result.namaRekanan}
                                     onChange={(event) => {
                                       handleChangeInputPerincian(
@@ -2652,6 +2655,7 @@ const EditProductionPlanPage = (props) => {
                                 </TableCell>
                                 <TableCell>
                                   <TextField
+                                  sx={{width: "200px"}}
                                     value={result.keterangan}
                                     onChange={(event) => {
                                       handleChangeInputPerincian(
@@ -2665,6 +2669,7 @@ const EditProductionPlanPage = (props) => {
                                 <TableCell>{index + 1 + "."}</TableCell>
                                 <TableCell>
                                   <TextField
+                                  sx={{width: "200px"}}
                                     disabled
                                     value={result.jenisCetakan}
                                     // onChange={(event) => {
@@ -2730,7 +2735,7 @@ const EditProductionPlanPage = (props) => {
                                       "& .MuiOutlinedInput-root": {
                                         height: isMobile ? "50px" : "4vw",
                                         width: isMobile ? "120px" : "200px",
-                                        fontSize: isMobile ? "10px" : "1.5vw",
+                                        fontSize: isMobile ? "12px" : "1.5vw",
                                         borderRadius: "10px",
                                         "& fieldset": {
                                           borderColor: "#0F607D",

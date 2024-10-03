@@ -541,7 +541,7 @@ const PembelianBahanBaku = (props) => {
           }}
         >
           <Typography
-            style={{ fontSize: isMobile ? "24px" : "2vw", color: "#0F607D" }}
+            style={{ fontSize: isMobile ? "6vw" : "2vw", color: "#0F607D" }}
           >
             {pembelianBahanBakuId
               ? "Edit Pembelian Bahan Baku/Bahan Pembantu"
@@ -589,7 +589,7 @@ const PembelianBahanBaku = (props) => {
                 <Typography
                   style={{
                     color: "#0F607D",
-                    fontSize: isMobile ? "12px" : "1.5vw",
+                    fontSize: isMobile ? "" : "1.5vw",
                   }}
                 >
                   Leveransir:
@@ -604,7 +604,7 @@ const PembelianBahanBaku = (props) => {
                       "& .MuiOutlinedInput-root": {
                         height: isMobile ? "30px" : "3vw",
                         width: isMobile ? "200px" : "40vw",
-                        fontSize: isMobile ? "10px" : "1.5vw",
+                        fontSize: isMobile ? "12px" : "1.5vw",
                         borderRadius: "10px",
                         "& fieldset": {
                           borderColor: "#0F607D",
@@ -630,7 +630,7 @@ const PembelianBahanBaku = (props) => {
                 <Typography
                   style={{
                     color: "#0F607D",
-                    fontSize: isMobile ? "12px" : "1.5vw",
+                    fontSize: isMobile ? "" : "1.5vw",
                   }}
                 >
                   Alamat:{" "}
@@ -645,7 +645,7 @@ const PembelianBahanBaku = (props) => {
                       "& .MuiOutlinedInput-root": {
                         height: isMobile ? "30px" : "3vw",
                         width: isMobile ? "200px" : "40vw",
-                        fontSize: isMobile ? "10px" : "1.5vw",
+                        fontSize: isMobile ? "12px" : "1.5vw",
                         borderRadius: "10px",
                         "& fieldset": {
                           borderColor: "#0F607D",

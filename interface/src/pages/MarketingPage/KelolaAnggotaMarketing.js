@@ -24,6 +24,8 @@ const KelolaAnggotaMarketing = (props) => {
   const { isMobile } = useContext(AppContext);
   const { userInformation } = props;
 
+  const navigate = useNavigate();
+
   const [userBaru, setUserBaru] = useState([]);
   const [userLama, setUserLama] = useState([]);
 
@@ -220,7 +222,13 @@ const KelolaAnggotaMarketing = (props) => {
           </Typography>
 
           {userBaru?.length === 0 ? (
-            <div style={{ display: "flex", justifyContent: "center" }}>
+            <div
+              style={{
+                display: "flex",
+                justifyContent: "center",
+                marginTop: "16px",
+              }}
+            >
               <Typography
                 style={{
                   fontSize: isMobile ? "3.5vw" : "1.5vw",
@@ -234,7 +242,7 @@ const KelolaAnggotaMarketing = (props) => {
             <div style={{ marginTop: "32px" }}>
               <Typography
                 style={{
-                  fontSize: isMobile ? "3.5vw" : "1.5vw",
+                  fontSize: isMobile ? "5vw" : "1.5vw",
                   color: "#0F607D",
                 }}
               >
@@ -328,6 +336,9 @@ const KelolaAnggotaMarketing = (props) => {
                   Simpan Data
                 </DefaultButton>
                 <Button
+                  onClick={() => {
+                    navigate(-1);
+                  }}
                   variant="outlined"
                   color="error"
                   style={{ marginLeft: "8px", textTransform: "none" }}
@@ -338,7 +349,9 @@ const KelolaAnggotaMarketing = (props) => {
             </div>
           )}
           <div style={{ marginTop: "32px" }}>
-            <Typography style={{ fontSize: isMobile ? "3.5vw" :  "1.5vw", color: "#0F607D" }}>
+            <Typography
+              style={{ fontSize: isMobile ? "5vw" : "1.5vw", color: "#0F607D" }}
+            >
               Kelola Anggota Lama
             </Typography>
             <TableContainer component={Paper}>
@@ -429,6 +442,9 @@ const KelolaAnggotaMarketing = (props) => {
                 Simpan Data Anggota
               </DefaultButton>
               <Button
+                onClick={() => {
+                  navigate(-1);
+                }}
                 variant="outlined"
                 color="error"
                 style={{ marginLeft: "8px", textTransform: "none" }}

@@ -555,13 +555,13 @@ const StokOpnam = (props) => {
             <div style={{ width: "100%" }}>
               <div
                 style={{
-                  display: "flex",
+                  display: isMobile ? " " : "flex",
                   alignItems: "center",
                   margin: "16px 32px",
                 }}
               >
                 <Typography>Judul Stok Opnam: </Typography>
-                <div style={{ marginLeft: "8px" }}>
+                <div style={{ marginLeft: isMobile ? " " : "8px" }}>
                   <TextField
                     value={dataStokOpnam.judulStokOpnam}
                     onChange={(event) => {
@@ -572,13 +572,13 @@ const StokOpnam = (props) => {
               </div>
               <div
                 style={{
-                  display: "flex",
+                  display: isMobile ? " " : "flex",
                   alignItems: "center",
                   margin: "16px 32px",
                 }}
               >
                 <Typography>Tanggal Stok Opnam: </Typography>
-                <div style={{ marginLeft: "8px" }}>
+                <div style={{ marginLeft: isMobile ? " " : "8px" }}>
                   <LocalizationProvider dateAdapter={AdapterDayjs}>
                     <DemoContainer components={["DateTimePicker"]}>
                       <DemoItem>
@@ -612,13 +612,13 @@ const StokOpnam = (props) => {
               </div>
               <div
                 style={{
-                  display: "flex",
+                  display: isMobile ? " " : "flex",
                   alignItems: "center",
                   margin: "16px 32px",
                 }}
               >
                 <Typography>Tanggal Akhir Stok Opnam: </Typography>
-                <div style={{ marginLeft: "8px" }}>
+                <div style={{ marginLeft: isMobile ? " " : "8px" }}>
                   <LocalizationProvider dateAdapter={AdapterDayjs}>
                     <DemoContainer components={["DateTimePicker"]}>
                       <DemoItem>

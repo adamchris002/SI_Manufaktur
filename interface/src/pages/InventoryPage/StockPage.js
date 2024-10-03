@@ -335,9 +335,9 @@ const StockPage = (props) => {
             }}
             sx={{
               "& .MuiOutlinedInput-root": {
-                height: isMobile ? "15px" : "3vw",
+                height: isMobile ? "30px" : "3vw",
                 width: isMobile ? "150px" : "25vw",
-                fontSize: isMobile ? "10px" : "1.5vw",
+                fontSize: isMobile ? "12px" : "1.5vw",
                 borderRadius: "10px",
                 boxSizing: "border-box",
                 "& fieldset": {
@@ -592,7 +592,7 @@ const StockPage = (props) => {
           >
             <div>
               <Typography
-                style={{ color: "#0F607D", fontSize: isMobile ? "" : "2vw" }}
+                style={{ color: "#0F607D", fontSize: isMobile ? "5vw" : "2vw" }}
               >
                 {inventoryItem === true
                   ? "Edit Item Bahan Baku"
@@ -624,9 +624,9 @@ const StockPage = (props) => {
                   }}
                   sx={{
                     "& .MuiOutlinedInput-root": {
-                      height: isMobile ? "15px" : "3vw",
+                      height: isMobile ? "30px" : "3vw",
                       width: isMobile ? "150px" : "25vw",
-                      fontSize: isMobile ? "10px" : "1.5vw",
+                      fontSize: isMobile ? "12px" : "1.5vw",
                       borderRadius: "10px",
                       boxSizing: "border-box",
                       "& fieldset": {
@@ -666,9 +666,9 @@ const StockPage = (props) => {
                   }}
                   sx={{
                     "& .MuiOutlinedInput-root": {
-                      height: isMobile ? "15px" : "3vw",
+                      height: isMobile ? "30px" : "3vw",
                       width: isMobile ? "150px" : "25vw",
-                      fontSize: isMobile ? "10px" : "1.5vw",
+                      fontSize: isMobile ? "12px" : "1.5vw",
                       borderRadius: "10px",
                       boxSizing: "border-box",
                       "& fieldset": {
@@ -753,9 +753,9 @@ const StockPage = (props) => {
                     sx={{
                       marginRight: "1.667vw",
                       "& .MuiOutlinedInput-root": {
-                        height: isMobile ? "15px" : "3vw",
+                        height: isMobile ? "30px" : "3vw",
                         width: isMobile ? "50px" : "7vw",
-                        fontSize: isMobile ? "10px" : "1.5vw",
+                        fontSize: isMobile ? "12px" : "1.5vw",
                         borderRadius: "10px",
                         "& fieldset": {
                           borderColor: "#0F607D",
@@ -775,8 +775,8 @@ const StockPage = (props) => {
                       setJumlahItemUnit(event.target.value);
                     }}
                     type="text"
-                    width={isMobile ? "50px" : "7vw"}
-                    height={isMobile ? "15px" : "3vw"}
+                    width={isMobile ? "93px" : "7vw"}
+                    height={isMobile ? "30px" : "3vw"}
                     borderRadius="10px"
                     data={units}
                     fontSize={isMobile ? "10px" : "1.5vw"}

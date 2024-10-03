@@ -802,7 +802,6 @@ const PenyerahanBarang = (props) => {
                     <LocalizationProvider dateAdapter={AdapterDayjs}>
                       <DemoContainer
                         sx={{
-                          padding: 0,
                           overflow: isMobile ? "hidden" : "",
                         }}
                         components={["DateTimePicker"]}
@@ -810,11 +809,11 @@ const PenyerahanBarang = (props) => {
                         <DemoItem>
                           <DateTimePicker
                             sx={{
-                              width: isMobile ? "200px" : "300px",
+                              width: isMobile ? "100px" : "300px",
                               height: isMobile ? "30px" : "50px",
                               ".MuiInputBase-root": {
                                 height: isMobile ? "30px" : "50px",
-                                width: isMobile ? "200px" : "300px",
+                                width: isMobile ? "195px" : "300px",
                                 fontSize: isMobile ? "12px" : "",
                                 minWidth: "",
                               },
@@ -863,11 +862,11 @@ const PenyerahanBarang = (props) => {
                         <DemoItem>
                           <DateTimePicker
                             sx={{
-                              width: isMobile ? "200px" : "300px",
+                              width: isMobile ? "100px" : "300px",
                               height: isMobile ? "30px" : "50px",
                               ".MuiInputBase-root": {
                                 height: isMobile ? "30px" : "50px",
-                                width: isMobile ? "200px" : "300px",
+                                width: isMobile ? "195px" : "300px",
                                 fontSize: isMobile ? "12px" : "",
                                 minWidth: "",
                               },
@@ -904,14 +903,14 @@ const PenyerahanBarang = (props) => {
                     style={{
                       display: "flex",
                       alignItems: "center",
-                      margin: "16px 0px",
+                      margin: "16px 32px 16px 0px",
                     }}
                   >
                     <div style={{ width: "200px" }}>
-                      <Typography>Tanggal Penyerahan: </Typography>
+                      <Typography>Status Penyerahan: </Typography>
                     </div>
                     <MySelectTextField
-                      width={"200px"}
+                      width={"170px"}
                       data={statusPenyerahan}
                       value={dataBarangYangDiambil.statusPenyerahan}
                       onChange={(event) => {

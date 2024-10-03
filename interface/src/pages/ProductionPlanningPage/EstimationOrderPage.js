@@ -814,7 +814,10 @@ const EstimationOrderPage = (props) => {
     axios({
       method: "GET",
       url: "http://localhost:3000/productionPlanning/getOneOrder",
-      params: { orderId: orderId.target.value, userId: userInformation?.data?.id },
+      params: {
+        orderId: orderId.target.value,
+        userId: userInformation?.data?.id,
+      },
     }).then((result) => {
       setSelectedOrder(result);
       setPemesan(result?.data?.customerDetail);
@@ -899,7 +902,12 @@ const EstimationOrderPage = (props) => {
               }}
             >
               <div style={{ margin: "24px" }}>
-                <Typography style={{ fontSize: "2.5vw", color: "#0F607D" }}>
+                <Typography
+                  style={{
+                    fontSize: isMobile ? "5vw" : "2.5vw",
+                    color: "#0F607D",
+                  }}
+                >
                   Informasi Order
                 </Typography>
 
@@ -922,14 +930,20 @@ const EstimationOrderPage = (props) => {
                           justifyContent: "flex-start",
                         }}
                       >
-                        <div style={{ width: "30%  " }}>
+                        <div style={{ width: "38%" }}>
                           <Typography
-                            style={{ fontSize: "1.5vw", color: "#0F607D" }}
+                            style={{
+                              fontSize: isMobile ? "14px" : "1.5vw",
+                              color: "#0F607D",
+                            }}
                           >{`ID Pesanan: ${selectedOrder?.data?.id}`}</Typography>
                         </div>
-                        <div style={{ width: "70%  " }}>
+                        <div style={{ width: "68%" }}>
                           <Typography
-                            style={{ fontSize: "1.5vw", color: "#0F607D" }}
+                            style={{
+                              fontSize: isMobile ? "14px" : "1.5vw",
+                              color: "#0F607D",
+                            }}
                           >{`Judul Pesanan: ${
                             selectedOrder?.data?.orderTitle.length < 16
                               ? selectedOrder?.data?.orderTitle
@@ -940,14 +954,21 @@ const EstimationOrderPage = (props) => {
                       </div>
                       <div style={{ marginTop: "8px" }}>
                         <Typography
-                          style={{ fontSize: "1.5vw", color: "#0F607D" }}
+                          style={{
+                            fontSize: isMobile ? "4vw" : "1.5vw",
+                            color: "#0F607D",
+                          }}
                         >
                           Dokumen:
                         </Typography>
                       </div>
                       {selectedOrder?.data?.documents.length === 0 ? (
                         <Typography
-                          style={{ color: "#0F607D", fontSize: "16px" }}
+                          style={{
+                            color: "#0F607D",
+                            fontSize: isMobile ? "14px" : "16px",
+                            marginTop: "8px",
+                          }}
                         >
                           Tidak ada data dokumen dari pesanan ini
                         </Typography>
@@ -990,7 +1011,10 @@ const EstimationOrderPage = (props) => {
                       )}
                       <div style={{ marginTop: "32px" }}>
                         <Typography
-                          style={{ fontSize: "1.5vw", color: "#0F607D" }}
+                          style={{
+                            fontSize: isMobile ? "4vw" : "1.5vw",
+                            color: "#0F607D",
+                          }}
                         >
                           Detail Pesanan:
                         </Typography>
@@ -1000,7 +1024,7 @@ const EstimationOrderPage = (props) => {
                           <Typography
                             style={{
                               overflowWrap: "break-word",
-                              fontSize: "1.5vw",
+                              fontSize: isMobile ? "14px" : "1.5vw",
                               color: "#0F607D",
                             }}
                           >
@@ -1010,37 +1034,59 @@ const EstimationOrderPage = (props) => {
                       </div>
                       <div
                         style={{
-                          display: "flex",
+                          display: isMobile ? " " : "flex",
                           justifyContent: "flex-start",
                           marginTop: "32px",
                         }}
                       >
-                        <div style={{ width: "50%" }}>
+                        <div style={{ width: isMobile ? " " : "50%" }}>
                           <Typography
-                            style={{ fontSize: "1.5vw", color: "#0F607D" }}
+                            style={{
+                              fontSize: isMobile ? "14px" : "1.5vw",
+                              color: "#0F607D",
+                            }}
                           >{`Jumlah Pesanan: ${selectedOrder?.data?.orderQuantity}`}</Typography>
                         </div>
-                        <div style={{ width: "50%" }}>
+                        <div
+                          style={{
+                            width: isMobile ? " " : "50%",
+                            marginTop: isMobile ? "8px" : "",
+                          }}
+                        >
                           <Typography
-                            style={{ fontSize: "1.5vw", color: "#0F607D" }}
+                            style={{
+                              fontSize: isMobile ? "14px" : "1.5vw",
+                              color: "#0F607D",
+                            }}
                           >{`Status Pesanan: ${selectedOrder?.data?.orderStatus}`}</Typography>
                         </div>
                       </div>
                       <div
                         style={{
-                          display: "flex",
+                          display: isMobile ? " " : "flex",
                           justifyContent: "flex-start",
                           marginTop: "8px",
                         }}
                       >
-                        <div style={{ width: "50%" }}>
+                        <div style={{ width: isMobile ? " " : "50%" }}>
                           <Typography
-                            style={{ fontSize: "1.5vw", color: "#0F607D" }}
+                            style={{
+                              fontSize: isMobile ? "14px" : "1.5vw",
+                              color: "#0F607D",
+                            }}
                           >{`Customer Channel: ${selectedOrder?.data?.customerChannel}`}</Typography>
                         </div>
-                        <div style={{ width: "50%" }}>
+                        <div
+                          style={{
+                            width: isMobile ? " " : "50%",
+                            marginTop: isMobile ? "8px" : "",
+                          }}
+                        >
                           <Typography
-                            style={{ fontSize: "1.5vw", color: "#0F607D" }}
+                            style={{
+                              fontSize: isMobile ? "14px" : "1.5vw",
+                              color: "#0F607D",
+                            }}
                           >{`Customer Detail: ${selectedOrder?.data?.customerDetail}`}</Typography>
                         </div>
                       </div>
@@ -1078,7 +1124,12 @@ const EstimationOrderPage = (props) => {
               }}
             >
               <div style={{ margin: "24px" }}>
-                <Typography style={{ fontSize: "2.5vw", color: "#0F607D" }}>
+                <Typography
+                  style={{
+                    fontSize: isMobile ? "5vw" : "2.5vw",
+                    color: "#0F607D",
+                  }}
+                >
                   Perencanaan Produksi
                 </Typography>
                 <div
@@ -1120,9 +1171,9 @@ const EstimationOrderPage = (props) => {
                       value={pemesan}
                       sx={{
                         "& .MuiOutlinedInput-root": {
-                          height: isMobile ? "15px" : "3vw",
+                          height: isMobile ? "30px" : "3vw",
                           width: isMobile ? "90px" : "12vw",
-                          fontSize: isMobile ? "10px" : "1.5vw",
+                          fontSize: isMobile ? "12px" : "1.5vw",
                           borderRadius: "10px",
                           "& fieldset": {
                             borderColor: "#0F607D",
@@ -1211,9 +1262,9 @@ const EstimationOrderPage = (props) => {
                     value={alamatPengirimanProduk}
                     sx={{
                       "& .MuiOutlinedInput-root": {
-                        height: isMobile ? "15px" : "3vw",
+                        height: isMobile ? "30px" : "3vw",
                         width: isMobile ? "150px" : "25vw",
-                        fontSize: isMobile ? "10px" : "1.5vw",
+                        fontSize: isMobile ? "12px" : "1.5vw",
                         borderRadius: "10px",
                         "& fieldset": {
                           borderColor: "#0F607D",
@@ -1259,9 +1310,9 @@ const EstimationOrderPage = (props) => {
                       type="text"
                       sx={{
                         "& .MuiOutlinedInput-root": {
-                          height: isMobile ? "15px" : "3vw",
-                          width: isMobile ? "90px" : "10vw",
-                          fontSize: isMobile ? "10px" : "1.5vw",
+                          height: isMobile ? "30px" : "3vw",
+                          width: isMobile ? "80px" : "10vw",
+                          fontSize: isMobile ? "12px" : "1.5vw",
                           borderRadius: "10px",
                           "& fieldset": {
                             borderColor: "#0F607D",
@@ -1299,9 +1350,9 @@ const EstimationOrderPage = (props) => {
                       type="text"
                       sx={{
                         "& .MuiOutlinedInput-root": {
-                          height: isMobile ? "15px" : "3vw",
+                          height: isMobile ? "30px" : "3vw",
                           width: isMobile ? "90px" : "10vw",
-                          fontSize: isMobile ? "10px" : "1.5vw",
+                          fontSize: isMobile ? "12px" : "1.5vw",
                           borderRadius: "10px",
                           "& fieldset": {
                             borderColor: "#0F607D",
@@ -1348,9 +1399,9 @@ const EstimationOrderPage = (props) => {
                       type="text"
                       sx={{
                         "& .MuiOutlinedInput-root": {
-                          height: isMobile ? "15px" : "3vw",
+                          height: isMobile ? "30px" : "3vw",
                           width: isMobile ? "90px" : "10vw",
-                          fontSize: isMobile ? "10px" : "1.5vw",
+                          fontSize: isMobile ? "12px" : "1.5vw",
                           borderRadius: "10px",
                           "& fieldset": {
                             borderColor: "#0F607D",
@@ -1388,9 +1439,9 @@ const EstimationOrderPage = (props) => {
                       type="text"
                       sx={{
                         "& .MuiOutlinedInput-root": {
-                          height: isMobile ? "15px" : "3vw",
+                          height: isMobile ? "30px" : "3vw",
                           width: isMobile ? "90px" : "10vw",
-                          fontSize: isMobile ? "10px" : "1.5vw",
+                          fontSize: isMobile ? "12px" : "1.5vw",
                           borderRadius: "10px",
                           "& fieldset": {
                             borderColor: "#0F607D",
@@ -1437,9 +1488,9 @@ const EstimationOrderPage = (props) => {
                       type="text"
                       sx={{
                         "& .MuiOutlinedInput-root": {
-                          height: isMobile ? "15px" : "3vw",
+                          height: isMobile ? "30px" : "3vw",
                           width: isMobile ? "90px" : "10vw",
-                          fontSize: isMobile ? "10px" : "1.5vw",
+                          fontSize: isMobile ? "12px" : "1.5vw",
                           borderRadius: "10px",
                           "& fieldset": {
                             borderColor: "#0F607D",
@@ -1477,9 +1528,9 @@ const EstimationOrderPage = (props) => {
                       type="text"
                       sx={{
                         "& .MuiOutlinedInput-root": {
-                          height: isMobile ? "15px" : "3vw",
+                          height: isMobile ? "30px" : "3vw",
                           width: isMobile ? "90px" : "10vw",
-                          fontSize: isMobile ? "10px" : "1.5vw",
+                          fontSize: isMobile ? "12px" : "1.5vw",
                           borderRadius: "10px",
                           "& fieldset": {
                             borderColor: "#0F607D",
@@ -1518,9 +1569,9 @@ const EstimationOrderPage = (props) => {
                     type="text"
                     sx={{
                       "& .MuiOutlinedInput-root": {
-                        height: isMobile ? "15px" : "3vw",
+                        height: isMobile ? "30px" : "3vw",
                         width: isMobile ? "90px" : "10vw",
-                        fontSize: isMobile ? "10px" : "1.5vw",
+                        fontSize: isMobile ? "12px" : "1.5vw",
                         borderRadius: "10px",
                         "& fieldset": {
                           borderColor: "#0F607D",
@@ -1656,7 +1707,12 @@ const EstimationOrderPage = (props) => {
                     alignItems: "center",
                   }}
                 >
-                  <Typography style={{ color: "#0F607D", fontSize: "2vw" }}>
+                  <Typography
+                    style={{
+                      color: "#0F607D",
+                      fontSize: isMobile ? "4vw" : "2vw",
+                    }}
+                  >
                     Bahan Baku dan Bahan Pembantu
                   </Typography>
                   <IconButton
@@ -2046,7 +2102,7 @@ const EstimationOrderPage = (props) => {
                     <Typography
                       style={{
                         color: "#0F607D",
-                        fontSize: "2vw",
+                        fontSize: isMobile ? "4vw" : "2vw",
                         marginRight: "8px",
                       }}
                     >
@@ -2313,7 +2369,7 @@ const EstimationOrderPage = (props) => {
                     <Typography
                       style={{
                         color: "#0F607D",
-                        fontSize: "2vw",
+                        fontSize: isMobile ? "4vw" : "2vw",
                         marginRight: "8px",
                       }}
                     >
@@ -2575,20 +2631,12 @@ const EstimationOrderPage = (props) => {
                     <Typography
                       style={{
                         color: "#0F607D",
-                        fontSize: "2vw",
+                        fontSize: isMobile ? "4vw" : "2vw",
                         marginRight: "8px",
                       }}
                     >
                       Perincian
                     </Typography>
-                    {/* <IconButton
-                      style={{ height: "50%" }}
-                      onClick={() => {
-                        handleTambahPerincian();
-                      }}
-                    >
-                      <AddIcon style={{ color: "#0F607D" }} />
-                    </IconButton> */}
                   </div>
                   <TableContainer component={Paper} sx={{ overflowX: "auto" }}>
                     <Table
@@ -2601,12 +2649,12 @@ const EstimationOrderPage = (props) => {
                       <TableHead>
                         <TableRow>
                           <TableCell colSpan={3} style={{ width: "50%" }}>
-                            <Typography style={{ fontSize: "1.5vw" }}>
+                            <Typography style={{ fontSize: isMobile ? "3.5vw" : "1.5vw" }}>
                               Perincian Rekanan
                             </Typography>
                           </TableCell>
                           <TableCell colSpan={5} style={{ width: "50%" }}>
-                            <Typography style={{ fontSize: "1.5vw" }}>
+                            <Typography style={{ fontSize: isMobile ? "3.5vw" : "1.5vw" }}>
                               Perincian Harga Cetak
                             </Typography>
                           </TableCell>
@@ -2641,6 +2689,7 @@ const EstimationOrderPage = (props) => {
                                 <TableCell>{index + 1 + "."}</TableCell>
                                 <TableCell>
                                   <TextField
+                                  sx={{width: "200px"}}
                                     value={result.namaRekanan}
                                     onChange={(event) => {
                                       handleChangeInputPerincian(
@@ -2653,6 +2702,7 @@ const EstimationOrderPage = (props) => {
                                 </TableCell>
                                 <TableCell>
                                   <TextField
+                                  sx={{width: "200px"}}
                                     value={result.keterangan}
                                     onChange={(event) => {
                                       handleChangeInputPerincian(
@@ -2667,6 +2717,7 @@ const EstimationOrderPage = (props) => {
                                 <TableCell>
                                   <TextField
                                     disabled
+                                    sx={{width: "200px"}}
                                     value={result.jenisCetakan}
                                     // onChange={(event) => {
                                     //   handleChangeInputPerincian(
@@ -2731,7 +2782,7 @@ const EstimationOrderPage = (props) => {
                                       "& .MuiOutlinedInput-root": {
                                         height: isMobile ? "50px" : "4vw",
                                         width: isMobile ? "120px" : "200px",
-                                        fontSize: isMobile ? "10px" : "1.5vw",
+                                        fontSize: isMobile ? "12px" : "1.5vw",
                                         borderRadius: "10px",
                                         "& fieldset": {
                                           borderColor: "#0F607D",

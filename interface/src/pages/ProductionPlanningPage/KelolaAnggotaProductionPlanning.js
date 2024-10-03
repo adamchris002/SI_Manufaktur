@@ -207,13 +207,13 @@ const KelolaAnggotaProductionPlanning = (props) => {
       <div style={{ width: "100%" }}>
         <div style={{ margin: "32px" }}>
           <Typography
-            style={{ fontSize: isMobile ? "5vw" : "3vw", color: "#0F607D" }}
+            style={{ fontSize: isMobile ? "6vw" : "3vw", color: "#0F607D" }}
           >
             Kelola Anggota Perencanaan Produksi
           </Typography>
 
           {userBaru?.length === 0 ? (
-            <div style={{ display: "flex", justifyContent: "center" }}>
+            <div style={{ display: "flex", justifyContent: "center", marginTop: "16px", }}>
               <Typography
                 style={{
                   fontSize: isMobile ? "3.5vw" : "1.5vw",
@@ -225,7 +225,7 @@ const KelolaAnggotaProductionPlanning = (props) => {
             </div>
           ) : (
             <div style={{ marginTop: "32px" }}>
-              <Typography style={{ fontSize: "1.5vw", color: "#0F607D" }}>
+              <Typography style={{ fontSize: isMobile ? "5vw" : "1.5vw", color: "#0F607D" }}>
                 Kelola Anggota Baru
               </Typography>
               <TableContainer component={Paper}>
@@ -327,7 +327,7 @@ const KelolaAnggotaProductionPlanning = (props) => {
           )}
           <div style={{ marginTop: "32px" }}>
             <Typography
-              style={{ fontSize: isMobile ? "3.5vw" : "1.5vw", color: "#0F607D" }}
+              style={{ fontSize: isMobile ? "5vw" : "1.5vw", color: "#0F607D" }}
             >
               Kelola Anggota Lama
             </Typography>

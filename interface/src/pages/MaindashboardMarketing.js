@@ -534,10 +534,9 @@ const MaindashboardMarketing = (props) => {
         >
           <AccountCircleIcon
             style={{
-              width: isMobile ? "10vw" : "3.33vw",
-              height: "auto",
-              marginRight: "0.83vw",
-              cursor: "pointer",
+              width: isMobile ? "32px" : "64px",
+              height: isMobile ? "32px" : "64px",
+              marginRight: "16px",
             }}
           />
           <div style={{ textAlign: "left" }}>
@@ -557,7 +556,11 @@ const MaindashboardMarketing = (props) => {
           <div style={{ margin: "32px" }}>
             <div style={{ display: "flex", alignItems: "center" }}>
               <Typography
-                style={{ width: "150px", color: "#0F607D", fontSize: "1.5vw" }}
+                style={{
+                  width: "150px",
+                  color: "#0F607D",
+                  fontSize: isMobile ? "5vw" : "1.5vw",
+                }}
               >
                 Ubah Divisi
               </Typography>
@@ -577,7 +580,11 @@ const MaindashboardMarketing = (props) => {
               }}
             >
               <Typography
-                style={{ width: "150px", color: "#0F607D", fontSize: "1.5vw" }}
+                style={{
+                  width: "150px",
+                  color: "#0F607D",
+                  fontSize: isMobile ? "5vw" : "1.5vw",
+                }}
               >
                 Ubah Lokasi
               </Typography>
@@ -629,8 +636,8 @@ const MaindashboardMarketing = (props) => {
                   key={index}
                   className="order-item"
                   style={{
-                    minWidth: isMobile ? "132px" : "13.33vw",
-                    minHeight: isMobile ? "132px" : "13.33vw",
+                    minWidth: isMobile ? "148px" : "13.33vw",
+                    minHeight: isMobile ? "148px" : "13.33vw",
                     marginRight: index === array.length - 1 ? "0" : "32px",
                   }}
                   onClick={() => {
@@ -763,9 +770,15 @@ const MaindashboardMarketing = (props) => {
                         fontWeight: "bold",
                         fontSize: isMobile ? "8px" : "0.625vw",
                       }}
-                    >{`Tanggal Pembuatan Pesanan: ${moment(
-                      data.createdAt
-                    ).format("DD/MM/YYYY")}`}</Typography>
+                    >
+                      {isMobile
+                        ? `Tanggal Pembuatan: ${moment(data.createdAt).format(
+                            "DD/MM/YYYY"
+                          )}`
+                        : `Tanggal Pembuatan Pesanan: ${moment(
+                            data.createdAt
+                          ).format("DD/MM/YYYY")}`}
+                    </Typography>
                   </div>
                   <div
                     style={{
@@ -854,8 +867,8 @@ const MaindashboardMarketing = (props) => {
                     key={index}
                     className="order-item"
                     style={{
-                      minWidth: isMobile ? "132px" : "13.33vw",
-                      minHeight: isMobile ? "132px" : "13.33vw",
+                      minWidth: isMobile ? "148px" : "13.33vw",
+                      minHeight: isMobile ? "148px" : "13.33vw",
                       marginRight:
                         index === filteredArray.length - 1 ? "0" : "32px",
                     }}
@@ -988,9 +1001,15 @@ const MaindashboardMarketing = (props) => {
                           fontWeight: "bold",
                           fontSize: isMobile ? "8px" : "0.625vw",
                         }}
-                      >{`Tanggal Pembuatan Pesanan: ${moment(
-                        data.createdAt
-                      ).format("DD/MM/YYYY")}`}</Typography>
+                      >
+                        {isMobile
+                          ? `Tanggal Pembuatan: ${moment(data.createdAt).format(
+                              "DD/MM/YYYY"
+                            )}`
+                          : `Tanggal Pembuatan Pesanan: ${moment(
+                              data.createdAt
+                            ).format("DD/MM/YYYY")}`}
+                      </Typography>
                     </div>
                     <div
                       style={{
@@ -1060,8 +1079,8 @@ const MaindashboardMarketing = (props) => {
                     key={index}
                     className="order-item"
                     style={{
-                      minWidth: isMobile ? "132px" : "13.33vw",
-                      minHeight: isMobile ? "132px" : "13.33vw",
+                      minWidth: isMobile ? "148px" : "13.33vw",
+                      minHeight: isMobile ? "148px" : "13.33vw",
                       marginRight:
                         index === filteredArray.length - 1 ? "0" : "32px",
                     }}
@@ -1194,9 +1213,15 @@ const MaindashboardMarketing = (props) => {
                           fontWeight: "bold",
                           fontSize: isMobile ? "8px" : "0.625vw",
                         }}
-                      >{`Tanggal Pembuatan Pesanan: ${moment(
-                        data.createdAt
-                      ).format("DD/MM/YYYY")}`}</Typography>
+                      >
+                        {isMobile
+                          ? `Tanggal Pembuatan: ${moment(data.createdAt).format(
+                              "DD/MM/YYYY"
+                            )}`
+                          : `Tanggal Pembuatan Pesanan: ${moment(
+                              data.createdAt
+                            ).format("DD/MM/YYYY")}`}
+                      </Typography>
                     </div>
                     <div
                       style={{
@@ -1560,7 +1585,12 @@ const MaindashboardMarketing = (props) => {
               maxHeight: "80vh",
             }}
           >
-            <div style={{ display: "flex", margin: "1.667vw 0px 1.042vw 0px" }}>
+            <div
+              style={{
+                display: "flex",
+                margin: isMobile ? "16px 0px" : "1.667vw 0px 1.042vw 0px",
+              }}
+            >
               <Typography
                 style={{
                   color: "#0F607D",
@@ -1570,7 +1600,7 @@ const MaindashboardMarketing = (props) => {
                 Tambah Pesanan
               </Typography>
             </div>
-            <div style={{ marginBottom: "1.667vw" }}>
+            <div style={{ marginBottom: isMobile ? "16px" : "1.667vw" }}>
               <div
                 style={{
                   display: "flex",
@@ -1593,9 +1623,9 @@ const MaindashboardMarketing = (props) => {
                   type="text"
                   sx={{
                     "& .MuiOutlinedInput-root": {
-                      height: isMobile ? "15px" : "3vw",
+                      height: isMobile ? "30px" : "3vw",
                       width: isMobile ? "150px" : "25vw",
-                      fontSize: isMobile ? "10px" : "1.5vw",
+                      fontSize: isMobile ? "12px" : "1.5vw",
                       borderRadius: "10px",
                       "& fieldset": {
                         borderColor: "#0F607D",
@@ -1614,7 +1644,7 @@ const MaindashboardMarketing = (props) => {
                 />
               </div>
             </div>
-            <div style={{ marginBottom: "1.667vw" }}>
+            <div style={{ marginBottom: isMobile ? "16px" : "1.667vw" }}>
               <div
                 style={{
                   display: "flex",
@@ -1641,10 +1671,10 @@ const MaindashboardMarketing = (props) => {
                     sx={{
                       marginRight: "1.667vw",
                       "& .MuiOutlinedInput-root": {
-                        height: isMobile ? "15px" : "3vw",
+                        height: isMobile ? "30px" : "3vw",
                         width: isMobile ? "50px" : "7vw",
                         fontSize: isMobile ? "10px" : "1.5vw",
-                        borderRadius: "10px",
+                        borderRadius: "12px",
                         "& fieldset": {
                           borderColor: "#0F607D",
                         },
@@ -1663,8 +1693,8 @@ const MaindashboardMarketing = (props) => {
                   <MySelectTextField
                     type="text"
                     width={isMobile ? "50px" : "7vw"}
-                    height={isMobile ? "15px" : "3vw"}
-                    borderRadius="10px"
+                    height={isMobile ? "30px" : "3vw"}
+                    borderRadius="12px"
                     data={units}
                     value={orderQuantityUnit}
                     fontSize={isMobile ? "10px" : "1.5vw"}
@@ -1673,7 +1703,7 @@ const MaindashboardMarketing = (props) => {
                 </div>
               </div>
             </div>
-            <div style={{ marginBottom: "1.667vw" }}>
+            <div style={{ marginBottom: isMobile ? "16px" : "1.667vw" }}>
               <div
                 style={{
                   display: "flex",
@@ -1854,7 +1884,7 @@ const MaindashboardMarketing = (props) => {
                 </div>
               </div>
             </div>
-            <div style={{ marginBottom: "1.667vw" }}>
+            <div style={{ marginBottom: isMobile ? "16px" : "1.667vw" }}>
               <div
                 style={{
                   display: "flex",
@@ -1899,7 +1929,7 @@ const MaindashboardMarketing = (props) => {
               </div>
             </div>
 
-            <div style={{ marginBottom: "1.667vw" }}>
+            <div style={{ marginBottom: isMobile ? "16px" : "1.667vw" }}>
               <div
                 style={{
                   display: "flex",
@@ -1922,9 +1952,9 @@ const MaindashboardMarketing = (props) => {
                   type="text"
                   sx={{
                     "& .MuiOutlinedInput-root": {
-                      height: isMobile ? "15px" : "3vw",
-                      width: isMobile ? "120px" : "20vw",
-                      fontSize: isMobile ? "10px" : "1.5vw",
+                      height: isMobile ? "30px" : "3vw",
+                      width: isMobile ? "150px" : "20vw",
+                      fontSize: isMobile ? "12px" : "1.5vw",
                       borderRadius: "10px",
                       "& fieldset": {
                         borderColor: "#0F607D",
@@ -1943,7 +1973,7 @@ const MaindashboardMarketing = (props) => {
                 />
               </div>
             </div>
-            <div style={{ marginBottom: "1.667vw" }}>
+            <div style={{ marginBottom: isMobile ? "16px" : "1.667vw" }}>
               <div
                 style={{
                   display: "flex",
@@ -1966,9 +1996,9 @@ const MaindashboardMarketing = (props) => {
                   type="text"
                   sx={{
                     "& .MuiOutlinedInput-root": {
-                      height: isMobile ? "15px" : "3vw",
-                      width: isMobile ? "90px" : "15vw",
-                      fontSize: isMobile ? "10px" : "1.5vw",
+                      height: isMobile ? "30px" : "3vw",
+                      width: isMobile ? "150px" : "15vw",
+                      fontSize: isMobile ? "12px" : "1.5vw",
                       borderRadius: "10px",
                       "& fieldset": {
                         borderColor: "#0F607D",
@@ -1987,7 +2017,7 @@ const MaindashboardMarketing = (props) => {
                 />
               </div>
             </div>
-            <div style={{ marginBottom: "1.667vw" }}>
+            <div style={{ marginBottom: isMobile ? "16px" : "1.667vw" }}>
               <div
                 style={{
                   display: "flex",
@@ -2010,10 +2040,10 @@ const MaindashboardMarketing = (props) => {
                   type="text"
                   sx={{
                     "& .MuiOutlinedInput-root": {
-                      height: isMobile ? "15px" : "3vw",
-                      width: isMobile ? "120px" : "20vw",
+                      height: isMobile ? "30px" : "3vw",
+                      width: isMobile ? "150px" : "20vw",
                       fontSize: isMobile ? "10px" : "1.5vw",
-                      borderRadius: "10px",
+                      borderRadius: "12px",
                       "& fieldset": {
                         borderColor: "#0F607D",
                       },
@@ -2034,7 +2064,7 @@ const MaindashboardMarketing = (props) => {
                 />
               </div>
             </div>
-            <div style={{ marginBottom: "1.667vw" }}>
+            <div style={{ marginBottom: isMobile ? "16px" : "1.667vw" }}>
               <div
                 style={{
                   display: "flex",
@@ -2061,7 +2091,7 @@ const MaindashboardMarketing = (props) => {
                     <DemoItem>
                       <DateTimePicker
                         sx={{
-                          width: isMobile ? "200px" : "300px",
+                          width: isMobile ? "150px" : "300px",
                           height: isMobile ? "30px" : "50px",
                           ".MuiInputBase-root": {
                             height: isMobile ? "30px" : "50px",
@@ -2082,7 +2112,7 @@ const MaindashboardMarketing = (props) => {
                 </LocalizationProvider>
               </div>
             </div>
-            <div style={{ marginBottom: "1.667vw" }}>
+            <div style={{ marginBottom: isMobile ? "16px" : "1.667vw" }}>
               <div
                 style={{
                   display: "flex",
@@ -2105,7 +2135,7 @@ const MaindashboardMarketing = (props) => {
                   type="text"
                   value={orderCustomerChannel}
                   width={isMobile ? "80px" : "8vw"}
-                  height={isMobile ? "15px" : "3vw"}
+                  height={isMobile ? "30px" : "3vw"}
                   borderRadius="10px"
                   data={channels}
                   fontSize={isMobile ? "10px" : "1.5vw"}
@@ -2113,7 +2143,7 @@ const MaindashboardMarketing = (props) => {
                 />
               </div>
             </div>
-            <div style={{ marginBottom: "1.667vw" }}>
+            <div style={{ marginBottom: isMobile ? "16px" : "1.667vw" }}>
               <div
                 style={{
                   display: "flex",
@@ -2136,7 +2166,7 @@ const MaindashboardMarketing = (props) => {
                   type="text"
                   sx={{
                     "& .MuiOutlinedInput-root": {
-                      height: isMobile ? "15px" : "3vw",
+                      height: isMobile ? "30px" : "3vw",
                       width: isMobile ? "150px" : "25vw",
                       fontSize: isMobile ? "10px" : "1.5vw",
                       borderRadius: "10px",
@@ -2157,7 +2187,7 @@ const MaindashboardMarketing = (props) => {
                 />
               </div>
             </div>
-            <div style={{ marginBottom: "1.667vw" }}>
+            <div style={{ marginBottom: isMobile ? "16px" : "1.667vw" }}>
               <div
                 style={{
                   display: "flex",
@@ -2180,7 +2210,7 @@ const MaindashboardMarketing = (props) => {
                   type="text"
                   sx={{
                     "& .MuiOutlinedInput-root": {
-                      height: isMobile ? "15px" : "3vw",
+                      height: isMobile ? "30px" : "3vw",
                       width: isMobile ? "150px" : "25vw",
                       fontSize: isMobile ? "10px" : "1.5vw",
                       borderRadius: "10px",

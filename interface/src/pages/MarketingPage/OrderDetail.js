@@ -75,7 +75,7 @@ const OrderDetail = (props) => {
   const { userInformation } = props;
   const [checkUpdate, setCheckUpdate] = useState(false);
   const [orderDetailInfo, setOrderDetailInfo] = useState({});
-  console.log(orderDetailInfo)
+  console.log(orderDetailInfo);
   const [openModal, setOpenModal] = useState(false);
   const [orderTitle, setOrderTitle] = useState("");
   const [orderQuantityValue, setOrderQuantityValue] = useState(null);
@@ -137,7 +137,7 @@ const OrderDetail = (props) => {
     axios({
       method: "GET",
       url: `http://localhost:3000/order/getOrderInfo/${orderId}`,
-      params: {userId: userInformation?.data?.id}
+      params: { userId: userInformation?.data?.id },
     }).then((result) => {
       setOrderDetailInfo(result);
       setOrderTitle(result.data.orderTitle);
@@ -358,15 +358,15 @@ const OrderDetail = (props) => {
   return (
     <div
       style={{
-        width: "100vw",
-        height: "100vh",
+        width: "100%",
+        height: "100%",
         backgroundImage: `url(${factoryBackground})`,
         backgroundSize: "cover",
         display: "flex",
         backgroundAttachment: "fixed",
       }}
     >
-      <div style={{ width: "100%" }}>
+      <div style={{ width: "100vw", height: "100vh" }}>
         <div
           style={{
             display: "flex",
@@ -426,9 +426,9 @@ const OrderDetail = (props) => {
                 }}
               >
                 <DefaultButton
-                  height={isMobile ? "20px" : "4vw"}
-                  width={isMobile ? "100px" : "12vw"}
-                  fontSize={isMobile ? "12px" : "1.2vw"}
+                  height={isMobile ? "30px" : "4vw"}
+                  width={isMobile ? "120px" : "12vw"}
+                  fontSize={isMobile ? "14px" : "1.2vw"}
                   onClickFunction={() => {
                     handleOpenModal(orderDetailInfo);
                   }}
@@ -439,8 +439,8 @@ const OrderDetail = (props) => {
                 <Button
                   sx={{
                     textTransform: "none",
-                    width: isMobile ? "100px" : "12vw",
-                    height: isMobile ? "20px" : "4vw",
+                    width: isMobile ? "130px" : "12vw",
+                    height: isMobile ? "30px" : "4vw",
                     marginLeft: "8px",
                   }}
                   color="error"
@@ -449,7 +449,7 @@ const OrderDetail = (props) => {
                     handleDeleteModal();
                   }}
                 >
-                  <Typography style={{ fontSize: isMobile ? "12px" : "1.2vw" }}>
+                  <Typography style={{ fontSize: isMobile ? "14px" : "1.2vw" }}>
                     Delete Pesanan
                   </Typography>
                 </Button>
@@ -481,13 +481,13 @@ const OrderDetail = (props) => {
                 marginTop: "16px",
                 display: "flex",
                 overflowX: "auto",
-                width: "100%",
-                margin: "0px 32px",
+                // width: "100%",
+                margin: "32px",
               }}
             >
               <Typography
                 style={{
-                  fontSize: isMobile ? "24px" : "2vw",
+                  fontSize: isMobile ? "16px" : "2vw",
                   color: "#0F607D",
                 }}
               >
@@ -567,12 +567,17 @@ const OrderDetail = (props) => {
           </div>
           <div style={{ display: "flex" }}>
             <Typography
-              sx={{ fontSize: isMobile ? "3vw" : "1.8vw", color: "#0F607D" }}
+              sx={{ fontSize: isMobile ? "16px" : "1.8vw", color: "#0F607D" }}
             >
               {orderDetailInfo?.data?.orderDetails}
             </Typography>
           </div>
-          <div style={{ width: isMobile ? "90%" : "80%", marginTop: "32px" }}>
+          <div
+            style={{
+              width: isMobile ? "100%" : "80%",
+              marginTop: isMobile ? "24px" : "32px",
+            }}
+          >
             <div style={{ display: "flex", justifyContent: "flex-start" }}>
               <div style={{ width: "50%" }}>
                 <Typography
@@ -679,7 +684,7 @@ const OrderDetail = (props) => {
                 Edit Pesanan
               </Typography>
             </div>
-            <div style={{ marginBottom: "1.667vw" }}>
+            <div style={{ marginBottom: isMobile ? "16px" : "1.667vw" }}>
               <div
                 style={{
                   display: "flex",
@@ -703,9 +708,9 @@ const OrderDetail = (props) => {
                   value={orderTitle}
                   sx={{
                     "& .MuiOutlinedInput-root": {
-                      height: isMobile ? "15px" : "3vw",
+                      height: isMobile ? "30px" : "3vw",
                       width: isMobile ? "150px" : "25vw",
-                      fontSize: isMobile ? "10px" : "1.5vw",
+                      fontSize: isMobile ? "12px" : "1.5vw",
                       borderRadius: "10px",
                       "& fieldset": {
                         borderColor: "#0F607D",
@@ -724,7 +729,7 @@ const OrderDetail = (props) => {
                 />
               </div>
             </div>
-            <div style={{ marginBottom: "1.667vw" }}>
+            <div style={{ marginBottom: isMobile ? "16px" : "1.667vw" }}>
               <div
                 style={{
                   display: "flex",
@@ -752,9 +757,9 @@ const OrderDetail = (props) => {
                     sx={{
                       marginRight: "1.667vw",
                       "& .MuiOutlinedInput-root": {
-                        height: isMobile ? "15px" : "3vw",
+                        height: isMobile ? "30px" : "3vw",
                         width: isMobile ? "50px" : "7vw",
-                        fontSize: isMobile ? "10px" : "1.5vw",
+                        fontSize: isMobile ? "12px" : "1.5vw",
                         borderRadius: "10px",
                         "& fieldset": {
                           borderColor: "#0F607D",
@@ -774,17 +779,17 @@ const OrderDetail = (props) => {
                   <MySelectTextField
                     value={orderQuantityUnit}
                     type="text"
-                    width={isMobile ? "50px" : "7vw"}
-                    height={isMobile ? "15px" : "3vw"}
+                    width={isMobile ? "70px" : "7vw"}
+                    height={isMobile ? "30px" : "3vw"}
                     borderRadius="10px"
                     data={units}
-                    fontSize={isMobile ? "10px" : "1.5vw"}
+                    fontSize={isMobile ? "12px" : "1.5vw"}
                     onChange={handleAddSelectUnit}
                   />
                 </div>
               </div>
             </div>
-            <div style={{ marginBottom: "1.667vw" }}>
+            <div style={{ marginBottom: isMobile ? "16px" : "1.667vw" }}>
               <div
                 style={{
                   display: "flex",
@@ -970,7 +975,7 @@ const OrderDetail = (props) => {
                 </div>
               </div>
             </div>
-            <div style={{ marginBottom: "1.667vw" }}>
+            <div style={{ marginBottom: isMobile ? "16px" : "1.667vw" }}>
               <div
                 style={{
                   display: "flex",
@@ -995,7 +1000,7 @@ const OrderDetail = (props) => {
                   sx={{
                     "& .MuiOutlinedInput-root": {
                       width: isMobile ? "150px" : "25vw",
-                      fontSize: isMobile ? "10px" : "1.5vw",
+                      fontSize: isMobile ? "12px" : "1.5vw",
                       borderRadius: "10px",
                       boxSizing: "border-box",
                       "& fieldset": {
@@ -1015,7 +1020,7 @@ const OrderDetail = (props) => {
                 />
               </div>
             </div>
-            <div style={{ marginBottom: "1.667vw" }}>
+            <div style={{ marginBottom: isMobile ? "16px" : "1.667vw" }}>
               <div
                 style={{
                   display: "flex",
@@ -1039,9 +1044,9 @@ const OrderDetail = (props) => {
                   value={orderType}
                   sx={{
                     "& .MuiOutlinedInput-root": {
-                      height: isMobile ? "15px" : "3vw",
-                      width: isMobile ? "120px" : "20vw",
-                      fontSize: isMobile ? "10px" : "1.5vw",
+                      height: isMobile ? "30px" : "3vw",
+                      width: isMobile ? "150px" : "20vw",
+                      fontSize: isMobile ? "12px" : "1.5vw",
                       borderRadius: "10px",
                       "& fieldset": {
                         borderColor: "#0F607D",
@@ -1060,7 +1065,7 @@ const OrderDetail = (props) => {
                 />
               </div>
             </div>
-            <div style={{ marginBottom: "1.667vw" }}>
+            <div style={{ marginBottom: isMobile ? "16px" : "1.667vw" }}>
               <div
                 style={{
                   display: "flex",
@@ -1084,9 +1089,9 @@ const OrderDetail = (props) => {
                   value={orderNoSeries}
                   sx={{
                     "& .MuiOutlinedInput-root": {
-                      height: isMobile ? "15px" : "3vw",
-                      width: isMobile ? "90px" : "15vw",
-                      fontSize: isMobile ? "10px" : "1.5vw",
+                      height: isMobile ? "30px" : "3vw",
+                      width: isMobile ? "150px" : "15vw",
+                      fontSize: isMobile ? "12px" : "1.5vw",
                       borderRadius: "10px",
                       "& fieldset": {
                         borderColor: "#0F607D",
@@ -1105,7 +1110,7 @@ const OrderDetail = (props) => {
                 />
               </div>
             </div>
-            <div style={{ marginBottom: "1.667vw" }}>
+            <div style={{ marginBottom: isMobile ? "16px" : "1.667vw" }}>
               <div
                 style={{
                   display: "flex",
@@ -1129,9 +1134,9 @@ const OrderDetail = (props) => {
                   value={orderTotalPrice}
                   sx={{
                     "& .MuiOutlinedInput-root": {
-                      height: isMobile ? "15px" : "3vw",
-                      width: isMobile ? "120px" : "20vw",
-                      fontSize: isMobile ? "10px" : "1.5vw",
+                      height: isMobile ? "30px" : "3vw",
+                      width: isMobile ? "150px" : "20vw",
+                      fontSize: isMobile ? "12px" : "1.5vw",
                       borderRadius: "10px",
                       "& fieldset": {
                         borderColor: "#0F607D",
@@ -1153,7 +1158,7 @@ const OrderDetail = (props) => {
                 />
               </div>
             </div>
-            <div style={{ marginBottom: "1.667vw" }}>
+            <div style={{ marginBottom: isMobile ? "16px" : "1.667vw" }}>
               <div
                 style={{
                   display: "flex",
@@ -1180,7 +1185,7 @@ const OrderDetail = (props) => {
                     <DemoItem>
                       <DateTimePicker
                         sx={{
-                          width: isMobile ? "200px" : "300px",
+                          width: isMobile ? "150px" : "300px",
                           height: isMobile ? "30px" : "50px",
                           ".MuiInputBase-root": {
                             height: isMobile ? "30px" : "50px",
@@ -1198,7 +1203,7 @@ const OrderDetail = (props) => {
                 </LocalizationProvider>
               </div>
             </div>
-            <div style={{ marginBottom: "1.667vw" }}>
+            <div style={{ marginBottom: isMobile ? "16px" : "1.667vw" }}>
               <div
                 style={{
                   display: "flex",
@@ -1219,16 +1224,16 @@ const OrderDetail = (props) => {
                 </div>
                 <MySelectTextField
                   type="text"
-                  width={isMobile ? "80px" : "8vw"}
-                  height={isMobile ? "15px" : "3vw"}
+                  width={isMobile ? "100px" : "8vw"}
+                  height={isMobile ? "30px" : "3vw"}
                   value={orderCustomerChannel}
-                  borderRadius="10px"
+                  borderRadius="12px"
                   data={channels}
                   onChange={handleAddSelectCustomerChannel}
                 />
               </div>
             </div>
-            <div style={{ marginBottom: "1.667vw" }}>
+            <div style={{ marginBottom: isMobile ? "16px" : "1.667vw" }}>
               <div
                 style={{
                   display: "flex",
@@ -1252,9 +1257,9 @@ const OrderDetail = (props) => {
                   value={orderCustomerDetail}
                   sx={{
                     "& .MuiOutlinedInput-root": {
-                      height: isMobile ? "15px" : "3vw",
+                      height: isMobile ? "30px" : "3vw",
                       width: isMobile ? "150px" : "25vw",
-                      fontSize: isMobile ? "10px" : "1.5vw",
+                      fontSize: isMobile ? "12px" : "1.5vw",
                       borderRadius: "10px",
                       "& fieldset": {
                         borderColor: "#0F607D",
@@ -1273,7 +1278,7 @@ const OrderDetail = (props) => {
                 />
               </div>
             </div>
-            <div style={{ marginBottom: "1.667vw" }}>
+            <div style={{ marginBottom: isMobile ? "16px" : "1.667vw" }}>
               <div
                 style={{
                   display: "flex",
@@ -1297,9 +1302,9 @@ const OrderDetail = (props) => {
                   value={alamatPengiriman}
                   sx={{
                     "& .MuiOutlinedInput-root": {
-                      height: isMobile ? "15px" : "3vw",
+                      height: isMobile ? "30px" : "3vw",
                       width: isMobile ? "150px" : "25vw",
-                      fontSize: isMobile ? "10px" : "1.5vw",
+                      fontSize: isMobile ? "12px" : "1.5vw",
                       borderRadius: "10px",
                       "& fieldset": {
                         borderColor: "#0F607D",
@@ -1333,10 +1338,10 @@ const OrderDetail = (props) => {
               >
                 <DefaultButton
                   height={isMobile ? "30px" : "3vw"}
-                  width={isMobile ? "80px" : "10vw"}
+                  width={isMobile ? "120px" : "10vw"}
                   backgroundColor="#0F607D"
                   borderRadius="10px"
-                  fontSize={isMobile ? "10px" : "0.9vw"}
+                  fontSize={isMobile ? "12px" : "0.9vw"}
                   onClickFunction={() => {
                     handleUpdateOrder(orderId);
                   }}
@@ -1348,9 +1353,9 @@ const OrderDetail = (props) => {
                   color="error"
                   style={{
                     height: isMobile ? "30px" : "3vw",
-                    width: isMobile ? "80px" : "10vw",
+                    width: isMobile ? "100px" : "10vw",
                     borderRadius: "10px",
-                    fontSize: isMobile ? "10px" : "0.9vw",
+                    fontSize: isMobile ? "12px" : "0.9vw",
                     textTransform: "none",
                     marginLeft: "2vw",
                   }}

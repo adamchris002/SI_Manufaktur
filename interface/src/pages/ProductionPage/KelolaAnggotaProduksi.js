@@ -214,7 +214,7 @@ const KelolaAnggotaProduksi = (props) => {
           </Typography>
 
           {userBaru?.length === 0 ? (
-            <div style={{ display: "flex", justifyContent: "center" }}>
+            <div style={{ display: "flex", justifyContent: "center", marginTop: "16px", }}>
               <Typography
                 style={{
                   fontSize: isMobile ? "3vw" : "1.5vw",
@@ -226,7 +226,7 @@ const KelolaAnggotaProduksi = (props) => {
             </div>
           ) : (
             <div style={{ marginTop: "32px" }}>
-              <Typography style={{ fontSize: "1.5vw", color: "#0F607D" }}>
+              <Typography style={{ fontSize: isMobile ? "5vw" : "1.5vw", color: "#0F607D" }}>
                 Kelola Anggota Baru
               </Typography>
               <TableContainer component={Paper}>
@@ -328,7 +328,7 @@ const KelolaAnggotaProduksi = (props) => {
           )}
           <div style={{ marginTop: "32px" }}>
             <Typography
-              style={{ fontSize: isMobile ? "3vw" : "1.5vw", color: "#0F607D" }}
+              style={{ fontSize: isMobile ? "5vw" : "1.5vw", color: "#0F607D" }}
             >
               Kelola Anggota Lama
             </Typography>

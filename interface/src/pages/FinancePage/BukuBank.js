@@ -390,7 +390,9 @@ const BukuBank = (props) => {
               justifyContent: "space-between",
             }}
           >
-            <Typography style={{ color: "#0F607D", fontSize: "3vw" }}>
+            <Typography
+              style={{ color: "#0F607D", fontSize: isMobile ? "6vw" : "3vw" }}
+            >
               Daftar Nama Bank
             </Typography>
             {(userInformation?.data?.role === "Admin" ||
@@ -415,12 +417,14 @@ const BukuBank = (props) => {
             }}
           >
             <div style={{ display: "flex", alignItems: "center" }}>
-              <Typography style={{ color: "#0F607D", fontSize: "3vw" }}>
+              <Typography
+                style={{ color: "#0F607D", fontSize: isMobile ? "5vw" : "3vw" }}
+              >
                 Buku Bank Aktif
               </Typography>
               <div style={{ marginLeft: "16px" }}>
                 <MySelectTextField
-                  width="150px"
+                  width={isMobile ? "100px" : "150px"}
                   onChange={(event) => {
                     handleChangeNamaBank(event);
                   }}
@@ -433,13 +437,19 @@ const BukuBank = (props) => {
               (userInformation?.data?.role === "Admin" ||
                 userInformation?.data?.role === "Super Admin" ||
                 userInformation?.data?.role === "Owner") && (
-                <DefaultButton
-                  onClickFunction={() => {
-                    handleTambahBaris();
-                  }}
-                >
-                  Tambah Baris
-                </DefaultButton>
+                <div style={{ marginLeft: isMobile ? "8px" : "" }}>
+                  <DefaultButton
+                    height={isMobile ? "" : "2.08vw"}
+                    width={isMobile ? "" : "15vw"}
+                    borderRadius="0.83vw"
+                    fontSize={isMobile ? "10px" : "1vw"}
+                    onClickFunction={() => {
+                      handleTambahBaris();
+                    }}
+                  >
+                    Tambah Baris
+                  </DefaultButton>
+                </div>
               )}
           </div>
           {selectedBank !== "" && (
@@ -452,7 +462,12 @@ const BukuBank = (props) => {
                     justifyContent: "center",
                   }}
                 >
-                  <Typography style={{ color: "#0F607D", fontSize: "2vw" }}>
+                  <Typography
+                    style={{
+                      color: "#0F607D",
+                      fontSize: isMobile ? "3.5vw" : "2vw",
+                    }}
+                  >
                     Silahkan tambah baris
                   </Typography>
                 </div>
@@ -538,9 +553,9 @@ const BukuBank = (props) => {
                                     type="text"
                                     sx={{
                                       "& .MuiOutlinedInput-root": {
-                                        height: isMobile ? "15px" : "3vw",
-                                        width: isMobile ? "120px" : "200px",
-                                        fontSize: isMobile ? "10px" : "1.5vw",
+                                        height: isMobile ? "50px" : "3vw",
+                                        width: "200px",
+                                        fontSize: isMobile ? "14px" : "1.5vw",
                                         borderRadius: "10px",
                                         "& fieldset": {
                                           borderColor: "#0F607D",
@@ -565,9 +580,9 @@ const BukuBank = (props) => {
                                     type="text"
                                     sx={{
                                       "& .MuiOutlinedInput-root": {
-                                        height: isMobile ? "15px" : "3vw",
-                                        width: isMobile ? "120px" : "200px",
-                                        fontSize: isMobile ? "10px" : "1.5vw",
+                                        height: isMobile ? "50px" : "3vw",
+                                        width: "200px",
+                                        fontSize: isMobile ? "14px" : "1.5vw",
                                         borderRadius: "10px",
                                         "& fieldset": {
                                           borderColor: "#0F607D",
@@ -595,9 +610,9 @@ const BukuBank = (props) => {
                                     type="text"
                                     sx={{
                                       "& .MuiOutlinedInput-root": {
-                                        height: isMobile ? "15px" : "3vw",
-                                        width: isMobile ? "120px" : "200px",
-                                        fontSize: isMobile ? "10px" : "1.5vw",
+                                        height: isMobile ? "50px" : "3vw",
+                                        width: "200px",
+                                        fontSize: isMobile ? "14px" : "1.5vw",
                                         borderRadius: "10px",
                                         "& fieldset": {
                                           borderColor: "#0F607D",
@@ -622,9 +637,9 @@ const BukuBank = (props) => {
                                     type="text"
                                     sx={{
                                       "& .MuiOutlinedInput-root": {
-                                        height: isMobile ? "15px" : "3vw",
-                                        width: isMobile ? "120px" : "200px",
-                                        fontSize: isMobile ? "10px" : "1.5vw",
+                                        height: isMobile ? "50px" : "3vw",
+                                        width: "200px",
+                                        fontSize: isMobile ? "14px" : "1.5vw",
                                         borderRadius: "10px",
                                         "& fieldset": {
                                           borderColor: "#0F607D",
@@ -655,9 +670,9 @@ const BukuBank = (props) => {
                                     type="text"
                                     sx={{
                                       "& .MuiOutlinedInput-root": {
-                                        height: isMobile ? "15px" : "3vw",
-                                        width: isMobile ? "120px" : "200px",
-                                        fontSize: isMobile ? "10px" : "1.5vw",
+                                        height: isMobile ? "50px" : "3vw",
+                                        width: "200px",
+                                        fontSize: isMobile ? "14px" : "1.5vw",
                                         borderRadius: "10px",
                                         "& fieldset": {
                                           borderColor: "#0F607D",
@@ -730,13 +745,22 @@ const BukuBank = (props) => {
                 </Button>
               </div>
             )}
-          <div style={{ padding: "32px 0px", width: "40%" }}>
-            <Typography style={{ fontSize: "3vw", color: "#0F607D" }}>
+          <div
+            style={{ padding: "32px 0px", width: isMobile ? "100%" : "40%" }}
+          >
+            <Typography
+              style={{ fontSize: isMobile ? "5vw" : "3vw", color: "#0F607D" }}
+            >
               Sejarah Buku Bank
             </Typography>
             {bukuBankDone.length === 0 ? (
               <div>
-                <Typography style={{ fontSize: "2vw", color: "#0F607D" }}>
+                <Typography
+                  style={{
+                    fontSize: isMobile ? "3.5vw" : "2vw",
+                    color: "#0F607D",
+                  }}
+                >
                   Belum ada sejarah buku bank
                 </Typography>
               </div>
@@ -802,7 +826,9 @@ const BukuBank = (props) => {
                 justifyContent: "space-between",
               }}
             >
-              <Typography style={{ color: "#0F607D", fontSize: "3vw" }}>
+              <Typography
+                style={{ color: "#0F607D", fontSize: isMobile ? "6vw" : "3vw" }}
+              >
                 Buku Bank {selectedBukuBankDone.namaBank}
               </Typography>
               <IconButton
@@ -816,39 +842,42 @@ const BukuBank = (props) => {
             <div>
               <Typography
                 style={{
-                  fontSize: "1.5vw",
+                  fontSize: isMobile ? "3.5vw" : "1.5vw",
                   color: "#0F607D",
                   marginTop: "16px",
                 }}
               >
                 Total Debet: Rp.{" "}
-                {totalDebetDone
+                {parseFloat(totalDebetDone)
+                  .toFixed(2)
                   .toString()
                   .replace(/\B(?=(\d{3})+(?!\d))/g, ".")}
                 ,-
               </Typography>
               <Typography
                 style={{
-                  fontSize: "1.5vw",
+                  fontSize: isMobile ? "3.5vw" : "1.5vw",
                   color: "#0F607D",
                   marginTop: "16px",
                 }}
               >
                 Total Kredit: Rp.{" "}
-                {totalKreditDone
+                {parseFloat(totalKreditDone)
+                  .toFixed(2)
                   .toString()
                   .replace(/\B(?=(\d{3})+(?!\d))/g, ".")}
                 ,-
               </Typography>
               <Typography
                 style={{
-                  fontSize: "1.5vw",
+                  fontSize: isMobile ? "3.5vw" : "1.5vw",
                   color: "#0F607D",
                   marginTop: "16px",
                 }}
               >
                 Saldo Akhir: Rp.{" "}
-                {totalSaldoDone
+                {parseFloat(totalSaldoDone)
+                  .toFixed(2)
                   .toString()
                   .replace(/\B(?=(\d{3})+(?!\d))/g, ".")}
                 ,-
@@ -883,10 +912,26 @@ const BukuBank = (props) => {
                           <TableCell>
                             {dayjs(result.tanggal).format("MM/DD/YYYY hh:mm A")}
                           </TableCell>
+                          {/* {parseFloat(totalSaldoDone).toFixed(2)
+                  .toString()
+                  .replace(/\B(?=(\d{3})+(?!\d))/g, ".")}
+                ,- */}
                           <TableCell>{result.uraian}</TableCell>
-                          <TableCell>{result.debet}</TableCell>
-                          <TableCell>{result.kredit}</TableCell>
-                          <TableCell>{result.saldo}</TableCell>
+                          <TableCell>
+                            {result.debet !== "" && result.debet !== null
+                              ? `Rp. ${parseFloat(result.debet).toFixed(2).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".")} ,-`
+                              : ""}
+                          </TableCell>
+                          <TableCell>
+                            {result.kredit !== "" && result.kredit !== null
+                              ? `Rp. ${parseFloat(result.kredit).toFixed(2).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".")} ,-`
+                              : ""}
+                          </TableCell>
+                          <TableCell>
+                            {result.saldo !== "" && result.saldo !== null
+                              ? `Rp. ${parseFloat(result.saldo).toFixed(2).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".")} ,-`
+                              : ""}
+                          </TableCell>
                           <TableCell>{result.keterangan}</TableCell>
                         </TableRow>
                       </React.Fragment>
@@ -916,7 +961,9 @@ const BukuBank = (props) => {
                 justifyContent: "space-between",
               }}
             >
-              <Typography style={{ color: "#0F607D", fontSize: "3vw" }}>
+              <Typography
+                style={{ color: "#0F607D", fontSize: isMobile ? "6vw" : "3vw" }}
+              >
                 Daftar Nama Bank
               </Typography>
             </div>
@@ -927,7 +974,12 @@ const BukuBank = (props) => {
                 margin: "16px 0px",
               }}
             >
-              <Typography style={{ color: "#0F607D", fontSize: "1.5vw" }}>
+              <Typography
+                style={{
+                  color: "#0F607D",
+                  fontSize: isMobile ? "3.5vw" : "1.5vw",
+                }}
+              >
                 Nama Bank:
               </Typography>
               <TextField

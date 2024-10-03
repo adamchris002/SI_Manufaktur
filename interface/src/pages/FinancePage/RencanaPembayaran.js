@@ -786,7 +786,7 @@ const RencanaPembayaran = (props) => {
               justifyContent: "space-between",
             }}
           >
-            <Typography style={{ color: "#0F607D", fontSize: "3vw" }}>
+            <Typography style={{ color: "#0F607D", fontSize: isMobile ? "4vw" :"3vw" }}>
               Rencana Pembayaran
             </Typography>
             {(userInformation?.data?.role === "Admin" ||
@@ -794,6 +794,10 @@ const RencanaPembayaran = (props) => {
               userInformation?.data?.role === "Owner") && (
               <div style={{ display: "flex", alignItems: "center" }}>
                 <DefaultButton
+                  height={isMobile ? "" : "2.08vw"}
+                  width={isMobile ? "" : "15vw"}
+                  borderRadius="0.83vw"
+                  fontSize={isMobile ? "10px" : "0.8vw"}
                   onClickFunction={() => {
                     setOpenModalPembayaranLainLain(true);
                   }}
@@ -802,6 +806,10 @@ const RencanaPembayaran = (props) => {
                 </DefaultButton>
                 <div style={{ marginLeft: "8px" }}>
                   <DefaultButton
+                    height={isMobile ? "" : "2.08vw"}
+                    width={isMobile ? "" : "15vw"}
+                    borderRadius="0.83vw"
+                    fontSize={isMobile ? "10px" : "1vw"}
                     onClickFunction={() => {
                       setOpenModal(true);
                     }}
@@ -814,7 +822,7 @@ const RencanaPembayaran = (props) => {
           </div>
           <div
             style={{
-              marginBottom: "64px",
+              marginBottom: ongoingHutangsAndCicilans.length !== 0 ? "64px" : "",
               display: "flex",
               justifyContent: "space-between",
             }}
@@ -932,7 +940,7 @@ const RencanaPembayaran = (props) => {
             (item) => item.pembayaranLains.length > 0
           ) ? (
             <>
-              <Typography style={{ color: "#0F607D", fontSize: "2vw" }}>
+              <Typography style={{ color: "#0F607D", fontSize: isMobile ? "4vw" : "2vw" }}>
                 Pembayaran Lain-Lain
               </Typography>
               <TableContainer
@@ -1003,7 +1011,7 @@ const RencanaPembayaran = (props) => {
                 marginTop: "32px",
               }}
             >
-              <Typography style={{ color: "#0F607D", fontSize: "2vw" }}>
+              <Typography style={{ color: "#0F607D", fontSize: isMobile ? "3.5vw" : "2vw" }}>
                 Belum ada data pembayaran lain-lain
               </Typography>
             </div>
@@ -1013,7 +1021,7 @@ const RencanaPembayaran = (props) => {
             (item) => item.hutangs.length > 0
           ) ? (
             <>
-              <Typography style={{ color: "#0F607D", fontSize: "2vw" }}>
+              <Typography style={{ color: "#0F607D", fontSize: isMobile ? "4vw" : "2vw" }}>
                 Hutang
               </Typography>
               <TableContainer component={Paper} sx={{ overflowX: "auto" }}>
@@ -1081,7 +1089,7 @@ const RencanaPembayaran = (props) => {
                 marginTop: "64px",
               }}
             >
-              <Typography style={{ color: "#0F607D", fontSize: "2vw" }}>
+              <Typography style={{ color: "#0F607D", fontSize: isMobile ? "3.5vw" : "2vw" }}>
                 Belum ada data pembayaran hutang
               </Typography>
             </div>

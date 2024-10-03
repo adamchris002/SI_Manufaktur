@@ -1154,6 +1154,7 @@ const LaporanSampah = (props) => {
               }}
             >
               <DefaultButton
+              width={isMobile ? "240px" : " "}
                 onClickFunction={() => {
                   handleAddLaporanSampah();
                 }}

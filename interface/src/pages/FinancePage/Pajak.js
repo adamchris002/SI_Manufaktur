@@ -505,7 +505,7 @@ const Pajak = (props) => {
               justifyContent: "space-between",
             }}
           >
-            <Typography style={{ color: "#0F607D", fontSize: "3vw" }}>
+            <Typography style={{ color: "#0F607D", fontSize: isMobile ? "6vw" : "3vw" }}>
               Pajak
             </Typography>
             <MySelectTextField
@@ -520,7 +520,7 @@ const Pajak = (props) => {
           <div style={{ marginTop: "32px" }}>
             {selectedJenisPajak === "" ? (
               <div style={{ display: "flex", justifyContent: "center" }}>
-                <Typography style={{ color: "#0F607D", fontSize: "2vw" }}>
+                <Typography style={{ color: "#0F607D", fontSize: isMobile ? "4vw" : "2vw" }}>
                   Silahkan pilih jenis pajak
                 </Typography>
               </div>
@@ -529,7 +529,7 @@ const Pajak = (props) => {
                 {selectedJenisPajak === "Pajak Masukan" && (
                   <div>
                     <div style={{ display: "flex", alignItems: "center" }}>
-                      <Typography style={{ color: "#0F607D", fontSize: "2vw" }}>
+                      <Typography style={{ color: "#0F607D", fontSize: isMobile ? "5vw" : "2vw" }}>
                         Pajak Masukan
                       </Typography>
                       <div style={{ marginLeft: "8px" }}>
@@ -681,9 +681,9 @@ const Pajak = (props) => {
                                       type="text"
                                       sx={{
                                         "& .MuiOutlinedInput-root": {
-                                          height: isMobile ? "15px" : "3vw",
-                                          width: isMobile ? "120px" : "200px",
-                                          fontSize: isMobile ? "10px" : "1.5vw",
+                                          height: isMobile ? "50px" : "3vw",
+                                          width:"200px",
+                                          fontSize: isMobile ? "14px" : "1.5vw",
                                           borderRadius: "10px",
                                           "& fieldset": {
                                             borderColor: "#0F607D",
@@ -708,9 +708,9 @@ const Pajak = (props) => {
                                       type="text"
                                       sx={{
                                         "& .MuiOutlinedInput-root": {
-                                          height: isMobile ? "15px" : "3vw",
-                                          width: isMobile ? "120px" : "200px",
-                                          fontSize: isMobile ? "10px" : "1.5vw",
+                                          height: isMobile ? "50px" : "3vw",
+                                          width:"200px",
+                                          fontSize: isMobile ? "14px" : "1.5vw",
                                           borderRadius: "10px",
                                           "& fieldset": {
                                             borderColor: "#0F607D",
@@ -765,9 +765,9 @@ const Pajak = (props) => {
                                       type="text"
                                       sx={{
                                         "& .MuiOutlinedInput-root": {
-                                          height: isMobile ? "15px" : "3vw",
-                                          width: isMobile ? "120px" : "200px",
-                                          fontSize: isMobile ? "10px" : "1.5vw",
+                                          height: isMobile ? "50px" : "3vw",
+                                          width:"200px",
+                                          fontSize: isMobile ? "14px" : "1.5vw",
                                           borderRadius: "10px",
                                           "& fieldset": {
                                             borderColor: "#0F607D",
@@ -798,9 +798,9 @@ const Pajak = (props) => {
                                       type="text"
                                       sx={{
                                         "& .MuiOutlinedInput-root": {
-                                          height: isMobile ? "15px" : "3vw",
-                                          width: isMobile ? "120px" : "200px",
-                                          fontSize: isMobile ? "10px" : "1.5vw",
+                                          height: isMobile ? "50px" : "3vw",
+                                          width:"200px",
+                                          fontSize: isMobile ? "14px" : "1.5vw",
                                           borderRadius: "10px",
                                           "& fieldset": {
                                             borderColor: "#0F607D",
@@ -865,7 +865,7 @@ const Pajak = (props) => {
                 {selectedJenisPajak === "Pajak Keluaran" && (
                   <div>
                     <div style={{ display: "flex", alignItems: "center" }}>
-                      <Typography style={{ color: "#0F607D", fontSize: "2vw" }}>
+                      <Typography style={{ color: "#0F607D", fontSize: isMobile ? "5vw" : "2vw" }}>
                         Pajak Keluaran
                       </Typography>
                       <div style={{ marginLeft: "8px" }}>
@@ -1022,9 +1022,9 @@ const Pajak = (props) => {
                                       type="text"
                                       sx={{
                                         "& .MuiOutlinedInput-root": {
-                                          height: isMobile ? "15px" : "3vw",
-                                          width: isMobile ? "120px" : "200px",
-                                          fontSize: isMobile ? "10px" : "1.5vw",
+                                          height: isMobile ? "50px" : "3vw",
+                                          width:"200px",
+                                          fontSize: isMobile ? "14px" : "1.5vw",
                                           borderRadius: "10px",
                                           "& fieldset": {
                                             borderColor: "#0F607D",
@@ -1049,9 +1049,9 @@ const Pajak = (props) => {
                                       type="text"
                                       sx={{
                                         "& .MuiOutlinedInput-root": {
-                                          height: isMobile ? "15px" : "3vw",
-                                          width: isMobile ? "120px" : "200px",
-                                          fontSize: isMobile ? "10px" : "1.5vw",
+                                          height: isMobile ? "50px" : "3vw",
+                                          width:"200px",
+                                          fontSize: isMobile ? "14px" : "1.5vw",
                                           borderRadius: "10px",
                                           "& fieldset": {
                                             borderColor: "#0F607D",
@@ -1106,9 +1106,9 @@ const Pajak = (props) => {
                                       type="text"
                                       sx={{
                                         "& .MuiOutlinedInput-root": {
-                                          height: isMobile ? "15px" : "3vw",
-                                          width: isMobile ? "120px" : "200px",
-                                          fontSize: isMobile ? "10px" : "1.5vw",
+                                          height: isMobile ? "50px" : "3vw",
+                                          width:"200px",
+                                          fontSize: isMobile ? "14px" : "1.5vw",
                                           borderRadius: "10px",
                                           "& fieldset": {
                                             borderColor: "#0F607D",
@@ -1139,9 +1139,9 @@ const Pajak = (props) => {
                                       type="text"
                                       sx={{
                                         "& .MuiOutlinedInput-root": {
-                                          height: isMobile ? "15px" : "3vw",
-                                          width: isMobile ? "120px" : "200px",
-                                          fontSize: isMobile ? "10px" : "1.5vw",
+                                          height: isMobile ? "50px" : "3vw",
+                                          width:"200px",
+                                          fontSize: isMobile ? "14px" : "1.5vw",
                                           borderRadius: "10px",
                                           "& fieldset": {
                                             borderColor: "#0F607D",
@@ -1172,9 +1172,9 @@ const Pajak = (props) => {
                                       type="text"
                                       sx={{
                                         "& .MuiOutlinedInput-root": {
-                                          height: isMobile ? "15px" : "3vw",
-                                          width: isMobile ? "120px" : "200px",
-                                          fontSize: isMobile ? "10px" : "1.5vw",
+                                          height: isMobile ? "50px" : "3vw",
+                                          width:"200px",
+                                          fontSize: isMobile ? "14px" : "1.5vw",
                                           borderRadius: "10px",
                                           "& fieldset": {
                                             borderColor: "#0F607D",

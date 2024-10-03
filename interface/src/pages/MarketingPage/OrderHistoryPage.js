@@ -312,7 +312,7 @@ const OrderHistoryPage = (props) => {
             alignItems: "center",
           }}
         >
-          <Typography style={{ fontSize: "3vw", color: "#0F607D" }}>
+          <Typography style={{ fontSize: isMobile ? "6vw" : "3vw", color: "#0F607D" }}>
             Order History
           </Typography>
         </div>

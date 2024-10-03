@@ -36,8 +36,8 @@ const ProductionPlanningActivityLog = (props) => {
   return (
     <div
       style={{
-        width: "100%",
-        height: "100%",
+        width: "100vw",
+        height: "100vh",
         backgroundImage: `url(${factoryBackground})`,
         backgroundSize: "cover",
         display: "flex",
@@ -47,6 +47,7 @@ const ProductionPlanningActivityLog = (props) => {
       <div
         style={{
           width: "100%",
+          height: "100%"
         }}
       >
         <div

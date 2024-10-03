@@ -910,10 +910,9 @@ const MaindashboardInventory = (props) => {
         >
           <AccountCircleIcon
             style={{
-              width: isMobile ? "10vw" : "3.33vw",
-              height: "auto",
-              marginRight: "0.83vw",
-              cursor: "pointer",
+              width: isMobile ? "32px" : "64px",
+              height: isMobile ? "32px" : "64px",
+              marginRight: "16px",
             }}
           />
           <div style={{ textAlign: "left" }}>
@@ -933,7 +932,7 @@ const MaindashboardInventory = (props) => {
           <div style={{ margin: "32px" }}>
             <div style={{ display: "flex", alignItems: "center" }}>
               <Typography
-                style={{ width: "150px", color: "#0F607D", fontSize: "1.5vw" }}
+                style={{ width: "150px", color: "#0F607D", fontSize: isMobile ? "5vw" : "1.5vw" }}
               >
                 Ubah Divisi
               </Typography>
@@ -953,7 +952,7 @@ const MaindashboardInventory = (props) => {
               }}
             >
               <Typography
-                style={{ width: "150px", color: "#0F607D", fontSize: "1.5vw" }}
+                style={{ width: "150px", color: "#0F607D", fontSize: isMobile ? "5vw" : "1.5vw" }}
               >
                 Ubah Lokasi
               </Typography>
@@ -1371,7 +1370,7 @@ const MaindashboardInventory = (props) => {
         >
           <Typography
             id="stokOpnam"
-            style={{ fontSize: isMobile ? "4.5vw" : "2vw", color: "#0F607D" }}
+            style={{ fontSize: isMobile ? "4vw" : "2vw", color: "#0F607D" }}
           >
             Stok Opnam
           </Typography>
@@ -1384,7 +1383,7 @@ const MaindashboardInventory = (props) => {
                   navigate("/inventoryDashboard/stokOpnam");
                 }}
               >
-                <Typography style={{ fontSize: isMobile ? "12px" : "1.042vw" }}>
+                <Typography style={{ fontSize: isMobile ? "10px" : "1.042vw" }}>
                   Tambah Stok Opnam
                 </Typography>
               </DefaultButton>
@@ -1398,11 +1397,11 @@ const MaindashboardInventory = (props) => {
         ) : (
           <div
             style={{
-              width: "70%",
+              width: isMobile ? "85%" : "70%",
               margin: isMobile ? "0px 32px 0px 32px" : "1.667vw",
             }}
           >
-            <TableContainer component={Paper}>
+            <TableContainer  component={Paper}>
               <Table sx={{ minWidth: 650 }} aria-label="simple table">
                 <TableHead>
                   <TableRow>
@@ -1492,7 +1491,7 @@ const MaindashboardInventory = (props) => {
         >
           <Typography
             id="pengambilanbarang"
-            style={{ fontSize: isMobile ? "4.5vw" : "2vw", color: "#0F607D" }}
+            style={{ fontSize: isMobile ? "4vw" : "2vw", color: "#0F607D" }}
           >
             Pengambilan/Penyerahan Barang
           </Typography>
@@ -1521,7 +1520,7 @@ const MaindashboardInventory = (props) => {
         ) : (
           <div
             style={{
-              width: "70%",
+              width: isMobile ? "85%" : "70%",
               margin: isMobile ? "0px 32px 0px 32px" : "1.667vw",
             }}
           >
@@ -1756,7 +1755,7 @@ const MaindashboardInventory = (props) => {
                           "& .MuiOutlinedInput-root": {
                             height: isMobile ? "30px" : "3vw",
                             width: isMobile ? "200px" : "40vw",
-                            fontSize: isMobile ? "10px" : "1.5vw",
+                            fontSize: isMobile ? "12px" : "1.5vw",
                             borderRadius: "10px",
                             "& fieldset": {
                               borderColor: "#0F607D",
@@ -1809,7 +1808,7 @@ const MaindashboardInventory = (props) => {
                           "& .MuiOutlinedInput-root": {
                             height: isMobile ? "30px" : "3vw",
                             width: isMobile ? "200px" : "40vw",
-                            fontSize: isMobile ? "10px" : "1.5vw",
+                            fontSize: isMobile ? "12px" : "1.5vw",
                             borderRadius: "10px",
                             "& fieldset": {
                               borderColor: "#0F607D",

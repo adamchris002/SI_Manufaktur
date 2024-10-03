@@ -371,10 +371,9 @@ const MaindashboardProductionPlanning = (props) => {
         >
           <AccountCircleIcon
             style={{
-              width: isMobile ? "10vw" : "3.33vw",
-              height: "auto",
-              marginRight: "0.83vw",
-              cursor: "pointer",
+              width: isMobile ? "32px" : "64px",
+              height: isMobile ? "32px" : "64px",
+              marginRight: "16px",
             }}
           />
           <div style={{ textAlign: "left" }}>
@@ -394,7 +393,11 @@ const MaindashboardProductionPlanning = (props) => {
           <div style={{ margin: "32px" }}>
             <div style={{ display: "flex", alignItems: "center" }}>
               <Typography
-                style={{ width: "150px", color: "#0F607D", fontSize: "1.5vw" }}
+                style={{
+                  width: "150px",
+                  color: "#0F607D",
+                  fontSize: isMobile ? "5vw" : "1.5vw",
+                }}
               >
                 Ubah Divisi
               </Typography>
@@ -414,7 +417,11 @@ const MaindashboardProductionPlanning = (props) => {
               }}
             >
               <Typography
-                style={{ width: "150px", color: "#0F607D", fontSize: "1.5vw" }}
+                style={{
+                  width: "150px",
+                  color: "#0F607D",
+                  fontSize: isMobile ? "5vw" : "1.5vw",
+                }}
               >
                 Ubah Lokasi
               </Typography>
@@ -581,8 +588,8 @@ const MaindashboardProductionPlanning = (props) => {
                   key={index}
                   className="order-item"
                   style={{
-                    minWidth: isMobile ? "132px" : "13.33vw",
-                    minHeight: isMobile ? "132px" : "13.33vw",
+                    minWidth: isMobile ? "148px" : "13.33vw",
+                    minHeight: isMobile ? "148px" : "13.33vw",
                     marginRight: index === array.length - 1 ? "0" : "32px",
                   }}
                 >
@@ -712,9 +719,15 @@ const MaindashboardProductionPlanning = (props) => {
                         fontWeight: "bold",
                         fontSize: isMobile ? "8px" : "0.625vw",
                       }}
-                    >{`Tanggal Pembuatan Pesanan: ${moment(
-                      data.createdAt
-                    ).format("DD/MM/YYYY")}`}</Typography>
+                    >
+                      {isMobile
+                        ? `Tanggal Pembuatan: ${moment(data.createdAt).format(
+                            "DD/MM/YYYY"
+                          )}`
+                        : `Tanggal Pembuatan Pesanan: ${moment(
+                            data.createdAt
+                          ).format("DD/MM/YYYY")}`}
+                    </Typography>
                   </div>
                   <div
                     style={{
@@ -779,8 +792,8 @@ const MaindashboardProductionPlanning = (props) => {
                   key={index}
                   className="order-item"
                   style={{
-                    minWidth: isMobile ? "132px" : "13.33vw",
-                    minHeight: isMobile ? "132px" : "13.33vw",
+                    minWidth: isMobile ? "148px" : "13.33vw",
+                    minHeight: isMobile ? "148px" : "13.33vw",
                     marginRight: index === array.length - 1 ? "0" : "32px",
                   }}
                 >
@@ -910,9 +923,15 @@ const MaindashboardProductionPlanning = (props) => {
                         fontWeight: "bold",
                         fontSize: isMobile ? "8px" : "0.625vw",
                       }}
-                    >{`Tanggal Pembuatan Pesanan: ${moment(
-                      data.createdAt
-                    ).format("DD/MM/YYYY")}`}</Typography>
+                    >
+                      {isMobile
+                        ? `Tanggal Pembuatan: ${moment(data.createdAt).format(
+                            "DD/MM/YYYY"
+                          )}`
+                        : `Tanggal Pembuatan Pesanan: ${moment(
+                            data.createdAt
+                          ).format("DD/MM/YYYY")}`}
+                    </Typography>
                   </div>
                   <div
                     style={{
@@ -952,7 +971,7 @@ const MaindashboardProductionPlanning = (props) => {
         >
           <Typography
             id="estimationordershistory"
-            style={{ fontSize: isMobile ? "4.5vw" : "2vw", color: "#0F607D" }}
+            style={{ fontSize: isMobile ? "4vw" : "2vw", color: "#0F607D" }}
           >
             History Estimasi Pesanan
           </Typography>
@@ -983,7 +1002,7 @@ const MaindashboardProductionPlanning = (props) => {
         >
           <Typography
             id="activitylog"
-            style={{ fontSize: isMobile ? "4.5vw" : "2vw", color: "#0F607D" }}
+            style={{ fontSize: isMobile ? "4vw" : "2vw", color: "#0F607D" }}
           >
             Catatan Aktivitas
           </Typography>
@@ -1015,7 +1034,7 @@ const MaindashboardProductionPlanning = (props) => {
             <Typography
               id="kelolaanggota"
               style={{
-                fontSize: isMobile ? "4.5vw" : "2vw",
+                fontSize: isMobile ? "4vw" : "2vw",
                 color: "#0F607D",
               }}
             >

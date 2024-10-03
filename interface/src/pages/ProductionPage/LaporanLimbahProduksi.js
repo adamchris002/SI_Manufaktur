@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import axios from "axios";
 import { useAuth } from "../../components/AuthContext";
 import { useLocation, useNavigate } from "react-router-dom";
@@ -28,8 +28,10 @@ import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { DemoContainer, DemoItem } from "@mui/x-date-pickers/internals/demo";
 import { DateTimePicker } from "@mui/x-date-pickers/DateTimePicker";
+import { AppContext } from "../../App";
 
 const LaporanLimbahProduksi = (props) => {
+  const { isMobile } = useContext(AppContext);
   const { userInformation } = props;
   const { setSuccessMessage } = useAuth();
   const navigate = useNavigate();
@@ -461,24 +463,39 @@ const LaporanLimbahProduksi = (props) => {
     >
       <div style={{ width: "100%", height: "100%" }}>
         <div style={{ margin: "32px" }}>
-          <Typography style={{ color: "#0F607D", fontSize: "3vw" }}>
+          <Typography
+            style={{ color: "#0F607D", fontSize: isMobile ? "6vw" : "3vw" }}
+          >
             Laporan Limbah Produksi
           </Typography>
         </div>
         {laporanLimbahProduksiId === undefined && (
           <div style={{ margin: "32px" }}>
-            <Typography style={{ fontSize: "2vw", color: "#0F607D" }}>
+            <Typography
+              style={{ fontSize: isMobile ? "5vw" : "2vw", color: "#0F607D" }}
+            >
               Pilih Kegiatan Produksi:
             </Typography>
             <div
               style={{
-                display: "flex",
+                display: isMobile ? "" : "flex",
                 alignItems: "center",
                 marginTop: "16px",
               }}
             >
-              <div style={{ display: "flex", alignItems: "center" }}>
-                <Typography style={{ fontSize: "1.5vw", color: "#0F607D" }}>
+              <div
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: isMobile ? "space-between" : "",
+                }}
+              >
+                <Typography
+                  style={{
+                    fontSize: isMobile ? "3.5vw" : "1.5vw",
+                    color: "#0F607D",
+                  }}
+                >
                   No Order Produksi:
                 </Typography>
                 <div style={{ marginLeft: "16px" }}>
@@ -494,12 +511,19 @@ const LaporanLimbahProduksi = (props) => {
               </div>
               <div
                 style={{
-                  marginLeft: "32px",
+                  marginLeft: isMobile ? "" : "32px",
                   display: "flex",
                   alignItems: "center",
+                  marginTop: isMobile ? "8px" : "",
+                  justifyContent: isMobile ? "space-between" : "",
                 }}
               >
-                <Typography style={{ fontSize: "1.5vw", color: "#0F607D" }}>
+                <Typography
+                  style={{
+                    fontSize: isMobile ? "3.5vw" : "1.5vw",
+                    color: "#0F607D",
+                  }}
+                >
                   Tahap Produksi:
                 </Typography>
                 <div style={{ marginLeft: "16px" }}>
@@ -517,10 +541,18 @@ const LaporanLimbahProduksi = (props) => {
             {selectedKegiatanProduksi.length !== 0 && (
               <div style={{ marginTop: "32px" }}>
                 <div
-                  style={{ display: "flex", justifyContent: "space-between" }}
+                  style={{
+                    display: isMobile ? "100%" : "flex",
+                    justifyContent: "space-between",
+                  }}
                 >
-                  <div style={{ width: "50%" }}>
-                    <Typography style={{ color: "#0F607D", fontSize: "3vw" }}>
+                  <div style={{ width: isMobile ? "" : "50%" }}>
+                    <Typography
+                      style={{
+                        color: "#0F607D",
+                        fontSize: isMobile ? "3.5vw" : "3vw",
+                      }}
+                    >
                       Informasi Kegiatan Produksi
                     </Typography>
                     {selectedKegiatanProduksi?.map((result, index) => {
@@ -537,12 +569,15 @@ const LaporanLimbahProduksi = (props) => {
                             <Typography
                               style={{
                                 color: "#0F607D",
-                                fontSize: "1.5vw",
-                                width: "300px",
+                                fontSize: isMobile ? "3vw" : "1.5vw",
+                                width: isMobile ? "120px" : "300px",
                               }}
                             >{`ID: ${result.id}`}</Typography>
                             <Typography
-                              style={{ color: "#0F607D", fontSize: "1.5vw" }}
+                              style={{
+                                color: "#0F607D",
+                                fontSize: isMobile ? "3vw" : "1.5vw",
+                              }}
                             >{`Tanggal Produksi: ${dayjs(
                               result.tanggalProduksi
                             ).format("MM/DD/YYYY hh:mm A")}`}</Typography>
@@ -558,12 +593,15 @@ const LaporanLimbahProduksi = (props) => {
                             <Typography
                               style={{
                                 color: "#0F607D",
-                                fontSize: "1.5vw",
-                                width: "300px",
+                                fontSize: isMobile ? "3vw" : "1.5vw",
+                                width: isMobile ? "120px" : "300px",
                               }}
                             >{`No Order Produksi: ${result.noOrderProduksi}`}</Typography>
                             <Typography
-                              style={{ color: "#0F607D", fontSize: "1.5vw" }}
+                              style={{
+                                color: "#0F607D",
+                                fontSize: isMobile ? "3vw" : "1.5vw",
+                              }}
                             >{`Mesin: ${result.mesin}`}</Typography>
                           </div>
                           <div
@@ -577,25 +615,37 @@ const LaporanLimbahProduksi = (props) => {
                             <Typography
                               style={{
                                 color: "#0F607D",
-                                fontSize: "1.5vw",
-                                width: "300px",
+                                fontSize: isMobile ? "3vw" : "1.5vw",
+                                width: isMobile ? "120px" : "300px",
                               }}
                             >{`Dibuat Oleh: ${result.dibuatOleh}`}</Typography>
                             <Typography
-                              style={{ color: "#0F607D", fontSize: "1.5vw" }}
+                              style={{
+                                color: "#0F607D",
+                                fontSize: isMobile ? "3vw" : "1.5vw",
+                              }}
                             >{`Tahap Produksi: ${result.tahapProduksi}`}</Typography>
                           </div>
                           <div style={{ marginTop: "8px" }}>
                             <Typography
-                              style={{ color: "#0F607D", fontSize: "1.5vw" }}
+                              style={{
+                                color: "#0F607D",
+                                fontSize: isMobile ? "3vw" : "1.5vw",
+                              }}
                             >{`Jenis Cetakan: ${result.jenisCetakan}`}</Typography>
                           </div>
                         </div>
                       );
                     })}
                   </div>
-                  <div style={{ width: "48%" }}>
-                    <Typography style={{ color: "#0F607D", fontSize: "3vw" }}>
+                  <div style={{ width: isMobile ? "100%" : "48%" }}>
+                    <Typography
+                      style={{
+                        color: "#0F607D",
+                        fontSize: isMobile ? "3.5vw" : "3vw",
+                        marginTop: isMobile ? "16px" : "",
+                      }}
+                    >
                       Personil
                     </Typography>
                     <TableContainer component={Paper}>
@@ -685,7 +735,7 @@ const LaporanLimbahProduksi = (props) => {
                 <div style={{ marginTop: "32px" }}>
                   {selectedKegiatanProduksi?.map((result, index) => {
                     return (
-                      <div key={index} style={{ paddingBottom: "32px" }}>
+                      <div key={index}>
                         {result.tahapProduksi === "Produksi Pracetak" && (
                           <>
                             <Typography
@@ -1022,7 +1072,9 @@ const LaporanLimbahProduksi = (props) => {
               marginBottom: "16px",
             }}
           >
-            <Typography style={{ color: "#0F607D", fontSize: "2vw" }}>
+            <Typography
+              style={{ color: "#0F607D", fontSize: isMobile ? "2.5vw" : "2vw" }}
+            >
               Item Limbah Hasil Produksi:
             </Typography>
             <DefaultButton
@@ -1035,7 +1087,9 @@ const LaporanLimbahProduksi = (props) => {
           </div>
           <div>
             <div style={{ display: "flex", alignItems: "center" }}>
-              <Typography style={{ width: "200px" }}>Dibuat Oleh:</Typography>
+              <Typography style={{ width: "200px", color: "#0F607D" }}>
+                Dibuat Oleh:
+              </Typography>
               <TextField
                 value={dataLimbah.dibuatOleh}
                 onChange={(event) => {
@@ -1044,26 +1098,41 @@ const LaporanLimbahProduksi = (props) => {
               />
             </div>
             <div style={{ display: "flex", alignItems: "center" }}>
-              <Typography style={{ width: "200px" }}>
+              <Typography style={{ width: "200px", color: "#0F607D" }}>
                 Tanggal Pembuatan:{" "}
               </Typography>
-              <LocalizationProvider dateAdapter={AdapterDayjs}>
-                <DemoContainer components={["DateTimePicker"]}>
-                  <DemoItem>
-                    <DateTimePicker
-                      value={
-                        dataLimbah.tanggalPembuatan.isValid()
-                          ? dataLimbah.tanggalPembuatan
-                          : null
-                      }
-                      onChange={(event) => {
-                        handleChangeDataLimbah(event, "tanggalPembuatan");
-                      }}
-                      disablePast
-                    />
-                  </DemoItem>
-                </DemoContainer>
-              </LocalizationProvider>
+              <div style={{width: "200px"}}>
+                <LocalizationProvider dateAdapter={AdapterDayjs}>
+                  <DemoContainer
+                    sx={{ overflow: isMobile ? "hidden" : "" }}
+                    components={["DateTimePicker"]}
+                  >
+                    <DemoItem>
+                      <DateTimePicker
+                        sx={{
+                          width: isMobile ? "200px" : "300px",
+                          height: isMobile ? "30px" : "50px",
+                          ".MuiInputBase-root": {
+                            height: isMobile ? "30px" : "50px",
+                            width: isMobile ? "200px" : "300px",
+                            fontSize: isMobile ? "12px" : "",
+                            minWidth: "",
+                          },
+                        }}
+                        value={
+                          dataLimbah.tanggalPembuatan.isValid()
+                            ? dataLimbah.tanggalPembuatan
+                            : null
+                        }
+                        onChange={(event) => {
+                          handleChangeDataLimbah(event, "tanggalPembuatan");
+                        }}
+                        disablePast
+                      />
+                    </DemoItem>
+                  </DemoContainer>
+                </LocalizationProvider>
+              </div>
             </div>
           </div>
           <TableContainer component={Paper} sx={{ overflowX: "auto" }}>

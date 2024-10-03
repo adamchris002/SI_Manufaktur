@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import factoryBackground from "../../assets/factorybackground.png";
 import {
   Button,
@@ -27,6 +27,7 @@ import axios from "axios";
 import MySnackbar from "../../components/Snackbar";
 import dayjs from "dayjs";
 import { useAuth } from "../../components/AuthContext";
+import { AppContext } from "../../App";
 
 const KegiatanProduksi = (props) => {
   const { userInformation } = props;
@@ -34,6 +35,8 @@ const KegiatanProduksi = (props) => {
   const location = useLocation();
   const { setSuccessMessage } = useAuth();
   const { laporanProduksiId, isNewTahapProduksi } = location.state || "";
+
+  const { isMobile } = useContext(AppContext);
 
   const [personil, setPersonil] = useState([
     {
@@ -119,7 +122,7 @@ const KegiatanProduksi = (props) => {
       axios({
         method: "GET",
         url: `http://localhost:3000/production/getOneProductionData/${isNewTahapProduksi.id}`,
-        params: {userId: userInformation?.data?.id}
+        params: { userId: userInformation?.data?.id },
       }).then((result) => {
         if (result.status === 200) {
           if (result.data.tahapProduksi === "Produksi Pracetak") {
@@ -322,7 +325,7 @@ const KegiatanProduksi = (props) => {
         axios({
           method: "GET",
           url: `http://localhost:3000/production/getOneProductionData/${laporanProduksiId}`,
-          params: {userId: userInformation?.data?.id}
+          params: { userId: userInformation?.data?.id },
         }).then((result) => {
           if (result.status === 200) {
             setPersonil(result.data.personils);
@@ -1406,22 +1409,24 @@ const KegiatanProduksi = (props) => {
     >
       <div style={{ height: "100%", width: "100%" }}>
         <div style={{ margin: "32px" }}>
-          <Typography style={{ color: "#0F607D", fontSize: "3vw" }}>
+          <Typography
+            style={{ color: "#0F607D", fontSize: isMobile ? "6vw" : "3vw" }}
+          >
             Kegiatan Produksi
           </Typography>
         </div>
         <div
           style={{
             margin: "32px",
-            display: "flex",
+            display: isMobile ? "" : "flex",
             justifyContent: "space-between",
           }}
         >
-          <div style={{ width: "50%" }}>
+          <div style={{ width: isMobile ? "100%" : "50%" }}>
             <Typography
               style={{
                 color: "#0F607D",
-                fontSize: "2vw",
+                fontSize: isMobile ? "5vw" : "2vw",
                 marginBottom: "16px",
               }}
             >
@@ -1429,15 +1434,32 @@ const KegiatanProduksi = (props) => {
             </Typography>
             <div style={{ display: "flex", alignItems: "center" }}>
               <Typography
-                style={{ width: "15vw", color: "#0F607D", fontSize: "1.5vw" }}
+                style={{
+                  width: isMobile ? "150px" : "15vw",
+                  color: "#0F607D",
+                  fontSize: isMobile ? "3.5vw" : "1.5vw",
+                }}
               >
                 Tanggal Produksi:
               </Typography>
-              <div>
+              <div style={{ width: isMobile ? "200px" : "" }}>
                 <LocalizationProvider dateAdapter={AdapterDayjs}>
-                  <DemoContainer components={["DateTimePicker"]}>
+                  <DemoContainer
+                    sx={{ overflow: isMobile ? "hidden" : "" }}
+                    components={["DateTimePicker"]}
+                  >
                     <DemoItem>
                       <DateTimePicker
+                        sx={{
+                          width: isMobile ? "150px" : "300px",
+                          height: isMobile ? "30px" : "50px",
+                          ".MuiInputBase-root": {
+                            height: isMobile ? "30px" : "50px",
+                            width: isMobile ? "200px" : "300px",
+                            fontSize: isMobile ? "12px" : "",
+                            minWidth: "",
+                          },
+                        }}
                         disablePast
                         value={
                           dataProduksi.tanggalProduksi.isValid()
@@ -1466,7 +1488,7 @@ const KegiatanProduksi = (props) => {
                   </DemoContainer>
                 </LocalizationProvider>
                 {tanggalPengiriman.isValid() && (
-                  <Typography style={{ marginTop: "8px" }}>
+                  <Typography style={{ marginTop: "8px", fontSize: isMobile ? "12px" : "" }}>
                     Tanggal pengiriman:
                     {dayjs(tanggalPengiriman).format("MM/DD/YYYY hh:mm A")}
                   </Typography>
@@ -1481,7 +1503,11 @@ const KegiatanProduksi = (props) => {
               }}
             >
               <Typography
-                style={{ width: "15vw", color: "#0F607D", fontSize: "1.5vw" }}
+                style={{
+                  width: isMobile ? "150px" : "15vw",
+                  color: "#0F607D",
+                  fontSize: isMobile ? "3.5vw" : "1.5vw",
+                }}
               >
                 No Order Produksi:
               </Typography>
@@ -1505,12 +1531,20 @@ const KegiatanProduksi = (props) => {
               }}
             >
               <Typography
-                style={{ width: "15vw", color: "#0F607D", fontSize: "1.5vw" }}
+                style={{
+                  width: isMobile ? "150px" : "15vw",
+                  color: "#0F607D",
+                  fontSize: isMobile ? "3.5vw" : "1.5vw",
+                }}
               >
                 Jenis Cetakan:{" "}
               </Typography>
               <div>
-                <TextField value={dataProduksi.jenisCetakan} disabled={true} />
+                <TextField
+                  sx={{ width: "200px" }}
+                  value={dataProduksi.jenisCetakan}
+                  disabled={true}
+                />
               </div>
             </div>
             <div
@@ -1521,12 +1555,17 @@ const KegiatanProduksi = (props) => {
               }}
             >
               <Typography
-                style={{ width: "15vw", color: "#0F607D", fontSize: "1.5vw" }}
+                style={{
+                  width: isMobile ? "150px" : "15vw",
+                  color: "#0F607D",
+                  fontSize: isMobile ? "3.5vw" : "1.5vw",
+                }}
               >
                 Mesin:{" "}
               </Typography>
               <div>
                 <TextField
+                sx={{width: "200px"}}
                   value={dataProduksi.mesin}
                   onChange={(event) => {
                     handleChangeDataProduksi(event, "mesin");
@@ -1542,12 +1581,13 @@ const KegiatanProduksi = (props) => {
               }}
             >
               <Typography
-                style={{ width: "15vw", color: "#0F607D", fontSize: "1.5vw" }}
+                style={{ width: isMobile ? "150px" : "15vw", color: "#0F607D", fontSize: isMobile ? "3.5vw" : "1.5vw" }}
               >
                 Dibuat Oleh:{" "}
               </Typography>
               <div>
                 <TextField
+                sx={{width: "200px"}}
                   value={dataProduksi.dibuatOleh}
                   onChange={(event) => {
                     handleChangeDataProduksi(event, "dibuatOleh");
@@ -1556,7 +1596,7 @@ const KegiatanProduksi = (props) => {
               </div>
             </div>
           </div>
-          <div style={{ width: "50%" }}>
+          <div style={{ width: isMobile ? "100%" : "50%" }}>
             <div
               style={{
                 display: "flex",
@@ -1568,7 +1608,7 @@ const KegiatanProduksi = (props) => {
               <Typography
                 style={{
                   color: "#0F607D",
-                  fontSize: "2vw",
+                  fontSize: isMobile ? "5vw" : "2vw",
                 }}
               >
                 Personil
@@ -1639,7 +1679,7 @@ const KegiatanProduksi = (props) => {
               marginBottom: "16px",
             }}
           >
-            <Typography style={{ color: "#0F607D", fontSize: "2vw" }}>
+            <Typography style={{ color: "#0F607D", fontSize: isMobile ? "5vw" : "2vw" }}>
               Bahan
             </Typography>
             <DefaultButton
@@ -1781,7 +1821,7 @@ const KegiatanProduksi = (props) => {
         </div>
         {estimasiJadwal?.length !== 0 && (
           <div style={{ padding: "0px 32px 64px 32px" }}>
-            <Typography style={{ color: "#0F607D", fontSize: "2vw" }}>
+            <Typography style={{ color: "#0F607D", fontSize: isMobile ? "4vw" : "2vw" }}>
               Data Estimasi Jadwal Produksi
             </Typography>
             <TableContainer component={Paper} sx={{ overflowX: "auto" }}>
@@ -1842,7 +1882,7 @@ const KegiatanProduksi = (props) => {
                 marginBottom: "16px",
               }}
             >
-              <Typography style={{ color: "#0F607D", fontSize: "2vw" }}>
+              <Typography style={{ color: "#0F607D", fontSize: isMobile ?"5vw" : "2vw" }}>
                 Jadwal Produksi Pracetak
               </Typography>
               <DefaultButton
@@ -2130,7 +2170,7 @@ const KegiatanProduksi = (props) => {
                 marginBottom: "16px",
               }}
             >
-              <Typography style={{ color: "#0F607D", fontSize: "2vw" }}>
+              <Typography style={{ color: "#0F607D", fontSize: isMobile ? "5vw" : "2vw" }}>
                 Jadwal Produksi Cetak
               </Typography>
               <DefaultButton
@@ -2585,7 +2625,7 @@ const KegiatanProduksi = (props) => {
                 marginBottom: "16px",
               }}
             >
-              <Typography style={{ color: "#0F607D", fontSize: "2vw" }}>
+              <Typography style={{ color: "#0F607D", fontSize: isMobile ? "5vw" :  "2vw" }}>
                 Jadwal Produksi Fitur
               </Typography>
               <DefaultButton

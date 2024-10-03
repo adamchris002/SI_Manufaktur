@@ -286,120 +286,41 @@ const MaindashboardProduction = (props) => {
         flexDirection: "row",
       }}
     >
-      <div
-        style={{
-          width: "16.4617vw",
-          height: "100vh",
-          display: "flex",
-          alignItems: "center",
-          flexDirection: "column",
-        }}
-      >
-        <div style={{ width: "232px", height: "232px", marginTop: "32px" }}>
-          <img
-            style={{ height: "inherit", width: "inherit" }}
-            src={companyLogo}
-            alt="Company Logo"
-          />
-        </div>
-        <div style={{ marginTop: "64px", fontSize: "24px" }}>
-          <DefaultButton
-            width="232px"
-            height="40px"
-            backgroundColor="#0F607D"
-            borderRadius="16px"
-            fontSize="12px"
-            onClickFunction={() => {
-              document
-                .getElementById("itemstopickup")
-                .scrollIntoView({ behavior: "smooth" });
-            }}
-          >
-            Barang Untuk Diambil
-          </DefaultButton>
-        </div>
-        <div style={{ marginTop: "32px", fontSize: "24px" }}>
-          <DefaultButton
-            width="232px"
-            height="40px"
-            backgroundColor="#0F607D"
-            borderRadius="16px"
-            fontSize="12px"
-            onClickFunction={() => {
-              document
-                .getElementById("productionactivity")
-                .scrollIntoView({ behavior: "smooth" });
-            }}
-          >
-            Kegiatan Produksi
-          </DefaultButton>
-        </div>
-        <div style={{ marginTop: "32px", fontSize: "24px" }}>
-          <DefaultButton
-            width="232px"
-            height="40px"
-            backgroundColor="#0F607D"
-            borderRadius="16px"
-            fontSize="12px"
-            onClickFunction={() => {
-              document
-                .getElementById("manageproductionreports")
-                .scrollIntoView({ behavior: "smooth" });
-            }}
-          >
-            Kelola Laporan Produksi
-          </DefaultButton>
-        </div>
-        <div style={{ marginTop: "32px", fontSize: "24px" }}>
-          <DefaultButton
-            width="232px"
-            height="40px"
-            backgroundColor="#0F607D"
-            borderRadius="16px"
-            fontSize="12px"
-            onClickFunction={() => {
-              document
-                .getElementById("wastepickupactivity")
-                .scrollIntoView({ behavior: "smooth" });
-            }}
-          >
-            Kelola Item Limbah Produksi
-          </DefaultButton>
-        </div>
-        <div style={{ marginTop: "32px", fontSize: "24px" }}>
-          <DefaultButton
-            width="232px"
-            height="40px"
-            backgroundColor="#0F607D"
-            borderRadius="16px"
-            fontSize="12px"
-            onClickFunction={() => {
-              document
-                .getElementById("actualreportshistory")
-                .scrollIntoView({ behavior: "smooth" });
-            }}
-          >
-            Actual Reports History
-          </DefaultButton>
-        </div>
-        <div style={{ marginTop: "32px", fontSize: "24px" }}>
-          <DefaultButton
-            width="232px"
-            height="40px"
-            backgroundColor="#0F607D"
-            borderRadius="16px"
-            fontSize="12px"
-            onClickFunction={() => {
-              document
-                .getElementById("activitylog")
-                .scrollIntoView({ behavior: "smooth" });
-            }}
-          >
-            Catatan Aktivitas
-          </DefaultButton>
-        </div>
-        {(userInformation?.data?.role === "Super Admin" ||
-          userInformation?.data?.role === "Onwer") && (
+      {isMobile ? (
+        ""
+      ) : (
+        <div
+          style={{
+            width: "16.4617vw",
+            height: "100vh",
+            display: "flex",
+            alignItems: "center",
+            flexDirection: "column",
+          }}
+        >
+          <div style={{ width: "15vw", height: "15vw", marginTop: "1.667vw" }}>
+            <img
+              style={{ height: "inherit", width: "inherit" }}
+              src={companyLogo}
+              alt="Company Logo"
+            />
+          </div>
+          <div style={{ marginTop: "3.3vw", fontSize: "1.25vw" }}>
+            <DefaultButton
+              width="15vw"
+              height="2.08vw"
+              backgroundColor="#0F607D"
+              borderRadius="0.83vw"
+              fontSize="1vw"
+              onClickFunction={() => {
+                document
+                  .getElementById("itemstopickup")
+                  .scrollIntoView({ behavior: "smooth" });
+              }}
+            >
+              Barang Untuk Diambil
+            </DefaultButton>
+          </div>
           <div style={{ marginTop: "1.667vw", fontSize: "1.25vw" }}>
             <DefaultButton
               width="15vw"
@@ -409,41 +330,143 @@ const MaindashboardProduction = (props) => {
               fontSize="1vw"
               onClickFunction={() => {
                 document
-                  .getElementById("kelolaanggota")
+                  .getElementById("productionactivity")
                   .scrollIntoView({ behavior: "smooth" });
               }}
             >
-              Kelola Anggota
+              Kegiatan Produksi
             </DefaultButton>
           </div>
-        )}
-      </div>
+          <div style={{ marginTop: "1.667vw", fontSize: "1.25vw" }}>
+            <DefaultButton
+              width="15vw"
+              height="2.08vw"
+              backgroundColor="#0F607D"
+              borderRadius="0.83vw"
+              fontSize="1vw"
+              onClickFunction={() => {
+                document
+                  .getElementById("manageproductionreports")
+                  .scrollIntoView({ behavior: "smooth" });
+              }}
+            >
+              Kelola Laporan Produksi
+            </DefaultButton>
+          </div>
+          <div style={{ marginTop: "1.667vw", fontSize: "1.25vw" }}>
+            <DefaultButton
+              width="15vw"
+              height="2.08vw"
+              backgroundColor="#0F607D"
+              borderRadius="0.83vw"
+              fontSize="1vw"
+              onClickFunction={() => {
+                document
+                  .getElementById("wastepickupactivity")
+                  .scrollIntoView({ behavior: "smooth" });
+              }}
+            >
+              Kelola Item Limbah Produksi
+            </DefaultButton>
+          </div>
+          <div style={{ marginTop: "1.667vw", fontSize: "1.25vw" }}>
+            <DefaultButton
+              width="15vw"
+              height="2.08vw"
+              backgroundColor="#0F607D"
+              borderRadius="0.83vw"
+              fontSize="1vw"
+              onClickFunction={() => {
+                document
+                  .getElementById("actualreportshistory")
+                  .scrollIntoView({ behavior: "smooth" });
+              }}
+            >
+              Actual Reports History
+            </DefaultButton>
+          </div>
+          <div style={{ marginTop: "1.667vw", fontSize: "1.25vw" }}>
+            <DefaultButton
+              width="15vw"
+              height="2.08vw"
+              backgroundColor="#0F607D"
+              borderRadius="0.83vw"
+              fontSize="1vw"
+              onClickFunction={() => {
+                document
+                  .getElementById("activitylog")
+                  .scrollIntoView({ behavior: "smooth" });
+              }}
+            >
+              Catatan Aktivitas
+            </DefaultButton>
+          </div>
+          {(userInformation?.data?.role === "Super Admin" ||
+            userInformation?.data?.role === "Onwer") && (
+            <div style={{ marginTop: "1.667vw", fontSize: "1.25vw" }}>
+              <DefaultButton
+                width="15vw"
+                height="2.08vw"
+                backgroundColor="#0F607D"
+                borderRadius="0.83vw"
+                fontSize="1vw"
+                onClickFunction={() => {
+                  document
+                    .getElementById("kelolaanggota")
+                    .scrollIntoView({ behavior: "smooth" });
+                }}
+              >
+                Kelola Anggota
+              </DefaultButton>
+            </div>
+          )}
+        </div>
+      )}
+      {isMobile ? (
+        ""
+      ) : (
+        <div
+          id="test"
+          style={{
+            width: "0.2083vw",
+            height: "95vh",
+            backgroundColor: "#0F607D",
+            alignSelf: "95v",
+          }}
+        />
+      )}
       <div
-        id="test"
         style={{
-          width: "0.2083vw",
-          height: "95vh",
-          backgroundColor: "#0F607D",
-          alignSelf: "95v",
+          width: isMobile ? "100vh" : "83.1217vw",
+          height: "100vh",
+          overflow: "auto",
         }}
-      ></div>
-      <div style={{ width: "83.1217vw", height: "100vh", overflow: "auto" }}>
+      >
         <div
           style={{
-            marginTop: "72px",
-            marginLeft: "32px",
+            margin: isMobile
+              ? "32px 32px 12px 32px"
+              : "3.33vw 1.667vw 0vw 1.667vw",
             display: "flex",
             alignItems: "center",
           }}
         >
           <AccountCircleIcon
-            style={{ width: "64px", height: "64px", marginRight: "16px" }}
+            style={{
+              width: isMobile ? "32px" : "64px",
+              height: isMobile ? "32px" : "64px",
+              marginRight: "16px",
+            }}
           />
           <div style={{ textAlign: "left" }}>
-            <Typography style={{ fontSize: "48px", color: "#0F607D" }}>
+            <Typography
+              style={{ fontSize: isMobile ? "5vw" : "4vw", color: "#0F607D" }}
+            >
               Welcome back, {userInformation.data.username}
             </Typography>
-            <Typography style={{ fontSize: "24px", color: "#0F607D" }}>
+            <Typography
+              style={{ fontSize: isMobile ? "4vw" : "2vw", color: "#0F607D" }}
+            >
               {userInformation.data.department} Division
             </Typography>
           </div>
@@ -452,7 +475,11 @@ const MaindashboardProduction = (props) => {
           <div style={{ margin: "32px" }}>
             <div style={{ display: "flex", alignItems: "center" }}>
               <Typography
-                style={{ width: "150px", color: "#0F607D", fontSize: "1.5vw" }}
+                style={{
+                  width: "150px",
+                  color: "#0F607D",
+                  fontSize: isMobile ? "5vw" : "1.5vw",
+                }}
               >
                 Ubah Divisi
               </Typography>
@@ -472,7 +499,11 @@ const MaindashboardProduction = (props) => {
               }}
             >
               <Typography
-                style={{ width: "150px", color: "#0F607D", fontSize: "1.5vw" }}
+                style={{
+                  width: "150px",
+                  color: "#0F607D",
+                  fontSize: isMobile ? "5vw" : "1.5vw",
+                }}
               >
                 Ubah Lokasi
               </Typography>
@@ -488,32 +519,32 @@ const MaindashboardProduction = (props) => {
         )}
         <div
           style={{
-            marginLeft: "32px",
-            marginTop: "64px",
+            margin: isMobile
+              ? "32px 32px 12px 32px"
+              : "3.33vw 1.667vw 0vw 1.667vw",
             display: "flex",
             justifyContent: "space-between",
             alignItems: "center",
-            width: "72vw",
+            width: isMobile ? "" : "72vw",
           }}
         >
           <Typography
             id="itemstopickup"
-            style={{ color: "#0F607D", fontSize: "36px" }}
+            style={{ color: "#0F607D", fontSize: isMobile ? "4vw" : "2vw" }}
           >
             Barang Untuk Diambil
           </Typography>
         </div>
-        <div style={{ marginLeft: "32px", marginTop: "32px" }}>
+        <div style={{ margin: "32px", marginTop: "32px" }}>
           <div
             style={{
-              width: "72vw",
-              overflowX: "auto",
-              whiteSpace: "nowrap",
+              // margin: isMobile ? "0px 32px 0px 0px" : "1.667vw",
+              width: isMobile ? "" : "72vw",
             }}
           >
             {allPenyerahanBarang.length === 0 ? (
               <div style={{ display: "flex", justifyContent: "center" }}>
-                <Typography style={{ fontSize: "1.5vw", color: "#0F607D" }}>
+                <Typography style={{ fontSize: isMobile ? "3vw" : "1.5vw", color: "#0F607D" }}>
                   Belum ada bahan baku yang dapat diambil
                 </Typography>
               </div>
@@ -555,17 +586,18 @@ const MaindashboardProduction = (props) => {
         </div>
         <div
           style={{
-            marginLeft: "32px",
-            marginTop: "64px",
+            margin: isMobile
+              ? "32px 32px 12px 32px"
+              : "3.33vw 1.667vw 0vw 1.667vw",
             display: "flex",
             justifyContent: "space-between",
             alignItems: "center",
-            width: "72vw",
+            width: isMobile ? "" : "72vw",
           }}
         >
           <Typography
             id="productionactivity"
-            style={{ fontSize: "36px", color: "#0F607D" }}
+            style={{ fontSize: isMobile ? "4vw" : "2vw", color: "#0F607D" }}
           >
             Kegiatan Produksi
           </Typography>
@@ -574,10 +606,10 @@ const MaindashboardProduction = (props) => {
             userInformation?.data?.role === "Owner") && (
             <div>
               <DefaultButton
-                height="40px"
-                width="232px"
-                borderRadius="16px"
-                fontSize="16px"
+                height={isMobile ? "" : "2.08vw"}
+                width={isMobile ? "" : "15vw"}
+                borderRadius="0.83vw"
+                fontSize={isMobile ? "10px" : "1vw"}
                 onClickFunction={() => {
                   navigate("/productionDashboard/kegiatanProduksi");
                 }}
@@ -587,17 +619,17 @@ const MaindashboardProduction = (props) => {
             </div>
           )}
         </div>
-        <div style={{ marginLeft: "32px", marginTop: "32px" }}>
+        <div style={{ margin: "32px", marginTop: "32px" }}>
           <div
             style={{
-              width: "72vw",
-              overflowX: "auto",
-              whiteSpace: "nowrap",
+              width: isMobile ? " " : "72vw",
+              // overflowX: "auto",
+              // whiteSpace: "nowrap",
             }}
           >
             {dataKegiatanProduksi.length === 0 ? (
               <div style={{ display: "flex", justifyContent: "center" }}>
-                <Typography style={{ color: "#0F607D", fontSize: "1.5vw" }}>
+                <Typography style={{ color: "#0F607D", fontSize: isMobile ? "3vw" : "1.5vw" }}>
                   Tidak ada data Kegiatan Produksi
                 </Typography>
               </div>
@@ -694,25 +726,26 @@ const MaindashboardProduction = (props) => {
         </div>
         <div
           style={{
-            marginLeft: "32px",
-            marginTop: "64px",
+            margin: isMobile
+              ? "32px 32px 12px 32px"
+              : "3.33vw 1.667vw 0vw 1.667vw",
             display: "flex",
             justifyContent: "space-between",
             alignItems: "center",
-            width: "72vw",
+            width: isMobile ? "" : "72vw",
           }}
         >
           <Typography
             id="manageproductionreports"
-            style={{ fontSize: "36px", color: "#0F607D" }}
+            style={{ fontSize: isMobile ? "4vw" : "2vw", color: "#0F607D" }}
           >
             Kelola Laporan Produksi
           </Typography>
           <DefaultButton
-            height="40px"
-            width="320px"
-            borderRadius="16px"
-            fontSize="16px"
+            height={isMobile ? "" : "2.08vw"}
+            width={isMobile ? "" : "15vw"}
+            borderRadius="0.83vw"
+            fontSize={isMobile ? "10px" : "0.8vw"}
             onClickFunction={() => {
               navigate("/productionDashboard/laporanProduksi");
             }}
@@ -722,17 +755,18 @@ const MaindashboardProduction = (props) => {
         </div>
         <div
           style={{
-            marginLeft: "32px",
-            marginTop: "64px",
+            margin: isMobile
+              ? "32px 32px 12px 32px"
+              : "3.33vw 1.667vw 0vw 1.667vw",
             display: "flex",
             justifyContent: "space-between",
             alignItems: "center",
-            width: "72vw",
+            width: isMobile ? "" : "72vw",
           }}
         >
           <Typography
             id="wastepickupactivity"
-            style={{ fontSize: "36px", color: "#0F607D" }}
+            style={{ fontSize: isMobile ? "4vw" : "2vw", color: "#0F607D" }}
           >
             Kelola Item Limbah Produksi
           </Typography>
@@ -741,10 +775,10 @@ const MaindashboardProduction = (props) => {
             userInformation?.data?.role === "Owner") && (
             <div>
               <DefaultButton
-                height="40px"
-                width="320px"
-                borderRadius="16px"
-                fontSize="16px"
+                height={isMobile ? "" : "2.08vw"}
+                width={isMobile ? "" : "15vw"}
+                borderRadius="0.83vw"
+                fontSize={isMobile ? "10px" : "0.7vw"}
                 onClickFunction={() => {
                   navigate("/productionDashboard/laporanLimbahProduksi");
                 }}
@@ -759,7 +793,12 @@ const MaindashboardProduction = (props) => {
         >
           {allDataLaporanLimbahProduksi?.length === 0 ? (
             <div style={{ display: "flex", justifyContent: "center" }}>
-              <Typography style={{ color: "#0F607D", fontSize: "1.5vw" }}>
+              <Typography
+                style={{
+                  color: "#0F607D",
+                  fontSize: isMobile ? "3vw" : "1.5vw",
+                }}
+              >
                 Tidak ada data laporan limbah produksi
               </Typography>
             </div>
@@ -839,17 +878,18 @@ const MaindashboardProduction = (props) => {
         </div>
         <div
           style={{
-            marginLeft: "32px",
-            marginTop: "64px",
+            margin: isMobile
+              ? "32px 32px 12px 32px"
+              : "3.33vw 1.667vw 0vw 1.667vw",
             display: "flex",
             justifyContent: "space-between",
             alignItems: "center",
-            width: "72vw",
+            width: isMobile ? "" : "72vw",
           }}
         >
           <Typography
             id="actualreportshistory"
-            style={{ fontSize: "36px", color: "#0F607D" }}
+            style={{ fontSize: isMobile ? "4vw" : "2vw", color: "#0F607D" }}
           >
             Actual Reports History
           </Typography>
@@ -865,22 +905,27 @@ const MaindashboardProduction = (props) => {
         </div>
         <div
           style={{
-            marginLeft: "32px",
-            marginTop: "64px",
+            margin: isMobile
+              ? "32px 32px 12px 32px"
+              : "3.33vw 1.667vw 0vw 1.667vw",
             display: "flex",
             justifyContent: "space-between",
             alignItems: "center",
-            width: "72vw",
+            width: isMobile ? "" : "72vw",
           }}
         >
           <Typography
             id="activitylog"
-            style={{ fontSize: "36px", color: "#0F607D" }}
+            style={{ fontSize: isMobile ? "4vw" : "2vw", color: "#0F607D" }}
           >
             Catatan Aktivitas
           </Typography>
           <div>
             <DefaultButton
+            height={isMobile ? "" : "2.08vw"}
+            width={isMobile ? "" : "15vw"}
+            borderRadius="0.83vw"
+            fontSize={isMobile ? "10px" : "0.8vw"}
               onClickFunction={() => {
                 navigate("/productionDashboard/activitylog");
               }}
@@ -895,7 +940,7 @@ const MaindashboardProduction = (props) => {
             style={{
               margin: isMobile
                 ? "32px 32px 12px 32px"
-                : "3.33vw 1.667vw 0vw 1.667vw",
+                : "1.25vw 1.667vw 0vw 1.667vw",
               display: "flex",
               justifyContent: "space-between",
               alignItems: "center",
@@ -905,7 +950,7 @@ const MaindashboardProduction = (props) => {
             <Typography
               id="kelolaanggota"
               style={{
-                fontSize: isMobile ? "4.5vw" : "2vw",
+                fontSize: isMobile ? "4vw" : "2vw",
                 color: "#0F607D",
               }}
             >
@@ -913,13 +958,15 @@ const MaindashboardProduction = (props) => {
             </Typography>
             <div>
               <DefaultButton
+                height={isMobile ? "" : "2.08vw"}
+                width={isMobile ? "" : "15vw"}
+                borderRadius="0.83vw"
+                fontSize={isMobile ? "10px" : "0.8vw"}
                 onClickFunction={() => {
                   navigate("/productionDashboard/kelolaAnggota");
                 }}
               >
-                <Typography style={{ fontSize: isMobile ? "12px" : "1.042vw" }}>
-                  Pergi ke Halaman Kelola Anggota
-                </Typography>
+                Pergi ke Halaman Kelola Anggota
               </DefaultButton>
             </div>
           </div>
