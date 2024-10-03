@@ -21,6 +21,7 @@ import MySelectTextField from "../../components/SelectTextField";
 import DefaultButton from "../../components/Button";
 
 const KelolaAnggotaProduksi = (props) => {
+  const { isMobile } = useContext(AppContext);
   const { userInformation } = props;
 
   const [userBaru, setUserBaru] = useState([]);
@@ -206,13 +207,20 @@ const KelolaAnggotaProduksi = (props) => {
     >
       <div style={{ width: "100%" }}>
         <div style={{ margin: "32px" }}>
-          <Typography style={{ fontSize: "3vw", color: "#0F607D" }}>
+          <Typography
+            style={{ fontSize: isMobile ? "6vw" : "3vw", color: "#0F607D" }}
+          >
             Kelola Anggota Produksi
           </Typography>
 
           {userBaru?.length === 0 ? (
             <div style={{ display: "flex", justifyContent: "center" }}>
-              <Typography style={{ fontSize: "1.5vw", color: "#0F607D" }}>
+              <Typography
+                style={{
+                  fontSize: isMobile ? "3vw" : "1.5vw",
+                  color: "#0F607D",
+                }}
+              >
                 Tidak ada data user baru
               </Typography>
             </div>
@@ -319,7 +327,9 @@ const KelolaAnggotaProduksi = (props) => {
             </div>
           )}
           <div style={{ marginTop: "32px" }}>
-            <Typography style={{ fontSize: "1.5vw", color: "#0F607D" }}>
+            <Typography
+              style={{ fontSize: isMobile ? "3vw" : "1.5vw", color: "#0F607D" }}
+            >
               Kelola Anggota Lama
             </Typography>
             <TableContainer component={Paper}>

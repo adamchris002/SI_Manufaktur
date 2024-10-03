@@ -21,6 +21,7 @@ import MySelectTextField from "../../components/SelectTextField";
 import DefaultButton from "../../components/Button";
 
 const KelolaAnggotaMarketing = (props) => {
+  const { isMobile } = useContext(AppContext);
   const { userInformation } = props;
 
   const [userBaru, setUserBaru] = useState([]);
@@ -163,18 +164,18 @@ const KelolaAnggotaMarketing = (props) => {
     // if (checkIfDataIsEmpty === false) {
     //   //snackbar
     // } else {
-      axios({
-        method: "PUT",
-        url: `http://localhost:3000/order/updateUserCredentials/${userInformation?.data?.id}`,
-        data: { userData: userBaru },
-      }).then((result) => {
-        if (result.status === 200) {
-          //snackbar
-          setTriggerBoth(true);
-        } else {
-          //snackbar
-        }
-      });
+    axios({
+      method: "PUT",
+      url: `http://localhost:3000/order/updateUserCredentials/${userInformation?.data?.id}`,
+      data: { userData: userBaru },
+    }).then((result) => {
+      if (result.status === 200) {
+        //snackbar
+        setTriggerBoth(true);
+      } else {
+        //snackbar
+      }
+    });
     // }
   };
 
@@ -212,19 +213,31 @@ const KelolaAnggotaMarketing = (props) => {
     >
       <div style={{ width: "100%" }}>
         <div style={{ margin: "32px" }}>
-          <Typography style={{ fontSize: "3vw", color: "#0F607D" }}>
+          <Typography
+            style={{ fontSize: isMobile ? "6vw" : "3vw", color: "#0F607D" }}
+          >
             Kelola Anggota Marketing
           </Typography>
 
           {userBaru?.length === 0 ? (
             <div style={{ display: "flex", justifyContent: "center" }}>
-              <Typography style={{ fontSize: "1.5vw", color: "#0F607D" }}>
+              <Typography
+                style={{
+                  fontSize: isMobile ? "3.5vw" : "1.5vw",
+                  color: "#0F607D",
+                }}
+              >
                 Tidak ada data user baru
               </Typography>
             </div>
           ) : (
             <div style={{ marginTop: "32px" }}>
-              <Typography style={{ fontSize: "1.5vw", color: "#0F607D" }}>
+              <Typography
+                style={{
+                  fontSize: isMobile ? "3.5vw" : "1.5vw",
+                  color: "#0F607D",
+                }}
+              >
                 Kelola Anggota Baru
               </Typography>
               <TableContainer component={Paper}>
@@ -325,7 +338,7 @@ const KelolaAnggotaMarketing = (props) => {
             </div>
           )}
           <div style={{ marginTop: "32px" }}>
-            <Typography style={{ fontSize: "1.5vw", color: "#0F607D" }}>
+            <Typography style={{ fontSize: isMobile ? "3.5vw" :  "1.5vw", color: "#0F607D" }}>
               Kelola Anggota Lama
             </Typography>
             <TableContainer component={Paper}>

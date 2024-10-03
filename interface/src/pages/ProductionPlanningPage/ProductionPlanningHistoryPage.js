@@ -1120,7 +1120,7 @@ const ProductionPlanningHistoryPage = (props) => {
             alignItems: "center",
           }}
         >
-          <Typography style={{ fontSize: "3vw", color: "#0F607D" }}>
+          <Typography style={{ fontSize: isMobile? "6vw" : "3vw", color: "#0F607D" }}>
             History Perencanaan Produksi
           </Typography>
         </div>
