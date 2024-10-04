@@ -786,7 +786,9 @@ const RencanaPembayaran = (props) => {
               justifyContent: "space-between",
             }}
           >
-            <Typography style={{ color: "#0F607D", fontSize: isMobile ? "4vw" :"3vw" }}>
+            <Typography
+              style={{ color: "#0F607D", fontSize: isMobile ? "4vw" : "3vw" }}
+            >
               Rencana Pembayaran
             </Typography>
             {(userInformation?.data?.role === "Admin" ||
@@ -822,14 +824,15 @@ const RencanaPembayaran = (props) => {
           </div>
           <div
             style={{
-              marginBottom: ongoingHutangsAndCicilans.length !== 0 ? "64px" : "",
-              display: "flex",
-              justifyContent: "space-between",
+              marginBottom:
+                ongoingHutangsAndCicilans.length !== 0 ? "64px" : "",
+              display: isMobile ? "" : "flex",
+              justifyContent: isMobile ? "" : "space-between",
             }}
           >
             {ongoingHutangsAndCicilans.length !== 0 && (
-              <div style={{ width: "48%" }}>
-                <Typography>Data Hutang dari bulan sebelum</Typography>
+              <div style={{ width: isMobile ? "100%" : "48%" }}>
+                <Typography style={{color: "#0F607D"}}>Data Hutang dari bulan sebelum</Typography>
                 <TableContainer component={Paper}>
                   <Table>
                     <TableHead>
@@ -880,8 +883,8 @@ const RencanaPembayaran = (props) => {
               </div>
             )}
             {ongoingPembayaranLainLain.length !== 0 && (
-              <div style={{ width: "48%" }}>
-                <Typography>
+              <div style={{ width: isMobile ? "100%" : "48%", marginTop: isMobile ? "16px" : "" }}>
+                <Typography style={{color: "#0F607D"}}>
                   Data pembayaran lain-lain dari bulan sebelum
                 </Typography>
                 <TableContainer component={Paper}>
@@ -940,7 +943,9 @@ const RencanaPembayaran = (props) => {
             (item) => item.pembayaranLains.length > 0
           ) ? (
             <>
-              <Typography style={{ color: "#0F607D", fontSize: isMobile ? "4vw" : "2vw" }}>
+              <Typography
+                style={{ color: "#0F607D", fontSize: isMobile ? "4vw" : "2vw" }}
+              >
                 Pembayaran Lain-Lain
               </Typography>
               <TableContainer
@@ -1011,7 +1016,12 @@ const RencanaPembayaran = (props) => {
                 marginTop: "32px",
               }}
             >
-              <Typography style={{ color: "#0F607D", fontSize: isMobile ? "3.5vw" : "2vw" }}>
+              <Typography
+                style={{
+                  color: "#0F607D",
+                  fontSize: isMobile ? "3.5vw" : "2vw",
+                }}
+              >
                 Belum ada data pembayaran lain-lain
               </Typography>
             </div>
@@ -1021,7 +1031,9 @@ const RencanaPembayaran = (props) => {
             (item) => item.hutangs.length > 0
           ) ? (
             <>
-              <Typography style={{ color: "#0F607D", fontSize: isMobile ? "4vw" : "2vw" }}>
+              <Typography
+                style={{ color: "#0F607D", fontSize: isMobile ? "4vw" : "2vw" }}
+              >
                 Hutang
               </Typography>
               <TableContainer component={Paper} sx={{ overflowX: "auto" }}>
@@ -1089,7 +1101,12 @@ const RencanaPembayaran = (props) => {
                 marginTop: "64px",
               }}
             >
-              <Typography style={{ color: "#0F607D", fontSize: isMobile ? "3.5vw" : "2vw" }}>
+              <Typography
+                style={{
+                  color: "#0F607D",
+                  fontSize: isMobile ? "3.5vw" : "2vw",
+                }}
+              >
                 Belum ada data pembayaran hutang
               </Typography>
             </div>
@@ -1105,7 +1122,7 @@ const RencanaPembayaran = (props) => {
               overflow: "auto",
               width: isMobile ? "80vw" : "50vw",
               maxHeight: "80vh",
-              padding: "32px",
+              padding: isMobile ? "" : "32px",
             }}
           >
             <div
@@ -1116,7 +1133,9 @@ const RencanaPembayaran = (props) => {
                 justifyContent: "space-between",
               }}
             >
-              <Typography style={{ color: "#0F607D", fontSize: "3vw" }}>
+              <Typography
+                style={{ color: "#0F607D", fontSize: isMobile ? "6vw" : "3vw" }}
+              >
                 Hutang
               </Typography>
               <MySelectTextField
@@ -1130,7 +1149,12 @@ const RencanaPembayaran = (props) => {
             </div>
             {selectedPembelianBahanBakuId === "" ? (
               <div style={{ display: "flex", justifyContent: "center" }}>
-                <Typography style={{ color: "#0F607D", fontSize: "2vw" }}>
+                <Typography
+                  style={{
+                    color: "#0F607D",
+                    fontSize: isMobile ? "3.5vw" : "2vw",
+                  }}
+                >
                   Silahkan pilih ID data pembelian bahan baku
                 </Typography>
               </div>
@@ -1233,9 +1257,9 @@ const RencanaPembayaran = (props) => {
                                 value={result.jumlahHarga}
                                 sx={{
                                   "& .MuiOutlinedInput-root": {
-                                    height: isMobile ? "15px" : "3vw",
-                                    width: isMobile ? "120px" : "200px",
-                                    fontSize: isMobile ? "10px" : "1.5vw",
+                                    height: isMobile ? "50px" : "3vw",
+                                    width: "200px",
+                                    fontSize: isMobile ? "14px" : "1.5vw",
                                     borderRadius: "10px",
                                     "& fieldset": {
                                       borderColor: "#0F607D",
@@ -1422,7 +1446,7 @@ const RencanaPembayaran = (props) => {
                     alignItems: "center",
                   }}
                 >
-                  <Typography style={{ fontSize: "1.5vw", color: "#0F607D" }}>
+                  <Typography style={{ fontSize: isMobile ? "4vw" : "1.5vw", color: "#0F607D" }}>
                     No Rekening:
                   </Typography>
                   <div style={{ marginLeft: "8px" }}>
@@ -1441,7 +1465,7 @@ const RencanaPembayaran = (props) => {
                     dataInfoPembayaran.constructor === Object && (
                       <Typography
                         style={{
-                          fontSize: "1.5vw",
+                          fontSize: isMobile ? "4vw" : "1.5vw",
                           color: "#0F607D",
                           marginTop: "16px",
                         }}
@@ -1494,7 +1518,7 @@ const RencanaPembayaran = (props) => {
               overflow: "auto",
               width: isMobile ? "80vw" : "50vw",
               maxHeight: "80vh",
-              padding: "32px",
+              padding: isMobile ? "" : "32px",
             }}
           >
             <div
@@ -1507,7 +1531,7 @@ const RencanaPembayaran = (props) => {
               <Typography
                 style={{
                   color: "#0F607D",
-                  fontSize: "3vw",
+                  fontSize: isMobile ? "5vw" : "3vw",
                   marginBottom: "16px",
                 }}
               >
@@ -1759,7 +1783,7 @@ const RencanaPembayaran = (props) => {
               overflow: "auto",
               width: isMobile ? "80vw" : "50vw",
               maxHeight: "80vh",
-              padding: "32px",
+              padding: isMobile ? "" : "32px",
             }}
           >
             <div
@@ -1772,7 +1796,7 @@ const RencanaPembayaran = (props) => {
               <Typography
                 style={{
                   color: "#0F607D",
-                  fontSize: "3vw",
+                  fontSize: isMobile ? "5vw" : "3vw",
                   marginBottom: "16px",
                 }}
               >
@@ -2003,7 +2027,7 @@ const RencanaPembayaran = (props) => {
               overflow: "auto",
               width: isMobile ? "80vw" : "50vw",
               maxHeight: "80vh",
-              padding: "32px",
+              padding: isMobile ? "" : "32px",
             }}
           >
             <div
@@ -2014,10 +2038,16 @@ const RencanaPembayaran = (props) => {
                 justifyContent: "space-between",
               }}
             >
-              <Typography style={{ color: "#0F607D", fontSize: "3vw" }}>
+              <Typography
+                style={{ color: "#0F607D", fontSize: isMobile ? "5vw" : "3vw" }}
+              >
                 Pembayaran Lain-Lain
               </Typography>
               <DefaultButton
+                height={isMobile ? "" : "2.08vw"}
+                width={isMobile ? "" : "15vw"}
+                borderRadius="0.83vw"
+                fontSize={isMobile ? "10px" : "0.8vw"}
                 onClickFunction={() => {
                   handleTambahItemDataPembayaranLainLain();
                 }}
@@ -2140,9 +2170,9 @@ const RencanaPembayaran = (props) => {
                               value={result.jumlahHarga}
                               sx={{
                                 "& .MuiOutlinedInput-root": {
-                                  height: isMobile ? "15px" : "3vw",
-                                  width: isMobile ? "120px" : "200px",
-                                  fontSize: isMobile ? "10px" : "1.5vw",
+                                  height: isMobile ? "50px" : "3vw",
+                                  width: "200px",
+                                  fontSize: isMobile ? "14px" : "1.5vw",
                                   borderRadius: "10px",
                                   "& fieldset": {
                                     borderColor: "#0F607D",
@@ -2335,7 +2365,7 @@ const RencanaPembayaran = (props) => {
                   alignItems: "center",
                 }}
               >
-                <Typography style={{ fontSize: "1.5vw", color: "#0F607D" }}>
+                <Typography style={{ fontSize: isMobile ? "4vw" : "1.5vw", color: "#0F607D" }}>
                   No Rekening:
                 </Typography>
                 <div style={{ marginLeft: "8px" }}>
@@ -2354,7 +2384,7 @@ const RencanaPembayaran = (props) => {
                   dataInfoPembayaran.constructor === Object && (
                     <Typography
                       style={{
-                        fontSize: "1.5vw",
+                        fontSize: isMobile ?"4vw" :  "1.5vw",
                         color: "#0F607D",
                         marginTop: "16px",
                       }}
