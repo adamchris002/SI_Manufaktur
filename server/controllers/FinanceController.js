@@ -66,7 +66,7 @@ class FinanceController {
   static async addNamaBank(req, res) {
     try {
       const { id } = req.params;
-      const { namaBank } = req.body;
+      const { namaBank, namaBank2 } = req.body;
 
       let findUser = await users.findOne({
         where: { id: id },
@@ -74,6 +74,7 @@ class FinanceController {
 
       let result = await bukuBanks.create({
         namaBank: namaBank,
+        namaBank2: namaBank2,
         statusBukuBank: "Ongoing",
         lokasi: findUser.lokasi,
       });

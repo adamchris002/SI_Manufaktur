@@ -22,8 +22,9 @@ module.exports = (sequelize, DataTypes) => {
   bukuBanks.init(
     {
       namaBank: DataTypes.STRING,
+      namaBank2: DataTypes.STRING,
       statusBukuBank: DataTypes.STRING,
-      lokasi: DataTypes.STRING
+      lokasi: DataTypes.STRING,
     },
     {
       sequelize,

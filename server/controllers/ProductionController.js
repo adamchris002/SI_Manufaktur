@@ -147,7 +147,7 @@ class ProductionController {
         },
         { where: { id: dataProduksi.noOrderProduksi } }
       );
-[]
+      [];
       let createActivityLog = await activitylogs.create({
         user: findUser.name,
         activity: `Menambahkan kegiatan produksi pracetak dengan id ${result.id}`,
@@ -479,6 +479,39 @@ class ProductionController {
       let findOneLaporanProduksi = await laporanProduksis.findOne({
         where: { id: id },
       });
+
+      if (findOneLaporanProduksi.tahapProduksi === "Produksi Pracetak") {
+        await orders.update(
+          {
+            orderStatus: "Estimated",
+          },
+          { where: { id: findOneLaporanProduksi.noOrderProduksi } }
+        );
+      } else if (findOneLaporanProduksi.tahapProduksi === "Produksi Cetak") {
+        await laporanProduksis.update(
+          {
+            statusLaporan: null,
+          },
+          {
+            where: {
+              noOrderProduksi: findOneLaporanProduksi.noOrderProduksi,
+              tahapProduksi: "Produksi Pracetak",
+            },
+          }
+        );
+      } else {
+        await laporanProduksis.update(
+          {
+            statusLaporan: null,
+          },
+          {
+            where: {
+              noOrderProduksi: findOneLaporanProduksi.noOrderProduksi,
+              tahapProduksi: "Produksi Cetak",
+            },
+          }
+        );
+      }
 
       let result = await laporanProduksis.destroy({
         where: { id: id },

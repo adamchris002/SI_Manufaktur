@@ -70,9 +70,9 @@ const BukuBank = (props) => {
     },
   ]);
   const [namaBank, setNamaBank] = useState("");
+  const [namaBank2, setNamaBank2] = useState("");
   const [daftarBank, setDaftarBank] = useState([]);
   const [selectedBank, setSelectedBank] = useState("");
-  console.log(selectedBank);
   const [selectedBukuBankDone, setSelectedBukuBankDone] = useState([]);
   const [bukuBankDone, setBukuBankDone] = useState([]);
 
@@ -242,23 +242,29 @@ const BukuBank = (props) => {
   };
 
   const hanleAddNamaBank = () => {
-    axios({
-      method: "POST",
-      url: `http://localhost:3000/finance/addNamaBank/${userInformation?.data?.id}`,
-      data: { namaBank: namaBank },
-    }).then((result) => {
-      if (result.status === 200) {
-        handleCloseModal();
-        setOpenSnackbar(true);
-        setSnackbarStatus(true);
-        setSnackbarMessage("Berhasil menambahkan bank");
-        setRefreshNamaBank(true);
-      } else {
-        setOpenSnackbar(true);
-        setSnackbarStatus(false);
-        setSnackbarMessage("Tidak berhasil menambahkan bank");
-      }
-    });
+    if (namaBank === "" || namaBank2 === "") {
+      setOpenSnackbar(true);
+      setSnackbarStatus(false);
+      setSnackbarMessage("Mohon mengisi semua input");
+    } else {
+      axios({
+        method: "POST",
+        url: `http://localhost:3000/finance/addNamaBank/${userInformation?.data?.id}`,
+        data: { namaBank: namaBank, namaBank2: namaBank2 },
+      }).then((result) => {
+        if (result.status === 200) {
+          handleCloseModal();
+          setOpenSnackbar(true);
+          setSnackbarStatus(true);
+          setSnackbarMessage("Berhasil menambahkan bank");
+          setRefreshNamaBank(true);
+        } else {
+          setOpenSnackbar(true);
+          setSnackbarStatus(false);
+          setSnackbarMessage("Tidak berhasil menambahkan bank");
+        }
+      });
+    }
   };
 
   const handleChangeNamaBank = (event) => {
@@ -919,17 +925,26 @@ const BukuBank = (props) => {
                           <TableCell>{result.uraian}</TableCell>
                           <TableCell>
                             {result.debet !== "" && result.debet !== null
-                              ? `Rp. ${parseFloat(result.debet).toFixed(2).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".")} ,-`
+                              ? `Rp. ${parseFloat(result.debet)
+                                  .toFixed(2)
+                                  .toString()
+                                  .replace(/\B(?=(\d{3})+(?!\d))/g, ".")} ,-`
                               : ""}
                           </TableCell>
                           <TableCell>
                             {result.kredit !== "" && result.kredit !== null
-                              ? `Rp. ${parseFloat(result.kredit).toFixed(2).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".")} ,-`
+                              ? `Rp. ${parseFloat(result.kredit)
+                                  .toFixed(2)
+                                  .toString()
+                                  .replace(/\B(?=(\d{3})+(?!\d))/g, ".")} ,-`
                               : ""}
                           </TableCell>
                           <TableCell>
                             {result.saldo !== "" && result.saldo !== null
-                              ? `Rp. ${parseFloat(result.saldo).toFixed(2).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".")} ,-`
+                              ? `Rp. ${parseFloat(result.saldo)
+                                  .toFixed(2)
+                                  .toString()
+                                  .replace(/\B(?=(\d{3})+(?!\d))/g, ".")} ,-`
                               : ""}
                           </TableCell>
                           <TableCell>{result.keterangan}</TableCell>
@@ -980,12 +995,36 @@ const BukuBank = (props) => {
                   fontSize: isMobile ? "3.5vw" : "1.5vw",
                 }}
               >
-                Nama Bank:
+                No Rekening:
               </Typography>
               <TextField
+                type="number"
                 value={namaBank}
                 onChange={(event) => {
                   setNamaBank(event.target.value);
+                }}
+                style={{ marginLeft: "8px" }}
+              />
+            </div>
+            <div
+              style={{
+                display: "flex",
+                alignItems: "center",
+                margin: "16px 0px",
+              }}
+            >
+              <Typography
+                style={{
+                  color: "#0F607D",
+                  fontSize: isMobile ? "3.5vw" : "1.5vw",
+                }}
+              >
+                Nama Bank:
+              </Typography>
+              <TextField
+                value={namaBank2}
+                onChange={(event) => {
+                  setNamaBank2(event.target.value);
                 }}
                 style={{ marginLeft: "8px" }}
               />

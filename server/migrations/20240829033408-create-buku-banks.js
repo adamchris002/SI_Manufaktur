@@ -12,6 +12,9 @@ module.exports = {
       namaBank: {
         type: Sequelize.STRING,
       },
+      namaBank2: {
+        type: Sequelize.STRING
+      },
       statusBukuBank: {
         type: Sequelize.STRING,
       },

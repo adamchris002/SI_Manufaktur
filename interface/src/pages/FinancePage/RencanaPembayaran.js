@@ -1470,7 +1470,7 @@ const RencanaPembayaran = (props) => {
                           marginTop: "16px",
                         }}
                       >
-                        Nama Bank: {dataInfoPembayaran.namaBank}
+                        Nama Bank: {dataInfoPembayaran.namaBank2}
                       </Typography>
                     )}
                 </div>
@@ -2389,7 +2389,7 @@ const RencanaPembayaran = (props) => {
                         marginTop: "16px",
                       }}
                     >
-                      Nama Bank: {dataInfoPembayaran.namaBank}
+                      Nama Bank: {dataInfoPembayaran.namaBank2}
                     </Typography>
                   )}
               </div>
