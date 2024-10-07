@@ -269,7 +269,41 @@ class ProductionPlanningController {
       res.json(error);
     }
   }
-
+  static async getAllProductionPlanStatusEstimatedForProduction(req, res) {
+    try {
+      const { id } = req.params;
+      const findUser = await users.findOne({
+        where: { id: id },
+      });
+      let allEstimatedOrder = await orders.findAll({
+        where: { orderStatus: "Estimated", lokasi: findUser.lokasi },
+      });
+      let estimatedOrderIds = allEstimatedOrder.map((order) => order.id);
+      let result = await productionPlannings.findAll({
+        where: {
+          orderId: { [Op.in]: estimatedOrderIds },
+          statusProductionPlanning: "Processed",
+        },
+        include: [
+          {
+            model: estimasiBahanBakus,
+            include: [{ model: bahanBakuAkanDigunakans }],
+          },
+          {
+            model: estimasiJadwalProduksis,
+            include: [
+              {
+                model: rencanaJadwalProduksis,
+              },
+            ],
+          },
+        ],
+      });
+      res.json(result);
+    } catch (error) {
+      res.json(error);
+    }
+  }
   static async getAllProductionPlanStatusEstimated(req, res) {
     try {
       const { id } = req.params;
@@ -281,7 +315,10 @@ class ProductionPlanningController {
       });
       let estimatedOrderIds = allEstimatedOrder.map((order) => order.id);
       let result = await productionPlannings.findAll({
-        where: { orderId: { [Op.in]: estimatedOrderIds } },
+        where: {
+          orderId: { [Op.in]: estimatedOrderIds },
+          statusProductionPlanning: null,
+        },
         include: [
           {
             model: estimasiBahanBakus,
@@ -492,7 +529,7 @@ class ProductionPlanningController {
         activity: `Mengedit perencanaan produksi dengan id ${productionPlanId}`,
         name: jenisCetakan,
         division: "Production Planning",
-        lokasi: existingUser.lokasi
+        lokasi: existingUser.lokasi,
       });
 
       await UserActivityLogs.create({
@@ -650,7 +687,7 @@ class ProductionPlanningController {
                 },
                 { where: { id: data.id } }
               );
-      
+
               dataJenisJadwal = await estimasiJadwalProduksis.findOne({
                 where: { id: data.id },
               });
@@ -994,7 +1031,7 @@ class ProductionPlanningController {
         activity: `Mengupdate kredensial user/menambahkan user ke dalam divisi production planning`,
         name: `Divisi: Production Planning`,
         division: "Production Planning",
-        lokasi: findUser.lokasi
+        lokasi: findUser.lokasi,
       });
 
       await UserActivityLogs.create({

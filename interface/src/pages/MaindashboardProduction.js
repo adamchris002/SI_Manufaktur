@@ -7,6 +7,7 @@ import factoryBackground from "../assets/factorybackground.png";
 import companyLogo from "../assets/PT_Aridas_Karya_Satria_Logo.png";
 import DefaultButton from "../components/Button";
 import AccountCircleIcon from "@mui/icons-material/AccountCircle";
+import CheckIcon from "@mui/icons-material/Check";
 import {
   IconButton,
   Paper,
@@ -116,6 +117,7 @@ const MaindashboardProduction = (props) => {
     { value: "Marketing" },
     { value: "Production Planning" },
     { value: "Inventory" },
+    { value: "Production" },
     { value: "Finance" },
   ];
 
@@ -206,6 +208,25 @@ const MaindashboardProduction = (props) => {
     setOpenSnackbar(false);
     setSnackbarMessage("");
     setSnackbarStatus(true);
+  };
+
+  const handleSelesaiKegiatanProduksi = (id) => {
+    axios({
+      method: "PUT",
+      url: `http://localhost:3000/production/kegiatanProduksiSelesai/${id}`,
+      params: { userId: userInformation?.data?.id },
+    }).then((result) => {
+      if (result.status === 200) {
+        setRefreshDataKegiatanProduksi(true);
+        setOpenSnackbar(true);
+        setSnackbarStatus(true);
+        setSnackbarMessage(`Kegiatan produksi dengan id ${id} selesai`);
+      } else {
+        setOpenSnackbar(true);
+        setSnackbarStatus(false);
+        setSnackbarMessage("Tidak berhasil mengupdate kegiatan produksi");
+      }
+    });
   };
 
   const handleChangeTahapProduksi = (id) => {
@@ -359,7 +380,7 @@ const MaindashboardProduction = (props) => {
               height="2.08vw"
               backgroundColor="#0F607D"
               borderRadius="0.83vw"
-              fontSize="1vw"
+              fontSize="0.9vw"
               onClickFunction={() => {
                 document
                   .getElementById("wastepickupactivity")
@@ -484,6 +505,7 @@ const MaindashboardProduction = (props) => {
                 Ubah Divisi
               </Typography>
               <MySelectTextField
+                value={userInformation?.data?.department}
                 onChange={(event) => {
                   handleChangeDivisiOwner(event);
                 }}
@@ -508,6 +530,7 @@ const MaindashboardProduction = (props) => {
                 Ubah Lokasi
               </Typography>
               <MySelectTextField
+                value={userInformation?.data?.lokasi}
                 onChange={(event) => {
                   handleChangeLocationOwner(event);
                 }}
@@ -544,7 +567,12 @@ const MaindashboardProduction = (props) => {
           >
             {allPenyerahanBarang.length === 0 ? (
               <div style={{ display: "flex", justifyContent: "center" }}>
-                <Typography style={{ fontSize: isMobile ? "3vw" : "1.5vw", color: "#0F607D" }}>
+                <Typography
+                  style={{
+                    fontSize: isMobile ? "3vw" : "1.5vw",
+                    color: "#0F607D",
+                  }}
+                >
                   Belum ada bahan baku yang dapat diambil
                 </Typography>
               </div>
@@ -629,7 +657,12 @@ const MaindashboardProduction = (props) => {
           >
             {dataKegiatanProduksi.length === 0 ? (
               <div style={{ display: "flex", justifyContent: "center" }}>
-                <Typography style={{ color: "#0F607D", fontSize: isMobile ? "3vw" : "1.5vw" }}>
+                <Typography
+                  style={{
+                    color: "#0F607D",
+                    fontSize: isMobile ? "3vw" : "1.5vw",
+                  }}
+                >
                   Tidak ada data Kegiatan Produksi
                 </Typography>
               </div>
@@ -683,7 +716,7 @@ const MaindashboardProduction = (props) => {
                                       alignItems: "center",
                                     }}
                                   >
-                                    <IconButton
+                                    {/* <IconButton
                                       onClick={() => {
                                         handleGoToEditKegiatanProduksi(
                                           result.id
@@ -691,7 +724,19 @@ const MaindashboardProduction = (props) => {
                                       }}
                                     >
                                       <EditIcon style={{ color: "#0F607D" }} />
-                                    </IconButton>
+                                    </IconButton> */}
+                                    {result.tahapProduksi !==
+                                      "Produksi Pracetak" && (
+                                      <IconButton
+                                        onClick={() => {
+                                          handleSelesaiKegiatanProduksi(
+                                            result.id
+                                          );
+                                        }}
+                                      >
+                                        <CheckIcon style={{color: "#0F607D"}} />
+                                      </IconButton>
+                                    )}
                                     {result.tahapProduksi !==
                                       "Produksi Fitur" && (
                                       <IconButton
@@ -922,10 +967,10 @@ const MaindashboardProduction = (props) => {
           </Typography>
           <div>
             <DefaultButton
-            height={isMobile ? "" : "2.08vw"}
-            width={isMobile ? "" : "15vw"}
-            borderRadius="0.83vw"
-            fontSize={isMobile ? "10px" : "0.8vw"}
+              height={isMobile ? "" : "2.08vw"}
+              width={isMobile ? "" : "15vw"}
+              borderRadius="0.83vw"
+              fontSize={isMobile ? "10px" : "0.8vw"}
               onClickFunction={() => {
                 navigate("/productionDashboard/activitylog");
               }}

@@ -16,6 +16,7 @@ const {
   activitylogs,
   UserActivityLogs,
   users,
+  inventorys,
 } = require("../models");
 const dayjs = require("dayjs");
 
@@ -41,8 +42,13 @@ class ProductionController {
   static async addKegiatanProduksi(req, res) {
     try {
       const { id } = req.params;
-      const { dataProduksi, jadwalPracetak, personil, tanggalPengiriman } =
-        req.body;
+      const {
+        dataProduksi,
+        jadwalPracetak,
+        personil,
+        tanggalPengiriman,
+        isLaporanAktual,
+      } = req.body;
 
       const findUser = await users.findOne({
         where: { id: id },
@@ -83,6 +89,7 @@ class ProductionController {
         tahapProduksi: dataProduksi.tahapProduksi,
         tanggalPengiriman: tanggalPengiriman,
         lokasi: findUser.lokasi,
+        isLaporanAktual: isLaporanAktual,
       });
 
       if (
@@ -91,22 +98,56 @@ class ProductionController {
       ) {
         await Promise.all(
           dataProduksi.bahanProduksis.map(async (data) => {
-            let beratAwalNewValue;
-            try {
-              beratAwalNewValue = convertUnit(data.beratAwal, data.beratAkhir);
-            } catch (err) {
-              throw new Error(`Error converting units: ${err.message}`);
-            }
+            if (isLaporanAktual) {
+              let beratAwalNewValue;
+              try {
+                beratAwalNewValue = convertUnit(
+                  data.beratAwal,
+                  data.beratAkhir
+                );
+              } catch (err) {
+                throw new Error(`Error converting units: ${err.message}`);
+              }
 
-            await bahanLaporanProduksis.create({
-              laporanProduksiId: result.id,
-              tahapProduksi: dataProduksi.tahapProduksi,
-              jenis: data.jenis,
-              kode: data.kode,
-              beratAwal: beratAwalNewValue,
-              beratAkhir: data.beratAkhir,
-              keterangan: data.keterangan,
-            });
+              await inventorys.update(
+                {
+                  jumlahItem: beratAwalNewValue,
+                },
+                { where: { namaItem: data.jenis } }
+              );
+
+              await bahanLaporanProduksis.create({
+                laporanProduksiId: result.id,
+                tahapProduksi: dataProduksi.tahapProduksi,
+                noOrderProduksi: dataProduksi.noOrderProduksi,
+                jenis: data.jenis,
+                kode: data.kode,
+                beratAwal: beratAwalNewValue,
+                beratAkhir: data.beratAkhir,
+                keterangan: data.keterangan,
+              });
+            } else {
+              let beratAwalNewValue;
+              try {
+                beratAwalNewValue = convertUnit(
+                  data.beratAwal,
+                  data.beratAkhir
+                );
+              } catch (err) {
+                throw new Error(`Error converting units: ${err.message}`);
+              }
+
+              await bahanLaporanProduksis.create({
+                laporanProduksiId: result.id,
+                tahapProduksi: dataProduksi.tahapProduksi,
+                noOrderProduksi: dataProduksi.noOrderProduksi,
+                jenis: data.jenis,
+                kode: data.kode,
+                beratAwal: beratAwalNewValue,
+                beratAkhir: data.beratAkhir,
+                keterangan: data.keterangan,
+              });
+            }
           })
         );
       }
@@ -180,6 +221,32 @@ class ProductionController {
       });
       let result = await laporanProduksis.findAll({
         where: { lokasi: findUser.lokasi },
+        include: [
+          { model: personils },
+          { model: jadwalProduksis },
+          { model: bahanLaporanProduksis },
+        ],
+      });
+      res.json(result);
+    } catch (error) {
+      res.json(error);
+    }
+  }
+  static async getLaporanPracetakPrev(req, res) {
+    try {
+      const { id } = req.params;
+      const { userId } = req.query;
+
+      const findUser = await users.findOne({
+        where: { id: userId },
+      });
+
+      const result = await laporanProduksis.findOne({
+        where: {
+          lokasi: findUser.lokasi,
+          noOrderProduksi: id,
+          tahapProduksi: "Produksi Pracetak",
+        },
         include: [
           { model: personils },
           { model: jadwalProduksis },
@@ -543,8 +610,13 @@ class ProductionController {
   static async addKegiatanProduksiFitur(req, res) {
     try {
       const { id } = req.params;
-      const { personil, dataProduksi, jadwalFitur, tanggalPengiriman } =
-        req.body;
+      const {
+        personil,
+        dataProduksi,
+        jadwalFitur,
+        tanggalPengiriman,
+        isLaporanAktual,
+      } = req.body;
 
       const findUser = await users.findOne({
         where: { id: id },
@@ -595,6 +667,7 @@ class ProductionController {
         tahapProduksi: dataProduksi.tahapProduksi,
         tanggalPengiriman: tanggalPengiriman,
         lokasi: findUser.lokasi,
+        isLaporanAktual: isLaporanAktual,
       });
 
       if (
@@ -603,21 +676,92 @@ class ProductionController {
       ) {
         await Promise.all(
           dataProduksi.bahanProduksis.map(async (data) => {
-            let beratAwalNewValue;
-            try {
-              beratAwalNewValue = convertUnit(data.beratAwal, data.beratAkhir);
-            } catch (err) {
-              throw new Error(`Error converting units: ${err.message}`);
+            if (isLaporanAktual) {
+              let beratAwalNewValue;
+              try {
+                beratAwalNewValue = convertUnit(
+                  data.beratAwal,
+                  data.beratAkhir
+                );
+              } catch (err) {
+                throw new Error(`Error converting units: ${err.message}`);
+              }
+
+              await inventorys.update(
+                {
+                  jumlahItem: beratAwalNewValue,
+                },
+                { where: { namaItem: data.jenis } }
+              );
+              await bahanLaporanProduksis.create({
+                laporanProduksiId: result.id,
+                tahapProduksi: dataProduksi.tahapProduksi,
+                noOrderProduksi: dataProduksi.noOrderProduksi,
+                jenis: data.jenis,
+                kode: data.kode,
+                beratAwal: beratAwalNewValue,
+                beratAkhir: data.beratAkhir,
+                keterangan: data.keterangan,
+              });
+
+              // let findBahanLaporanProduksiFromLastActivity =
+              //   await bahanLaporanProduksis.findOne({
+              //     where: {
+              //       jenis: data.jenis,
+              //       noOrderProduksi: dataProduksi.noOrderProduksi,
+              //       tahapProduksi: "Produksi Cetak",
+              //     },
+              //   });
+              // if (findBahanLaporanProduksiFromLastActivity === null) {
+              //   let tempBeratAkhir = separateValueAndUnit(data.beratAkhir);
+              //   let tempBeratAwal = `0 ${tempBeratAkhir.unit}`;
+              //   await bahanLaporanProduksis.create({
+              //     laporanProduksiId: result.id,
+              //     tahapProduksi: dataProduksi.tahapProduksi,
+              //     noOrderProduksi: dataProduksi.noOrderProduksi,
+              //     jenis: data.jenis,
+              //     kode: data.kode,
+              //     beratAwal: convertUnit(tempBeratAwal, data.beratAkhir),
+              //     beratAkhir: data.beratAkhir,
+              //     keterangan: data.keterangan,
+              //   });
+              // } else {
+              //   let tempBeratAwal = convertUnit(
+              //     findBahanLaporanProduksiFromLastActivity.beratAwal,
+              //     data.beratAkhir
+              //   );
+              //   await bahanLaporanProduksis.create({
+              //     laporanProduksiId: result.id,
+              //     tahapProduksi: dataProduksi.tahapProduksi,
+              //     noOrderProduksi: dataProduksi.noOrderProduksi,
+              //     jenis: data.jenis,
+              //     kode: data.kode,
+              //     beratAwal: tempBeratAwal,
+              //     beratAkhir: data.beratAkhir,
+              //     keterangan: data.keterangan,
+              //   });
+              // }
+            } else {
+              let beratAwalNewValue;
+              try {
+                beratAwalNewValue = convertUnit(
+                  data.beratAwal,
+                  data.beratAkhir
+                );
+              } catch (err) {
+                throw new Error(`Error converting units: ${err.message}`);
+              }
+              await bahanLaporanProduksis.create({
+                laporanProduksiId: result.id,
+                tahapProduksi: dataProduksi.tahapProduksi,
+                noOrderProduksi: dataProduksi.noOrderProduksi,
+                jenis: data.jenis,
+                kode: data.kode,
+                beratAwal: beratAwalNewValue,
+                beratAkhir: data.beratAkhir,
+                keterangan: data.keterangan,
+              });
             }
-            await bahanLaporanProduksis.create({
-              laporanProduksiId: result.id,
-              tahapProduksi: dataProduksi.tahapProduksi,
-              jenis: data.jenis,
-              kode: data.kode,
-              beratAwal: beratAwalNewValue,
-              beratAkhir: data.beratAkhir,
-              keterangan: data.keterangan,
-            });
           })
         );
       }
@@ -678,8 +822,13 @@ class ProductionController {
   static async addKegiatanProduksiCetak(req, res) {
     try {
       const { id } = req.params;
-      const { personil, jadwalCetak, dataProduksi, tanggalPengiriman } =
-        req.body;
+      const {
+        personil,
+        jadwalCetak,
+        dataProduksi,
+        tanggalPengiriman,
+        isLaporanAktual,
+      } = req.body;
 
       const findUser = await users.findOne({
         where: { id: id },
@@ -731,6 +880,7 @@ class ProductionController {
         tahapProduksi: dataProduksi.tahapProduksi,
         tanggalPengiriman: tanggalPengiriman,
         lokasi: findUser.lokasi,
+        isLaporanAktual: isLaporanAktual,
       });
 
       if (
@@ -739,21 +889,93 @@ class ProductionController {
       ) {
         await Promise.all(
           dataProduksi.bahanProduksis.map(async (data) => {
-            let beratAwalNewValue;
-            try {
-              beratAwalNewValue = convertUnit(data.beratAwal, data.beratAkhir);
-            } catch (err) {
-              throw new Error(`Error converting units: ${err.message}`);
+            if (isLaporanAktual) {
+              let beratAwalNewValue;
+              try {
+                beratAwalNewValue = convertUnit(
+                  data.beratAwal,
+                  data.beratAkhir
+                );
+              } catch (err) {
+                throw new Error(`Error converting units: ${err.message}`);
+              }
+
+              await inventorys.update(
+                {
+                  jumlahItem: beratAwalNewValue,
+                },
+                { where: { namaItem: data.jenis } }
+              );
+
+              await bahanLaporanProduksis.create({
+                laporanProduksiId: result.id,
+                tahapProduksi: dataProduksi.tahapProduksi,
+                noOrderProduksi: dataProduksi.noOrderProduksi,
+                jenis: data.jenis,
+                kode: data.kode,
+                beratAwal: beratAwalNewValue,
+                beratAkhir: data.beratAkhir,
+                keterangan: data.keterangan,
+              });
+
+              // let findBahanLaporanProduksiFromLastActivity =
+              //   await bahanLaporanProduksis.findOne({
+              //     where: {
+              //       jenis: data.jenis,
+              //       noOrderProduksi: dataProduksi.noOrderProduksi,
+              //       tahapProduksi: "Produksi Pracetak",
+              //     },
+              //   });
+              // if (findBahanLaporanProduksiFromLastActivity === null) {
+              //   let tempBeratAkhir = separateValueAndUnit(data.beratAkhir);
+              //   let tempBeratAwal = `0 ${tempBeratAkhir.unit}`;
+              //   await bahanLaporanProduksis.create({
+              //     laporanProduksiId: result.id,
+              //     tahapProduksi: dataProduksi.tahapProduksi,
+              //     noOrderProduksi: dataProduksi.noOrderProduksi,
+              //     jenis: data.jenis,
+              //     kode: data.kode,
+              //     beratAwal: convertUnit(tempBeratAwal, data.beratAkhir),
+              //     beratAkhir: data.beratAkhir,
+              //     keterangan: data.keterangan,
+              //   });
+              // } else {
+              //   let tempBeratAwal = convertUnit(
+              //     findBahanLaporanProduksiFromLastActivity.beratAwal,
+              //     data.beratAkhir
+              //   );
+              //   await bahanLaporanProduksis.create({
+              //     laporanProduksiId: result.id,
+              //     tahapProduksi: dataProduksi.tahapProduksi,
+              //     noOrderProduksi: dataProduksi.noOrderProduksi,
+              //     jenis: data.jenis,
+              //     kode: data.kode,
+              //     beratAwal: tempBeratAwal,
+              //     beratAkhir: data.beratAkhir,
+              //     keterangan: data.keterangan,
+              //   });
+              // }
+            } else {
+              let beratAwalNewValue;
+              try {
+                beratAwalNewValue = convertUnit(
+                  data.beratAwal,
+                  data.beratAkhir
+                );
+              } catch (err) {
+                throw new Error(`Error converting units: ${err.message}`);
+              }
+              await bahanLaporanProduksis.create({
+                laporanProduksiId: result.id,
+                tahapProduksi: dataProduksi.tahapProduksi,
+                noOrderProduksi: dataProduksi.noOrderProduksi,
+                jenis: data.jenis,
+                kode: data.kode,
+                beratAwal: beratAwalNewValue,
+                beratAkhir: data.beratAkhir,
+                keterangan: data.keterangan,
+              });
             }
-            await bahanLaporanProduksis.create({
-              laporanProduksiId: result.id,
-              tahapProduksi: dataProduksi.tahapProduksi,
-              jenis: data.jenis,
-              kode: data.kode,
-              beratAwal: beratAwalNewValue,
-              beratAkhir: data.beratAkhir,
-              keterangan: data.keterangan,
-            });
           })
         );
       }
@@ -1154,6 +1376,12 @@ class ProductionController {
       let productionPlanningDone = await productionPlannings.update(
         { statusProductionPlanning: "Done" },
         { where: { id: findLaporanProduksi.idProductionPlanning } }
+      );
+      let orderDone = await orders.update(
+        {
+          orderStatus: "Done",
+        },
+        { where: { id: findLaporanProduksi.noOrderProduksi } }
       );
       let result = await findLaporanProduksi.update({
         statusLaporan: "Done",

@@ -75,7 +75,6 @@ const OrderDetail = (props) => {
   const { userInformation } = props;
   const [checkUpdate, setCheckUpdate] = useState(false);
   const [orderDetailInfo, setOrderDetailInfo] = useState({});
-  console.log(orderDetailInfo);
   const [openModal, setOpenModal] = useState(false);
   const [orderTitle, setOrderTitle] = useState("");
   const [orderQuantityValue, setOrderQuantityValue] = useState(null);

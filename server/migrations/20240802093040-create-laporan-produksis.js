@@ -36,11 +36,14 @@ module.exports = {
       statusLaporanLimbah: {
         type: Sequelize.STRING,
       },
+      isLaporanAktual: {
+        type: Sequelize.BOOLEAN,
+      },
       tanggalPengiriman: {
         type: Sequelize.STRING,
       },
       lokasi: {
-        type: Sequelize.STRING
+        type: Sequelize.STRING,
       },
       createdAt: {
         allowNull: false,

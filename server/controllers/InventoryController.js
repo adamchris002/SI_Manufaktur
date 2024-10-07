@@ -16,6 +16,7 @@ const {
   itemPenyerahanBarangs,
   UserPenyerahanBarangs,
   inventoryHistorys,
+  productionPlannings,
 } = require("../models");
 
 class InventoryController {
@@ -115,7 +116,7 @@ class InventoryController {
         activity: `Mengedit pembelian bahan baku dengan id ${findPembelianBahanBaku.id}`,
         name: "Leveransir: " + findPembelianBahanBaku.leveransir,
         division: "Inventory",
-        lokasi: userInformation.lokasi
+        lokasi: userInformation.lokasi,
       });
 
       await UserActivityLogs.create({
@@ -198,7 +199,7 @@ class InventoryController {
         activity: `Mengedit permohonan pembelian dengan id ${permohonanPembelian[0].id}`,
         name: "Nomor: " + permohonanPembelian[0].nomor,
         division: "Inventory",
-        lokasi: userInformation.lokasi
+        lokasi: userInformation.lokasi,
       });
 
       await UserActivityLogs.create({
@@ -728,7 +729,7 @@ class InventoryController {
         activity: `Update item bahan baku dengan id ${findOneDataInventory.id}`,
         name: "Nama Item :" + dataInventory.namaItem,
         division: "Inventory",
-        lokasi: userInformation.lokasi
+        lokasi: userInformation.lokasi,
       });
 
       await UserActivityLogs.create({
@@ -975,7 +976,7 @@ class InventoryController {
         activity: `Mengedit stok opnam dengan id ${findOneStokOpnam.id}`,
         name: "Leveransir: " + dataStokOpnam.judulStokOpnam,
         division: "Inventory",
-        lokasi: userInformation.lokasi
+        lokasi: userInformation.lokasi,
       });
 
       await UserActivityLogs.create({
@@ -1054,7 +1055,7 @@ class InventoryController {
   static async addPenyerahanBarang(req, res) {
     try {
       const { id } = req.params;
-      const { dataPenyerahanBarang } = req.body;
+      const { dataPenyerahanBarang, productionPlanningId } = req.body;
 
       let userInformation = await users.findOne({
         where: { id: id },
@@ -1067,7 +1068,7 @@ class InventoryController {
         tanggalPenyerahan: dataPenyerahanBarang.tanggalPenyerahan,
         tanggalPengambilan: dataPenyerahanBarang.tanggalPengambilan,
         statusPenyerahan: dataPenyerahanBarang.statusPenyerahan,
-        lokasi: userInformation.lokasi
+        lokasi: userInformation.lokasi,
       });
       await UserPenyerahanBarangs.create({
         userId: id,
@@ -1099,12 +1100,19 @@ class InventoryController {
         );
       }
 
+      await productionPlannings.update(
+        {
+          statusProductionPlanning: "Processed",
+        },
+        { where: { id: productionPlanningId } }
+      );
+
       let createActivityLog = await activitylogs.create({
         user: userInformation.name,
         activity: `Menambahkan penyerahan bahan baku dengan id ${result.id}`,
         name: "Order Id: " + dataPenyerahanBarang.orderId,
         division: "Inventory",
-        lokasi: userInformation.lokasi
+        lokasi: userInformation.lokasi,
       });
 
       await UserActivityLogs.create({
@@ -1383,7 +1391,7 @@ class InventoryController {
         activity: `Mengedit penyerahan barang dengan id ${dataPenyerahanBarang.id}`,
         name: "Order Id: " + findOnePenyerahanBarang.orderId,
         division: "Inventory",
-        lokasi: userInformation.lokasi
+        lokasi: userInformation.lokasi,
       });
 
       await UserActivityLogs.create({
@@ -1477,7 +1485,7 @@ class InventoryController {
         activity: `Menolak permohonan pembelian dengan id ${findOnePermohonanPembelian.id}`,
         name: "Nomor: " + findOnePermohonanPembelian.nomor,
         division: "Finance",
-        lokasi: userInformation.lokasi
+        lokasi: userInformation.lokasi,
       });
 
       await UserActivityLogs.create({
@@ -1514,7 +1522,7 @@ class InventoryController {
         activity: `Menerima permohonan pembelian dengan id ${findOnePermohonanPembelian.id}`,
         name: "Nomor: " + findOnePermohonanPembelian.nomor,
         division: "Finance",
-        lokasi: userInformation.lokasi
+        lokasi: userInformation.lokasi,
       });
 
       await UserActivityLogs.create({
@@ -1581,7 +1589,7 @@ class InventoryController {
         activity: `Mengupdate kredensial user/menambahkan user ke dalam divisi inventory`,
         name: `Divisi: Inventory`,
         division: "Inventory",
-        lokasi: findUser.lokasi
+        lokasi: findUser.lokasi,
       });
 
       await UserActivityLogs.create({

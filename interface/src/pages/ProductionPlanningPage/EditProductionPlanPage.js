@@ -73,6 +73,7 @@ const EditProductionPlanPage = (props) => {
   const [selectedOrder, setSelectedOrder] = useState([]);
   const [estimasiJadwal, setEstimasiJadwal] = useState([]);
   const [estimasiBahanBaku, setEstimasiBahanBaku] = useState([]);
+  const [allInventoryItem, setAllInventoryItem] = useState([]);
 
   const [openModal, setOpenModal] = useState(false);
   const [openSnackbar, setOpenSnackbar] = useState(false);
@@ -297,6 +298,25 @@ const EditProductionPlanPage = (props) => {
       };
     });
   };
+
+  useEffect(() => {
+    axios({
+      method: "GET",
+      url: `http://localhost:3000/inventory/getAllInventoryItem/${userInformation?.data?.id}`,
+    }).then((result) => {
+      if (result.status === 200) {
+        const tempData = result.data.map((result) => ({
+          value: result.namaItem,
+        }));
+
+        setAllInventoryItem(tempData);
+      } else {
+        setOpenSnackbar(true);
+        setSnackbarStatus(false);
+        setSnackbarMessage("Tidak berhasil memanggil data item dari gudang");
+      }
+    });
+  }, []);
 
   useEffect(() => {
     if (refreshProductionPlanData) {
@@ -1068,7 +1088,12 @@ const EditProductionPlanPage = (props) => {
               }}
             >
               <div style={{ margin: "24px" }}>
-                <Typography style={{ fontSize: isMobile ? "5vw" : "2.5vw", color: "#0F607D" }}>
+                <Typography
+                  style={{
+                    fontSize: isMobile ? "5vw" : "2.5vw",
+                    color: "#0F607D",
+                  }}
+                >
                   Perencanaan Produksi
                 </Typography>
                 <div
@@ -1662,7 +1687,12 @@ const EditProductionPlanPage = (props) => {
                     alignItems: "center",
                   }}
                 >
-                  <Typography style={{ color: "#0F607D", fontSize: isMobile ? "4vw" : "2vw" }}>
+                  <Typography
+                    style={{
+                      color: "#0F607D",
+                      fontSize: isMobile ? "4vw" : "2vw",
+                    }}
+                  >
                     Bahan Baku dan Bahan Pembantu
                   </Typography>
                   <IconButton
@@ -1762,7 +1792,7 @@ const EditProductionPlanPage = (props) => {
                                             <TableCell></TableCell>
                                           )}
                                           <TableCell>
-                                            <TextField
+                                            <MySelectTextField
                                               value={dataJenis?.namaJenis}
                                               onChange={(event) => {
                                                 handleInputChangeEstimasiBahanBaku(
@@ -1773,7 +1803,21 @@ const EditProductionPlanPage = (props) => {
                                                   "namaJenis"
                                                 );
                                               }}
+                                              data={allInventoryItem}
+                                              width={"200px"}
                                             />
+                                            {/* <TextField
+                                              value={dataJenis?.namaJenis}
+                                              onChange={(event) => {
+                                                handleInputChangeEstimasiBahanBaku(
+                                                  event,
+                                                  index,
+                                                  dataItemIndex,
+                                                  dataJenisIndex,
+                                                  "namaJenis"
+                                                );
+                                              }}
+                                            /> */}
                                           </TableCell>
                                           <TableCell>
                                             <TextField
@@ -2605,12 +2649,16 @@ const EditProductionPlanPage = (props) => {
                       <TableHead>
                         <TableRow>
                           <TableCell colSpan={3} style={{ width: "50%" }}>
-                            <Typography style={{ fontSize: isMobile ? "3.5vw" : "1.5vw" }}>
+                            <Typography
+                              style={{ fontSize: isMobile ? "3.5vw" : "1.5vw" }}
+                            >
                               Perincian Rekanan
                             </Typography>
                           </TableCell>
                           <TableCell colSpan={5} style={{ width: "50%" }}>
-                            <Typography style={{ fontSize: isMobile ? "3.5vw" : "1.5vw" }}>
+                            <Typography
+                              style={{ fontSize: isMobile ? "3.5vw" : "1.5vw" }}
+                            >
                               Perincian Harga Cetak
                             </Typography>
                           </TableCell>
@@ -2642,7 +2690,7 @@ const EditProductionPlanPage = (props) => {
                                 <TableCell>{index + 1 + "."}</TableCell>
                                 <TableCell>
                                   <TextField
-                                  sx={{width: "200px"}}
+                                    sx={{ width: "200px" }}
                                     value={result.namaRekanan}
                                     onChange={(event) => {
                                       handleChangeInputPerincian(
@@ -2655,7 +2703,7 @@ const EditProductionPlanPage = (props) => {
                                 </TableCell>
                                 <TableCell>
                                   <TextField
-                                  sx={{width: "200px"}}
+                                    sx={{ width: "200px" }}
                                     value={result.keterangan}
                                     onChange={(event) => {
                                       handleChangeInputPerincian(
@@ -2669,7 +2717,7 @@ const EditProductionPlanPage = (props) => {
                                 <TableCell>{index + 1 + "."}</TableCell>
                                 <TableCell>
                                   <TextField
-                                  sx={{width: "200px"}}
+                                    sx={{ width: "200px" }}
                                     disabled
                                     value={result.jenisCetakan}
                                     // onChange={(event) => {

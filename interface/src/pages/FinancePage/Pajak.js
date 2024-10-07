@@ -1278,7 +1278,7 @@ const Pajak = (props) => {
             </div>
             <div style={{ marginTop: "16px" }}>
               <Typography style={{ color: "#0F607D", fontSize: "1.5vw" }}>
-                Nama Buku Bank: {selectedBukuBank.namaBank}
+                Nama Buku Bank: {selectedBukuBank.namaBank2}
               </Typography>
             </div>
           </div>

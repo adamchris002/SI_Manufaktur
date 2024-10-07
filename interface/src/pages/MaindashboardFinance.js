@@ -126,6 +126,7 @@ const MaindashboardFinance = (props) => {
     { value: "Production Planning" },
     { value: "Inventory" },
     { value: "Production" },
+    { value: "Finance" },
   ];
 
   useEffect(() => {
@@ -545,6 +546,7 @@ const MaindashboardFinance = (props) => {
                 Ubah Divisi
               </Typography>
               <MySelectTextField
+                value={userInformation?.data?.department}
                 onChange={(event) => {
                   handleChangeDivisiOwner(event);
                 }}
@@ -569,6 +571,7 @@ const MaindashboardFinance = (props) => {
                 Ubah Lokasi
               </Typography>
               <MySelectTextField
+                value={userInformation?.data?.lokasi}
                 onChange={(event) => {
                   handleChangeLocationOwner(event);
                 }}

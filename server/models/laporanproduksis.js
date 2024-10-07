@@ -39,6 +39,7 @@ module.exports = (sequelize, DataTypes) => {
       statusLaporan: DataTypes.STRING,
       statusLaporanLimbah: DataTypes.STRING,
       tanggalPengiriman: DataTypes.STRING,
+      isLaporanAktual: DataTypes.BOOLEAN,
       lokasi: DataTypes.STRING,
     },
     {

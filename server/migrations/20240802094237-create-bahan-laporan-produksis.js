@@ -20,6 +20,9 @@ module.exports = {
       tahapProduksi: {
         type: Sequelize.STRING
       },
+      noOrderProduksi: {
+        type: Sequelize.STRING
+      },
       jenis: {
         type: Sequelize.STRING
       },

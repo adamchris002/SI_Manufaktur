@@ -27,6 +27,10 @@ productionPlanningRoutes.get(
   ProductionPlanningController.getAllProductionPlanStatusEstimated //lokasi udah
 );
 productionPlanningRoutes.get(
+  "/getAllProductionPlanStatusEstimatedForProduction/:id",
+  ProductionPlanningController.getAllProductionPlanStatusEstimatedForProduction
+);
+productionPlanningRoutes.get(
   "/getProductionPlanningWithData/:id",
   ProductionPlanningController.getProductionPlanWithData //lokasi udah
 );

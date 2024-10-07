@@ -214,33 +214,36 @@ const PenyerahanBarang = (props) => {
   };
 
   const handleAddPengambilanBarang = () => {
-    // const checkIfDataPengambilanComplete = checkForSubmission();
-    // if (checkIfDataPengambilanComplete === false) {
-    //   setOpenSnackbar(true);
-    //   setSnackbarStatus(false);
-    //   setSnackbarMessage(
-    //     "Tolong isi input dengan lengkap atau perbaiki data pada input"
-    //   );
-    // } else {
-    const transformedData = transformDataForSubmission(dataBarangYangDiambil);
-    axios({
-      method: "POST",
-      url: `http://localhost:3000/inventory/addPenyerahanBarang/${userInformation?.data?.id}`,
-      data: { dataPenyerahanBarang: transformedData },
-    }).then((result) => {
-      if (result.status === 200) {
-        setSuccessMessage("Berhasil menambahkan form penyerahan barang");
-        setSnackbarStatus(true);
-        navigate(-1);
-      } else {
-        setOpenSnackbar(true);
-        setSnackbarStatus(false);
-        setSnackbarMessage(
-          "Tidak berhasil menambahkan data penyerahan/pengambilan barang"
-        );
-      }
-    });
-    // }
+    const checkIfDataPengambilanComplete = checkForSubmission();
+    if (checkIfDataPengambilanComplete === false) {
+      setOpenSnackbar(true);
+      setSnackbarStatus(false);
+      setSnackbarMessage(
+        "Tolong isi input dengan lengkap atau perbaiki data pada input"
+      );
+    } else {
+      const transformedData = transformDataForSubmission(dataBarangYangDiambil);
+      axios({
+        method: "POST",
+        url: `http://localhost:3000/inventory/addPenyerahanBarang/${userInformation?.data?.id}`,
+        data: {
+          dataPenyerahanBarang: transformedData,
+          productionPlanningId: selectedEstimatedOrder.id,
+        },
+      }).then((result) => {
+        if (result.status === 200) {
+          setSuccessMessage("Berhasil menambahkan form penyerahan barang");
+          setSnackbarStatus(true);
+          navigate(-1);
+        } else {
+          setOpenSnackbar(true);
+          setSnackbarStatus(false);
+          setSnackbarMessage(
+            "Tidak berhasil menambahkan data penyerahan/pengambilan barang"
+          );
+        }
+      });
+    }
   };
 
   const handleEditPenyerahanBarang = () => {
@@ -544,6 +547,7 @@ const PenyerahanBarang = (props) => {
                   };
                 }
 
+                updatedItem.jumlahDigudang = jumlahDigudang;
                 updatedItem.kodeBarang = kodeBarang;
                 updatedItem.lokasiPeyimpanan = lokasiPenyimpanan;
                 updatedItem.rincianItem = rincianBarang;

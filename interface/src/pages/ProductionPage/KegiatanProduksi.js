@@ -38,6 +38,8 @@ const KegiatanProduksi = (props) => {
 
   const { isMobile } = useContext(AppContext);
 
+  const [isLaporanAktual, setIsLaporanAktual] = useState(false);
+
   const [personil, setPersonil] = useState([
     {
       nama: "",
@@ -47,6 +49,8 @@ const KegiatanProduksi = (props) => {
   const [allProductionPlan, setAllProductionPlan] = useState([]);
   const [dataBahanProduksiPrev, setDataBahanProduksiPrev] = useState([]);
   const [allInventoryItem, setAllInventoryItem] = useState([]);
+  const [checkSameData, setCheckSameData] = useState(false);
+  const [allBarangGudang, setAllBarangGudang] = useState([]);
   const [dataProduksi, setDataProduksi] = useState({
     tanggalProduksi: dayjs(""),
     noOrderProduksi: "",
@@ -118,6 +122,29 @@ const KegiatanProduksi = (props) => {
     useState(true);
 
   useEffect(() => {
+    axios({
+      method: "GET",
+      url: `http://localhost:3000/inventory/getAllInventoryItem/${userInformation?.data?.id}`,
+    }).then((result) => {
+      if (result.status === 200) {
+        const tempData = result.data.map((result) => {
+          return {
+            ...result,
+            value: result.namaItem,
+          };
+        });
+        setAllBarangGudang(tempData);
+      } else {
+        setOpenSnackbar(true);
+        setSnackbarStatus(false);
+        setSnackbarMessage(
+          "Tidak berhasil memanggil data bahan dari gudang untuk laporan aktual"
+        );
+      }
+    });
+  }, {});
+
+  useEffect(() => {
     if (isNewTahapProduksi) {
       axios({
         method: "GET",
@@ -136,7 +163,10 @@ const KegiatanProduksi = (props) => {
                 tahapProduksi: "Produksi Cetak",
               };
             });
-            setDataBahanProduksiPrev(result.data.bahanLaporanProdukses);
+            if (result.data.isLaporanAktual) {
+            } else {
+              setDataBahanProduksiPrev(result.data.bahanLaporanProdukses);
+            }
             if (dayjs(result.data.tanggalPengiriman).isValid()) {
               setTanggalPengiriman(dayjs(result.data.tanggalPengiriman));
             }
@@ -153,9 +183,28 @@ const KegiatanProduksi = (props) => {
                 tahapProduksi: "Produksi Fitur",
               };
             });
-            setDataBahanProduksiPrev(result.data.bahanLaporanProdukses);
+            if (result.data.isLaporanAktual) {
+              axios({
+                method: "GET",
+                url: `http://localhost:3000/production/getLaporanPracetakPrev/${result.data.noOrderProduksi}`,
+                params: { userId: userInformation?.data?.id },
+              }).then((value) => {
+                if (value.status === 200) {
+                  if (value.isLaporanAktual) {
+                    //
+                  } else {
+                    setDataBahanProduksiPrev(value.data.bahanLaporanProdukses);
+                  }
+                } else {
+                  //
+                }
+              });
+            } else {
+              setDataBahanProduksiPrev(result.data.bahanLaporanProdukses);
+            }
             setTanggalPengiriman(dayjs(result.data.tanggalPengiriman));
           }
+          setCheckSameData(true);
         } else {
           setOpenSnackbar(true);
           setSnackbarStatus(false);
@@ -169,7 +218,7 @@ const KegiatanProduksi = (props) => {
     if (laporanProduksiId === undefined && isNewTahapProduksi === undefined) {
       axios({
         method: "GET",
-        url: `http://localhost:3000/productionPlanning/getAllProductionPlanStatusEstimated/${userInformation?.data?.id}`,
+        url: `http://localhost:3000/productionPlanning/getAllProductionPlanStatusEstimatedForProduction/${userInformation?.data?.id}`,
       }).then((result) => {
         if (result.status === 200) {
           const tempData = result.data.map((data) => ({
@@ -208,47 +257,44 @@ const KegiatanProduksi = (props) => {
       dataProduksi.noOrderProduksi !== "" &&
       dataProduksi.noOrderProduksi !== null
     ) {
-      axios({
-        method: "GET",
-        url: `http://localhost:3000/inventory/getPenyerahanBarangOrderId/${dataProduksi.noOrderProduksi}`,
-        params: { userId: userInformation?.data?.id },
-      }).then((result) => {
-        if (result.status === 200) {
-          // if (isNewTahapProduksi) {
-          const tempData = result?.data?.itemPenyerahanBarangs?.map((item) => {
-            const matchingItem = dataBahanProduksiPrev.find(
-              (bahan) =>
-                bahan.jenis === item.namaBarang &&
-                bahan.kode === item.kodeBarang
+      // if (checkSameData) {
+        axios({
+          method: "GET",
+          url: `http://localhost:3000/inventory/getPenyerahanBarangOrderId/${dataProduksi.noOrderProduksi}`,
+          params: { userId: userInformation?.data?.id },
+        }).then((result) => {
+          if (result.status === 200) {
+            const tempData = result?.data?.itemPenyerahanBarangs?.map(
+              (item) => {
+                const matchingItem = dataBahanProduksiPrev.find(
+                  (bahan) =>
+                    bahan.jenis === item.namaBarang &&
+                    bahan.kode === item.kodeBarang
+                );
+                if (matchingItem) {
+                  return {
+                    ...item,
+                    value: matchingItem.jenis,
+                    jumlahYangDiambil: matchingItem.beratAwal,
+                  };
+                }
+                return {
+                  ...item,
+                  value: item.namaBarang,
+                };
+              }
             );
-            if (matchingItem) {
-              return {
-                ...item,
-                value: matchingItem.jenis,
-                jumlahYangDiambil: matchingItem.beratAwal,
-              };
-            }
-            return {
-              ...item,
-              value: item.namaBarang,
-            };
-          });
-          setAllInventoryItem(tempData);
-          // } else {
-          //   let tempData = result?.data?.itemPenyerahanBarangs?.map((item) => ({
-          //     value: item.namaBarang,
-          //     ...item,
-          //   }));
-          // setAllInventoryItem(tempData);
-          // }
-        } else {
-          setOpenSnackbar(true);
-          setSnackbarStatus(false);
-          setSnackbarMessage("Tidak berhasil memanggil item bahan baku");
-        }
-      });
+            setAllInventoryItem(tempData);
+            setCheckSameData(false);
+          } else {
+            setOpenSnackbar(true);
+            setSnackbarStatus(false);
+            setSnackbarMessage("Tidak berhasil memanggil item bahan baku");
+          }
+        });
+      // }
     }
-  }, [dataProduksi.noOrderProduksi, allProductionPlan]);
+  }, [dataProduksi.noOrderProduksi, allProductionPlan, checkSameData]);
 
   useEffect(() => {
     if (
@@ -337,6 +383,7 @@ const KegiatanProduksi = (props) => {
               jenisCetakan: result.data.jenisCetakan,
               mesin: result.data.mesin,
               dibuatOleh: result.data.dibuatOleh,
+              isLaporanAktual: result.data.isLaporanAktual,
               tahapProduksi: result.data.tahapProduksi || "Produksi Pracetak",
               bahanProduksis: result.data.bahanLaporanProdukses.map((item) => {
                 const tempBeratAwal = separateValueAndUnit(item.beratAwal);
@@ -680,44 +727,38 @@ const KegiatanProduksi = (props) => {
                 updatedItem = { ...updatedItem, [field]: value };
 
                 if (field === "jenis") {
-                  const kodeBarang = getSelectedInventoryItem(
-                    updatedItem.jenis,
-                    "kodeBarang"
-                  );
-                  // const inventoryHistorys = getSelectedInventoryItem(
-                  //   updatedItem.jenis,
-                  //   "inventoryHistorys"
-                  // );
-                  const beratAwal = separateValueAndUnit(
-                    getSelectedInventoryItem(
+                  if (
+                    isLaporanAktual === false &&
+                    (oldObject?.isLaporanAktual === undefined ||
+                      oldObject.isLaporanAktual === false ||
+                      oldObject.isLaporanAktual === null)
+                  ) {
+                    const kodeBarang = getSelectedInventoryItem(
                       updatedItem.jenis,
-                      "jumlahYangDiambil"
-                    )
-                  );
-                  // if (inventoryHistorys.length === 0) {
-                  //   updatedItem.beratAwal = {
-                  //     value: beratAwal.value,
-                  //     unit: beratAwal.unit,
-                  //   };
-                  // } else {
-                  //   const mostRecentItem = inventoryHistorys.reduce(
-                  //     (latest, item) => {
-                  //       return new Date(item.createdAt) >
-                  //         new Date(latest.createdAt)
-                  //         ? item
-                  //         : latest;
-                  //     }
-                  //   );
-                  //   const tempvalue = separateValueAndUnit(
-                  //     mostRecentItem.stokOpnamAkhir
-                  //   );
-                  //   updatedItem.beratAwal = {
-                  //     value: tempvalue.value,
-                  //     unit: tempvalue.unit,
-                  //   };
-                  // }
-                  updatedItem.beratAwal = beratAwal;
-                  updatedItem.kode = kodeBarang;
+                      "kodeBarang"
+                    );
+
+                    const beratAwal = separateValueAndUnit(
+                      getSelectedInventoryItem(
+                        updatedItem.jenis,
+                        "jumlahYangDiambil"
+                      )
+                    );
+
+                    updatedItem.beratAwal = beratAwal;
+                    updatedItem.kode = kodeBarang;
+                  } else {
+                    const findItemFromGudang = allBarangGudang.find(
+                      (item) => item.namaItem === value
+                    );
+
+                    const kodeBarang = findItemFromGudang.kodeBarang;
+                    const beratAwal = separateValueAndUnit(
+                      findItemFromGudang.jumlahItem
+                    );
+                    updatedItem.beratAwal = beratAwal;
+                    updatedItem.kode = kodeBarang;
+                  }
                 }
               }
             }
@@ -1299,6 +1340,7 @@ const KegiatanProduksi = (props) => {
           dataProduksi: modifiedDataProduksis,
           jadwalFitur: modifiedJadwalFitur,
           tanggalPengiriman: tanggalPengiriman,
+          isLaporanAktual: isLaporanAktual,
         },
       }).then((result) => {
         if (result.status === 200) {
@@ -1337,6 +1379,7 @@ const KegiatanProduksi = (props) => {
           dataProduksi: modifiedDataProduksis,
           jadwalCetak: modifiedJadwalCetak,
           tanggalPengiriman: tanggalPengiriman,
+          isLaporanAktual: isLaporanAktual,
         },
       }).then((result) => {
         if (result.status === 200) {
@@ -1377,6 +1420,7 @@ const KegiatanProduksi = (props) => {
           jadwalPracetak: modifiedJadwalPracetak,
           personil: personil,
           tanggalPengiriman: tanggalPengiriman,
+          isLaporanAktual: isLaporanAktual,
         },
       }).then((result) => {
         if (result.status === 200) {
@@ -1408,12 +1452,66 @@ const KegiatanProduksi = (props) => {
       }}
     >
       <div style={{ height: "100%", width: "100%" }}>
-        <div style={{ margin: "32px" }}>
+        <div
+          style={{
+            margin: "32px",
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "center",
+          }}
+        >
           <Typography
             style={{ color: "#0F607D", fontSize: isMobile ? "6vw" : "3vw" }}
           >
             Kegiatan Produksi
           </Typography>
+          <div>
+            {isLaporanAktual === false ? (
+              <DefaultButton
+                onClickFunction={() => {
+                  setIsLaporanAktual(!isLaporanAktual);
+                  setDataProduksi((oldObject) => {
+                    return {
+                      ...oldObject,
+                      bahanProduksis: [
+                        {
+                          jenis: "",
+                          kode: "",
+                          beratAwal: { value: "", unit: "" },
+                          beratAkhir: { value: "", unit: "" },
+                          keterangan: "",
+                        },
+                      ],
+                    };
+                  });
+                }}
+              >
+                Kegiatan Produksi Aktual
+              </DefaultButton>
+            ) : (
+              <DefaultButton
+                onClickFunction={() => {
+                  setIsLaporanAktual(!isLaporanAktual);
+                  setDataProduksi((oldObject) => {
+                    return {
+                      ...oldObject,
+                      bahanProduksis: [
+                        {
+                          jenis: "",
+                          kode: "",
+                          beratAwal: { value: "", unit: "" },
+                          beratAkhir: { value: "", unit: "" },
+                          keterangan: "",
+                        },
+                      ],
+                    };
+                  });
+                }}
+              >
+                Kegiatan Produksi Reguler
+              </DefaultButton>
+            )}
+          </div>
         </div>
         <div
           style={{
@@ -1488,7 +1586,12 @@ const KegiatanProduksi = (props) => {
                   </DemoContainer>
                 </LocalizationProvider>
                 {tanggalPengiriman.isValid() && (
-                  <Typography style={{ marginTop: "8px", fontSize: isMobile ? "12px" : "" }}>
+                  <Typography
+                    style={{
+                      marginTop: "8px",
+                      fontSize: isMobile ? "12px" : "",
+                    }}
+                  >
                     Tanggal pengiriman:
                     {dayjs(tanggalPengiriman).format("MM/DD/YYYY hh:mm A")}
                   </Typography>
@@ -1565,7 +1668,7 @@ const KegiatanProduksi = (props) => {
               </Typography>
               <div>
                 <TextField
-                sx={{width: "200px"}}
+                  sx={{ width: "200px" }}
                   value={dataProduksi.mesin}
                   onChange={(event) => {
                     handleChangeDataProduksi(event, "mesin");
@@ -1581,13 +1684,17 @@ const KegiatanProduksi = (props) => {
               }}
             >
               <Typography
-                style={{ width: isMobile ? "150px" : "15vw", color: "#0F607D", fontSize: isMobile ? "3.5vw" : "1.5vw" }}
+                style={{
+                  width: isMobile ? "150px" : "15vw",
+                  color: "#0F607D",
+                  fontSize: isMobile ? "3.5vw" : "1.5vw",
+                }}
               >
                 Dibuat Oleh:{" "}
               </Typography>
               <div>
                 <TextField
-                sx={{width: "200px"}}
+                  sx={{ width: "200px" }}
                   value={dataProduksi.dibuatOleh}
                   onChange={(event) => {
                     handleChangeDataProduksi(event, "dibuatOleh");
@@ -1679,7 +1786,9 @@ const KegiatanProduksi = (props) => {
               marginBottom: "16px",
             }}
           >
-            <Typography style={{ color: "#0F607D", fontSize: isMobile ? "5vw" : "2vw" }}>
+            <Typography
+              style={{ color: "#0F607D", fontSize: isMobile ? "5vw" : "2vw" }}
+            >
               Bahan
             </Typography>
             <DefaultButton
@@ -1707,7 +1816,7 @@ const KegiatanProduksi = (props) => {
                     <TableCell style={{ width: "200px" }}>Kode</TableCell>
                     <TableCell style={{ width: "200px" }}>Berat Awal</TableCell>
                     <TableCell style={{ width: "200px" }}>
-                      Berat Akhir
+                      Jumlah yang diambil
                     </TableCell>
                     <TableCell style={{ width: "200px" }}>Keterangan</TableCell>
                     <TableCell style={{ width: "50px" }}>Actions</TableCell>
@@ -1721,7 +1830,12 @@ const KegiatanProduksi = (props) => {
                           <TableCell>{index + 1 + "."}</TableCell>
                           <TableCell>
                             <MySelectTextField
-                              data={allInventoryItem}
+                              data={
+                                isLaporanAktual ||
+                                dataProduksi.isLaporanAktual === true
+                                  ? allBarangGudang
+                                  : allInventoryItem
+                              }
                               value={result.jenis}
                               onChange={(event) => {
                                 handleChangeDataProduksi(event, "jenis", index);
@@ -1821,7 +1935,9 @@ const KegiatanProduksi = (props) => {
         </div>
         {estimasiJadwal?.length !== 0 && (
           <div style={{ padding: "0px 32px 64px 32px" }}>
-            <Typography style={{ color: "#0F607D", fontSize: isMobile ? "4vw" : "2vw" }}>
+            <Typography
+              style={{ color: "#0F607D", fontSize: isMobile ? "4vw" : "2vw" }}
+            >
               Data Estimasi Jadwal Produksi
             </Typography>
             <TableContainer component={Paper} sx={{ overflowX: "auto" }}>
@@ -1882,7 +1998,9 @@ const KegiatanProduksi = (props) => {
                 marginBottom: "16px",
               }}
             >
-              <Typography style={{ color: "#0F607D", fontSize: isMobile ?"5vw" : "2vw" }}>
+              <Typography
+                style={{ color: "#0F607D", fontSize: isMobile ? "5vw" : "2vw" }}
+              >
                 Jadwal Produksi Pracetak
               </Typography>
               <DefaultButton
@@ -1937,9 +2055,13 @@ const KegiatanProduksi = (props) => {
                                 <DemoContainer components={["DateTimePicker"]}>
                                   <DemoItem>
                                     <DateTimePicker
-                                      disablePast
+                                      disablePast={
+                                        isLaporanAktual ? false : true
+                                      }
                                       maxDateTime={
-                                        tanggalPengiriman.isValid()
+                                        isLaporanAktual
+                                          ? undefined
+                                          : tanggalPengiriman.isValid()
                                           ? dayjs(tanggalPengiriman)
                                           : undefined
                                       }
@@ -1976,9 +2098,13 @@ const KegiatanProduksi = (props) => {
                                 <DemoContainer components={["DateTimePicker"]}>
                                   <DemoItem>
                                     <DateTimePicker
-                                      disablePast
+                                      disablePast={
+                                        isLaporanAktual ? false : true
+                                      }
                                       maxDateTime={
-                                        tanggalPengiriman.isValid()
+                                        isLaporanAktual
+                                          ? undefined
+                                          : tanggalPengiriman.isValid()
                                           ? dayjs(tanggalPengiriman)
                                           : undefined
                                       }
@@ -1995,9 +2121,11 @@ const KegiatanProduksi = (props) => {
                                         );
                                       }}
                                       minDate={
-                                        !result.jamAwalProduksi.isValid()
+                                        isLaporanAktual
                                           ? undefined
-                                          : result.jamAwalProduksi
+                                          : result.jamAwalProduksi.isValid()
+                                          ? result.jamAwalProduksi
+                                          : undefined
                                       }
                                       renderInput={(params) => (
                                         <TextField
@@ -2170,7 +2298,9 @@ const KegiatanProduksi = (props) => {
                 marginBottom: "16px",
               }}
             >
-              <Typography style={{ color: "#0F607D", fontSize: isMobile ? "5vw" : "2vw" }}>
+              <Typography
+                style={{ color: "#0F607D", fontSize: isMobile ? "5vw" : "2vw" }}
+              >
                 Jadwal Produksi Cetak
               </Typography>
               <DefaultButton
@@ -2240,14 +2370,18 @@ const KegiatanProduksi = (props) => {
                                 <DemoContainer components={["DateTimePicker"]}>
                                   <DemoItem>
                                     <DateTimePicker
-                                      disablePast
+                                      disablePast={
+                                        isLaporanAktual ? false : true
+                                      }
                                       value={
                                         result.jamAwalProduksi.isValid()
                                           ? result.jamAwalProduksi
                                           : null
                                       }
                                       maxDateTime={
-                                        tanggalPengiriman.isValid()
+                                        isLaporanAktual
+                                          ? undefined
+                                          : tanggalPengiriman.isValid()
                                           ? dayjs(tanggalPengiriman)
                                           : undefined
                                       }
@@ -2279,19 +2413,25 @@ const KegiatanProduksi = (props) => {
                                 <DemoContainer components={["DateTimePicker"]}>
                                   <DemoItem>
                                     <DateTimePicker
-                                      disablePast
+                                      disablePast={
+                                        isLaporanAktual ? false : true
+                                      }
                                       value={
                                         result.jamAkhirProduksi.isValid()
                                           ? result.jamAkhirProduksi
                                           : null
                                       }
                                       minDate={
-                                        !result.jamAkhirProduksi.isValid()
+                                        isLaporanAktual
+                                          ? undefined
+                                          : result.jamAwalProduksi.isValid()
                                           ? result.jamAwalProduksi
                                           : undefined
                                       }
                                       maxDateTime={
-                                        tanggalPengiriman.isValid()
+                                        isLaporanAktual
+                                          ? undefined
+                                          : tanggalPengiriman.isValid()
                                           ? dayjs(tanggalPengiriman)
                                           : undefined
                                       }
@@ -2625,7 +2765,9 @@ const KegiatanProduksi = (props) => {
                 marginBottom: "16px",
               }}
             >
-              <Typography style={{ color: "#0F607D", fontSize: isMobile ? "5vw" :  "2vw" }}>
+              <Typography
+                style={{ color: "#0F607D", fontSize: isMobile ? "5vw" : "2vw" }}
+              >
                 Jadwal Produksi Fitur
               </Typography>
               <DefaultButton
@@ -2686,14 +2828,18 @@ const KegiatanProduksi = (props) => {
                                 <DemoContainer components={["DateTimePicker"]}>
                                   <DemoItem>
                                     <DateTimePicker
-                                      disablePast
+                                      disablePast={
+                                        isLaporanAktual ? false : true
+                                      }
                                       value={
                                         result.jamAwalProduksi.isValid()
                                           ? result.jamAwalProduksi
                                           : null
                                       }
                                       maxDateTime={
-                                        tanggalPengiriman.isValid()
+                                        isLaporanAktual
+                                          ? undefined
+                                          : tanggalPengiriman.isValid()
                                           ? dayjs(tanggalPengiriman)
                                           : undefined
                                       }
@@ -2725,19 +2871,25 @@ const KegiatanProduksi = (props) => {
                                 <DemoContainer components={["DateTimePicker"]}>
                                   <DemoItem>
                                     <DateTimePicker
-                                      disablePast
+                                      disablePast={
+                                        isLaporanAktual ? false : true
+                                      }
                                       value={
                                         result.jamAkhirProduksi.isValid()
                                           ? result.jamAkhirProduksi
                                           : null
                                       }
                                       minDate={
-                                        !result.jamAwalProduksi.isValid()
+                                        isLaporanAktual
                                           ? undefined
-                                          : result.jamAwalProduksi
+                                          : result.jamAwalProduksi.isValid()
+                                          ? result.jamAwalProduksi
+                                          : undefined
                                       }
                                       maxDateTime={
-                                        tanggalPengiriman.isValid()
+                                        isLaporanAktual
+                                          ? undefined
+                                          : tanggalPengiriman.isValid()
                                           ? dayjs(tanggalPengiriman)
                                           : undefined
                                       }

@@ -135,6 +135,7 @@ const MaindashboardInventory = (props) => {
   const department = [
     { value: "Marketing" },
     { value: "Production Planning" },
+    { value: "Inventory" },
     { value: "Production" },
     { value: "Finance" },
   ];
@@ -932,11 +933,16 @@ const MaindashboardInventory = (props) => {
           <div style={{ margin: "32px" }}>
             <div style={{ display: "flex", alignItems: "center" }}>
               <Typography
-                style={{ width: "150px", color: "#0F607D", fontSize: isMobile ? "5vw" : "1.5vw" }}
+                style={{
+                  width: "150px",
+                  color: "#0F607D",
+                  fontSize: isMobile ? "5vw" : "1.5vw",
+                }}
               >
                 Ubah Divisi
               </Typography>
               <MySelectTextField
+                value={userInformation?.data?.department}
                 onChange={(event) => {
                   handleChangeDivisiOwner(event);
                 }}
@@ -952,11 +958,16 @@ const MaindashboardInventory = (props) => {
               }}
             >
               <Typography
-                style={{ width: "150px", color: "#0F607D", fontSize: isMobile ? "5vw" : "1.5vw" }}
+                style={{
+                  width: "150px",
+                  color: "#0F607D",
+                  fontSize: isMobile ? "5vw" : "1.5vw",
+                }}
               >
                 Ubah Lokasi
               </Typography>
               <MySelectTextField
+                value={userInformation?.data?.lokasi}
                 onChange={(event) => {
                   handleChangeLocationOwner(event);
                 }}
@@ -1401,7 +1412,7 @@ const MaindashboardInventory = (props) => {
               margin: isMobile ? "0px 32px 0px 32px" : "1.667vw",
             }}
           >
-            <TableContainer  component={Paper}>
+            <TableContainer component={Paper}>
               <Table sx={{ minWidth: 650 }} aria-label="simple table">
                 <TableHead>
                   <TableRow>

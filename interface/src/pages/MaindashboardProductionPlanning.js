@@ -111,6 +111,7 @@ const MaindashboardProductionPlanning = (props) => {
 
   const department = [
     { value: "Marketing" },
+    { value: "Production Planning" },
     { value: "Inventory" },
     { value: "Production" },
     { value: "Finance" },
@@ -402,6 +403,7 @@ const MaindashboardProductionPlanning = (props) => {
                 Ubah Divisi
               </Typography>
               <MySelectTextField
+                value={userInformation?.data?.department}
                 onChange={(event) => {
                   handleChangeDivisiOwner(event);
                 }}
@@ -426,6 +428,7 @@ const MaindashboardProductionPlanning = (props) => {
                 Ubah Lokasi
               </Typography>
               <MySelectTextField
+                value={userInformation?.data?.lokasi}
                 onChange={(event) => {
                   handleChangeLocationOwner(event);
                 }}

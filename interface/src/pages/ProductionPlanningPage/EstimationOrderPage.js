@@ -78,6 +78,8 @@ const EstimationOrderPage = (props) => {
   const [snackbarMessage, setSnackbarMessage] = useState("");
   const { setSuccessMessage } = useAuth();
 
+  const [allInventoryItem, setAllInventoryItem] = useState([]);
+
   const [pemesan, setPemesan] = useState("");
   const [tanggalPengiriman, setTanggalPengiriman] = useState(dayjs(""));
   const [alamatPengirimanProduk, setAlamatPengirimanProduk] = useState("");
@@ -824,6 +826,25 @@ const EstimationOrderPage = (props) => {
       setAlamatPengirimanProduk(result?.data?.alamatPengiriman);
     });
   };
+
+  useEffect(() => {
+    axios({
+      method: "GET",
+      url: `http://localhost:3000/inventory/getAllInventoryItem/${userInformation?.data?.id}`,
+    }).then((result) => {
+      if (result.status === 200) {
+        const tempData = result.data.map((result) => ({
+          value: result.namaItem,
+        }));
+
+        setAllInventoryItem(tempData);
+      } else {
+        setOpenSnackbar(true);
+        setSnackbarStatus(false);
+        setSnackbarMessage("Tidak berhasil memanggil data item dari gudang");
+      }
+    });
+  }, []);
 
   useEffect(() => {
     axios({
@@ -1811,7 +1832,21 @@ const EstimationOrderPage = (props) => {
                                           <TableCell></TableCell>
                                         )}
                                         <TableCell>
-                                          <TextField
+                                          <MySelectTextField
+                                          value={dataJenis.namaJenis}
+                                            onChange={(event) => {
+                                              handleInputChangeEstimasiBahanBaku(
+                                                event,
+                                                index,
+                                                dataItemIndex,
+                                                dataJenisIndex,
+                                                "namaJenis"
+                                              );
+                                            }}
+                                            data={allInventoryItem}
+                                            width={"200px"}
+                                          />
+                                          {/* <TextField
                                             value={dataJenis.namaJenis}
                                             onChange={(event) => {
                                               handleInputChangeEstimasiBahanBaku(
@@ -1822,7 +1857,7 @@ const EstimationOrderPage = (props) => {
                                                 "namaJenis"
                                               );
                                             }}
-                                          />
+                                          /> */}
                                         </TableCell>
                                         <TableCell>
                                           <TextField
@@ -2649,12 +2684,16 @@ const EstimationOrderPage = (props) => {
                       <TableHead>
                         <TableRow>
                           <TableCell colSpan={3} style={{ width: "50%" }}>
-                            <Typography style={{ fontSize: isMobile ? "3.5vw" : "1.5vw" }}>
+                            <Typography
+                              style={{ fontSize: isMobile ? "3.5vw" : "1.5vw" }}
+                            >
                               Perincian Rekanan
                             </Typography>
                           </TableCell>
                           <TableCell colSpan={5} style={{ width: "50%" }}>
-                            <Typography style={{ fontSize: isMobile ? "3.5vw" : "1.5vw" }}>
+                            <Typography
+                              style={{ fontSize: isMobile ? "3.5vw" : "1.5vw" }}
+                            >
                               Perincian Harga Cetak
                             </Typography>
                           </TableCell>
@@ -2689,7 +2728,7 @@ const EstimationOrderPage = (props) => {
                                 <TableCell>{index + 1 + "."}</TableCell>
                                 <TableCell>
                                   <TextField
-                                  sx={{width: "200px"}}
+                                    sx={{ width: "200px" }}
                                     value={result.namaRekanan}
                                     onChange={(event) => {
                                       handleChangeInputPerincian(
@@ -2702,7 +2741,7 @@ const EstimationOrderPage = (props) => {
                                 </TableCell>
                                 <TableCell>
                                   <TextField
-                                  sx={{width: "200px"}}
+                                    sx={{ width: "200px" }}
                                     value={result.keterangan}
                                     onChange={(event) => {
                                       handleChangeInputPerincian(
@@ -2717,7 +2756,7 @@ const EstimationOrderPage = (props) => {
                                 <TableCell>
                                   <TextField
                                     disabled
-                                    sx={{width: "200px"}}
+                                    sx={{ width: "200px" }}
                                     value={result.jenisCetakan}
                                     // onChange={(event) => {
                                     //   handleChangeInputPerincian(

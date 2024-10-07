@@ -11,6 +11,10 @@ productionRoutes.get(
   ProductionController.getProductionData //lokasi udah
 );
 productionRoutes.get(
+  "/getLaporanPracetakPrev/:id",
+  ProductionController.getLaporanPracetakPrev
+);
+productionRoutes.get(
   "/getOneProductionData/:id",
   ProductionController.getOneProductionData //lokasi udah
 );
