@@ -58,6 +58,7 @@ const LaporanLimbahProduksi = (props) => {
   const [allTahapProduksi, setAllTahapProduksi] = useState([]);
   const [selectedTahapProduksi, setSelectedTahapProduksi] = useState("");
   const [selectedKegiatanProduksi, setSelectedKegiatanProduksi] = useState([]);
+  const [dataLimbahForSuggestion, setDataLimbahForSuggestion] = useState([]);
 
   const [snackbarMessage, setSnackbarMessage] = useState("");
   const [openSnackbar, setOpenSnackbar] = useState(false);
@@ -307,6 +308,14 @@ const LaporanLimbahProduksi = (props) => {
           };
         });
       setSelectedKegiatanProduksi(tempSelectedKegiatanProduksi);
+      const tempData =
+        tempSelectedKegiatanProduksi[0].bahanLaporanProdukses.map((result) => {
+          return {
+            ...result,
+            value: result.jenis,
+          };
+        });
+      setDataLimbahForSuggestion(tempData);
     }
   };
 
@@ -326,6 +335,15 @@ const LaporanLimbahProduksi = (props) => {
         };
       });
     setSelectedKegiatanProduksi(tempData);
+    const tempDataForSuggestion = tempData[0].bahanLaporanProdukses.map(
+      (result) => {
+        return {
+          ...result,
+          value: result.jenis,
+        };
+      }
+    );
+    setDataLimbahForSuggestion(tempDataForSuggestion);
 
     setDataLimbah((oldObject) => {
       return {
@@ -1101,7 +1119,7 @@ const LaporanLimbahProduksi = (props) => {
               <Typography style={{ width: "200px", color: "#0F607D" }}>
                 Tanggal Pembuatan:{" "}
               </Typography>
-              <div style={{width: "200px"}}>
+              <div style={{ width: "200px" }}>
                 <LocalizationProvider dateAdapter={AdapterDayjs}>
                   <DemoContainer
                     sx={{ overflow: isMobile ? "hidden" : "" }}
@@ -1177,7 +1195,7 @@ const LaporanLimbahProduksi = (props) => {
                             />
                           </TableCell>
                           <TableCell>
-                            <TextField
+                            {/* <TextField
                               value={result.namaBarang}
                               onChange={(event) => {
                                 handleChangeDataLimbah(
@@ -1186,8 +1204,20 @@ const LaporanLimbahProduksi = (props) => {
                                   index
                                 );
                               }}
-                            />
-                          </TableCell>
+                            /> */}
+                          <MySelectTextField
+                            data={dataLimbahForSuggestion}
+                            value={result.namaBarang}
+                            onChange={(event) => {
+                              handleChangeDataLimbah(
+                                event,
+                                "namaBarang",
+                                index
+                              );
+                            }}
+                            width={"200px"}
+                          />
+                          </TableCell> 
                           <TableCell>
                             <div
                               style={{ display: "flex", alignItems: "center" }}

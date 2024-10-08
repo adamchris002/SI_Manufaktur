@@ -63,6 +63,7 @@ financeRoutes.get(
 );
 financeRoutes.get("/getUserBaru", FinanceController.getUserBaru);
 financeRoutes.get("/getUserLama", FinanceController.getUserLama);
+financeRoutes.get("/getNamaBukuBankSama/:id", FinanceController.getNamaBukuBankSama)
 //post
 financeRoutes.post("/addNamaBank/:id", FinanceController.addNamaBank); //udah //lokasi udah
 financeRoutes.post("/addItemBukuBank/:id", FinanceController.addNewBukuBank); //udah //lokasi perlu ga?

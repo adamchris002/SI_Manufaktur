@@ -1722,6 +1722,23 @@ class FinanceController {
       res.json(error);
     }
   }
+  static async getNamaBukuBankSama(req, res) {
+    try {
+      const { id } = req.params;
+
+      const findUser = await users.findOne({
+        where: { id: id },
+      });
+      let result = await bukuBanks.findAll({
+        where: { lokasi: findUser.lokasi },
+      });
+      let dataNamaBanks = result.map((data) => data.namaBank2);
+      let uniqueDataNamaBanks = [...new Set(dataNamaBanks)];
+      res.json(uniqueDataNamaBanks);
+    } catch (error) {
+      res.json(error);
+    }
+  }
 }
 
 module.exports = FinanceController;

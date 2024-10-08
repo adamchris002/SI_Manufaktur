@@ -47,6 +47,7 @@ const LaporanProduksi = (props) => {
   const [selectedTahapProduksiAvailable, setSelectedTahapProduksiAvailable] =
     useState("");
   const [selectedKegiatanProduksi, setSelectedKegiatanProduksi] = useState([]);
+  console.log(selectedKegiatanProduksi);
 
   const handleGetKegiatanProduksi = () => {
     if (
@@ -172,13 +173,27 @@ const LaporanProduksi = (props) => {
       }
       switch (result.tahapProduksi) {
         case "Produksi Pracetak":
-          pdf.text("Laporan Produksi Pracetak", margin, y);
+          pdf.text(
+            `Laporan Produksi Pracetak${
+              result.isLaporanAktual ? " Aktual" : ""
+            }`,
+            margin,
+            y
+          );
           break;
         case "Produksi Cetak":
-          pdf.text("Laporan Produksi Cetak", margin, y);
+          pdf.text(
+            `Laporan Produksi Cetak${result.isLaporanAktual ? " Aktual" : ""}`,
+            margin,
+            y
+          );
           break;
         case "Produksi Fitur":
-          pdf.text("Laporan Produksi Fitur", margin, y);
+          pdf.text(
+            `Laporan Produksi Fitur${result.isLaporanAktual ? " Aktual" : ""}`,
+            margin,
+            y
+          );
           break;
         default:
           return;
@@ -465,13 +480,25 @@ const LaporanProduksi = (props) => {
 
     switch (selectedKegiatanProduksi[0].tahapProduksi) {
       case "Produksi Pracetak":
-        title.push(["Produksi Pracetak"]);
+        title.push([
+          `Produksi Pracetak${
+            selectedKegiatanProduksi[0].isLaporanAktual ? " Aktual" : ""
+          }`,
+        ]);
         break;
       case "Produksi Cetak":
-        title.push(["Produksi Cetak"]);
+        title.push([
+          `Produksi Cetak${
+            selectedKegiatanProduksi[0].isLaporanAktual ? " Aktual" : ""
+          }`,
+        ]);
         break;
       case "Produksi Fitur":
-        title.push(["Produksi Fitur"]);
+        title.push([
+          `Produksi Fitur${
+            selectedKegiatanProduksi[0].isLaporanAktual ? " Aktual" : ""
+          }`,
+        ]);
         break;
       default:
         return false;
@@ -943,9 +970,19 @@ const LaporanProduksi = (props) => {
           </div>
           {selectedKegiatanProduksi.length !== 0 && (
             <div style={{ marginTop: "32px" }}>
-              <div style={{ display: isMobile ? "" : "flex", justifyContent: "space-between" }}>
+              <div
+                style={{
+                  display: isMobile ? "" : "flex",
+                  justifyContent: "space-between",
+                }}
+              >
                 <div style={{ width: isMobile ? "100%" : "55%" }}>
-                  <Typography style={{ color: "#0F607D", fontSize: isMobile ? "3.5VW" : "3vw" }}>
+                  <Typography
+                    style={{
+                      color: "#0F607D",
+                      fontSize: isMobile ? "3.5VW" : "3vw",
+                    }}
+                  >
                     Informasi Kegiatan Produksi
                   </Typography>
                   {selectedKegiatanProduksi?.map((result, index) => {
@@ -967,7 +1004,10 @@ const LaporanProduksi = (props) => {
                             }}
                           >{`ID: ${result.id}`}</Typography>
                           <Typography
-                            style={{ color: "#0F607D", fontSize: isMobile ? "12px" : "1.5vw" }}
+                            style={{
+                              color: "#0F607D",
+                              fontSize: isMobile ? "12px" : "1.5vw",
+                            }}
                           >{`Tanggal Produksi: ${dayjs(
                             result.tanggalProduksi
                           ).format("MM/DD/YYYY hh:mm A")}`}</Typography>
@@ -988,7 +1028,10 @@ const LaporanProduksi = (props) => {
                             }}
                           >{`No Order Produksi: ${result.noOrderProduksi}`}</Typography>
                           <Typography
-                            style={{ color: "#0F607D", fontSize: isMobile ? "12px" : "1.5vw" }}
+                            style={{
+                              color: "#0F607D",
+                              fontSize: isMobile ? "12px" : "1.5vw",
+                            }}
                           >{`Mesin: ${result.mesin}`}</Typography>
                         </div>
                         <div
@@ -1007,12 +1050,18 @@ const LaporanProduksi = (props) => {
                             }}
                           >{`Dibuat Oleh: ${result.dibuatOleh}`}</Typography>
                           <Typography
-                            style={{ color: "#0F607D", fontSize: isMobile ? "12px" : "1.5vw" }}
+                            style={{
+                              color: "#0F607D",
+                              fontSize: isMobile ? "12px" : "1.5vw",
+                            }}
                           >{`Tahap Produksi: ${result.tahapProduksi}`}</Typography>
                         </div>
                         <div style={{ marginTop: "8px" }}>
                           <Typography
-                            style={{ color: "#0F607D", fontSize: isMobile ? "12px" : "1.5vw" }}
+                            style={{
+                              color: "#0F607D",
+                              fontSize: isMobile ? "12px" : "1.5vw",
+                            }}
                           >{`Jenis Cetakan: ${result.jenisCetakan}`}</Typography>
                         </div>
                       </div>
@@ -1020,7 +1069,13 @@ const LaporanProduksi = (props) => {
                   })}
                 </div>
                 <div style={{ width: isMobile ? "100%" : "42%" }}>
-                  <Typography style={{ color: "#0F607D", fontSize: isMobile ? "3.5vw" : "3vw", marginTop: isMobile ? "8px" : "" }}>
+                  <Typography
+                    style={{
+                      color: "#0F607D",
+                      fontSize: isMobile ? "3.5vw" : "3vw",
+                      marginTop: isMobile ? "8px" : "",
+                    }}
+                  >
                     Personil
                   </Typography>
                   <TableContainer component={Paper}>
@@ -1052,7 +1107,12 @@ const LaporanProduksi = (props) => {
                 </div>
               </div>
               <div style={{ marginTop: "32px" }}>
-                <Typography style={{ color: "#0F607D", fontSize: isMobile ? "3.5vw" : "3vw" }}>
+                <Typography
+                  style={{
+                    color: "#0F607D",
+                    fontSize: isMobile ? "3.5vw" : "3vw",
+                  }}
+                >
                   Bahan Kegiatan Produksi
                 </Typography>
                 <TableContainer component={Paper} sx={{ overflowX: "auto" }}>
@@ -1112,7 +1172,10 @@ const LaporanProduksi = (props) => {
                       {result.tahapProduksi === "Produksi Pracetak" && (
                         <>
                           <Typography
-                            style={{ color: "#0F607D", fontSize: isMobile ? "3.5vw" : "3vw" }}
+                            style={{
+                              color: "#0F607D",
+                              fontSize: isMobile ? "3.5vw" : "3vw",
+                            }}
                           >
                             Jadwal Produksi Pracetak
                           </Typography>
@@ -1201,7 +1264,10 @@ const LaporanProduksi = (props) => {
                       {result.tahapProduksi === "Produksi Cetak" && (
                         <>
                           <Typography
-                            style={{ color: "#0F607D", fontSize: isMobile ? "3.5vw" : "3vw" }}
+                            style={{
+                              color: "#0F607D",
+                              fontSize: isMobile ? "3.5vw" : "3vw",
+                            }}
                           >
                             Jadwal Produksi Cetak
                           </Typography>
@@ -1330,7 +1396,10 @@ const LaporanProduksi = (props) => {
                       {result.tahapProduksi === "Produksi Fitur" && (
                         <>
                           <Typography
-                            style={{ color: "#0F607D", fontSize: isMobile ? "3.5vw" : "3vw" }}
+                            style={{
+                              color: "#0F607D",
+                              fontSize: isMobile ? "3.5vw" : "3vw",
+                            }}
                           >
                             Jadwal Produksi Fitur
                           </Typography>

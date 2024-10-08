@@ -30,14 +30,16 @@ import MySelectTextField from "../../components/SelectTextField";
 import VisibilityIcon from "@mui/icons-material/Visibility";
 import CloseIcon from "@mui/icons-material/Close";
 import { useAuth } from "../../components/AuthContext";
+import AutorenewIcon from "@mui/icons-material/Autorenew";
 
 const NumericFormatCustom = React.forwardRef((props, ref) => {
-  const { onChange, ...other } = props;
+  const { onChange, value, ...other } = props;
 
   return (
     <NumericFormat
       {...other}
       getInputRef={ref}
+      value={parseFloat(value).toFixed(2)}
       onValueChange={(values) => {
         onChange({
           target: {
@@ -86,6 +88,10 @@ const BukuBank = (props) => {
   const [totalDebetDone, setTotalDebetDone] = useState(0);
   const [totalKreditDone, setTotalKreditDone] = useState(0);
   const [totalSaldoDone, setTotalSaldoDone] = useState(0);
+  const [changeInputType, setChangeInputType] = useState(false);
+  const [suggestionNameForNamaBank, setSuggestionNameForNamaBank] = useState(
+    []
+  );
 
   const handleDeleteItemBukuBank = (id, index) => {
     if (!id || id === undefined) {
@@ -118,6 +124,26 @@ const BukuBank = (props) => {
     setTotalSaldoDone(saldoSekarang);
     setOpenModalBukuBankDone(true);
   };
+
+  useEffect(() => {
+    axios({
+      method: "GET",
+      url: `http://localhost:3000/finance/getNamaBukuBankSama/${userInformation?.data?.id}`,
+    }).then((result) => {
+      if (result.status === 200) {
+        const tempData = result.data.map((result) => {
+          return {
+            value: result,
+          };
+        });
+        setSuggestionNameForNamaBank(tempData);
+      } else {
+        setOpenSnackbar(true);
+        setSnackbarStatus(false);
+        setSnackbarMessage("Tidak berhasil memanggil data bank");
+      }
+    });
+  }, []);
 
   useEffect(() => {
     axios({
@@ -1021,13 +1047,34 @@ const BukuBank = (props) => {
               >
                 Nama Bank:
               </Typography>
-              <TextField
-                value={namaBank2}
-                onChange={(event) => {
-                  setNamaBank2(event.target.value);
+              {changeInputType ? (
+                <div style={{ marginLeft: "16px" }}>
+                  <MySelectTextField
+                    data={suggestionNameForNamaBank}
+                    value={namaBank2}
+                    onChange={(event) => {
+                      setNamaBank2(event.target.value);
+                    }}
+                    width={"200px"}
+                  />
+                </div>
+              ) : (
+                <TextField
+                  value={namaBank2}
+                  onChange={(event) => {
+                    setNamaBank2(event.target.value);
+                  }}
+                  style={{ marginLeft: "16px" }}
+                />
+              )}
+              <IconButton
+                onClick={() => {
+                  setChangeInputType(!changeInputType);
                 }}
                 style={{ marginLeft: "8px" }}
-              />
+              >
+                <AutorenewIcon style={{ color: "#0F607D" }} />
+              </IconButton>
             </div>
             <div
               style={{
