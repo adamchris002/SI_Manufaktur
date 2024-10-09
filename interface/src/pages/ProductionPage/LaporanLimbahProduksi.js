@@ -718,7 +718,7 @@ const LaporanLimbahProduksi = (props) => {
                             Berat Awal
                           </TableCell>
                           <TableCell style={{ width: "200px" }}>
-                            Berat Akhir
+                            Jumlah yang diambil
                           </TableCell>
                           <TableCell style={{ width: "200px" }}>
                             Keterangan
