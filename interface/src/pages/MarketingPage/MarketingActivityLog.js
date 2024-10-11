@@ -27,7 +27,7 @@ const MarketingActivityLog = (props) => {
   useEffect(() => {
     axios({
       method: "GET",
-      url: `http://localhost:3000/order/getAllActivityLogs/${userInformation?.data?.id}`,
+      url: `http://localhost:5000/order/getAllActivityLogs/${userInformation?.data?.id}`,
     }).then((result) => {
       setActivityLogs(result);
     });

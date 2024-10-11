@@ -135,7 +135,7 @@ const OrderDetail = (props) => {
   useEffect(() => {
     axios({
       method: "GET",
-      url: `http://localhost:3000/order/getOrderInfo/${orderId}`,
+      url: `http://localhost:5000/order/getOrderInfo/${orderId}`,
       params: { userId: userInformation?.data?.id },
     }).then((result) => {
       setOrderDetailInfo(result);
@@ -219,7 +219,7 @@ const OrderDetail = (props) => {
 
       axios({
         method: "PUT",
-        url: `http://localhost:3000/order/updateOrder/${userInformation?.data?.id}`,
+        url: `http://localhost:5000/order/updateOrder/${userInformation?.data?.id}`,
         data: formData,
         headers: {
           "Content-Type": "multipart/form-data",
@@ -289,7 +289,7 @@ const OrderDetail = (props) => {
   const handleDeleteOrder = () => {
     axios({
       method: "DELETE",
-      url: `http://localhost:3000/order/deleteOrder`,
+      url: `http://localhost:5000/order/deleteOrder`,
       params: { userId: userInformation?.data?.id, orderId: orderId },
     })
       .then((result, index) => {
@@ -511,8 +511,8 @@ const OrderDetail = (props) => {
                           height: isMobile ? "100px" : "9vw",
                           width: isMobile ? "100px" : "9vw",
                         }}
-                        srcSet={`http://localhost:3000/uploads/${result.filename}?w=248&fit=crop&auto=format&dpr=2 2x`}
-                        src={`http://localhost:3000/uploads/${result.filename}?w=248&fit=crop&auto=format`}
+                        srcSet={`http://localhost:5000/uploads/${result.filename}?w=248&fit=crop&auto=format&dpr=2 2x`}
+                        src={`http://localhost:5000/uploads/${result.filename}?w=248&fit=crop&auto=format`}
                         alt={result.filename}
                         loading="lazy"
                         onClick={
@@ -530,8 +530,8 @@ const OrderDetail = (props) => {
                           width: isMobile ? "100px" : "9vw",
                           marginRight: isMobile ? "" : "32px",
                         }}
-                        srcSet={`http://localhost:3000/uploads/${result.filename}?w=248&fit=crop&auto=format&dpr=2 2x`}
-                        src={`http://localhost:3000/uploads/${result.filename}?w=248&fit=crop&auto=format`}
+                        srcSet={`http://localhost:5000/uploads/${result.filename}?w=248&fit=crop&auto=format&dpr=2 2x`}
+                        src={`http://localhost:5000/uploads/${result.filename}?w=248&fit=crop&auto=format`}
                         alt={result.filename}
                         loading="lazy"
                         onClick={
@@ -923,10 +923,10 @@ const OrderDetail = (props) => {
                                 top: 0,
                                 left: 0,
                               }}
-                              // srcSet={`http://localhost:3000/uploads/${result.filename}?w=248&fit=crop&auto=format&dpr=2 2x`}
+                              // srcSet={`http://localhost:5000/uploads/${result.filename}?w=248&fit=crop&auto=format&dpr=2 2x`}
                               src={
                                 result.id !== undefined
-                                  ? `http://localhost:3000/uploads/${result.filename}?w=248&fit=crop&auto=format`
+                                  ? `http://localhost:5000/uploads/${result.filename}?w=248&fit=crop&auto=format`
                                   : URL.createObjectURL(result)
                               }
                               alt={result.filename}
@@ -1380,10 +1380,10 @@ const OrderDetail = (props) => {
           <div>
             <img
               style={{ width: "720px", height: "auto" }}
-              // srcSet={`http://localhost:3000/uploads/${orderDetailInfo.data.documents[imageIndex].filename}?w=248&fit=crop&auto=format&dpr=2 2x`}
+              // srcSet={`http://localhost:5000/uploads/${orderDetailInfo.data.documents[imageIndex].filename}?w=248&fit=crop&auto=format&dpr=2 2x`}
               src={
                 orderDocuments[imageIndex].id !== undefined
-                  ? `http://localhost:3000/uploads/${orderDocuments[imageIndex].filename}?w=248&fit=crop&auto=format`
+                  ? `http://localhost:5000/uploads/${orderDocuments[imageIndex].filename}?w=248&fit=crop&auto=format`
                   : URL.createObjectURL(orderDocuments[imageIndex])
               }
               alt={

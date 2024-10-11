@@ -135,7 +135,7 @@ const Pajak = (props) => {
   useEffect(() => {
     axios({
       method: "GET",
-      url: `http://localhost:3000/finance/getOngoingBukuBank/${userInformation?.data?.id}`,
+      url: `http://localhost:5000/finance/getOngoingBukuBank/${userInformation?.data?.id}`,
     }).then((result) => {
       if (result.status === 200) {
         const tempData = result?.data?.map((result) => {
@@ -158,7 +158,7 @@ const Pajak = (props) => {
   useEffect(() => {
     axios({
       method: "GET",
-      url: `http://localhost:3000/finance/getAllProductionPlanningForPajakKeluaran/${userInformation?.data?.id}`,
+      url: `http://localhost:5000/finance/getAllProductionPlanningForPajakKeluaran/${userInformation?.data?.id}`,
     }).then((result) => {
       if (result.status === 200) {
         const tempData = result?.data?.map((result) => {
@@ -181,7 +181,7 @@ const Pajak = (props) => {
   useEffect(() => {
     axios({
       method: "GET",
-      url: `http://localhost:3000/finance/getPembelianBahanBakuForPajakMasukan/${userInformation?.data?.id}`,
+      url: `http://localhost:5000/finance/getPembelianBahanBakuForPajakMasukan/${userInformation?.data?.id}`,
     }).then((result) => {
       if (result.status === 200) {
         const tempData = result?.data?.map((result) => {
@@ -430,7 +430,7 @@ const Pajak = (props) => {
       const transformedData = handleTransformDataPajak(dataPajakMasukan);
       axios({
         method: "POST",
-        url: `http://localhost:3000/finance/addPajakMasukan/${userInformation?.data?.id}`,
+        url: `http://localhost:5000/finance/addPajakMasukan/${userInformation?.data?.id}`,
         data: {
           dataPajakMasukan: transformedData,
           dataBank: selectedBukuBank,
@@ -461,7 +461,7 @@ const Pajak = (props) => {
       const transformedData = handleTransformDataPajak(dataPajakKeluaran);
       axios({
         method: "POST",
-        url: `http://localhost:3000/finance/addPajakKeluaran/${userInformation?.data?.id}`,
+        url: `http://localhost:5000/finance/addPajakKeluaran/${userInformation?.data?.id}`,
         data: {
           dataPajakKeluaran: transformedData,
           dataBank: selectedBukuBank,

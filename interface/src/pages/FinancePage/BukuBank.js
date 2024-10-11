@@ -128,7 +128,7 @@ const BukuBank = (props) => {
   useEffect(() => {
     axios({
       method: "GET",
-      url: `http://localhost:3000/finance/getNamaBukuBankSama/${userInformation?.data?.id}`,
+      url: `http://localhost:5000/finance/getNamaBukuBankSama/${userInformation?.data?.id}`,
     }).then((result) => {
       if (result.status === 200) {
         const tempData = result.data.map((result) => {
@@ -148,7 +148,7 @@ const BukuBank = (props) => {
   useEffect(() => {
     axios({
       method: "GET",
-      url: `http://localhost:3000/finance/getDoneBukuBank/${userInformation?.data?.id}`,
+      url: `http://localhost:5000/finance/getDoneBukuBank/${userInformation?.data?.id}`,
     }).then((result) => {
       if (result.status === 200) {
         setBukuBankDone(result.data);
@@ -163,7 +163,7 @@ const BukuBank = (props) => {
     if (refreshNamaBank) {
       axios({
         method: "GET",
-        url: `http://localhost:3000/finance/getOngoingBukuBank/${userInformation?.data?.id}`,
+        url: `http://localhost:5000/finance/getOngoingBukuBank/${userInformation?.data?.id}`,
       }).then((result) => {
         if (result.status === 200) {
           const tempData = result?.data?.map((result) => ({
@@ -275,7 +275,7 @@ const BukuBank = (props) => {
     } else {
       axios({
         method: "POST",
-        url: `http://localhost:3000/finance/addNamaBank/${userInformation?.data?.id}`,
+        url: `http://localhost:5000/finance/addNamaBank/${userInformation?.data?.id}`,
         data: { namaBank: namaBank, namaBank2: namaBank2 },
       }).then((result) => {
         if (result.status === 200) {
@@ -301,7 +301,7 @@ const BukuBank = (props) => {
 
     axios({
       method: "GET",
-      url: `http://localhost:3000/finance/checkIfNamaBankAvailable/${value}`,
+      url: `http://localhost:5000/finance/checkIfNamaBankAvailable/${value}`,
       params: { userId: userInformation?.data?.id },
     }).then((result) => {
       if (result.status === 200) {
@@ -311,7 +311,7 @@ const BukuBank = (props) => {
           if (matchedResult.itemBukuBanks.length === 0) {
             axios({
               method: "GET",
-              url: `http://localhost:3000/finance/getPreviousSaldoAkhir/${value}`,
+              url: `http://localhost:5000/finance/getPreviousSaldoAkhir/${value}`,
               params: { userId: userInformation?.data?.id },
             }).then((result) => {
               if (result.status === 200) {
@@ -384,7 +384,7 @@ const BukuBank = (props) => {
     } else {
       axios({
         method: "POST",
-        url: `http://localhost:3000/finance/addItemBukuBank/${userInformation?.data?.id}`,
+        url: `http://localhost:5000/finance/addItemBukuBank/${userInformation?.data?.id}`,
         data: { namaBank: selectedBank, dataBukuBank: dataBukuBank },
       }).then((result) => {
         if (result.status === 200) {

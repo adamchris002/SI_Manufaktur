@@ -72,7 +72,7 @@ const LaporanLimbahProduksi = (props) => {
       if (refreshDataLimbahProduksi) {
         axios({
           method: "GET",
-          url: `http://localhost:3000/production/getOneLaporanLimbahProduksi/${laporanLimbahProduksiId}`,
+          url: `http://localhost:5000/production/getOneLaporanLimbahProduksi/${laporanLimbahProduksiId}`,
           params: { userId: userInformation?.data?.id },
         }).then((result) => {
           if (result.status === 200) {
@@ -105,7 +105,7 @@ const LaporanLimbahProduksi = (props) => {
   useEffect(() => {
     axios({
       method: "GET",
-      url: `http://localhost:3000/production/getLaporanProduksiForLaporanLimbah/${userInformation?.data?.id}`,
+      url: `http://localhost:5000/production/getLaporanProduksiForLaporanLimbah/${userInformation?.data?.id}`,
     })
       .then((result) => {
         if (result.status === 200) {
@@ -196,7 +196,7 @@ const LaporanLimbahProduksi = (props) => {
     } else {
       axios({
         method: "DELETE",
-        url: `http://localhost:3000/production/deleteItemLaporanLimbahProduksis/${id}`,
+        url: `http://localhost:5000/production/deleteItemLaporanLimbahProduksis/${id}`,
         params: {
           userId: userInformation?.data?.id,
           idLimbahProduksi: idLimbahProduksi,
@@ -419,7 +419,7 @@ const LaporanLimbahProduksi = (props) => {
       const transformedDataLimbah = transformDataLimbahProduksi(dataLimbah);
       axios({
         method: "PUT",
-        url: `http://localhost:3000/production/updateDataLimbahProduksi/${userInformation?.data?.id}`,
+        url: `http://localhost:5000/production/updateDataLimbahProduksi/${userInformation?.data?.id}`,
         data: { dataLimbah: transformedDataLimbah },
       }).then((result) => {
         if (result.status === 200) {
@@ -446,7 +446,7 @@ const LaporanLimbahProduksi = (props) => {
       const transformedDataLimbah = transformDataLimbahProduksi(dataLimbah);
       axios({
         method: "POST",
-        url: `http://localhost:3000/production/addLaporanLimbahProduksi/${userInformation?.data?.id}`,
+        url: `http://localhost:5000/production/addLaporanLimbahProduksi/${userInformation?.data?.id}`,
         data: { dataLimbah: transformedDataLimbah },
       }).then((result) => {
         if (result.status === 200) {

@@ -150,7 +150,7 @@ const EditProductionPlanPage = (props) => {
   const removeJadwal = (id, idEstimasiJadwal) => {
     axios({
       method: "DELETE",
-      url: `http://localhost:3000/productionPlanning/removeJadwal/${id}`,
+      url: `http://localhost:5000/productionPlanning/removeJadwal/${id}`,
       params: {
         userId: userInformation?.data?.id,
         productionPlanId: productionPlanId,
@@ -186,7 +186,7 @@ const EditProductionPlanPage = (props) => {
   const deleteJadwal = (id) => {
     axios({
       method: "DELETE",
-      url: `http://localhost:3000/productionPlanning/deleteJadwal/${id}`,
+      url: `http://localhost:5000/productionPlanning/deleteJadwal/${id}`,
       params: {
         userId: userInformation?.data?.id,
         productionPlanId: productionPlanId,
@@ -208,7 +208,7 @@ const EditProductionPlanPage = (props) => {
   const handleDeleteItemPerincian = (id) => {
     axios({
       method: "DELETE",
-      url: `http://localhost:3000/productionPlanning/deleteItemPerincian/${id}`,
+      url: `http://localhost:5000/productionPlanning/deleteItemPerincian/${id}`,
     }).then((result) => {
       if (result.status === 200) {
         setOpenSnackbar(true);
@@ -226,7 +226,7 @@ const EditProductionPlanPage = (props) => {
   const handleDeleteItemRincianCetakan = (id) => {
     axios({
       method: "DELETE",
-      url: `http://localhost:3000/productionPlanning/deleteItemRincianCetakan/${id}`,
+      url: `http://localhost:5000/productionPlanning/deleteItemRincianCetakan/${id}`,
       params: {
         userId: userInformation?.data?.id,
         productionPlanId: productionPlanId,
@@ -245,7 +245,7 @@ const EditProductionPlanPage = (props) => {
     });
     // axios({
     //   method: "DELETE",
-    //   url: `http://localhost:3000/productionPlanning/deleteItemPerincian/${id}`,
+    //   url: `http://localhost:5000/productionPlanning/deleteItemPerincian/${id}`,
     // }).then((result) => {
     //   if (result.status === 200) {
     //     setOpenSnackbar(true);
@@ -302,7 +302,7 @@ const EditProductionPlanPage = (props) => {
   useEffect(() => {
     axios({
       method: "GET",
-      url: `http://localhost:3000/inventory/getAllInventoryItem/${userInformation?.data?.id}`,
+      url: `http://localhost:5000/inventory/getAllInventoryItem/${userInformation?.data?.id}`,
     }).then((result) => {
       if (result.status === 200) {
         const tempData = result.data.map((result) => ({
@@ -322,7 +322,7 @@ const EditProductionPlanPage = (props) => {
     if (refreshProductionPlanData) {
       axios({
         method: "GET",
-        url: `http://localhost:3000/productionPlanning/getProductionPlanningWithData/${productionPlanId}`,
+        url: `http://localhost:5000/productionPlanning/getProductionPlanningWithData/${productionPlanId}`,
         params: { userId: userInformation?.data?.id },
       }).then((result) => {
         setProductionPlanWithData(result);
@@ -367,7 +367,7 @@ const EditProductionPlanPage = (props) => {
   const handleRemoveDataEstimasiBahanBaku = (index) => {
     axios({
       method: "DELETE",
-      url: `http://localhost:3000/productionPlanning/deleteJenisBahanBaku/${index}`,
+      url: `http://localhost:5000/productionPlanning/deleteJenisBahanBaku/${index}`,
       params: {
         userId: userInformation?.data?.id,
         productionPlanId: productionPlanId,
@@ -424,7 +424,7 @@ const EditProductionPlanPage = (props) => {
   const handleRemoveDataBahanBaku = (estimasiBahanBakuId, groupIndex) => {
     axios({
       method: "DELETE",
-      url: "http://localhost:3000/productionPlanning/deleteGroupBahanBaku",
+      url: "http://localhost:5000/productionPlanning/deleteGroupBahanBaku",
       params: {
         userId: userInformation?.data?.id,
         productionPlanId: productionPlanId,
@@ -448,7 +448,7 @@ const EditProductionPlanPage = (props) => {
   const handleRemoveJenisDataBahanBaku = (id, productionPlanId) => {
     axios({
       method: "DELETE",
-      url: `http://localhost:3000/productionPlanning/deleteBahanBakuId/${id}`,
+      url: `http://localhost:5000/productionPlanning/deleteBahanBakuId/${id}`,
       params: {
         userId: userInformation?.data?.id,
         productionPlanId: productionPlanId,
@@ -848,7 +848,7 @@ const EditProductionPlanPage = (props) => {
     } else {
       axios({
         method: "PUT",
-        url: `http://localhost:3000/productionPlanning/updateProductionPlan/${userInformation.data.id}`,
+        url: `http://localhost:5000/productionPlanning/updateProductionPlan/${userInformation.data.id}`,
         data: perencanaanProduksiData,
       }).then((result) => {
         if (result.status === 200) {
@@ -1037,7 +1037,7 @@ const EditProductionPlanPage = (props) => {
     if (callSelectedOrder) {
       axios({
         method: "GET",
-        url: "http://localhost:3000/productionPlanning/getOneOrder",
+        url: "http://localhost:5000/productionPlanning/getOneOrder",
         params: {
           orderId: productionPlanWithData?.data?.orderId,
           userId: userInformation?.data?.id,

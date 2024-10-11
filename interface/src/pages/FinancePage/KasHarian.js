@@ -92,7 +92,7 @@ const KasHarian = (props) => {
   useEffect(() => {
     axios({
       method: "POST",
-      url: "http://localhost:3000/finance/checkForDefaultPosPembayaran",
+      url: "http://localhost:5000/finance/checkForDefaultPosPembayaran",
     }).then((result) => {
       if (result.status === 200) {
         setRefreshPosPembayaran(true);
@@ -108,7 +108,7 @@ const KasHarian = (props) => {
     if (refreshPosPembayaran) {
       axios({
         method: "GET",
-        url: "http://localhost:3000/finance/getAllPosPembayaran",
+        url: "http://localhost:5000/finance/getAllPosPembayaran",
       }).then((result) => {
         if (result.status === 200) {
           const tempData = result?.data?.map(({ kode, ...rest }) => ({
@@ -144,7 +144,7 @@ const KasHarian = (props) => {
   useEffect(() => {
     axios({
       method: "GET",
-      url: `http://localhost:3000/finance/getDoneKasHarian/${userInformation?.data?.id}`,
+      url: `http://localhost:5000/finance/getDoneKasHarian/${userInformation?.data?.id}`,
     }).then((result) => {
       if (result.status === 200) {
         setKasHarianDone(result.data);
@@ -159,7 +159,7 @@ const KasHarian = (props) => {
   useEffect(() => {
     axios({
       method: "GET",
-      url: `http://localhost:3000/finance/getOngoingKasHarian/${userInformation?.data?.id}`,
+      url: `http://localhost:5000/finance/getOngoingKasHarian/${userInformation?.data?.id}`,
     }).then((result) => {
       if (result.status === 200) {
         if (result.data !== null) {
@@ -324,7 +324,7 @@ const KasHarian = (props) => {
     } else {
       axios({
         method: "POST",
-        url: `http://localhost:3000/finance/addKasHarian/${userInformation?.data?.id}`,
+        url: `http://localhost:5000/finance/addKasHarian/${userInformation?.data?.id}`,
         data: { judulKasHarian: judulKasHarian, dataKasHarian: dataKasHarian },
       }).then((result) => {
         if (result.status === 200) {
@@ -343,7 +343,7 @@ const KasHarian = (props) => {
   const simpanDataPosPembayaran = () => {
     axios({
       method: "PUT",
-      url: `http://localhost:3000/finance/savePosPembayaran/${userInformation?.data?.id}`,
+      url: `http://localhost:5000/finance/savePosPembayaran/${userInformation?.data?.id}`,
       data: { dataPosPembayaran: posPembayaran },
     }).then((result) => {
       if (result.status === 200) {

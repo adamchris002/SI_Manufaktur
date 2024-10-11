@@ -124,7 +124,7 @@ const KegiatanProduksi = (props) => {
   useEffect(() => {
     axios({
       method: "GET",
-      url: `http://localhost:3000/inventory/getAllInventoryItem/${userInformation?.data?.id}`,
+      url: `http://localhost:5000/inventory/getAllInventoryItem/${userInformation?.data?.id}`,
     }).then((result) => {
       if (result.status === 200) {
         const tempData = result.data.map((result) => {
@@ -148,7 +148,7 @@ const KegiatanProduksi = (props) => {
     if (isNewTahapProduksi) {
       axios({
         method: "GET",
-        url: `http://localhost:3000/production/getOneProductionData/${isNewTahapProduksi.id}`,
+        url: `http://localhost:5000/production/getOneProductionData/${isNewTahapProduksi.id}`,
         params: { userId: userInformation?.data?.id },
       }).then((result) => {
         if (result.status === 200) {
@@ -186,7 +186,7 @@ const KegiatanProduksi = (props) => {
             if (result.data.isLaporanAktual) {
               axios({
                 method: "GET",
-                url: `http://localhost:3000/production/getLaporanPracetakPrev/${result.data.noOrderProduksi}`,
+                url: `http://localhost:5000/production/getLaporanPracetakPrev/${result.data.noOrderProduksi}`,
                 params: { userId: userInformation?.data?.id },
               }).then((value) => {
                 if (value.status === 200) {
@@ -218,7 +218,7 @@ const KegiatanProduksi = (props) => {
     if (laporanProduksiId === undefined && isNewTahapProduksi === undefined) {
       axios({
         method: "GET",
-        url: `http://localhost:3000/productionPlanning/getAllProductionPlanStatusEstimatedForProduction/${userInformation?.data?.id}`,
+        url: `http://localhost:5000/productionPlanning/getAllProductionPlanStatusEstimatedForProduction/${userInformation?.data?.id}`,
       }).then((result) => {
         if (result.status === 200) {
           const tempData = result.data.map((data) => ({
@@ -235,7 +235,7 @@ const KegiatanProduksi = (props) => {
     } else {
       axios({
         method: "GET",
-        url: `http://localhost:3000/productionPlanning/getAllProductionPlanning/${userInformation?.data?.id}`,
+        url: `http://localhost:5000/productionPlanning/getAllProductionPlanning/${userInformation?.data?.id}`,
       }).then((result) => {
         if (result.status === 200) {
           const tempData = result.data.map((data) => ({
@@ -260,7 +260,7 @@ const KegiatanProduksi = (props) => {
       // if (checkSameData) {
         axios({
           method: "GET",
-          url: `http://localhost:3000/inventory/getPenyerahanBarangOrderId/${dataProduksi.noOrderProduksi}`,
+          url: `http://localhost:5000/inventory/getPenyerahanBarangOrderId/${dataProduksi.noOrderProduksi}`,
           params: { userId: userInformation?.data?.id },
         }).then((result) => {
           if (result.status === 200) {
@@ -370,7 +370,7 @@ const KegiatanProduksi = (props) => {
       if (refreshDataKegiatanProduksi) {
         axios({
           method: "GET",
-          url: `http://localhost:3000/production/getOneProductionData/${laporanProduksiId}`,
+          url: `http://localhost:5000/production/getOneProductionData/${laporanProduksiId}`,
           params: { userId: userInformation?.data?.id },
         }).then((result) => {
           if (result.status === 200) {
@@ -779,7 +779,7 @@ const KegiatanProduksi = (props) => {
   const handleSelesaiKegiatanProduksi = (id) => {
     axios({
       method: "PUT",
-      url: `http://localhost:3000/production/kegiatanProduksiSelesai/${id}`,
+      url: `http://localhost:5000/production/kegiatanProduksiSelesai/${id}`,
       params: { userId: userInformation?.data?.id },
     }).then((result) => {
       if (result.status === 200) {
@@ -861,7 +861,7 @@ const KegiatanProduksi = (props) => {
     } else {
       axios({
         method: "DELETE",
-        url: `http://localhost:3000/production/deleteJadwalProduksiPracetak/${id}`,
+        url: `http://localhost:5000/production/deleteJadwalProduksiPracetak/${id}`,
         params: {
           userId: userInformation?.data?.id,
           noOrderProduksi: dataProduksi.noOrderProduksi,
@@ -888,7 +888,7 @@ const KegiatanProduksi = (props) => {
     } else {
       axios({
         method: "DELETE",
-        url: `http://localhost:3000/production/deleteJadwalProduksiPracetak/${id}`,
+        url: `http://localhost:5000/production/deleteJadwalProduksiPracetak/${id}`,
         params: {
           userId: userInformation?.data?.id,
           noOrderProduksi: dataProduksi.noOrderProduksi,
@@ -915,7 +915,7 @@ const KegiatanProduksi = (props) => {
     } else {
       axios({
         method: "DELETE",
-        url: `http://localhost:3000/production/deleteJadwalProduksiPracetak/${id}`,
+        url: `http://localhost:5000/production/deleteJadwalProduksiPracetak/${id}`,
         params: {
           userId: userInformation?.data?.id,
           noOrderProduksi: dataProduksi.noOrderProduksi,
@@ -985,7 +985,7 @@ const KegiatanProduksi = (props) => {
     } else {
       axios({
         method: "DELETE",
-        url: `http://localhost:3000/production/deletePersonils/${id}`,
+        url: `http://localhost:5000/production/deletePersonils/${id}`,
         params: {
           userId: userInformation?.data?.id,
           tahapProduksi: dataProduksi.tahapProduksi,
@@ -1019,7 +1019,7 @@ const KegiatanProduksi = (props) => {
     } else {
       axios({
         method: "DELETE",
-        url: `http://localhost:3000/production/deleteBahanProduksiPracetak/${id}`,
+        url: `http://localhost:5000/production/deleteBahanProduksiPracetak/${id}`,
         params: {
           userId: userInformation?.data?.id,
           noOrderProduksi: dataProduksi.noOrderProduksi,
@@ -1216,7 +1216,7 @@ const KegiatanProduksi = (props) => {
       const modifiedJadwalFitur = handleModifyJadwalFitur();
       axios({
         method: "PUT",
-        url: `http://localhost:3000/production/updateKegiatanProduksiFitur/${userInformation?.data?.id}`,
+        url: `http://localhost:5000/production/updateKegiatanProduksiFitur/${userInformation?.data?.id}`,
         data: {
           personil: personil,
           dataProduksi: modifiedDataProduksis,
@@ -1253,7 +1253,7 @@ const KegiatanProduksi = (props) => {
       const modifiedJadwalPracetak = handleModifyJadwalPracetak();
       axios({
         method: "PUT",
-        url: `http://localhost:3000/production/updateKegiatanProduksiPracetak/${userInformation?.data?.id}`,
+        url: `http://localhost:5000/production/updateKegiatanProduksiPracetak/${userInformation?.data?.id}`,
         data: {
           dataProduksi: modifiedDataProduksis,
           jadwalPracetak: modifiedJadwalPracetak,
@@ -1292,7 +1292,7 @@ const KegiatanProduksi = (props) => {
         const modifiedJadwalCetak = handleModifyJadwalCetak();
         axios({
           method: "PUT",
-          url: `http://localhost:3000/production/updateKegiatanProduksiCetak/${userInformation?.data?.id}`,
+          url: `http://localhost:5000/production/updateKegiatanProduksiCetak/${userInformation?.data?.id}`,
           data: {
             personil: personil,
             dataProduksi: modifiedDataProduksis,
@@ -1334,7 +1334,7 @@ const KegiatanProduksi = (props) => {
       const modifiedJadwalFitur = handleModifyJadwalFitur();
       axios({
         method: "POST",
-        url: `http://localhost:3000/production/addKegiatanProduksiFitur/${userInformation?.data?.id}`,
+        url: `http://localhost:5000/production/addKegiatanProduksiFitur/${userInformation?.data?.id}`,
         data: {
           personil: personil,
           dataProduksi: modifiedDataProduksis,
@@ -1373,7 +1373,7 @@ const KegiatanProduksi = (props) => {
       const modifiedJadwalCetak = handleModifyJadwalCetak();
       axios({
         method: "POST",
-        url: `http://localhost:3000/production/addKegiatanProduksiCetak/${userInformation?.data?.id}`,
+        url: `http://localhost:5000/production/addKegiatanProduksiCetak/${userInformation?.data?.id}`,
         data: {
           personil: personil,
           dataProduksi: modifiedDataProduksis,
@@ -1414,7 +1414,7 @@ const KegiatanProduksi = (props) => {
       const modifiedJadwalPracetak = handleModifyJadwalPracetak();
       axios({
         method: "POST",
-        url: `http://localhost:3000/production/addKegiatanProduksi/${userInformation?.data?.id}`,
+        url: `http://localhost:5000/production/addKegiatanProduksi/${userInformation?.data?.id}`,
         data: {
           dataProduksi: modifiedDataProduksis,
           jadwalPracetak: modifiedJadwalPracetak,

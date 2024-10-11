@@ -99,7 +99,7 @@ const MaindashboardMarketing = (props) => {
     if (updateNotification) {
       axios({
         method: "GET",
-        url: `http://localhost:3000/order/getAllOrderInfo/${userInformation?.data?.id}`,
+        url: `http://localhost:5000/order/getAllOrderInfo/${userInformation?.data?.id}`,
       }).then((result) => {
         setAllOrderList(result);
         setUpdateNotification(false);
@@ -143,7 +143,7 @@ const MaindashboardMarketing = (props) => {
   const handleChangeDivisiOwner = (event) => {
     axios({
       method: "PUT",
-      url: `http://localhost:3000/finance/updateDivisiOwner/${event.target.value}`,
+      url: `http://localhost:5000/finance/updateDivisiOwner/${event.target.value}`,
     }).then((result) => {
       if (result.status === 200) {
         setUserCredentials((oldObject) => {
@@ -180,7 +180,7 @@ const MaindashboardMarketing = (props) => {
   const handleChangeLocationOwner = (event) => {
     axios({
       method: "PUT",
-      url: `http://localhost:3000/finance/updateLocationOwner/${event.target.value}`,
+      url: `http://localhost:5000/finance/updateLocationOwner/${event.target.value}`,
     }).then((result) => {
       if (result.status === 200) {
         setUserCredentials((oldObject) => {
@@ -253,7 +253,7 @@ const MaindashboardMarketing = (props) => {
 
       axios({
         method: "POST",
-        url: `http://localhost:3000/order/addOrder/${userInformation.data.id}`,
+        url: `http://localhost:5000/order/addOrder/${userInformation.data.id}`,
         data: formData,
         headers: {
           "Content-Type": "multipart/form-data",
@@ -664,8 +664,8 @@ const MaindashboardMarketing = (props) => {
                                       width: isMobile ? "30px" : "3.125vw",
                                       marginRight: "4px",
                                     }}
-                                    srcSet={`http://localhost:3000/uploads/${document.filename}?w=248&fit=crop&auto=format&dpr=2 2x`}
-                                    src={`http://localhost:3000/uploads/${document.filename}?w=248&fit=crop&auto=format`}
+                                    srcSet={`http://localhost:5000/uploads/${document.filename}?w=248&fit=crop&auto=format&dpr=2 2x`}
+                                    src={`http://localhost:5000/uploads/${document.filename}?w=248&fit=crop&auto=format`}
                                     alt=""
                                     loading="lazy"
                                   />
@@ -693,8 +693,8 @@ const MaindashboardMarketing = (props) => {
                                     width: isMobile ? "30px" : "3.125vw",
                                     marginRight: "4px",
                                   }}
-                                  srcSet={`http://localhost:3000/uploads/${document.filename}?w=248&fit=crop&auto=format&dpr=2 2x`}
-                                  src={`http://localhost:3000/uploads/${document.filename}?w=248&fit=crop&auto=format`}
+                                  srcSet={`http://localhost:5000/uploads/${document.filename}?w=248&fit=crop&auto=format&dpr=2 2x`}
+                                  src={`http://localhost:5000/uploads/${document.filename}?w=248&fit=crop&auto=format`}
                                   alt=""
                                   loading="lazy"
                                 />
@@ -895,8 +895,8 @@ const MaindashboardMarketing = (props) => {
                                         width: isMobile ? "30px" : "3.125vw",
                                         marginRight: "4px",
                                       }}
-                                      srcSet={`http://localhost:3000/uploads/${document.filename}?w=248&fit=crop&auto=format&dpr=2 2x`}
-                                      src={`http://localhost:3000/uploads/${document.filename}?w=248&fit=crop&auto=format`}
+                                      srcSet={`http://localhost:5000/uploads/${document.filename}?w=248&fit=crop&auto=format&dpr=2 2x`}
+                                      src={`http://localhost:5000/uploads/${document.filename}?w=248&fit=crop&auto=format`}
                                       alt=""
                                       loading="lazy"
                                     />
@@ -924,8 +924,8 @@ const MaindashboardMarketing = (props) => {
                                       width: isMobile ? "30px" : "3.125vw",
                                       marginRight: "4px",
                                     }}
-                                    srcSet={`http://localhost:3000/uploads/${document.filename}?w=248&fit=crop&auto=format&dpr=2 2x`}
-                                    src={`http://localhost:3000/uploads/${document.filename}?w=248&fit=crop&auto=format`}
+                                    srcSet={`http://localhost:5000/uploads/${document.filename}?w=248&fit=crop&auto=format&dpr=2 2x`}
+                                    src={`http://localhost:5000/uploads/${document.filename}?w=248&fit=crop&auto=format`}
                                     alt=""
                                     loading="lazy"
                                   />
@@ -1107,8 +1107,8 @@ const MaindashboardMarketing = (props) => {
                                         width: isMobile ? "30px" : "3.125vw",
                                         marginRight: "4px",
                                       }}
-                                      srcSet={`http://localhost:3000/uploads/${document.filename}?w=248&fit=crop&auto=format&dpr=2 2x`}
-                                      src={`http://localhost:3000/uploads/${document.filename}?w=248&fit=crop&auto=format`}
+                                      srcSet={`http://localhost:5000/uploads/${document.filename}?w=248&fit=crop&auto=format&dpr=2 2x`}
+                                      src={`http://localhost:5000/uploads/${document.filename}?w=248&fit=crop&auto=format`}
                                       alt=""
                                       loading="lazy"
                                     />
@@ -1136,8 +1136,8 @@ const MaindashboardMarketing = (props) => {
                                       width: isMobile ? "30px" : "3.125vw",
                                       marginRight: "4px",
                                     }}
-                                    srcSet={`http://localhost:3000/uploads/${document.filename}?w=248&fit=crop&auto=format&dpr=2 2x`}
-                                    src={`http://localhost:3000/uploads/${document.filename}?w=248&fit=crop&auto=format`}
+                                    srcSet={`http://localhost:5000/uploads/${document.filename}?w=248&fit=crop&auto=format&dpr=2 2x`}
+                                    src={`http://localhost:5000/uploads/${document.filename}?w=248&fit=crop&auto=format`}
                                     alt=""
                                     loading="lazy"
                                   />
@@ -1319,8 +1319,8 @@ const MaindashboardMarketing = (props) => {
                                         width: isMobile ? "30px" : "3.125vw",
                                         marginRight: "4px",
                                       }}
-                                      srcSet={`http://localhost:3000/uploads/${document.filename}?w=248&fit=crop&auto=format&dpr=2 2x`}
-                                      src={`http://localhost:3000/uploads/${document.filename}?w=248&fit=crop&auto=format`}
+                                      srcSet={`http://localhost:5000/uploads/${document.filename}?w=248&fit=crop&auto=format&dpr=2 2x`}
+                                      src={`http://localhost:5000/uploads/${document.filename}?w=248&fit=crop&auto=format`}
                                       alt=""
                                       loading="lazy"
                                     />
@@ -1348,8 +1348,8 @@ const MaindashboardMarketing = (props) => {
                                       width: isMobile ? "30px" : "3.125vw",
                                       marginRight: "4px",
                                     }}
-                                    srcSet={`http://localhost:3000/uploads/${document.filename}?w=248&fit=crop&auto=format&dpr=2 2x`}
-                                    src={`http://localhost:3000/uploads/${document.filename}?w=248&fit=crop&auto=format`}
+                                    srcSet={`http://localhost:5000/uploads/${document.filename}?w=248&fit=crop&auto=format&dpr=2 2x`}
+                                    src={`http://localhost:5000/uploads/${document.filename}?w=248&fit=crop&auto=format`}
                                     alt=""
                                     loading="lazy"
                                   />

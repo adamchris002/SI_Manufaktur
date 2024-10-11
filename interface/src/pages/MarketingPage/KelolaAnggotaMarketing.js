@@ -35,7 +35,7 @@ const KelolaAnggotaMarketing = (props) => {
     if (triggerBoth) {
       axios({
         method: "GET",
-        url: "http://localhost:3000/order/getUserBaru",
+        url: "http://localhost:5000/order/getUserBaru",
       }).then((result) => {
         if (result.status === 200) {
           setUserBaru(result.data);
@@ -50,7 +50,7 @@ const KelolaAnggotaMarketing = (props) => {
     if (triggerBoth) {
       axios({
         method: "GET",
-        url: "http://localhost:3000/order/getUserLama",
+        url: "http://localhost:5000/order/getUserLama",
       }).then((result) => {
         if (result.status === 200) {
           const tempData = result.data.filter(
@@ -168,7 +168,7 @@ const KelolaAnggotaMarketing = (props) => {
     // } else {
     axios({
       method: "PUT",
-      url: `http://localhost:3000/order/updateUserCredentials/${userInformation?.data?.id}`,
+      url: `http://localhost:5000/order/updateUserCredentials/${userInformation?.data?.id}`,
       data: { userData: userBaru },
     }).then((result) => {
       if (result.status === 200) {
@@ -189,7 +189,7 @@ const KelolaAnggotaMarketing = (props) => {
     } else {
       axios({
         method: "PUT",
-        url: `http://localhost:3000/order/updateUserCredentials/${userInformation?.data?.id}`,
+        url: `http://localhost:5000/order/updateUserCredentials/${userInformation?.data?.id}`,
         data: { userData: userLama },
       }).then((result) => {
         if (result.status === 200) {

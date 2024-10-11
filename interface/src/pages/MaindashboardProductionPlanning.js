@@ -47,7 +47,7 @@ const MaindashboardProductionPlanning = (props) => {
   const handleChangeDivisiOwner = (event) => {
     axios({
       method: "PUT",
-      url: `http://localhost:3000/finance/updateDivisiOwner/${event.target.value}`,
+      url: `http://localhost:5000/finance/updateDivisiOwner/${event.target.value}`,
     }).then((result) => {
       if (result.status === 200) {
         setUserCredentials((oldObject) => {
@@ -84,7 +84,7 @@ const MaindashboardProductionPlanning = (props) => {
   const handleChangeLocationOwner = (event) => {
     axios({
       method: "PUT",
-      url: `http://localhost:3000/finance/updateLocationOwner/${event.target.value}`,
+      url: `http://localhost:5000/finance/updateLocationOwner/${event.target.value}`,
     }).then((result) => {
       if (result.status === 200) {
         setUserCredentials((oldObject) => {
@@ -121,7 +121,7 @@ const MaindashboardProductionPlanning = (props) => {
     if (refreshProductionPlanData) {
       axios({
         method: "GET",
-        url: `http://localhost:3000/productionPlanning/getUnreviewedOrders/${userInformation?.data?.id}`,
+        url: `http://localhost:5000/productionPlanning/getUnreviewedOrders/${userInformation?.data?.id}`,
       }).then((result) => {
         try {
           setUnreviewedOrders(result);
@@ -136,7 +136,7 @@ const MaindashboardProductionPlanning = (props) => {
     if (refreshProductionPlanData) {
       axios({
         method: "GET",
-        url: `http://localhost:3000/productionPlanning/getEstimatedOrders/${userInformation?.data?.id}`,
+        url: `http://localhost:5000/productionPlanning/getEstimatedOrders/${userInformation?.data?.id}`,
       }).then((result) => {
         try {
           setEstimatedOrders(result);
@@ -151,7 +151,7 @@ const MaindashboardProductionPlanning = (props) => {
     if (refreshProductionPlanData) {
       axios({
         method: "GET",
-        url: `http://localhost:3000/productionPlanning/getAllProductionPlanning/${userInformation?.data?.id}`,
+        url: `http://localhost:5000/productionPlanning/getAllProductionPlanning/${userInformation?.data?.id}`,
       }).then((result) => {
         try {
           setAllProductionPlan(result);
@@ -176,7 +176,7 @@ const MaindashboardProductionPlanning = (props) => {
   const handleDeleteProductionPlan = (productionPlanId) => {
     axios({
       method: "DELETE",
-      url: `http://localhost:3000/productionPlanning/deleteProductionPlan/${productionPlanId}`,
+      url: `http://localhost:5000/productionPlanning/deleteProductionPlan/${productionPlanId}`,
       params: {
         userId: userInformation.data.id,
         productionPlanId: productionPlanId,
@@ -613,8 +613,8 @@ const MaindashboardProductionPlanning = (props) => {
                                       width: isMobile ? "30px" : "3.125vw",
                                       marginRight: "4px",
                                     }}
-                                    srcSet={`http://localhost:3000/uploads/${document.filename}?w=248&fit=crop&auto=format&dpr=2 2x`}
-                                    src={`http://localhost:3000/uploads/${document.filename}?w=248&fit=crop&auto=format`}
+                                    srcSet={`http://localhost:5000/uploads/${document.filename}?w=248&fit=crop&auto=format&dpr=2 2x`}
+                                    src={`http://localhost:5000/uploads/${document.filename}?w=248&fit=crop&auto=format`}
                                     alt=""
                                     loading="lazy"
                                   />
@@ -642,8 +642,8 @@ const MaindashboardProductionPlanning = (props) => {
                                     width: isMobile ? "30px" : "3.125vw",
                                     marginRight: "4px",
                                   }}
-                                  srcSet={`http://localhost:3000/uploads/${document.filename}?w=248&fit=crop&auto=format&dpr=2 2x`}
-                                  src={`http://localhost:3000/uploads/${document.filename}?w=248&fit=crop&auto=format`}
+                                  srcSet={`http://localhost:5000/uploads/${document.filename}?w=248&fit=crop&auto=format&dpr=2 2x`}
+                                  src={`http://localhost:5000/uploads/${document.filename}?w=248&fit=crop&auto=format`}
                                   alt=""
                                   loading="lazy"
                                 />
@@ -817,8 +817,8 @@ const MaindashboardProductionPlanning = (props) => {
                                       width: isMobile ? "30px" : "3.125vw",
                                       marginRight: "4px",
                                     }}
-                                    srcSet={`http://localhost:3000/uploads/${document.filename}?w=248&fit=crop&auto=format&dpr=2 2x`}
-                                    src={`http://localhost:3000/uploads/${document.filename}?w=248&fit=crop&auto=format`}
+                                    srcSet={`http://localhost:5000/uploads/${document.filename}?w=248&fit=crop&auto=format&dpr=2 2x`}
+                                    src={`http://localhost:5000/uploads/${document.filename}?w=248&fit=crop&auto=format`}
                                     alt=""
                                     loading="lazy"
                                   />
@@ -846,8 +846,8 @@ const MaindashboardProductionPlanning = (props) => {
                                     width: isMobile ? "30px" : "3.125vw",
                                     marginRight: "4px",
                                   }}
-                                  srcSet={`http://localhost:3000/uploads/${document.filename}?w=248&fit=crop&auto=format&dpr=2 2x`}
-                                  src={`http://localhost:3000/uploads/${document.filename}?w=248&fit=crop&auto=format`}
+                                  srcSet={`http://localhost:5000/uploads/${document.filename}?w=248&fit=crop&auto=format&dpr=2 2x`}
+                                  src={`http://localhost:5000/uploads/${document.filename}?w=248&fit=crop&auto=format`}
                                   alt=""
                                   loading="lazy"
                                 />

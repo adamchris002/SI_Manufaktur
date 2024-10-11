@@ -27,7 +27,7 @@ const FinanceActivityLog = (props) => {
   useEffect(() => {
     axios({
       method: "GET",
-      url: `http://localhost:3000/finance/getActivityLog/${userInformation?.data?.id}`,
+      url: `http://localhost:5000/finance/getActivityLog/${userInformation?.data?.id}`,
     }).then((result) => {
       setActivityLogs(result);
     });

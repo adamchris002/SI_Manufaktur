@@ -87,7 +87,7 @@ const StockPage = (props) => {
     if (refreshInventoryItem) {
       axios({
         method: "GET",
-        url: `http://localhost:3000/inventory/getAllInventoryItem/${userInformation?.data?.id}`,
+        url: `http://localhost:5000/inventory/getAllInventoryItem/${userInformation?.data?.id}`,
       }).then((result) => {
         if (result.status === 200) {
           setRefreshInventoryItem(false);
@@ -149,7 +149,7 @@ const StockPage = (props) => {
       };
       axios({
         method: "PUT",
-        url: `http://localhost:3000/inventory/editInventoryItem/${userInformation?.data?.id}`,
+        url: `http://localhost:5000/inventory/editInventoryItem/${userInformation?.data?.id}`,
         data: { dataInventory: dataInventory },
       }).then((result) => {
         if (result.status === 200) {
@@ -177,7 +177,7 @@ const StockPage = (props) => {
   const handleDeleteInventoryItem = (id) => {
     axios({
       method: "DELETE",
-      url: "http://localhost:3000/inventory/deleteInventoryItem",
+      url: "http://localhost:5000/inventory/deleteInventoryItem",
       params: { userId: userInformation?.data?.id, inventoryItemId: id },
     }).then((result) => {
       if (result.status === 200) {
@@ -217,7 +217,7 @@ const StockPage = (props) => {
       };
       axios({
         method: "POST",
-        url: `http://localhost:3000/inventory/addInventoryItem/${userInformation?.data?.id}`,
+        url: `http://localhost:5000/inventory/addInventoryItem/${userInformation?.data?.id}`,
         data: { dataInventory: dataInventory },
       }).then((result) => {
         if (result.status === 200) {

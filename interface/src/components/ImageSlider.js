@@ -11,7 +11,7 @@
 //     const currentDocument = documents[currentIndex];
 //     if (currentDocument) {
 //       const currentImageFilename = currentDocument.filename;
-//       const currentImageUrl = `http://localhost:3000/uploads/${currentImageFilename}`;
+//       const currentImageUrl = `http://localhost:5000/uploads/${currentImageFilename}`;
 
 //       return (
 //         <div key={currentIndex}>

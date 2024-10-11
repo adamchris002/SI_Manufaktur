@@ -50,7 +50,7 @@ const MaindashboardProduction = (props) => {
   const handleChangeDivisiOwner = (event) => {
     axios({
       method: "PUT",
-      url: `http://localhost:3000/finance/updateDivisiOwner/${event.target.value}`,
+      url: `http://localhost:5000/finance/updateDivisiOwner/${event.target.value}`,
     }).then((result) => {
       if (result.status === 200) {
         setUserCredentials((oldObject) => {
@@ -87,7 +87,7 @@ const MaindashboardProduction = (props) => {
   const handleChangeLocationOwner = (event) => {
     axios({
       method: "PUT",
-      url: `http://localhost:3000/finance/updateLocationOwner/${event.target.value}`,
+      url: `http://localhost:5000/finance/updateLocationOwner/${event.target.value}`,
     }).then((result) => {
       if (result.status === 200) {
         setUserCredentials((oldObject) => {
@@ -136,7 +136,7 @@ const MaindashboardProduction = (props) => {
     if (refreshDataLaporanLimbahProduksi) {
       axios({
         method: "GET",
-        url: `http://localhost:3000/production/getAllLaporanLimbahProduksi/${userInformation?.data?.id}`,
+        url: `http://localhost:5000/production/getAllLaporanLimbahProduksi/${userInformation?.data?.id}`,
       }).then((result) => {
         if (result.status === 200) {
           setAllDataLaporanLimbahProduksi(result?.data);
@@ -154,7 +154,7 @@ const MaindashboardProduction = (props) => {
     if (refreshDataKegiatanProduksi) {
       axios({
         method: "GET",
-        url: `http://localhost:3000/production/penyerahanBarangSiap/${userInformation?.data?.id}`,
+        url: `http://localhost:5000/production/penyerahanBarangSiap/${userInformation?.data?.id}`,
       }).then((result) => {
         if (result.status === 200) {
           setAllPenyerahanBarang(result.data);
@@ -171,7 +171,7 @@ const MaindashboardProduction = (props) => {
     if (refreshDataKegiatanProduksi) {
       axios({
         method: "GET",
-        url: `http://localhost:3000/production/getProductionData/${userInformation?.data?.id}`,
+        url: `http://localhost:5000/production/getProductionData/${userInformation?.data?.id}`,
       }).then((result) => {
         if (result.status === 200) {
           const data = result.data;
@@ -213,7 +213,7 @@ const MaindashboardProduction = (props) => {
   const handleSelesaiKegiatanProduksi = (id) => {
     axios({
       method: "PUT",
-      url: `http://localhost:3000/production/kegiatanProduksiSelesai/${id}`,
+      url: `http://localhost:5000/production/kegiatanProduksiSelesai/${id}`,
       params: { userId: userInformation?.data?.id },
     }).then((result) => {
       if (result.status === 200) {
@@ -250,7 +250,7 @@ const MaindashboardProduction = (props) => {
   const handleDeleteKegiatanProduksi = (id) => {
     axios({
       method: "DELETE",
-      url: `http://localhost:3000/production/deleteKegiatanProduksi/${id}`,
+      url: `http://localhost:5000/production/deleteKegiatanProduksi/${id}`,
       params: { userId: userInformation?.data?.id },
     }).then((result) => {
       if (result.status === 200) {
@@ -273,7 +273,7 @@ const MaindashboardProduction = (props) => {
   ) => {
     axios({
       method: "DELETE",
-      url: `http://localhost:3000/production/deleteItemLimbahProduksi/${id}`,
+      url: `http://localhost:5000/production/deleteItemLimbahProduksi/${id}`,
       params: {
         tahapProduksi: tahapProduksi,
         noOrderProduksi: noOrderProduksi,

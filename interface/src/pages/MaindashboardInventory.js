@@ -66,7 +66,7 @@ const MaindashboardInventory = (props) => {
   const handleChangeDivisiOwner = (event) => {
     axios({
       method: "PUT",
-      url: `http://localhost:3000/finance/updateDivisiOwner/${event.target.value}`,
+      url: `http://localhost:5000/finance/updateDivisiOwner/${event.target.value}`,
     }).then((result) => {
       if (result.status === 200) {
         setUserCredentials((oldObject) => {
@@ -103,7 +103,7 @@ const MaindashboardInventory = (props) => {
   const handleChangeLocationOwner = (event) => {
     axios({
       method: "PUT",
-      url: `http://localhost:3000/finance/updateLocationOwner/${event.target.value}`,
+      url: `http://localhost:5000/finance/updateLocationOwner/${event.target.value}`,
     }).then((result) => {
       if (result.status === 200) {
         setUserCredentials((oldObject) => {
@@ -144,7 +144,7 @@ const MaindashboardInventory = (props) => {
     if (refreshPenyerahanBarang) {
       axios({
         method: "GET",
-        url: `http://localhost:3000/inventory/getAllPengambilanBarang/${userInformation?.data?.id}`,
+        url: `http://localhost:5000/inventory/getAllPengambilanBarang/${userInformation?.data?.id}`,
       }).then((result) => {
         if (result.status === 200) {
           setAllPenyerahanBarang(result.data);
@@ -165,7 +165,7 @@ const MaindashboardInventory = (props) => {
     if (refreshPermohonanPembelian) {
       axios({
         method: "GET",
-        url: `http://localhost:3000/inventory/getAllInventoryItem/${userInformation?.data?.id}`,
+        url: `http://localhost:5000/inventory/getAllInventoryItem/${userInformation?.data?.id}`,
       }).then((result) => {
         if (result.status === 200) {
           const tempData = result.data.map((item) => ({
@@ -187,7 +187,7 @@ const MaindashboardInventory = (props) => {
     if (refresDataStokOpnam) {
       axios({
         method: "GET",
-        url: `http://localhost:3000/inventory/getAllStokOpnam/${userInformation?.data?.id}`,
+        url: `http://localhost:5000/inventory/getAllStokOpnam/${userInformation?.data?.id}`,
       }).then((result) => {
         if (result.status === 200) {
           setAllStokOpnam(result.data);
@@ -218,7 +218,7 @@ const MaindashboardInventory = (props) => {
             if (dayjs().isAfter(dayjs(result.tanggalAkhirStokOpnam))) {
               axios({
                 method: "PUT",
-                url: `http://localhost:3000/inventory/statusStokOpnamComplete/${result.id}`,
+                url: `http://localhost:5000/inventory/statusStokOpnamComplete/${result.id}`,
               })
                 .then((response) => {
                   if (response.status === 200) {
@@ -260,7 +260,7 @@ const MaindashboardInventory = (props) => {
     if (refreshPembelianBahanBaku) {
       axios({
         method: "GET",
-        url: `http://localhost:3000/inventory/getAllPembelianBahanBaku/${userInformation?.data?.id}`,
+        url: `http://localhost:5000/inventory/getAllPembelianBahanBaku/${userInformation?.data?.id}`,
       }).then((result) => {
         if (result.status === 200) {
           setPembelianBahanBaku(result);
@@ -279,7 +279,7 @@ const MaindashboardInventory = (props) => {
     if (refreshPermohonanPembelian) {
       axios({
         method: "GET",
-        url: `http://localhost:3000/inventory/getAllPermohonanPembelian/${userInformation?.data?.id}`,
+        url: `http://localhost:5000/inventory/getAllPermohonanPembelian/${userInformation?.data?.id}`,
       }).then((result) => {
         try {
           if (result.status === 200) {
@@ -300,7 +300,7 @@ const MaindashboardInventory = (props) => {
     if (refreshItemsPermohonanPembelian) {
       axios({
         method: "GET",
-        url: `http://localhost:3000/inventory/getPermohonanPembelian/${permohonanPembelian[0]?.id}`,
+        url: `http://localhost:5000/inventory/getPermohonanPembelian/${permohonanPembelian[0]?.id}`,
         params: { userId: userInformation?.data?.id },
       }).then((result) => {
         if (result.status === 200) {
@@ -319,7 +319,7 @@ const MaindashboardInventory = (props) => {
   const handleDeletePermohonanPembelian = (id) => {
     axios({
       method: "DELETE",
-      url: `http://localhost:3000/inventory/deletePermohonanPembelian/${id}`,
+      url: `http://localhost:5000/inventory/deletePermohonanPembelian/${id}`,
       params: { userId: userInformation?.data?.id },
     }).then((result) => {
       if (result.status === 200) {
@@ -342,7 +342,7 @@ const MaindashboardInventory = (props) => {
   const handleDeletePenyerahanBarang = (id) => {
     axios({
       method: "DELETE",
-      url: `http://localhost:3000/inventory/deletePenyerahanBarang/${id}`,
+      url: `http://localhost:5000/inventory/deletePenyerahanBarang/${id}`,
       params: { userId: userInformation?.data?.id },
     }).then((result) => {
       if (result.status === 200) {
@@ -389,7 +389,7 @@ const MaindashboardInventory = (props) => {
     } else {
       axios({
         method: "DELETE",
-        url: `http://localhost:3000/inventory/deleteItemsPermohonanPembelian/${id}`,
+        url: `http://localhost:5000/inventory/deleteItemsPermohonanPembelian/${id}`,
         params: {
           userId: userInformation?.data?.id,
           permohonanPembelianId: permohonanPembelianId,
@@ -589,7 +589,7 @@ const MaindashboardInventory = (props) => {
         transformDataPermohonanPembelian(permohonanPembelian);
       axios({
         method: "POST",
-        url: `http://localhost:3000/inventory/addPermohonanPembelian/${userInformation.data.id}`,
+        url: `http://localhost:5000/inventory/addPermohonanPembelian/${userInformation.data.id}`,
         data: { permohonanPembelian: transformedPermohonanPembelian },
       }).then((result) => {
         if (result.status === 200) {
@@ -621,7 +621,7 @@ const MaindashboardInventory = (props) => {
     } else {
       axios({
         method: "PUT",
-        url: `http://localhost:3000/inventory/editPermohonanPembelian/${userInformation.data.id}`,
+        url: `http://localhost:5000/inventory/editPermohonanPembelian/${userInformation.data.id}`,
         data: { permohonanPembelian: transformedPermohonanPembelian },
       }).then((result) => {
         if (result.status === 200) {
@@ -642,7 +642,7 @@ const MaindashboardInventory = (props) => {
   const handleDeletePembelianBahanBaku = (id) => {
     axios({
       method: "DELETE",
-      url: `http://localhost:3000/inventory/deletePembelianBahanBaku/${id}`,
+      url: `http://localhost:5000/inventory/deletePembelianBahanBaku/${id}`,
       params: { userId: userInformation?.data?.id },
     }).then((result) => {
       if (result.status === 200) {
@@ -662,7 +662,7 @@ const MaindashboardInventory = (props) => {
   const handleDeleteStokOpnam = (id) => {
     axios({
       method: "DELETE",
-      url: `http://localhost:3000/inventory/deleteStokOpnam/${id}`,
+      url: `http://localhost:5000/inventory/deleteStokOpnam/${id}`,
       params: { userId: userInformation?.data?.id },
     }).then((result) => {
       if (result.status === 200) {

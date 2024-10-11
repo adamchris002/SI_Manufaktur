@@ -124,7 +124,7 @@ const PembelianBahanBaku = (props) => {
   useEffect(() => {
     axios({
       method: "GET",
-      url: `http://localhost:3000/inventory/getAllInventoryItem/${userInformation?.data?.id}`,
+      url: `http://localhost:5000/inventory/getAllInventoryItem/${userInformation?.data?.id}`,
     }).then((result) => {
       if (result.status === 200) {
         const tempInventoryData = result.data.map((data) => ({
@@ -143,7 +143,7 @@ const PembelianBahanBaku = (props) => {
   useEffect(() => {
     axios({
       method: "GET",
-      url: `http://localhost:3000/order/getAllOrderInfo/${userInformation?.data?.id}`,
+      url: `http://localhost:5000/order/getAllOrderInfo/${userInformation?.data?.id}`,
     }).then((result) => {
       if (result.status === 200) {
         const orderIdList = result.data.map((data) => ({
@@ -162,7 +162,7 @@ const PembelianBahanBaku = (props) => {
   useEffect(() => {
     axios({
       method: "GET",
-      url: `http://localhost:3000/inventory/getAllAcceptedPermohonanPembelian/${userInformation?.data?.id}`,
+      url: `http://localhost:5000/inventory/getAllAcceptedPermohonanPembelian/${userInformation?.data?.id}`,
     }).then((result) => {
       if (result.status === 200) {
         const allIds = result.data.map((data) => ({
@@ -183,7 +183,7 @@ const PembelianBahanBaku = (props) => {
   const handleSelectId = (idPermohonanPembelian) => {
     axios({
       method: "GET",
-      url: `http://localhost:3000/inventory/getPermohonanPembelian/${idPermohonanPembelian.target.value}`,
+      url: `http://localhost:5000/inventory/getPermohonanPembelian/${idPermohonanPembelian.target.value}`,
       params: { userId: userInformation?.data?.id },
     }).then((result) => {
       setPermohonanPembelian(result);
@@ -202,7 +202,7 @@ const PembelianBahanBaku = (props) => {
       if (refreshPembelianBahanBaku) {
         axios({
           method: "GET",
-          url: `http://localhost:3000/inventory/getPembelianBahanBaku/${pembelianBahanBakuId}`,
+          url: `http://localhost:5000/inventory/getPembelianBahanBaku/${pembelianBahanBakuId}`,
           params: {userId: userInformation?.data?.id}
         }).then((result) => {
           if (result.status === 200) {
@@ -328,7 +328,7 @@ const PembelianBahanBaku = (props) => {
     } else {
       axios({
         method: "DELETE",
-        url: `http://localhost:3000/inventory/deleteItemPembelianBahanBaku/${id}`,
+        url: `http://localhost:5000/inventory/deleteItemPembelianBahanBaku/${id}`,
         params: {
           userId: userInformation?.data?.id,
           pembelianBahanBakuId: pembelianBahanBakuId,
@@ -357,7 +357,7 @@ const PembelianBahanBaku = (props) => {
       const transformedPembelianBahanBaku = transformPembelianBahanBaku();
       axios({
         method: "PUT",
-        url: `http://localhost:3000/inventory/editPembelianBahanBaku/${id}`,
+        url: `http://localhost:5000/inventory/editPembelianBahanBaku/${id}`,
         data: {
           pembelianBahanBakuId: pembelianBahanBakuId,
           dataPembelianBahanBaku: transformedPembelianBahanBaku,
@@ -387,7 +387,7 @@ const PembelianBahanBaku = (props) => {
       const transformedPembelianBahanBaku = transformPembelianBahanBaku();
       axios({
         method: "POST",
-        url: `http://localhost:3000/inventory/addPembelianBahanBaku/${id}`,
+        url: `http://localhost:5000/inventory/addPembelianBahanBaku/${id}`,
         data: {
           permohonanPembelianId: permohonanPembelian?.data?.id,
           dataPembelianBahanBaku: transformedPembelianBahanBaku,

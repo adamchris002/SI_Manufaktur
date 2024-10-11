@@ -27,7 +27,7 @@ const InventoryActivityLog = (props) => {
   useEffect(() => {
     axios({
       method: "GET",
-      url: `http://localhost:3000/inventory/inventoryActivityLog/${userInformation?.data?.id}`,
+      url: `http://localhost:5000/inventory/inventoryActivityLog/${userInformation?.data?.id}`,
     }).then((result) => {
       setActivityLogs(result);
     });

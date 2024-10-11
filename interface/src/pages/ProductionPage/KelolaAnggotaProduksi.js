@@ -33,7 +33,7 @@ const KelolaAnggotaProduksi = (props) => {
     if (triggerBoth) {
       axios({
         method: "GET",
-        url: "http://localhost:3000/production/getUserBaru",
+        url: "http://localhost:5000/production/getUserBaru",
       }).then((result) => {
         if (result.status === 200) {
           setUserBaru(result.data);
@@ -48,7 +48,7 @@ const KelolaAnggotaProduksi = (props) => {
     if (triggerBoth) {
       axios({
         method: "GET",
-        url: "http://localhost:3000/production/getUserLama",
+        url: "http://localhost:5000/production/getUserLama",
       }).then((result) => {
         if (result.status === 200) {
           const tempData = result.data.filter(
@@ -161,7 +161,7 @@ const KelolaAnggotaProduksi = (props) => {
   const handleSavePenggunaBaru = () => {
     axios({
       method: "PUT",
-      url: `http://localhost:3000/production/updateUserCredentials/${userInformation?.data?.id}`,
+      url: `http://localhost:5000/production/updateUserCredentials/${userInformation?.data?.id}`,
       data: { userData: userBaru },
     }).then((result) => {
       if (result.status === 200) {
@@ -181,7 +181,7 @@ const KelolaAnggotaProduksi = (props) => {
     } else {
       axios({
         method: "PUT",
-        url: `http://localhost:3000/production/updateUserCredentials/${userInformation?.data?.id}`,
+        url: `http://localhost:5000/production/updateUserCredentials/${userInformation?.data?.id}`,
         data: { userData: userLama },
       }).then((result) => {
         if (result.status === 200) {

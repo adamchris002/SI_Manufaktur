@@ -51,7 +51,7 @@ const RegisterPage = () => {
     } else {
       axios({
         method: "POST",
-        url: "http://localhost:3000/users/register",
+        url: "http://localhost:5000/users/register",
         data: registerData,
       })
         .then((result) => {

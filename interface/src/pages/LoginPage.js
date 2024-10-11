@@ -69,7 +69,7 @@ const LoginPage = (props) => {
       setLoginClicked(true);
       axios({
         method: "POST",
-        url: "http://localhost:3000/users/login",
+        url: "http://localhost:5000/users/login",
         data: loginData,
       }).then((result) => {
         if (result.data === null) {

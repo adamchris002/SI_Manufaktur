@@ -158,7 +158,7 @@ const RencanaPembayaran = (props) => {
   useEffect(() => {
     axios({
       method: "GET",
-      url: `http://localhost:3000/finance/getDoneRencanaPembayaran/${userInformation?.data?.id}`,
+      url: `http://localhost:5000/finance/getDoneRencanaPembayaran/${userInformation?.data?.id}`,
     }).then((result) => {
       if (result.status === 200) {
         setRencanaPembayaran(result.data);
@@ -176,7 +176,7 @@ const RencanaPembayaran = (props) => {
     if (refreshRencanaPembayaran === true) {
       axios({
         method: "GET",
-        url: `http://localhost:3000/finance/getAllOngoingRencanaPembayaran/${userInformation?.data?.id}`,
+        url: `http://localhost:5000/finance/getAllOngoingRencanaPembayaran/${userInformation?.data?.id}`,
       }).then((result) => {
         if (result.status === 200) {
           setAllDataRencanaPembayaran(result.data);
@@ -196,7 +196,7 @@ const RencanaPembayaran = (props) => {
   useEffect(() => {
     axios({
       method: "GET",
-      url: `http://localhost:3000/finance/findPrevOngoingHutangs/${userInformation?.data?.id}`,
+      url: `http://localhost:5000/finance/findPrevOngoingHutangs/${userInformation?.data?.id}`,
     }).then((result) => {
       if (result.status === 200) {
         // const resultIds = result.data.map((item) => item.id);
@@ -223,7 +223,7 @@ const RencanaPembayaran = (props) => {
   useEffect(() => {
     axios({
       method: "GET",
-      url: `http://localhost:3000/finance/findPrevOngoingPembayaranLainLain/${userInformation?.data?.id}`,
+      url: `http://localhost:5000/finance/findPrevOngoingPembayaranLainLain/${userInformation?.data?.id}`,
     }).then((result) => {
       if (result.status === 200) {
         const existingIds =
@@ -249,7 +249,7 @@ const RencanaPembayaran = (props) => {
   useEffect(() => {
     axios({
       method: "GET",
-      url: `http://localhost:3000/finance/getPembelianBahanbakuForHutang/${userInformation?.data?.id}`,
+      url: `http://localhost:5000/finance/getPembelianBahanbakuForHutang/${userInformation?.data?.id}`,
     }).then((result) => {
       if (result.status === 200) {
         const tempData = result?.data?.map((result) => {
@@ -272,7 +272,7 @@ const RencanaPembayaran = (props) => {
   useEffect(() => {
     axios({
       method: "GET",
-      url: `http://localhost:3000/finance/checkIfRencanaPembayaranExists/${userInformation?.data?.id}`,
+      url: `http://localhost:5000/finance/checkIfRencanaPembayaranExists/${userInformation?.data?.id}`,
     }).then((result) => {
       if (result.status === 200) {
         setRefreshRencanaPembayaran(true);
@@ -300,7 +300,7 @@ const RencanaPembayaran = (props) => {
       ) {
         axios({
           method: "PUT",
-          url: `http://localhost:3000/finance/updateDoneRencanaPembayaran/${userInformation?.data?.id}`,
+          url: `http://localhost:5000/finance/updateDoneRencanaPembayaran/${userInformation?.data?.id}`,
         }).then((result) => {
           if (result.status === 200) {
             setRefreshRencanaPembayaran(true);
@@ -320,7 +320,7 @@ const RencanaPembayaran = (props) => {
   useEffect(() => {
     axios({
       method: "GET",
-      url: `http://localhost:3000/finance/getOngoingBukuBank/${userInformation?.data?.id}`,
+      url: `http://localhost:5000/finance/getOngoingBukuBank/${userInformation?.data?.id}`,
     }).then((result) => {
       if (result.status === 200) {
         const tempData = result.data.map((result) => {
@@ -369,7 +369,7 @@ const RencanaPembayaran = (props) => {
     setRefreshRencanaPembayaran(false);
     axios({
       method: "PUT",
-      url: `http://localhost:3000/finance/updateCicilan/${userInformation?.data?.id}`,
+      url: `http://localhost:5000/finance/updateCicilan/${userInformation?.data?.id}`,
       data: { dataCicilan: viewDataHutang },
     }).then((result) => {
       if (result.status === 200) {
@@ -390,7 +390,7 @@ const RencanaPembayaran = (props) => {
     setRefreshRencanaPembayaran(false);
     axios({
       method: "PUT",
-      url: `http://localhost:3000/finance/updateCicilanPemLains/${userInformation?.data?.id}`,
+      url: `http://localhost:5000/finance/updateCicilanPemLains/${userInformation?.data?.id}`,
       data: {
         dataCicilanPemLains: viewDataPembayaranLain,
       },
@@ -694,7 +694,7 @@ const RencanaPembayaran = (props) => {
     } else {
       axios({
         method: "POST",
-        url: `http://localhost:3000/finance/addPembayaranLainLain/${userInformation?.data?.id}`,
+        url: `http://localhost:5000/finance/addPembayaranLainLain/${userInformation?.data?.id}`,
         data: {
           dataPembayaranLainLain: dataPembayaranLainLain,
           dataBank: dataInfoPembayaran,
@@ -727,7 +727,7 @@ const RencanaPembayaran = (props) => {
     } else {
       axios({
         method: "POST",
-        url: `http://localhost:3000/finance/addHutang/${userInformation?.data?.id}`,
+        url: `http://localhost:5000/finance/addHutang/${userInformation?.data?.id}`,
         data: {
           dataHutang: dataHutang,
           dataBank: dataInfoPembayaran,

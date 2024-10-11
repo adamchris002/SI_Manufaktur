@@ -58,7 +58,7 @@ const LaporanProduksi = (props) => {
     } else {
       axios({
         method: "GET",
-        url: `http://localhost:3000/production/getKegiatanProduksiDone/${userInformation?.data?.id}`,
+        url: `http://localhost:5000/production/getKegiatanProduksiDone/${userInformation?.data?.id}`,
         params: {
           tanggalProduksiSelesai: tanggalProduksiSelesai.format("MM/DD/YYYY"),
         },

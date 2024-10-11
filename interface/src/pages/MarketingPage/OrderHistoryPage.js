@@ -43,7 +43,7 @@ const OrderHistoryPage = (props) => {
   useEffect(() => {
     axios({
       method: "GET",
-      url: `http://localhost:3000/order/getAllOrderInfo/${userInformation?.data?.id}`,
+      url: `http://localhost:5000/order/getAllOrderInfo/${userInformation?.data?.id}`,
     }).then((result) => {
       if (result.status === 200) {
         const tempData = result.data.filter(
@@ -408,8 +408,8 @@ const OrderHistoryPage = (props) => {
                         width: isMobile ? "30px" : "120px",
                         marginRight: "16px",
                       }}
-                      srcSet={`http://localhost:3000/uploads/${result.filename}?w=248&fit=crop&auto=format&dpr=2 2x`}
-                      src={`http://localhost:3000/uploads/${result.filename}?w=248&fit=crop&auto=format`}
+                      srcSet={`http://localhost:5000/uploads/${result.filename}?w=248&fit=crop&auto=format&dpr=2 2x`}
+                      src={`http://localhost:5000/uploads/${result.filename}?w=248&fit=crop&auto=format`}
                       alt=""
                       loading="lazy"
                       onClick={() => {
@@ -528,10 +528,10 @@ const OrderHistoryPage = (props) => {
           <div>
             <img
               style={{ width: "720px", height: "auto" }}
-              // srcSet={`http://localhost:3000/uploads/${orderDetailInfo.data.documents[imageIndex].filename}?w=248&fit=crop&auto=format&dpr=2 2x`}
+              // srcSet={`http://localhost:5000/uploads/${orderDetailInfo.data.documents[imageIndex].filename}?w=248&fit=crop&auto=format&dpr=2 2x`}
               src={
                 dataView.documents[imageIndex].id !== undefined
-                  ? `http://localhost:3000/uploads/${dataView.documents[imageIndex].filename}?w=248&fit=crop&auto=format`
+                  ? `http://localhost:5000/uploads/${dataView.documents[imageIndex].filename}?w=248&fit=crop&auto=format`
                   : URL.createObjectURL(dataView.documents[imageIndex])
               }
               alt={""}

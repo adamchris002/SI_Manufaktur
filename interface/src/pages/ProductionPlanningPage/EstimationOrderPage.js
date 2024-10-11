@@ -513,7 +513,7 @@ const EstimationOrderPage = (props) => {
     } else {
       axios({
         method: "POST",
-        url: `http://localhost:3000/productionPlanning/addProductionPlanning/${userInformation.data.id}`,
+        url: `http://localhost:5000/productionPlanning/addProductionPlanning/${userInformation.data.id}`,
         data: perencanaanProduksiData,
       }).then((result) => {
         if (result.status === 200) {
@@ -815,7 +815,7 @@ const EstimationOrderPage = (props) => {
   const handleSelectId = (orderId) => {
     axios({
       method: "GET",
-      url: "http://localhost:3000/productionPlanning/getOneOrder",
+      url: "http://localhost:5000/productionPlanning/getOneOrder",
       params: {
         orderId: orderId.target.value,
         userId: userInformation?.data?.id,
@@ -830,7 +830,7 @@ const EstimationOrderPage = (props) => {
   useEffect(() => {
     axios({
       method: "GET",
-      url: `http://localhost:3000/inventory/getAllInventoryItem/${userInformation?.data?.id}`,
+      url: `http://localhost:5000/inventory/getAllInventoryItem/${userInformation?.data?.id}`,
     }).then((result) => {
       if (result.status === 200) {
         const tempData = result.data.map((result) => ({
@@ -849,7 +849,7 @@ const EstimationOrderPage = (props) => {
   useEffect(() => {
     axios({
       method: "GET",
-      url: `http://localhost:3000/productionPlanning/getUnreviewedOrders/${userInformation?.data?.id}`,
+      url: `http://localhost:5000/productionPlanning/getUnreviewedOrders/${userInformation?.data?.id}`,
     }).then((result) => {
       try {
         const allOrderIDs = result.data.map((data) => ({
@@ -1006,8 +1006,8 @@ const EstimationOrderPage = (props) => {
                                         height: isMobile ? "100px" : "9vw",
                                         width: isMobile ? "100px" : "9vw",
                                       }}
-                                      srcSet={`http://localhost:3000/uploads/${result.filename}?w=248&fit=crop&auto=format&dpr=2 2x`}
-                                      src={`http://localhost:3000/uploads/${result.filename}?w=248&fit=crop&auto=format`}
+                                      srcSet={`http://localhost:5000/uploads/${result.filename}?w=248&fit=crop&auto=format&dpr=2 2x`}
+                                      src={`http://localhost:5000/uploads/${result.filename}?w=248&fit=crop&auto=format`}
                                       alt={result.filename}
                                       loading="lazy"
                                     />
@@ -1018,8 +1018,8 @@ const EstimationOrderPage = (props) => {
                                         width: isMobile ? "100px" : "9vw",
                                         marginRight: isMobile ? "" : "32px",
                                       }}
-                                      srcSet={`http://localhost:3000/uploads/${result.filename}?w=248&fit=crop&auto=format&dpr=2 2x`}
-                                      src={`http://localhost:3000/uploads/${result.filename}?w=248&fit=crop&auto=format`}
+                                      srcSet={`http://localhost:5000/uploads/${result.filename}?w=248&fit=crop&auto=format&dpr=2 2x`}
+                                      src={`http://localhost:5000/uploads/${result.filename}?w=248&fit=crop&auto=format`}
                                       alt={result.filename}
                                       loading="lazy"
                                     />

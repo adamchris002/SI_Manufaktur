@@ -225,7 +225,7 @@ const PenyerahanBarang = (props) => {
       const transformedData = transformDataForSubmission(dataBarangYangDiambil);
       axios({
         method: "POST",
-        url: `http://localhost:3000/inventory/addPenyerahanBarang/${userInformation?.data?.id}`,
+        url: `http://localhost:5000/inventory/addPenyerahanBarang/${userInformation?.data?.id}`,
         data: {
           dataPenyerahanBarang: transformedData,
           productionPlanningId: selectedEstimatedOrder.id,
@@ -258,7 +258,7 @@ const PenyerahanBarang = (props) => {
       const transformedData = transformDataForSubmission(dataBarangYangDiambil);
       axios({
         method: "PUT",
-        url: `http://localhost:3000/inventory/editPenyerahanBarang/${userInformation?.data?.id}`,
+        url: `http://localhost:5000/inventory/editPenyerahanBarang/${userInformation?.data?.id}`,
         data: { dataPenyerahanBarang: transformedData },
       }).then((result) => {
         if (result.status === 200) {
@@ -304,7 +304,7 @@ const PenyerahanBarang = (props) => {
   useEffect(() => {
     axios({
       method: "GET",
-      url: `http://localhost:3000/inventory/getAllInventoryItem/${userInformation?.data?.id}`,
+      url: `http://localhost:5000/inventory/getAllInventoryItem/${userInformation?.data?.id}`,
     }).then((result) => {
       if (result.status === 200) {
         const tempName = result?.data?.map((data) => ({
@@ -324,7 +324,7 @@ const PenyerahanBarang = (props) => {
   useEffect(() => {
     axios({
       method: "GET",
-      url: `http://localhost:3000/productionPlanning/getAllProductionPlanStatusEstimated/${userInformation?.data?.id}`,
+      url: `http://localhost:5000/productionPlanning/getAllProductionPlanStatusEstimated/${userInformation?.data?.id}`,
     }).then((result) => {
       if (result.status === 200) {
         const tempName = result?.data?.map((data) => ({
@@ -345,7 +345,7 @@ const PenyerahanBarang = (props) => {
       if (refreshGetData) {
         axios({
           method: "GET",
-          url: `http://localhost:3000/inventory/getPenyerahanBarang/${penyerahanBarangId}`,
+          url: `http://localhost:5000/inventory/getPenyerahanBarang/${penyerahanBarangId}`,
           params: { userId: userInformation?.data?.id },
         }).then((result) => {
           if (result.status === 200) {
@@ -408,7 +408,7 @@ const PenyerahanBarang = (props) => {
     } else {
       axios({
         method: "DELETE",
-        url: `http://localhost:3000/inventory/deleteItemPenyerahanBarang/${id}`,
+        url: `http://localhost:5000/inventory/deleteItemPenyerahanBarang/${id}`,
         params: {
           userId: userInformation?.data?.id,
           penyerahanBarangId: penyerahanBarangId,

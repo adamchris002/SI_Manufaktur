@@ -27,7 +27,7 @@ const ProductionActivityLog = (props) => {
   useEffect(() => {
     axios({
       method: "GET",
-      url: `http://localhost:3000/production/getActivityLog/${userInformation?.data?.id}`,
+      url: `http://localhost:5000/production/getActivityLog/${userInformation?.data?.id}`,
     }).then((result) => {
       setActivityLogs(result);
     });

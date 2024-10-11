@@ -33,7 +33,7 @@ const KelolaAnggotaFinance = (props) => {
     if (triggerBoth) {
       axios({
         method: "GET",
-        url: "http://localhost:3000/finance/getUserBaru",
+        url: "http://localhost:5000/finance/getUserBaru",
       }).then((result) => {
         if (result.status === 200) {
           setUserBaru(result.data);
@@ -48,7 +48,7 @@ const KelolaAnggotaFinance = (props) => {
     if (triggerBoth) {
       axios({
         method: "GET",
-        url: "http://localhost:3000/finance/getUserLama",
+        url: "http://localhost:5000/finance/getUserLama",
       }).then((result) => {
         if (result.status === 200) {
           const tempData = result.data.filter(
@@ -161,7 +161,7 @@ const KelolaAnggotaFinance = (props) => {
   const handleSavePenggunaBaru = () => {
     axios({
       method: "PUT",
-      url: `http://localhost:3000/finance/updateUserCredentials/${userInformation?.data?.id}`,
+      url: `http://localhost:5000/finance/updateUserCredentials/${userInformation?.data?.id}`,
       data: { userData: userBaru },
     }).then((result) => {
       if (result.status === 200) {
@@ -181,7 +181,7 @@ const KelolaAnggotaFinance = (props) => {
     } else {
       axios({
         method: "PUT",
-        url: `http://localhost:3000/finance/updateUserCredentials/${userInformation?.data?.id}`,
+        url: `http://localhost:5000/finance/updateUserCredentials/${userInformation?.data?.id}`,
         data: { userData: userLama },
       }).then((result) => {
         if (result.status === 200) {

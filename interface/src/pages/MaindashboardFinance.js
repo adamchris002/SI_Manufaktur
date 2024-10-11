@@ -57,7 +57,7 @@ const MaindashboardFinance = (props) => {
   const handleChangeDivisiOwner = (event) => {
     axios({
       method: "PUT",
-      url: `http://localhost:3000/finance/updateDivisiOwner/${event.target.value}`,
+      url: `http://localhost:5000/finance/updateDivisiOwner/${event.target.value}`,
     }).then((result) => {
       if (result.status === 200) {
         setUserCredentials((oldObject) => {
@@ -94,7 +94,7 @@ const MaindashboardFinance = (props) => {
   const handleChangeLocationOwner = (event) => {
     axios({
       method: "PUT",
-      url: `http://localhost:3000/finance/updateLocationOwner/${event.target.value}`,
+      url: `http://localhost:5000/finance/updateLocationOwner/${event.target.value}`,
     }).then((result) => {
       if (result.status === 200) {
         setUserCredentials((oldObject) => {
@@ -141,7 +141,7 @@ const MaindashboardFinance = (props) => {
   useEffect(() => {
     axios({
       method: "GET",
-      url: `http://localhost:3000/finance/getActiveRencanaPembayaranOneYear/${userInformation?.data?.id}`,
+      url: `http://localhost:5000/finance/getActiveRencanaPembayaranOneYear/${userInformation?.data?.id}`,
     }).then((result) => {
       if (result.status === 200) {
         setDaftarTagihanSatuTahun(result.data);
@@ -159,7 +159,7 @@ const MaindashboardFinance = (props) => {
     if (refreshDataPermohonanPembelian) {
       axios({
         method: "GET",
-        url: `http://localhost:3000/inventory/getAllPermohonanPembelianRequested/${userInformation?.data?.id}`,
+        url: `http://localhost:5000/inventory/getAllPermohonanPembelianRequested/${userInformation?.data?.id}`,
       }).then((result) => {
         if (result.status === 200) {
           setAllDataPermohonanPembelianRequested(result.data);
@@ -180,7 +180,7 @@ const MaindashboardFinance = (props) => {
     if (refreshNamaBank) {
       axios({
         method: "GET",
-        url: `http://localhost:3000/finance/getOngoingBukuBank/${userInformation?.data?.id}`,
+        url: `http://localhost:5000/finance/getOngoingBukuBank/${userInformation?.data?.id}`,
       }).then((result) => {
         if (result.status === 200) {
           setDaftarBank(result.data);
@@ -199,7 +199,7 @@ const MaindashboardFinance = (props) => {
     if (refreshKasHarian) {
       axios({
         method: "GET",
-        url: `http://localhost:3000/finance/getOngoingKasHarian/${userInformation?.data?.id}`,
+        url: `http://localhost:5000/finance/getOngoingKasHarian/${userInformation?.data?.id}`,
       }).then((result) => {
         if (result.status === 200) {
           setKasHarian(result.data);
@@ -229,7 +229,7 @@ const MaindashboardFinance = (props) => {
             if (dayjs().isAfter(dayjs(result.createdAt).add(1, "month"))) {
               axios({
                 method: "PUT",
-                url: `http://localhost:3000/finance/updateStatusDone/${result.id}`,
+                url: `http://localhost:5000/finance/updateStatusDone/${result.id}`,
               }).then((response) => {
                 if (response.status === 200) {
                   setTriggerStatusBukuBank(false);
@@ -256,7 +256,7 @@ const MaindashboardFinance = (props) => {
         if (kasHarian?.statusKasHarian !== "Done") {
           axios({
             method: "PUT",
-            url: `http://localhost:3000/finance/updateStatusKasHarianDone/${kasHarian.id}`,
+            url: `http://localhost:5000/finance/updateStatusKasHarianDone/${kasHarian.id}`,
           }).then((response) => {
             if (response.status === 200) {
               setTriggerStatusKasHarian(false);
@@ -290,7 +290,7 @@ const MaindashboardFinance = (props) => {
   const handleDenyPermohonanPembelian = (id) => {
     axios({
       method: "PUT",
-      url: `http://localhost:3000/inventory/denyPermohonanPembelian/${id}`,
+      url: `http://localhost:5000/inventory/denyPermohonanPembelian/${id}`,
       params: { userId: userInformation?.data?.id },
     }).then((result) => {
       if (result.status === 200) {
@@ -311,7 +311,7 @@ const MaindashboardFinance = (props) => {
   const handleAcceptPermohonanPembelian = (id) => {
     axios({
       method: "PUT",
-      url: `http://localhost:3000/inventory/acceptPermohonanPembelian/${id}`,
+      url: `http://localhost:5000/inventory/acceptPermohonanPembelian/${id}`,
       params: { userId: userInformation?.data?.id },
     }).then((result) => {
       if (result.status === 200) {

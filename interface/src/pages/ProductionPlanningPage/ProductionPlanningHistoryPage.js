@@ -40,7 +40,7 @@ const ProductionPlanningHistoryPage = (props) => {
   useEffect(() => {
     axios({
       method: "GET",
-      url: `http://localhost:3000/productionPlanning/getAllProductionPlanning/${userInformation?.data?.id}`,
+      url: `http://localhost:5000/productionPlanning/getAllProductionPlanning/${userInformation?.data?.id}`,
     }).then((result) => {
       if (result.status === 200) {
         const tempData = result.data

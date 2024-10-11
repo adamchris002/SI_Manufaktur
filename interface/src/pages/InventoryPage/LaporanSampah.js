@@ -125,7 +125,7 @@ const LaporanSampah = (props) => {
     if (refreshDataLaporanSampah) {
       axios({
         method: "GET",
-        url: `http://localhost:3000/production/getLaporanSampah/${userInformation?.data?.id}`,
+        url: `http://localhost:5000/production/getLaporanSampah/${userInformation?.data?.id}`,
       }).then((result) => {
         if (result.status === 200) {
           setAllLaporanSampah(result.data);
@@ -143,7 +143,7 @@ const LaporanSampah = (props) => {
   useEffect(() => {
     axios({
       method: "GET",
-      url: `http://localhost:3000/production/getAllLaporanLimbahProduksi/${userInformation?.data?.id}`,
+      url: `http://localhost:5000/production/getAllLaporanLimbahProduksi/${userInformation?.data?.id}`,
     }).then((result) => {
       if (result.status === 200) {
         if (result.status === 200) {
@@ -380,7 +380,7 @@ const LaporanSampah = (props) => {
         handleModifyDataLaporanSampahForSubmission();
       axios({
         method: "POST",
-        url: `http://localhost:3000/production/addLaporanSampah/${userInformation?.data?.id}`,
+        url: `http://localhost:5000/production/addLaporanSampah/${userInformation?.data?.id}`,
         data: { dataLaporanSampah: modifiedDataLaporanSampah },
       }).then((result) => {
         if (result.status === 200) {
@@ -399,7 +399,7 @@ const LaporanSampah = (props) => {
   const handleDeleteLaporanSampah = (id) => {
     axios({
       method: "DELETE",
-      url: `http://localhost:3000/production/deleteLaporanSampah/${id}`,
+      url: `http://localhost:5000/production/deleteLaporanSampah/${id}`,
       params: { userId: userInformation?.data?.id },
     }).then((result) => {
       if (result.status === 200) {
@@ -418,7 +418,7 @@ const LaporanSampah = (props) => {
     setRefreshDataLaporanSampah(false);
     axios({
       method: "DELETE",
-      url: `http://localhost:3000/production/deleteItemLaporanSampah/${id}`,
+      url: `http://localhost:5000/production/deleteItemLaporanSampah/${id}`,
       params: {
         userId: userInformation?.data?.id,
         iDLaporanSampah: iDLaporanSampah,
@@ -542,7 +542,7 @@ const LaporanSampah = (props) => {
       const tempDataLaporanSampah = handleModifyDataLaporanSampahForEdit();
       axios({
         method: "PUT",
-        url: `http://localhost:3000/production/updateLaporanSampah/${userInformation?.data?.id}`,
+        url: `http://localhost:5000/production/updateLaporanSampah/${userInformation?.data?.id}`,
         data: { dataLaporanSampah: tempDataLaporanSampah },
       }).then((result) => {
         if (result.status === 200) {

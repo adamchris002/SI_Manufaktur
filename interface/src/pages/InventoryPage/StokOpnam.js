@@ -142,7 +142,7 @@ const StokOpnam = (props) => {
   useEffect(() => {
     axios({
       method: "GET",
-      url: `http://localhost:3000/inventory/getAllInventoryItem/${userInformation?.data?.id}`,
+      url: `http://localhost:5000/inventory/getAllInventoryItem/${userInformation?.data?.id}`,
     }).then((result) => {
       if (result.status === 200) {
         const tempName = result.data.map((data) => ({
@@ -163,7 +163,7 @@ const StokOpnam = (props) => {
       if (refreshStokOpnams) {
         axios({
           method: "GET",
-          url: `http://localhost:3000/inventory/getStokOpnam/${stokOpnamId}`,
+          url: `http://localhost:5000/inventory/getStokOpnam/${stokOpnamId}`,
           params: { userId: userInformation?.data?.id },
         }).then((result) => {
           if (result.status === 200) {
@@ -186,7 +186,7 @@ const StokOpnam = (props) => {
     if (refreshPermohonanPembelian) {
       axios({
         method: "GET",
-        url: `http://localhost:3000/inventory/getAllPermohonanPembelian/${userInformation?.data?.id}`,
+        url: `http://localhost:5000/inventory/getAllPermohonanPembelian/${userInformation?.data?.id}`,
       }).then((result) => {
         if (result.status === 200) {
           const newPermohonanPembelianIds = result.data.map((data) => ({
@@ -378,7 +378,7 @@ const StokOpnam = (props) => {
     } else {
       axios({
         method: "DELETE",
-        url: `http://localhost:3000/inventory/deleteItemStokOpnam/${id}`,
+        url: `http://localhost:5000/inventory/deleteItemStokOpnam/${id}`,
         params: { userId: userInformation?.data?.id, stokOpnamId: stokOpnamId },
       }).then((result) => {
         if (result.status === 200) {
@@ -405,7 +405,7 @@ const StokOpnam = (props) => {
       const modifiedData = modifyStokOpnam();
       axios({
         method: "PUT",
-        url: `http://localhost:3000/inventory/editStokOpnam/${userInformation?.data?.id}`,
+        url: `http://localhost:5000/inventory/editStokOpnam/${userInformation?.data?.id}`,
         data: { dataStokOpnam: modifiedData },
       }).then((result) => {
         if (result.status === 200) {
@@ -431,7 +431,7 @@ const StokOpnam = (props) => {
       const modifiedData = modifyStokOpnam();
       axios({
         method: "POST",
-        url: `http://localhost:3000/inventory/addStokOpnam/${userInformation?.data?.id}`,
+        url: `http://localhost:5000/inventory/addStokOpnam/${userInformation?.data?.id}`,
         data: { dataStokOpnam: modifiedData },
       }).then((result) => {
         if (result.status === 200) {
