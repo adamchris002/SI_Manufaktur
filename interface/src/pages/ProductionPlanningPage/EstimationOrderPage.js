@@ -824,6 +824,7 @@ const EstimationOrderPage = (props) => {
       setSelectedOrder(result);
       setPemesan(result?.data?.customerDetail);
       setAlamatPengirimanProduk(result?.data?.alamatPengiriman);
+      setJenisCetakan(result?.data?.orderType)
     });
   };
 
@@ -1328,6 +1329,7 @@ const EstimationOrderPage = (props) => {
                       Jenis Cetakan:
                     </Typography>
                     <TextField
+                    value={jenisCetakan}
                       type="text"
                       sx={{
                         "& .MuiOutlinedInput-root": {

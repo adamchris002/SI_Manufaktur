@@ -799,8 +799,8 @@ const KasHarian = (props) => {
                     <TableCell style={{ width: "150px" }}>uraian</TableCell>
                     <TableCell style={{ width: "150px" }}>Nomor BP</TableCell>
                     <TableCell style={{ width: "150px" }}>Pos</TableCell>
-                    <TableCell style={{ width: "150px" }}>Debet</TableCell>
                     <TableCell style={{ width: "150px" }}>Kredit</TableCell>
+                    <TableCell style={{ width: "150px" }}>Debet</TableCell>
                     <TableCell style={{ width: "150px" }}>Sisa</TableCell>
                   </TableRow>
                 </TableHead>
@@ -853,14 +853,14 @@ const KasHarian = (props) => {
                     <TableCell></TableCell>
                     <TableCell>
                       {" "}
-                      {`Total Debet: Rp. ${selectedKasHarianDone?.itemKasHarians
+                      {`Total Kredit: Rp. ${selectedKasHarianDone?.itemKasHarians
                         ?.reduce((acc, result) => {
                           return acc + (parseFloat(result.debet) || 0);
                         }, 0)
                         .toFixed(2).toString()
                         .replace(/\B(?=(\d{3})+(?!\d))/g, ".")},-`}
                     </TableCell>
-                    <TableCell>{`Total Kredit: Rp. ${selectedKasHarianDone?.itemKasHarians
+                    <TableCell>{`Total Debet: Rp. ${selectedKasHarianDone?.itemKasHarians
                       ?.reduce((acc, result) => {
                         return acc + (parseFloat(result.kredit) || 0);
                       }, 0)

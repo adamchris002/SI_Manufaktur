@@ -1,4 +1,5 @@
 const { users } = require("../models");
+const bcrypt = require("bcrypt");
 
 class UserController {
   static async getUserInfo(req, res) {
@@ -30,12 +31,15 @@ class UserController {
         return randomId.toString();
       }
       const userid = generateRandomId(6);
+
+      const hashedPassword = await bcrypt.hash(password, 10);
+
       let result = await users.create({
         userid,
         name,
         username,
         email,
-        password,
+        password: hashedPassword,
         department,
         role,
       });
@@ -48,12 +52,51 @@ class UserController {
   static async login(req, res) {
     try {
       const { username, password } = req.body;
+      const result = await users.findOne({
+        where: { username: username },
+      });
+
+      const isPasswordValid = await bcrypt.compare(password, result.password);
+      
+      if (!result || !isPasswordValid) {
+        return res.status(401).json({ error: "The username or password you entered is incorrect." });
+      } else {
+        res.json(result);
+      }
+    } catch (err) {
+      console.error("Error logging in:", err);
+      res.status(500).json({ error: "An error occurred during login" });
+    }
+  }
+  static async getOneUser(req, res) {
+    try {
+      const { username } = req.params;
       let result = await users.findOne({
-        where: { username: username, password: password },
+        where: { username: username },
       });
       res.json(result);
-    } catch (err) {
-      res.json(err);
+    } catch (error) {
+      res.json(error);
+    }
+  }
+  static async forgetPassword(req, res) {
+    try {
+      const { username, password } = req.body;
+      const findUser = await users.findOne({
+        where: { username: username },
+      });
+
+      const hashedPassword = await bcrypt.hash(password, 10);
+
+      findUser.update(
+        {
+          password: hashedPassword,
+        },
+        { where: { id: findUser.id } }
+      );
+      res.json(findUser);
+    } catch (error) {
+      res.json(error);
     }
   }
 }

@@ -145,11 +145,6 @@ class FinanceController {
             lokasi: findUser.lokasi,
           });
 
-          // await UsersActivityLogs.create({
-          //   userId: findUser.id,
-          //   activityLogId: createActivitylog.id,
-          //   id: createActivitylog.id,
-          // });
         })
       );
     }
@@ -1682,12 +1677,6 @@ class FinanceController {
         division: "Finance",
         lokasi: findUser.lokasi,
       });
-
-      // await UserActivityLogs.create({
-      //   userId: findUser.id,
-      //   activityLogsId: createActivityLog.id,
-      //   id: createActivityLog.id,
-      // });
 
       res.json(result);
     } catch (error) {

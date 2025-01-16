@@ -879,7 +879,7 @@ const BukuBank = (props) => {
                   marginTop: "16px",
                 }}
               >
-                Total Debet: Rp.{" "}
+                Total Kredit: Rp.{" "}
                 {parseFloat(totalDebetDone)
                   .toFixed(2)
                   .toString()
@@ -893,7 +893,7 @@ const BukuBank = (props) => {
                   marginTop: "16px",
                 }}
               >
-                Total Kredit: Rp.{" "}
+                Total Debet: Rp.{" "}
                 {parseFloat(totalKreditDone)
                   .toFixed(2)
                   .toString()
@@ -929,8 +929,8 @@ const BukuBank = (props) => {
                     <TableCell style={{ width: "25px" }}>No.</TableCell>
                     <TableCell style={{ width: "150px" }}>Tanggal</TableCell>
                     <TableCell style={{ width: "150px" }}>Uraian</TableCell>
-                    <TableCell style={{ width: "150px" }}>Debet</TableCell>
                     <TableCell style={{ width: "150px" }}>Kredit</TableCell>
+                    <TableCell style={{ width: "150px" }}>Debet</TableCell>
                     <TableCell style={{ width: "150px" }}>Saldo</TableCell>
                     <TableCell style={{ width: "150px" }}>Keterangan</TableCell>
                   </TableRow>

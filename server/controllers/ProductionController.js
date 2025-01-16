@@ -703,44 +703,6 @@ class ProductionController {
                 beratAkhir: data.beratAkhir,
                 keterangan: data.keterangan,
               });
-
-              // let findBahanLaporanProduksiFromLastActivity =
-              //   await bahanLaporanProduksis.findOne({
-              //     where: {
-              //       jenis: data.jenis,
-              //       noOrderProduksi: dataProduksi.noOrderProduksi,
-              //       tahapProduksi: "Produksi Cetak",
-              //     },
-              //   });
-              // if (findBahanLaporanProduksiFromLastActivity === null) {
-              //   let tempBeratAkhir = separateValueAndUnit(data.beratAkhir);
-              //   let tempBeratAwal = `0 ${tempBeratAkhir.unit}`;
-              //   await bahanLaporanProduksis.create({
-              //     laporanProduksiId: result.id,
-              //     tahapProduksi: dataProduksi.tahapProduksi,
-              //     noOrderProduksi: dataProduksi.noOrderProduksi,
-              //     jenis: data.jenis,
-              //     kode: data.kode,
-              //     beratAwal: convertUnit(tempBeratAwal, data.beratAkhir),
-              //     beratAkhir: data.beratAkhir,
-              //     keterangan: data.keterangan,
-              //   });
-              // } else {
-              //   let tempBeratAwal = convertUnit(
-              //     findBahanLaporanProduksiFromLastActivity.beratAwal,
-              //     data.beratAkhir
-              //   );
-              //   await bahanLaporanProduksis.create({
-              //     laporanProduksiId: result.id,
-              //     tahapProduksi: dataProduksi.tahapProduksi,
-              //     noOrderProduksi: dataProduksi.noOrderProduksi,
-              //     jenis: data.jenis,
-              //     kode: data.kode,
-              //     beratAwal: tempBeratAwal,
-              //     beratAkhir: data.beratAkhir,
-              //     keterangan: data.keterangan,
-              //   });
-              // }
             } else {
               let beratAwalNewValue;
               try {
@@ -917,44 +879,6 @@ class ProductionController {
                 beratAkhir: data.beratAkhir,
                 keterangan: data.keterangan,
               });
-
-              // let findBahanLaporanProduksiFromLastActivity =
-              //   await bahanLaporanProduksis.findOne({
-              //     where: {
-              //       jenis: data.jenis,
-              //       noOrderProduksi: dataProduksi.noOrderProduksi,
-              //       tahapProduksi: "Produksi Pracetak",
-              //     },
-              //   });
-              // if (findBahanLaporanProduksiFromLastActivity === null) {
-              //   let tempBeratAkhir = separateValueAndUnit(data.beratAkhir);
-              //   let tempBeratAwal = `0 ${tempBeratAkhir.unit}`;
-              //   await bahanLaporanProduksis.create({
-              //     laporanProduksiId: result.id,
-              //     tahapProduksi: dataProduksi.tahapProduksi,
-              //     noOrderProduksi: dataProduksi.noOrderProduksi,
-              //     jenis: data.jenis,
-              //     kode: data.kode,
-              //     beratAwal: convertUnit(tempBeratAwal, data.beratAkhir),
-              //     beratAkhir: data.beratAkhir,
-              //     keterangan: data.keterangan,
-              //   });
-              // } else {
-              //   let tempBeratAwal = convertUnit(
-              //     findBahanLaporanProduksiFromLastActivity.beratAwal,
-              //     data.beratAkhir
-              //   );
-              //   await bahanLaporanProduksis.create({
-              //     laporanProduksiId: result.id,
-              //     tahapProduksi: dataProduksi.tahapProduksi,
-              //     noOrderProduksi: dataProduksi.noOrderProduksi,
-              //     jenis: data.jenis,
-              //     kode: data.kode,
-              //     beratAwal: tempBeratAwal,
-              //     beratAkhir: data.beratAkhir,
-              //     keterangan: data.keterangan,
-              //   });
-              // }
             } else {
               let beratAwalNewValue;
               try {

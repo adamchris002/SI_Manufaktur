@@ -1226,6 +1226,9 @@ const Pajak = (props) => {
                         Tambah Pajak Keluaran
                       </DefaultButton>
                       <Button
+                      onClick={() => {
+                        navigate(-1)
+                      }}
                         variant="outlined"
                         color="error"
                         sx={{ textTransform: "none", marginLeft: "8px" }}

@@ -59,7 +59,7 @@ const LoginPage = (props) => {
   };
 
   const handleLogin = () => {
-    const loginData = { username: username, password: password };
+    const loginData = { username, password };
     if (username === "" || password === "") {
       setOpenSnackbar(true);
       setSnackbarMessage("Please fill in all the required fields");
@@ -67,59 +67,60 @@ const LoginPage = (props) => {
       setLoginClicked(true);
     } else {
       setLoginClicked(true);
-      axios({
-        method: "POST",
-        url: "http://localhost:5000/users/login",
-        data: loginData,
-      }).then((result) => {
-        if (result.data === null) {
-          setOpenSnackbar(true);
-          setSnackbarMessage(
-            "The username or password you entered is incorrect."
-          );
-          setSnackbarStatus(false);
-        } else {
-          if (result.data.department === null) {
+      axios.post("http://localhost:5000/users/login", loginData)
+        .then((result) => {
+          if (result.data === null || result.status === 401) {
             setOpenSnackbar(true);
-            setSnackbarMessage(
-              "You have not been assigned a department yet. Please wait until one has been assigned to you."
-            );
+            setSnackbarMessage("The username or password you entered is incorrect.");
             setSnackbarStatus(false);
-            setLoginClicked(true);
           } else {
-            setUserCredentials(result);
-            setSuccessMessage(
-              `Successfully logged in, welcome back ${result.data.username}`
-            );
-            setSnackbarStatus(true);
-            switch (result.data.department) {
-              case "Marketing":
-                navigate("/marketingDashboard");
-                break;
-              case "Production Planning":
-                navigate("/productionPlanningDashboard");
-                break;
-              case "Inventory":
-                navigate("inventoryDashboard");
-                break;
-              case "Production":
-                navigate("productionDashboard");
-                break;
-              case "Finance":
-                navigate("/financeDashboard");
-                break;
-              default:
-                setOpenSnackbar(true);
-                setSnackbarMessage(
-                  "Sorry, it seems that you don't have a department yet"
-                );
-                setSnackbarStatus(false);
+            if (result.data.department === null) {
+              setOpenSnackbar(true);
+              setSnackbarMessage("You have not been assigned a department yet. Please wait until one has been assigned to you.");
+              setSnackbarStatus(false);
+              setLoginClicked(true);
+            } else {
+              setUserCredentials(result);
+              setSuccessMessage(`Successfully logged in, welcome back ${result.data.username}`);
+              setSnackbarStatus(true);
+              switch (result.data.department) {
+                case "Marketing":
+                  navigate("/marketingDashboard");
+                  break;
+                case "Production Planning":
+                  navigate("/productionPlanningDashboard");
+                  break;
+                case "Inventory":
+                  navigate("/inventoryDashboard");
+                  break;
+                case "Production":
+                  navigate("/productionDashboard");
+                  break;
+                case "Finance":
+                  navigate("/financeDashboard");
+                  break;
+                default:
+                  setOpenSnackbar(true);
+                  setSnackbarMessage("Sorry, it seems that you don't have a department yet");
+                  setSnackbarStatus(false);
+              }
             }
           }
-        }
-      });
+        })
+        .catch((error) => {
+          if (error.response && error.response.status === 401) {
+            setOpenSnackbar(true);
+            setSnackbarMessage("Username atau Password yang Anda masukkan tidak tepat");
+            setSnackbarStatus(false);
+          } else {
+            setOpenSnackbar(true);
+            setSnackbarMessage("An unexpected error occurred. Please try again.");
+            setSnackbarStatus(false);
+          }
+        });
     }
   };
+  
 
   const handleClickShowPassword = () => {
     setShowPassword((show) => !show);
@@ -204,7 +205,7 @@ const LoginPage = (props) => {
               },
               width: isMobile ? "72vw" : "32vw",
             }}
-            error={loginClicked && username === ""} 
+            error={loginClicked && username === ""}
             helperText={
               loginClicked && username === "" && "Please fill in your Username"
             }
@@ -235,7 +236,7 @@ const LoginPage = (props) => {
               },
               width: isMobile ? "72vw" : "32vw",
             }}
-            error={loginClicked && password === ""} 
+            error={loginClicked && password === ""}
             helperText={
               loginClicked && password === "" && "Please fill in your Password"
             }
@@ -303,7 +304,9 @@ const LoginPage = (props) => {
               justifyContent: "center",
             }}
           >
-            <MyLink text={"Forgot Password?"} />
+            <MyLink onClickFunction={() => {
+              navigate("/forgetPassword")
+            }} text={"Forgot Password?"} />
           </div>
         </div>
       </div>

@@ -417,6 +417,10 @@ const RencanaPembayaran = (props) => {
     setDataInfoPembayaran(selectedBukuBank);
   };
 
+  const handleDeleteItemPembayaranLainLain = (index) => {
+    setDataPembayaranLainLain((oldArray) => oldArray.filter((_, j) => j !== index))
+  }
+
   const handleChangeInputCicilan = (event, index, indexCicilan) => {
     const value = event.target.value;
 
@@ -1203,7 +1207,7 @@ const RencanaPembayaran = (props) => {
                           </TableCell>
                         </>
                       )}
-                      <TableCell style={{ width: "50px" }}>Actions</TableCell>
+                      
                     </TableRow>
                   </TableHead>
                   <TableBody>
@@ -1366,11 +1370,7 @@ const RencanaPembayaran = (props) => {
                             ) : (
                               ""
                             )}
-                            <TableCell>
-                              <IconButton>
-                                <DeleteIcon style={{ color: "red" }} />
-                              </IconButton>
-                            </TableCell>
+                            
                           </TableRow>
                           <div
                             style={{
@@ -2287,7 +2287,9 @@ const RencanaPembayaran = (props) => {
                             ""
                           )}
                           <TableCell>
-                            <IconButton>
+                            <IconButton onClick={() => {
+                              handleDeleteItemPembayaranLainLain(index)
+                            }}>
                               <DeleteIcon style={{ color: "red" }} />
                             </IconButton>
                           </TableCell>

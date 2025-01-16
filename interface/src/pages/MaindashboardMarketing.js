@@ -206,7 +206,7 @@ const MaindashboardMarketing = (props) => {
   ];
 
   const department = [
-    {value: "Marketing"},
+    { value: "Marketing" },
     { value: "Production Planning" },
     { value: "Inventory" },
     { value: "Production" },
@@ -566,7 +566,7 @@ const MaindashboardMarketing = (props) => {
                 Ubah Divisi
               </Typography>
               <MySelectTextField
-              value={userInformation?.data?.department}
+                value={userInformation?.data?.department}
                 onChange={(event) => {
                   handleChangeDivisiOwner(event);
                 }}
@@ -591,7 +591,7 @@ const MaindashboardMarketing = (props) => {
                 Ubah Lokasi
               </Typography>
               <MySelectTextField
-              value={userInformation?.data?.lokasi}
+                value={userInformation?.data?.lokasi}
                 onChange={(event) => {
                   handleChangeLocationOwner(event);
                 }}
@@ -634,28 +634,61 @@ const MaindashboardMarketing = (props) => {
                 Belum ada data pesanan
               </Typography>
             ) : (
-              allOrderList?.data?.map((data, index, array) => (
-                <div
-                  key={index}
-                  className="order-item"
-                  style={{
-                    minWidth: isMobile ? "148px" : "13.33vw",
-                    minHeight: isMobile ? "148px" : "13.33vw",
-                    marginRight: index === array.length - 1 ? "0" : "32px",
-                  }}
-                  onClick={() => {
-                    navigate(`/marketingDashboard/orderDetail/${data.id}`);
-                  }}
-                >
-                  {data?.documents?.length === "" || null || undefined ? (
-                    ""
-                  ) : (
-                    <div style={{ margin: isMobile ? "12px" : "0.83vw" }}>
-                      {data?.documents?.length > 3 ? (
-                        <div style={{ display: "flex", alignItems: "center" }}>
-                          {data.documents
-                            ?.slice(0, 3)
-                            .map((document, index) => {
+              allOrderList?.data
+                ?.filter((item) => item.orderStatus !== "Done")
+                ?.map((data, index, array) => (
+                  <div
+                    key={index}
+                    className="order-item"
+                    style={{
+                      minWidth: isMobile ? "148px" : "13.33vw",
+                      minHeight: isMobile ? "148px" : "13.33vw",
+                      marginRight: index === array.length - 1 ? "0" : "32px",
+                    }}
+                    onClick={() => {
+                      navigate(`/marketingDashboard/orderDetail/${data.id}`);
+                    }}
+                  >
+                    {data?.documents?.length === "" || null || undefined ? (
+                      ""
+                    ) : (
+                      <div style={{ margin: isMobile ? "12px" : "0.83vw" }}>
+                        {data?.documents?.length > 3 ? (
+                          <div
+                            style={{ display: "flex", alignItems: "center" }}
+                          >
+                            {data.documents
+                              ?.slice(0, 3)
+                              .map((document, index) => {
+                                return (
+                                  <div key={index}>
+                                    <img
+                                      style={{
+                                        height: isMobile ? "30px" : "3.125vw",
+                                        width: isMobile ? "30px" : "3.125vw",
+                                        marginRight: "4px",
+                                      }}
+                                      srcSet={`http://localhost:5000/uploads/${document.filename}?w=248&fit=crop&auto=format&dpr=2 2x`}
+                                      src={`http://localhost:5000/uploads/${document.filename}?w=248&fit=crop&auto=format`}
+                                      alt=""
+                                      loading="lazy"
+                                    />
+                                  </div>
+                                );
+                              })}
+                            <Typography
+                              style={{
+                                marginLeft: "0.417vw",
+                                fontWeight: "bold",
+                                fontSize: isMobile ? "10px" : "1.042vw",
+                              }}
+                            >
+                              + {data?.documents?.length - 3}
+                            </Typography>
+                          </div>
+                        ) : (
+                          <div style={{ display: "flex" }}>
+                            {data.documents?.map((document, index) => {
                               return (
                                 <div key={index}>
                                   <img
@@ -672,139 +705,110 @@ const MaindashboardMarketing = (props) => {
                                 </div>
                               );
                             })}
-                          <Typography
-                            style={{
-                              marginLeft: "0.417vw",
-                              fontWeight: "bold",
-                              fontSize: isMobile ? "10px" : "1.042vw",
-                            }}
-                          >
-                            + {data?.documents?.length - 3}
-                          </Typography>
-                        </div>
-                      ) : (
-                        <div style={{ display: "flex" }}>
-                          {data.documents?.map((document, index) => {
-                            return (
-                              <div key={index}>
-                                <img
-                                  style={{
-                                    height: isMobile ? "30px" : "3.125vw",
-                                    width: isMobile ? "30px" : "3.125vw",
-                                    marginRight: "4px",
-                                  }}
-                                  srcSet={`http://localhost:5000/uploads/${document.filename}?w=248&fit=crop&auto=format&dpr=2 2x`}
-                                  src={`http://localhost:5000/uploads/${document.filename}?w=248&fit=crop&auto=format`}
-                                  alt=""
-                                  loading="lazy"
-                                />
-                              </div>
-                            );
-                          })}
-                        </div>
-                      )}
+                          </div>
+                        )}
+                      </div>
+                    )}
+                    <div
+                      style={{
+                        display: "flex",
+                        margin: isMobile
+                          ? "0px 12px 0px 12px"
+                          : "0vw 0.83vw 0vw 0.83vw",
+                        backgroundColor: "transparent",
+                        overflow: "hidden",
+                        textOverflow: "ellipsis",
+                        whiteSpace: "nowrap",
+                      }}
+                    >
+                      <Typography
+                        style={{
+                          color: "#0F607D",
+                          fontWeight: "bold",
+                          overflow: "hidden",
+                          textOverflow: "ellipsis",
+                          whiteSpace: "nowrap",
+                          fontSize: isMobile ? "12px" : "1.25vw",
+                        }}
+                      >
+                        {data.orderTitle.length < 15
+                          ? data.orderTitle
+                          : data.orderTitle.slice(0, 15) + "..."}
+                      </Typography>
                     </div>
-                  )}
-                  <div
-                    style={{
-                      display: "flex",
-                      margin: isMobile
-                        ? "0px 12px 0px 12px"
-                        : "0vw 0.83vw 0vw 0.83vw",
-                      backgroundColor: "transparent",
-                      overflow: "hidden",
-                      textOverflow: "ellipsis",
-                      whiteSpace: "nowrap",
-                    }}
-                  >
-                    <Typography
+                    <div
                       style={{
-                        color: "#0F607D",
-                        fontWeight: "bold",
+                        display: "flex",
+                        margin: isMobile
+                          ? "0px 12px 0px 12px"
+                          : "0vw 0.83vw 0vw 0.83vw",
+                        backgroundColor: "transparent",
                         overflow: "hidden",
                         textOverflow: "ellipsis",
                         whiteSpace: "nowrap",
-                        fontSize: isMobile ? "12px" : "1.25vw",
                       }}
                     >
-                      {data.orderTitle.length < 15
-                        ? data.orderTitle
-                        : data.orderTitle.slice(0, 15) + "..."}
-                    </Typography>
-                  </div>
-                  <div
-                    style={{
-                      display: "flex",
-                      margin: isMobile
-                        ? "0px 12px 0px 12px"
-                        : "0vw 0.83vw 0vw 0.83vw",
-                      backgroundColor: "transparent",
-                      overflow: "hidden",
-                      textOverflow: "ellipsis",
-                      whiteSpace: "nowrap",
-                    }}
-                  >
-                    <Typography
+                      <Typography
+                        style={{
+                          overflow: "hidden",
+                          textOverflow: "ellipsis",
+                          whiteSpace: "nowrap",
+                          fontSize: isMobile ? "10px" : "0.833vw",
+                        }}
+                      >
+                        {data.orderDetails.length < 25
+                          ? data.orderDetails
+                          : data.orderDetails.slice(0, 25) + "..."}
+                      </Typography>
+                    </div>
+                    <div
                       style={{
-                        overflow: "hidden",
-                        textOverflow: "ellipsis",
-                        whiteSpace: "nowrap",
-                        fontSize: isMobile ? "10px" : "0.833vw",
+                        display: "flex",
+                        backgroundColor: "transparent",
+                        position: "absolute",
+                        bottom: 12,
+                        left: 12,
+                        flexDirection: "column",
                       }}
                     >
-                      {data.orderDetails.length < 25
-                        ? data.orderDetails
-                        : data.orderDetails.slice(0, 25) + "..."}
-                    </Typography>
-                  </div>
-                  <div
-                    style={{
-                      display: "flex",
-                      backgroundColor: "transparent",
-                      position: "absolute",
-                      bottom: 12,
-                      left: 12,
-                      flexDirection: "column",
-                    }}
-                  >
-                    <Typography
+                      <Typography
+                        style={{
+                          color: "#0F607D",
+                          fontWeight: "bold",
+                          fontSize: isMobile ? "8px" : "0.625vw",
+                        }}
+                      >
+                        {isMobile
+                          ? `Tanggal Pembuatan: ${moment(data.createdAt).format(
+                              "DD/MM/YYYY"
+                            )}`
+                          : `Tanggal Pembuatan Pesanan: ${moment(
+                              data.createdAt
+                            ).format("DD/MM/YYYY")}`}
+                      </Typography>
+                    </div>
+                    <div
                       style={{
-                        color: "#0F607D",
-                        fontWeight: "bold",
-                        fontSize: isMobile ? "8px" : "0.625vw",
+                        display: "flex",
+                        backgroundColor: "transparent",
+                        position: "absolute",
+                        bottom: isMobile ? 24 : 28,
+                        left: 12,
+                        flexDirection: "column",
                       }}
                     >
-                      {isMobile
-                        ? `Tanggal Pembuatan: ${moment(data.createdAt).format(
-                            "DD/MM/YYYY"
-                          )}`
-                        : `Tanggal Pembuatan Pesanan: ${moment(
-                            data.createdAt
-                          ).format("DD/MM/YYYY")}`}
-                    </Typography>
+                      <Typography
+                        style={{
+                          color: "#0F607D",
+                          fontWeight: "bold",
+                          fontSize: isMobile ? "8px" : "0.625vw",
+                        }}
+                      >
+                        {`Status Pesanan: ${data.orderStatus}`}
+                      </Typography>
+                    </div>
                   </div>
-                  <div
-                    style={{
-                      display: "flex",
-                      backgroundColor: "transparent",
-                      position: "absolute",
-                      bottom: isMobile ? 24 : 28,
-                      left: 12,
-                      flexDirection: "column",
-                    }}
-                  >
-                    <Typography
-                      style={{
-                        color: "#0F607D",
-                        fontWeight: "bold",
-                        fontSize: isMobile ? "8px" : "0.625vw",
-                      }}
-                    >
-                      {`Status Pesanan: ${data.orderStatus}`}
-                    </Typography>
-                  </div>
-                </div>
-              ))
+                ))
             )}
           </div>
           <div style={{ display: "flex", marginTop: "1.667vw" }}>

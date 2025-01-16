@@ -43,11 +43,14 @@ import KelolaAnggotaProductionPlanning from "./pages/ProductionPlanningPage/Kelo
 import KelolaAnggotaInventory from "./pages/InventoryPage/KelolaAnggotaInventory";
 import KelolaAnggotaProduksi from "./pages/ProductionPage/KelolaAnggotaProduksi";
 import KelolaAnggotaFinance from "./pages/FinancePage/KelolaAnggotaFinance";
+import ForgetPassword from "./pages/ForgetPassword";
 
 export const AppContext = createContext({});
 
 function App() {
   const [userCredentials, setUserCredentials] = useState({});
+
+  console.log(userCredentials)
 
   const theme = createTheme({
     breakpoints: {
@@ -86,6 +89,7 @@ function App() {
               }
             />
             <Route path="/register" element={<RegisterPage />} />
+            <Route path="/forgetPassword" element={<ForgetPassword/>} />
             <Route
               path="/marketingDashboard/*"
               element={
