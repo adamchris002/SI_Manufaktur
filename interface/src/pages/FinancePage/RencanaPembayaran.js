@@ -503,13 +503,12 @@ const RencanaPembayaran = (props) => {
               let dataCicilan = [];
               const jumlahPerBulan =
                 parseFloat(updatedItem.jumlahHarga) / value;
-              const tanggalAwal = dayjs(updatedItem.createdAt);
-              const month = tanggalAwal.month();
+              const tanggalAwal = updatedItem.tanggal;
+              const month = tanggalAwal.month() + 1;
               const year = tanggalAwal.year();
+              const day = parseInt(updatedItem.tanggalJatuhTempoPembayaran, 10);
 
-              const startDate = dayjs(
-                `${month}/${updatedItem.tanggalJatuhTempoPembayaran}/${year}`
-              );
+              const startDate = `${month}/${day}/${year}`;
               for (let i = 0; i < value; i++) {
                 let newDataCicilan = {
                   jumlah: jumlahPerBulan,
@@ -550,13 +549,12 @@ const RencanaPembayaran = (props) => {
               let dataCicilan = [];
               const jumlahPerBulan =
                 parseFloat(updatedItem.jumlahHarga) / value;
-              const tanggalAwal = dayjs(updatedItem.createdAt);
-              const month = tanggalAwal.month();
+              const tanggalAwal = updatedItem.tanggal;
+              const month = tanggalAwal.month() + 1;
               const year = tanggalAwal.year();
+              const day = parseInt(updatedItem.tanggalJatuhTempoPembayaran, 10);
 
-              const startDate = dayjs(
-                `${month}/${updatedItem.tanggalJatuhTempoPembayaran}/${year}`
-              );
+              const startDate = `${month}/${day}/${year}`;
               for (let i = 0; i < value; i++) {
                 let newDataCicilan = {
                   jumlah: jumlahPerBulan,
@@ -836,7 +834,9 @@ const RencanaPembayaran = (props) => {
           >
             {ongoingHutangsAndCicilans.length !== 0 && (
               <div style={{ width: isMobile ? "100%" : "48%" }}>
-                <Typography style={{color: "#0F607D"}}>Data Hutang dari bulan sebelum</Typography>
+                <Typography style={{ color: "#0F607D" }}>
+                  Data Hutang dari bulan sebelum
+                </Typography>
                 <TableContainer component={Paper}>
                   <Table>
                     <TableHead>
@@ -887,8 +887,13 @@ const RencanaPembayaran = (props) => {
               </div>
             )}
             {ongoingPembayaranLainLain.length !== 0 && (
-              <div style={{ width: isMobile ? "100%" : "48%", marginTop: isMobile ? "16px" : "" }}>
-                <Typography style={{color: "#0F607D"}}>
+              <div
+                style={{
+                  width: isMobile ? "100%" : "48%",
+                  marginTop: isMobile ? "16px" : "",
+                }}
+              >
+                <Typography style={{ color: "#0F607D" }}>
                   Data pembayaran lain-lain dari bulan sebelum
                 </Typography>
                 <TableContainer component={Paper}>
@@ -1405,6 +1410,7 @@ const RencanaPembayaran = (props) => {
                                     {result.cicilan.map(
                                       (cicilan, cicilanIndex) => (
                                         <React.Fragment key={cicilanIndex}>
+                                          {/* {console.log(cicilan)} */}
                                           <TableRow>
                                             <TableCell>
                                               {cicilanIndex + 1 + "."}
@@ -1446,7 +1452,12 @@ const RencanaPembayaran = (props) => {
                     alignItems: "center",
                   }}
                 >
-                  <Typography style={{ fontSize: isMobile ? "4vw" : "1.5vw", color: "#0F607D" }}>
+                  <Typography
+                    style={{
+                      fontSize: isMobile ? "4vw" : "1.5vw",
+                      color: "#0F607D",
+                    }}
+                  >
                     No Rekening:
                   </Typography>
                   <div style={{ marginLeft: "8px" }}>
@@ -1685,15 +1696,15 @@ const RencanaPembayaran = (props) => {
                                               backgroundColor: "#d3f8fd",
                                             }}
                                           >
-                                            {!cicilan.tanggalJ ||
+                                            {!cicilan.tanggal ||
                                             !dayjs(
-                                              cicilan.tanggalJ,
+                                              cicilan.tanggal,
                                               "MM/DD/YYYY hh:mm A",
                                               true
                                             ).isValid()
-                                              ? dayjs(
-                                                  cicilan.tanggalJatuhTempo
-                                                ).format("MM/DD/YYYY")
+                                              ? dayjs(cicilan.tanggal).format(
+                                                  "MM/DD/YYYY"
+                                                )
                                               : dayjs(cicilan.tanggalJa).format(
                                                   "MM/DD/YYYY"
                                                 )}
@@ -2367,7 +2378,12 @@ const RencanaPembayaran = (props) => {
                   alignItems: "center",
                 }}
               >
-                <Typography style={{ fontSize: isMobile ? "4vw" : "1.5vw", color: "#0F607D" }}>
+                <Typography
+                  style={{
+                    fontSize: isMobile ? "4vw" : "1.5vw",
+                    color: "#0F607D",
+                  }}
+                >
                   No Rekening:
                 </Typography>
                 <div style={{ marginLeft: "8px" }}>
@@ -2386,7 +2402,7 @@ const RencanaPembayaran = (props) => {
                   dataInfoPembayaran.constructor === Object && (
                     <Typography
                       style={{
-                        fontSize: isMobile ?"4vw" :  "1.5vw",
+                        fontSize: isMobile ? "4vw" : "1.5vw",
                         color: "#0F607D",
                         marginTop: "16px",
                       }}

@@ -1015,6 +1015,7 @@ const KasHarian = (props) => {
                   Simpan Data Pos Pembayaran
                 </DefaultButton>
               )}
+              <div style={{marginLeft: "8px"}}>
               <Button
                 variant="outlined"
                 color="error"
@@ -1033,6 +1034,7 @@ const KasHarian = (props) => {
               >
                 Cancel
               </Button>
+              </div>
             </div>
           </div>
         </MyModal>

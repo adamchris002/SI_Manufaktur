@@ -877,6 +877,18 @@ const MaindashboardInventory = (props) => {
               </DefaultButton>
             </div>
           )}
+          {!isMobile && (
+            <div style={{ bottom: 0, position: "fixed", marginBottom: "15px" }}>
+              <DefaultButton
+                onClickFunction={() => {
+                  setUserCredentials({})
+                  navigate("/");
+                }}
+              >
+                Logout
+              </DefaultButton>
+            </div>
+          )}
         </div>
       )}
       {isMobile ? (
@@ -922,11 +934,30 @@ const MaindashboardInventory = (props) => {
             >
               Welcome back, {userInformation.data.username}
             </Typography>
+            <div
+              style={{
+                display: isMobile ? "flex" : "",
+                alignItems: isMobile ? "center" : "",
+              }}
+            >
             <Typography
               style={{ fontSize: isMobile ? "4vw" : "2vw", color: "#0F607D" }}
             >
               {userInformation.data.department} Division
             </Typography>
+            {isMobile && (
+                <div style={{ marginLeft: "8px" }}>
+                  <DefaultButton
+                    onClickFunction={() => {
+                      setUserCredentials({})
+                      navigate("/");
+                    }}
+                  >
+                    Logout
+                  </DefaultButton>
+                </div>
+              )}
+            </div>
           </div>
         </div>
         {userInformation?.data?.role === "Owner" && (
