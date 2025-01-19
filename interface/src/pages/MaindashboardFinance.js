@@ -145,7 +145,7 @@ const MaindashboardFinance = (props) => {
     }).then((result) => {
       if (result.status === 200) {
         setDaftarTagihanSatuTahun(result.data);
-        console.log(result.data)
+        console.log(result.data);
       } else {
         setOpenSnackbar(true);
         setSnackbarStatus(false);
@@ -480,7 +480,7 @@ const MaindashboardFinance = (props) => {
             <div style={{ bottom: 0, position: "fixed", marginBottom: "15px" }}>
               <DefaultButton
                 onClickFunction={() => {
-                  setUserCredentials({})
+                  setUserCredentials({});
                   navigate("/");
                 }}
               >
@@ -545,16 +545,16 @@ const MaindashboardFinance = (props) => {
                 alignItems: isMobile ? "center" : "",
               }}
             >
-            <Typography
-              style={{ fontSize: isMobile ? "4vw" : "2vw", color: "#0F607D" }}
-            >
-              {userInformation.data.department} Division
-            </Typography>
-            {isMobile && (
+              <Typography
+                style={{ fontSize: isMobile ? "4vw" : "2vw", color: "#0F607D" }}
+              >
+                {userInformation.data.department} Division
+              </Typography>
+              {isMobile && (
                 <div style={{ marginLeft: "8px" }}>
                   <DefaultButton
                     onClickFunction={() => {
-                      setUserCredentials({})
+                      setUserCredentials({});
                       navigate("/");
                     }}
                   >
@@ -906,9 +906,12 @@ const MaindashboardFinance = (props) => {
                         <TableRow>
                           <TableCell>{index + 1 + "."}</TableCell>
                           <TableCell>{result.judulRencanaPembayaran}</TableCell>
-                          <TableCell>
-                            {result.statusRencanaPembayaran}
-                          </TableCell>
+                          {result.statusRencanaPembayaran === "Done" && (
+                            <TableCell>Sudah Terlewat</TableCell>
+                          )}
+                          {result.statusRencanaPembayaran === "Ongoing" && (
+                            <TableCell>Sedang Berlangsung</TableCell>
+                          )}
                           {/* <TableCell>
                           <IconButton>
                             <VisibilityIcon style={{ color: "#0F607D" }} />

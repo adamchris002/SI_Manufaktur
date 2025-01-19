@@ -399,22 +399,6 @@ const MaindashboardProduction = (props) => {
               fontSize="1vw"
               onClickFunction={() => {
                 document
-                  .getElementById("actualreportshistory")
-                  .scrollIntoView({ behavior: "smooth" });
-              }}
-            >
-              Actual Reports History
-            </DefaultButton>
-          </div>
-          <div style={{ marginTop: "1.667vw", fontSize: "1.25vw" }}>
-            <DefaultButton
-              width="15vw"
-              height="2.08vw"
-              backgroundColor="#0F607D"
-              borderRadius="0.83vw"
-              fontSize="1vw"
-              onClickFunction={() => {
-                document
                   .getElementById("activitylog")
                   .scrollIntoView({ behavior: "smooth" });
               }}
@@ -954,33 +938,7 @@ const MaindashboardProduction = (props) => {
             </TableContainer>
           )}
         </div>
-        <div
-          style={{
-            margin: isMobile
-              ? "32px 32px 12px 32px"
-              : "3.33vw 1.667vw 0vw 1.667vw",
-            display: "flex",
-            justifyContent: "space-between",
-            alignItems: "center",
-            width: isMobile ? "" : "72vw",
-          }}
-        >
-          <Typography
-            id="actualreportshistory"
-            style={{ fontSize: isMobile ? "4vw" : "2vw", color: "#0F607D" }}
-          >
-            Actual Reports History
-          </Typography>
-          <div>
-            <DefaultButton
-              onClickFunction={() => {
-                navigate("/productionDashboard/laporanAktual");
-              }}
-            >
-              Go to Actual Reports History Page
-            </DefaultButton>
-          </div>
-        </div>
+
         <div
           style={{
             margin: isMobile

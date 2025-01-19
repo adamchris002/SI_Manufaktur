@@ -403,6 +403,7 @@ const StokOpnam = (props) => {
       setSnackbarMessage("Tolong isi semua input");
     } else {
       const modifiedData = modifyStokOpnam();
+      console.log(modifiedData)
       axios({
         method: "PUT",
         url: `http://localhost:5000/inventory/editStokOpnam/${userInformation?.data?.id}`,
@@ -711,7 +712,7 @@ const StokOpnam = (props) => {
                             <TableRow>
                               <TableCell>{index + 1 + "."}</TableCell>
                               <TableCell>
-                                <MySelectTextField
+                                {result.id ? result.suratPesanan : <MySelectTextField
                                   width={"200px"}
                                   data={allPermohonanPembelianId}
                                   value={result.suratPesanan}
@@ -722,7 +723,7 @@ const StokOpnam = (props) => {
                                       index
                                     );
                                   }}
-                                />
+                                />}
                               </TableCell>
                               <TableCell>
                                 <LocalizationProvider

@@ -485,6 +485,14 @@ const MaindashboardInventory = (props) => {
               (daftarPermohonan, j) => {
                 if (j === indexPermohonan) {
                   if (unit) {
+                    if (field === "jumlah") {
+                      if (value !== daftarPermohonan.stok.unit) {
+                        setOpenSnackbar(true);
+                        setSnackbarStatus(false);
+                        setSnackbarMessage("Satuan tidak sesuai");
+                        return daftarPermohonan
+                      }
+                    }
                     return {
                       ...daftarPermohonan,
                       [field]: {
@@ -881,7 +889,7 @@ const MaindashboardInventory = (props) => {
             <div style={{ bottom: 0, position: "fixed", marginBottom: "15px" }}>
               <DefaultButton
                 onClickFunction={() => {
-                  setUserCredentials({})
+                  setUserCredentials({});
                   navigate("/");
                 }}
               >
@@ -940,16 +948,16 @@ const MaindashboardInventory = (props) => {
                 alignItems: isMobile ? "center" : "",
               }}
             >
-            <Typography
-              style={{ fontSize: isMobile ? "4vw" : "2vw", color: "#0F607D" }}
-            >
-              {userInformation.data.department} Division
-            </Typography>
-            {isMobile && (
+              <Typography
+                style={{ fontSize: isMobile ? "4vw" : "2vw", color: "#0F607D" }}
+              >
+                {userInformation.data.department} Division
+              </Typography>
+              {isMobile && (
                 <div style={{ marginLeft: "8px" }}>
                   <DefaultButton
                     onClickFunction={() => {
-                      setUserCredentials({})
+                      setUserCredentials({});
                       navigate("/");
                     }}
                   >

@@ -421,6 +421,14 @@ const PembelianBahanBaku = (props) => {
           if (i === index) {
             let updatedResult = { ...result };
             if (unit) {
+              if (field === "jumlahTerimaPengiriman" || field === "sisaPengiriman") {
+                if (value !== result.jumlahOrder.unit) {
+                  setOpenSnackbar(true)
+                  setSnackbarStatus(false)
+                  setSnackbarMessage("Satuan tidak sesuai")
+                  return updatedResult
+                }
+              }
               return {
                 ...updatedResult,
                 [field]: {

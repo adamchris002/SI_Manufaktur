@@ -21,6 +21,9 @@ module.exports = {
       lokasi: {
         type: Sequelize.STRING
       }, 
+      statusStokOpnam: {
+        type: Sequelize.STRING
+      },
       createdAt: {
         allowNull: false,
         type: Sequelize.DATE

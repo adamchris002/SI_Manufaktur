@@ -368,7 +368,7 @@ class InventoryController {
       });
 
       let result = await permohonanPembelians.findAll({
-        where: { lokasi: findUser.lokasi },
+        where: { lokasi: findUser.lokasi, statusStokOpnam: null },
         include: [{ model: itemPermohonanPembelians }],
       });
       res.json(result);
@@ -508,6 +508,10 @@ class InventoryController {
               } else {
                 amountToReturn = `${totalItemDiGudang} ${tempJumlahItemDiGudang.unit}`;
               }
+            } else {
+              res
+                .status(300)
+                .json({ success: false, message: "Satuan tidak sesuai" });
             }
 
             await inventorys.update(
@@ -836,6 +840,12 @@ class InventoryController {
               stokSelisih: item.stokSelisih,
               keterangan: item.keterangan,
             });
+            await permohonanPembelians.update(
+              {
+                statusStokOpnam: "Done",
+              },
+              { where: { id: item.suratPesanan } }
+            );
           })
         );
       }
@@ -933,6 +943,7 @@ class InventoryController {
             if (!data.id) {
               await itemStokOpnams.create({
                 stokOpnamId: dataStokOpnam.id,
+                idBarang: data.idBarang,
                 suratPesanan: data.suratPesanan,
                 tanggalMasuk: data.tanggalMasuk,
                 tanggalPengembalian: data.tanggalPengembalian,
@@ -945,6 +956,12 @@ class InventoryController {
                 stokSelisih: data.stokSelisih,
                 keterangan: data.keterangan,
               });
+              await permohonanPembelians.update(
+                {
+                  statusStokOpnam: "Done",
+                },
+                { where: { id: data.suratPesanan } }
+              );
             } else {
               await itemStokOpnams.update(
                 {
