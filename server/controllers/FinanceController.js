@@ -1,5 +1,6 @@
 const { Op, DatabaseError } = require("sequelize");
 const {
+  orders,
   bukuBanks,
   itemBukuBanks,
   kasHarians,
@@ -144,7 +145,6 @@ class FinanceController {
             division: "Finance",
             lokasi: findUser.lokasi,
           });
-
         })
       );
     }
@@ -1724,6 +1724,71 @@ class FinanceController {
       let dataNamaBanks = result.map((data) => data.namaBank2);
       let uniqueDataNamaBanks = [...new Set(dataNamaBanks)];
       res.json(uniqueDataNamaBanks);
+    } catch (error) {
+      res.json(error);
+    }
+  }
+  static async getOrderDone(req, res) {
+    try {
+      const { id } = req.params;
+      const findUser = await users.findOne({
+        where: { id: id },
+      });
+
+      const findOrderDone = await orders.findAll({
+        where: { orderStatus: "Done", lokasi: findUser.lokasi },
+      });
+
+      const itemBukuBankTitles = await itemBukuBanks.findAll({
+        attributes: ["uraian"],
+      });
+
+      const itemBukuBankOrderTitles = itemBukuBankTitles.map(
+        (item) => item.uraian
+      );
+
+      const filteredOrders = findOrderDone.filter(
+        (order) =>
+          !itemBukuBankOrderTitles.includes("Pemasukan " + order.orderTitle)
+      );
+
+      res.json(filteredOrders);
+    } catch (error) {
+      res.json(error);
+    }
+  }
+  static async pembayaranPesananDone(req, res) {
+    try {
+      const id = req.params;
+      const { itemBukuBank, dataBank } = req.body;
+
+      const findBukuBank = await bukuBanks.findOne({
+        where: { namaBank: dataBank.namaBank },
+        include: [{ model: itemBukuBanks }],
+      });
+
+      let prevSaldo = 0;
+
+      if (findBukuBank && findBukuBank.itemBukuBanks.length > 0) {
+        const mostRecentSaldo = findBukuBank.itemBukuBanks.sort(
+          (a, b) => new Date(b.createdAt) - new Date(a.createdAt)
+        )[0].saldo;
+
+        prevSaldo = parseFloat(mostRecentSaldo);
+      }
+
+      prevSaldo += parseFloat(itemBukuBank.debet);
+
+      const createItemBukuBank = await itemBukuBanks.create({
+        bukuBankId: dataBank.id,
+        tanggal: dayjs().format("MM/DD/YYYY hh:mm A"),
+        uraian: itemBukuBank.uraian,
+        debet: itemBukuBank.debet,
+        kredit: itemBukuBank.kredit,
+        saldo: prevSaldo,
+        keterangan: itemBukuBank.keterangan,
+      });
+      res.json(createItemBukuBank);
     } catch (error) {
       res.json(error);
     }

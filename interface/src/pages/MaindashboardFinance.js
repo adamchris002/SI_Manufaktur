@@ -44,8 +44,12 @@ const MaindashboardFinance = (props) => {
   const [daftarBank, setDaftarBank] = useState([]);
   const [kasHarian, setKasHarian] = useState([]);
   const [daftarTagihanSatuTahun, setDaftarTagihanSatuTahun] = useState([]);
+  const [orderDone, setOrderDone] = useState([]);
+
+  const [allOngoingBukuBank, setAllOngoingBukuBank] = useState([]);
 
   const [openModal, setOpenModal] = useState(false);
+  const [openModalPesanan, setOpenModalPesanan] = useState(false);
   const [openSnackbar, setOpenSnackbar] = useState(false);
   const [snackbarStatus, setSnackbarStatus] = useState(false);
   const [snackbarMessage, setSnackbarMessage] = useState("");
@@ -53,6 +57,8 @@ const MaindashboardFinance = (props) => {
   const [refreshKasHarian, setRefreshKasHarian] = useState(true);
   const [triggerStatusBukuBank, setTriggerStatusBukuBank] = useState(false);
   const [triggerStatusKasHarian, setTriggerStatusKasHarian] = useState(false);
+  const [selectedBukuBank, setSelectedBukuBank] = useState({});
+  const [indexPesananDone, setIndexPesananDone] = useState("");
 
   const handleChangeDivisiOwner = (event) => {
     axios({
@@ -130,6 +136,46 @@ const MaindashboardFinance = (props) => {
   ];
 
   useEffect(() => {
+    axios({
+      method: "GET",
+      url: `http://localhost:5000/finance/getOngoingBukuBank/${userInformation?.data?.id}`,
+    }).then((result) => {
+      if (result.status === 200) {
+        const tempData = result?.data?.map((result) => {
+          return {
+            ...result,
+            value: result.namaBank,
+          };
+        });
+        setAllOngoingBukuBank(tempData);
+      } else {
+        setOpenSnackbar(true);
+        setSnackbarStatus(false);
+        setSnackbarMessage(
+          "Tidak berhasil memanggil data buku bank yang berlangsung"
+        );
+      }
+    });
+  }, []);
+
+  useEffect(() => {
+    axios({
+      method: "GET",
+      url: `http://localhost:5000/finance/getOrderDone/${userInformation?.data?.id}`,
+    }).then((result) => {
+      if (result.status === 200) {
+        setOrderDone(result.data);
+      } else {
+        setOpenSnackbar(true);
+        setSnackbarStatus(false);
+        setSnackbarMessage(
+          "Tidak berhasil memanggil data daftar tagihan 1 tahun"
+        );
+      }
+    });
+  }, [openModalPesanan === false]);
+
+  useEffect(() => {
     if (message) {
       setSnackbarMessage(message);
       setSnackbarStatus(true);
@@ -145,7 +191,6 @@ const MaindashboardFinance = (props) => {
     }).then((result) => {
       if (result.status === 200) {
         setDaftarTagihanSatuTahun(result.data);
-        console.log(result.data);
       } else {
         setOpenSnackbar(true);
         setSnackbarStatus(false);
@@ -277,6 +322,12 @@ const MaindashboardFinance = (props) => {
     setOpenModal(false);
   };
 
+  const handleCloseModalPesanan = () => {
+    setOpenModalPesanan(false);
+    setSelectedBukuBank({});
+    setIndexPesananDone("");
+  };
+
   const handleCloseSnackbar = () => {
     setOpenSnackbar(false);
     setSnackbarMessage("");
@@ -330,6 +381,48 @@ const MaindashboardFinance = (props) => {
     });
   };
 
+  const openModalViewPesanan = (index) => {
+    setOpenModalPesanan(true);
+    setIndexPesananDone(index);
+  };
+
+  const handleSelectBukuBank = (event) => {
+    const value = event.target.value;
+
+    const tempSelectedBukuBank = allOngoingBukuBank.find(
+      (item) => item.namaBank === value
+    );
+    setSelectedBukuBank(tempSelectedBukuBank);
+  };
+
+  const handleAddPesananDoneToBukuBank = () => {
+    const tempItemBukuBank = {
+      uraian: "Pemasukan " + orderDone[indexPesananDone].orderTitle,
+      debet: orderDone[indexPesananDone].orderTotalPrice,
+      kredit: 0,
+      keterangan: "Lunas",
+    };
+    axios({
+      method: "POST",
+      url: `http://localhost:5000/finance/pembayaranPesananDone/${userInformation?.data?.id}`,
+      data: { itemBukuBank: tempItemBukuBank, dataBank: selectedBukuBank },
+    }).then((result) => {
+      if (result.status === 200) {
+        handleCloseModalPesanan();
+        setOpenSnackbar(true);
+        setSnackbarStatus(true);
+        setSnackbarMessage(
+          "Berhasil menambahkan pesanan selelesai ke buku bank"
+        );
+      } else {
+        setOpenSnackbar(true);
+        setSnackbarStatus(false);
+        setSnackbarMessage(
+          "Tidak dapat menambahkan pesanan selesai ke buku bank"
+        );
+      }
+    });
+  };
   return (
     <div
       style={{
@@ -346,12 +439,14 @@ const MaindashboardFinance = (props) => {
         ""
       ) : (
         <div
+          className="hideScrollbar"
           style={{
             width: "16.4617vw",
-            height: "100vh",
+            height: "90vh",
             display: "flex",
             alignItems: "center",
             flexDirection: "column",
+            overflowX: "auto",
           }}
         >
           <div style={{ width: "15vw", height: "15vw", marginTop: "32px" }}>
@@ -375,6 +470,22 @@ const MaindashboardFinance = (props) => {
               }}
             >
               Permohonan Pembelian
+            </DefaultButton>
+          </div>
+          <div style={{ marginTop: "1.667vw", fontSize: "1.25vw" }}>
+            <DefaultButton
+              width="15vw"
+              height="2.08vw"
+              backgroundColor="#0F607D"
+              borderRadius="0.83vw"
+              fontSize="1vw"
+              onClickFunction={() => {
+                document
+                  .getElementById("pesananSelesai")
+                  .scrollIntoView({ behavior: "smooth" });
+              }}
+            >
+              Pesanan Selesai
             </DefaultButton>
           </div>
           <div style={{ marginTop: "1.667vw", fontSize: "1.25vw" }}>
@@ -695,6 +806,76 @@ const MaindashboardFinance = (props) => {
               </TableContainer>
             )}
           </div>
+        </div>
+        <div
+          style={{
+            margin: isMobile
+              ? "32px 32px 12px 32px"
+              : "3.33vw 1.667vw 0vw 1.667vw",
+            width: isMobile ? "" : "72vw",
+          }}
+        >
+          <Typography
+            id="pesananSelesai"
+            style={{ color: "#0F607D", fontSize: isMobile ? "4vw" : "2vw" }}
+          >
+            Daftar Pesanan Selesai
+          </Typography>
+          {orderDone?.length === 0 ? (
+            <Typography style={{ fontSize: "1.5vw", color: "#0F607D" }}>
+              Tidak ada data pesanan yang sudah selesai
+            </Typography>
+          ) : (
+            <div>
+              <TableContainer component={Paper}>
+                <Table sx={{ minWidth: 650 }} aria-label="simple table">
+                  <TableHead>
+                    <TableRow>
+                      <TableCell>ID</TableCell>
+                      <TableCell>Tanggal</TableCell>
+                      <TableCell>Pemesan</TableCell>
+                      <TableCell>Nama Pesanan</TableCell>
+                      <TableCell>Jenis Cetakan</TableCell>
+                      <TableCell>Jumlah Kuantitas</TableCell>
+                      <TableCell>Jumlah Harga</TableCell>
+                      <TableCell>Action</TableCell>
+                    </TableRow>
+                  </TableHead>
+                  <TableBody>
+                    {orderDone?.map((result, index) => {
+                      return (
+                        <React.Fragment key={index}>
+                          <TableRow>
+                            <TableCell>{result.id}</TableCell>
+                            <TableCell>{result.orderDueDate}</TableCell>
+                            <TableCell>{result.customerDetail}</TableCell>
+                            <TableCell>{result.orderTitle}</TableCell>
+                            <TableCell>{result.orderType}</TableCell>
+                            <TableCell>{result.orderQuantity}</TableCell>
+                            <TableCell>{`Rp. ${result.orderTotalPrice
+                              .toString()
+                              .replace(
+                                /\B(?=(\d{3})+(?!\d))/g,
+                                "."
+                              )},-`}</TableCell>
+                            <TableCell>
+                              <IconButton
+                                onClick={() => {
+                                  openModalViewPesanan(index);
+                                }}
+                              >
+                                <VisibilityIcon style={{ color: "#0f607d" }} />
+                              </IconButton>
+                            </TableCell>
+                          </TableRow>
+                        </React.Fragment>
+                      );
+                    })}
+                  </TableBody>
+                </Table>
+              </TableContainer>
+            </div>
+          )}
         </div>
         <div
           style={{
@@ -1104,6 +1285,99 @@ const MaindashboardFinance = (props) => {
                   Deny
                 </Button>
               </div>
+            </div>
+          </div>
+        </MyModal>
+      )}
+      {openModalPesanan === true && (
+        <MyModal open={openModalPesanan} handleClose={handleCloseModalPesanan}>
+          <div
+            className="hideScrollbar"
+            style={{
+              margin: isMobile ? "24px" : "0.83vw 1.667vw 0.83vw 1.667vw",
+              overflow: "auto",
+              width: isMobile ? "80vw" : "50vw",
+              maxHeight: "80vh",
+            }}
+          >
+            <div style={{ display: "flex", justifyContent: "space-between" }}>
+              <Typography
+                style={{
+                  color: "#0F607D",
+                  fontSize: isMobile ? "7vw" : "2vw",
+                }}
+              >
+                Tambahkan Pesanan Selesai ke Buku Bank
+              </Typography>
+              <IconButton
+                style={{ height: "50%" }}
+                onClick={() => {
+                  handleCloseModalPesanan();
+                }}
+              >
+                <CloseIcon />
+              </IconButton>
+            </div>
+            <div style={{ marginTop: "16px" }}>
+              <div style={{ display: "flex", alignItems: "center" }}>
+                <Typography
+                  style={{
+                    color: "#0F607D",
+                    marginBottom: "8px",
+                    fontSize: "1.5vw",
+                  }}
+                >
+                  Nomor Rekening:
+                </Typography>
+                <div style={{ marginLeft: "8px" }}>
+                  <MySelectTextField
+                    onChange={(event) => {
+                      handleSelectBukuBank(event);
+                    }}
+                    value={selectedBukuBank.value}
+                    width={isMobile ? "75px" : "100px"}
+                    data={allOngoingBukuBank}
+                  />
+                </div>
+              </div>
+              <Typography style={{ color: "#0F607D", fontSize: "1.5vw" }}>
+                Nama Bank: {selectedBukuBank.namaBank2}
+              </Typography>
+            </div>
+            <div
+              style={{
+                width: "100%",
+                display: "flex",
+                justifyContent: "center",
+                alignItems: "center",
+              }}
+            >
+              {(userInformation?.data?.role === "Owner" ||
+                userInformation?.data?.role === "Super Admin" ||
+                userInformation?.data?.role === "Admin") &&
+              selectedBukuBank.namaBank ? (
+                <div>
+                  <DefaultButton
+                    onClickFunction={() => {
+                      handleAddPesananDoneToBukuBank();
+                    }}
+                  >
+                    Tambahkan ke Buku Bank
+                  </DefaultButton>
+                  <Button
+                    color="error"
+                    variant="outlined"
+                    style={{ marginLeft: "8px" }}
+                    onClick={() => {
+                      handleCloseModalPesanan();
+                    }}
+                  >
+                    Cancel
+                  </Button>
+                </div>
+              ) : (
+                ""
+              )}
             </div>
           </div>
         </MyModal>

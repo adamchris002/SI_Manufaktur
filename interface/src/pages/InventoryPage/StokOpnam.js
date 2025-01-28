@@ -403,7 +403,6 @@ const StokOpnam = (props) => {
       setSnackbarMessage("Tolong isi semua input");
     } else {
       const modifiedData = modifyStokOpnam();
-      console.log(modifiedData)
       axios({
         method: "PUT",
         url: `http://localhost:5000/inventory/editStokOpnam/${userInformation?.data?.id}`,

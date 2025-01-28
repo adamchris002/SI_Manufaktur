@@ -133,7 +133,7 @@ const OrderHistoryPage = (props) => {
     pdf.text(`Jumlah Pesanan: ${dataView.orderQuantity}`, 100, y);
     y += 10;
 
-    pdf.text(`Jenis Cetakan: ${dataView.jenisCetakan}`, margin, y);
+    pdf.text(`Jenis Cetakan: ${dataView.orderType}`, margin, y);
     pdf.text(`No Seri: ${dataView.orderNoSeries}`, 100, y);
     y += 10;
 
@@ -183,7 +183,7 @@ const OrderHistoryPage = (props) => {
 
     worksheet.mergeCells("B2:M3");
     const titleCell = worksheet.getCell("B2");
-    titleCell.value = `LAPORAN PERENCANAAN PRODUKSI ${dataView.id}`;
+    titleCell.value = `LAPORAN PESANAN ${dataView.id}`;
     titleCell.border = borderStyle;
     titleCell.alignment = { vertical: "middle", horizontal: "center" };
 

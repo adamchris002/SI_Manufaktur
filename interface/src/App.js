@@ -50,8 +50,6 @@ export const AppContext = createContext({});
 function App() {
   const [userCredentials, setUserCredentials] = useState({});
 
-  console.log(userCredentials)
-
   const theme = createTheme({
     breakpoints: {
       values: {

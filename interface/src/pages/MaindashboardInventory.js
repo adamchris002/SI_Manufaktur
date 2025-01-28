@@ -741,10 +741,11 @@ const MaindashboardInventory = (props) => {
           className="hideScrollbar"
           style={{
             width: "16.4617vw",
-            height: "100vh",
+            height: "90vh",
             display: "flex",
             alignItems: "center",
             flexDirection: "column",
+            overflowX: "auto"
           }}
         >
           <div style={{ width: "15vw", height: "15vw", marginTop: "1.667vw" }}>

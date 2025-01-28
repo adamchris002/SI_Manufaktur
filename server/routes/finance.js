@@ -63,7 +63,11 @@ financeRoutes.get(
 );
 financeRoutes.get("/getUserBaru", FinanceController.getUserBaru);
 financeRoutes.get("/getUserLama", FinanceController.getUserLama);
-financeRoutes.get("/getNamaBukuBankSama/:id", FinanceController.getNamaBukuBankSama)
+financeRoutes.get(
+  "/getNamaBukuBankSama/:id",
+  FinanceController.getNamaBukuBankSama
+);
+financeRoutes.get("/getOrderDone/:id", FinanceController.getOrderDone);
 //post
 financeRoutes.post("/addNamaBank/:id", FinanceController.addNamaBank); //udah //lokasi udah
 financeRoutes.post("/addItemBukuBank/:id", FinanceController.addNewBukuBank); //udah //lokasi perlu ga?
@@ -78,6 +82,10 @@ financeRoutes.post("/addPajakKeluaran/:id", FinanceController.addPajakKeluaran);
 financeRoutes.post(
   "/addPembayaranLainLain/:id",
   FinanceController.addPembayaranLainLain //udah //lokasi udah
+);
+financeRoutes.post(
+  "/pembayaranPesananDone/:id",
+  FinanceController.pembayaranPesananDone
 );
 //put
 financeRoutes.put("/updateStatusDone/:id", FinanceController.updateStatusDone);
